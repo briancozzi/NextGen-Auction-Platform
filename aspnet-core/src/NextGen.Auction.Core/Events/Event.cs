@@ -10,18 +10,19 @@ using NextGen.Auction.Address;
 namespace NextGen.Auction.Events
 {
     [Table("Events")]
-    public class Event : FullAuditedEntity<Guid>
+    public class Event : FullAuditedEntity<Guid>, IMustHaveTenant
     {
+        public int TenantId { get; set; }//tenant as organization
         public string Name { get; set; }
         public DateTime EventDate { get; set; }
-        public Guid CompanyId { get; set; }
-        public Guid OrganizationId { get; set; }
+        [ForeignKey("AppAccount")]
+        public Guid AppAccountId { get; set; }
+        public AppAccounts.AppAccount AppAccount { get; set; }
         [ForeignKey("Address")]
         public Guid AddressId { get; set; }
         public Address.Address Address { get; set; }
         public string Email { get; set; }
         public string MobileNo { get; set; }
-        public string CountryCode { get; set; }
         public DateTime StartDateTime { get; set; }
         public DateTime EndDateTime { get; set; }
         public ICollection<Auctions.Auction> EventAuctions { get; set; }

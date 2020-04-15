@@ -1,4 +1,5 @@
-﻿using Abp.Domain.Entities.Auditing;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,8 +9,9 @@ using System.Text;
 namespace NextGen.Auction.Auctions
 {
     [Table("AuctionItems")]
-    public class AuctionItem : FullAuditedEntity<Guid>
+    public class AuctionItem : FullAuditedEntity<Guid>, IMustHaveTenant
     {
+        public int TenantId { get; set; }
         [ForeignKey("Auction")]
         public Guid AuctionId { get; set; }
         public Auction Auction { get; set; }

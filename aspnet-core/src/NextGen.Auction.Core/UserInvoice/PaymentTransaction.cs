@@ -17,6 +17,6 @@ namespace NextGen.Auction.UserInvoice
         [ForeignKey("CardDetail")]
         public Guid CardDetailId { get; set; }
         public CardDetail CardDetail { get; set; }
-        public Guid OrganizationSubscriptionId { get; set; }
+        //   public Guid OrganizationSubscriptionId { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Abp.Domain.Entities.Auditing;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,8 +9,9 @@ using System.Text;
 namespace NextGen.Auction.Item
 {
     [Table("Items")]
-    public class Item : FullAuditedEntity<Guid>
+    public class Item : FullAuditedEntity<Guid>, IMustHaveTenant
     {
+        public int TenantId { get; set; }//tenant as organization
         public string ItemType { get; set; }//may be an enum
         public int ItemNumber { get; set; }
         public string ItemName { get; set; }

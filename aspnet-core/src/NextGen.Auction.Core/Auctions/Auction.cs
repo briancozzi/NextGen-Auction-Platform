@@ -1,4 +1,5 @@
-﻿using Abp.Domain.Entities.Auditing;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using NextGen.Auction.Events;
 using System;
 using System.Collections.Generic;
@@ -9,12 +10,15 @@ using System.Text;
 namespace NextGen.Auction.Auctions
 {
     [Table("Auctions")]
-    public class Auction : FullAuditedEntity<Guid>
+    public class Auction : FullAuditedEntity<Guid>, IMustHaveTenant
     {
+        public int TenantId { get; set; }//tenant as organization
+        [ForeignKey("AppAccount")]
+        public Guid AppAccountId { get; set; }
+        public AppAccounts.AppAccount AppAccount { get; set; }
         [ForeignKey("Event")]
         public Guid EventId { get; set; }
         public Event Event { get; set; }
-        public Guid CompanyId { get; set; }
         public DateTime StartDateTime { get; set; }
         public DateTime EndDateTime { get; set; }
         [ForeignKey("Address")]
