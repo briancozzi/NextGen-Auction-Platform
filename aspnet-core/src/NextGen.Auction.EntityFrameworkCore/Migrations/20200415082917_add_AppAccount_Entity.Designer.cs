@@ -10,8 +10,8 @@ using NextGen.Auction.EntityFrameworkCore;
 namespace NextGen.Auction.Migrations
 {
     [DbContext(typeof(AuctionDbContext))]
-    [Migration("20200415032532_Add_Account_table_For_testing")]
-    partial class Add_Account_table_For_testing
+    [Migration("20200415082917_add_AppAccount_Entity")]
+    partial class add_AppAccount_Entity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -1315,57 +1315,27 @@ namespace NextGen.Auction.Migrations
                     b.ToTable("AbpWebhookSubscriptions");
                 });
 
-            modelBuilder.Entity("NextGen.Auction.Accounts.Account", b =>
+            modelBuilder.Entity("NextGen.Auction.AppAccounts.AppAccount", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CountryCodeForMobile")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("CreatorUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("DeleterUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsEmailVerified")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsMobileVerified")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("LastModifierUserId")
-                        .HasColumnType("bigint");
 
                     b.Property<string>("MobileNo")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Accounts");
+                    b.ToTable("AppAccounts");
                 });
 
             modelBuilder.Entity("NextGen.Auction.Authorization.Roles.Role", b =>
