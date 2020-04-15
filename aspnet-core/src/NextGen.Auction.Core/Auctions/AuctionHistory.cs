@@ -16,6 +16,6 @@ namespace NextGen.Auction.Auctions
         public Guid AuctionItemId { get; set; }
         public AuctionItem AuctionItem { get; set; }
         public double BidAmount { get; set; }
-        public string BidStatus { get; set; }//like win, pending
+        public string BidStatus { get; set; }//like winning, pending
     }
 }

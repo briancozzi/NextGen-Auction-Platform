@@ -22,6 +22,8 @@ namespace NextGen.Auction.Events
         public string Email { get; set; }
         public string MobileNo { get; set; }
         public string CountryCode { get; set; }
+        public DateTime StartDateTime { get; set; }
+        public DateTime EndDateTime { get; set; }
         public ICollection<Auctions.Auction> EventAuctions { get; set; }
 
         public Event()
