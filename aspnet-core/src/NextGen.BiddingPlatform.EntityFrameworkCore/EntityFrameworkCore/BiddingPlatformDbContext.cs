@@ -12,6 +12,7 @@ using NextGen.BiddingPlatform.MultiTenancy;
 using NextGen.BiddingPlatform.MultiTenancy.Accounting;
 using NextGen.BiddingPlatform.MultiTenancy.Payments;
 using NextGen.BiddingPlatform.Storage;
+using Toolbelt.ComponentModel.DataAnnotations;
 
 namespace NextGen.BiddingPlatform.EntityFrameworkCore
 {
@@ -113,6 +114,7 @@ namespace NextGen.BiddingPlatform.EntityFrameworkCore
             //    .IsUnique();
             //});
             modelBuilder.ConfigurePersistedGrantEntity();
+            modelBuilder.BuildIndexesFromAnnotations();
         }
     }
 }

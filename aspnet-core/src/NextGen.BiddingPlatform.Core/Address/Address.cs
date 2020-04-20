@@ -8,12 +8,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using Toolbelt.ComponentModel.DataAnnotations.Schema;
 
-namespace NextGen.BiddingPlatform.AddressEntity
+namespace NextGen.BiddingPlatform.Address
 {
     [Table("Addresses")]
     public class Address : AuditedEntity, IHasUniqueIdentifier
     {
-        [Index("IX_Address", 1, IsUnique = true, IsClustered = false)]
+        public const int MaxCityLength = 25;
+        public const int MaxZipCodeLength = 5;
+
+        [Index("IX_Address", IsClustered = false, IsUnique = true)]
         public Guid UniqueId { get; set; }
 
         [Required]
@@ -24,15 +27,19 @@ namespace NextGen.BiddingPlatform.AddressEntity
         public string Address2 { get; set; }
 
         [Required]
-        [MaxLength(25)]
+        [MaxLength(MaxCityLength)]
         public string City { get; set; }
 
         [ForeignKey("State")]
         public int StateId { get; set; }
-        public State State { get; set; }
+        public State.State State { get; set; }
+
+        [ForeignKey("Country")]
+        public int CountryId { get; set; }
+        public Country.Country Country { get; set; }
 
         [Required]
-        [MaxLength(5)]
+        [MaxLength(MaxZipCodeLength)]
         public string ZipCode { get; set; }
     }
 }

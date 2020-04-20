@@ -8,23 +8,26 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using Toolbelt.ComponentModel.DataAnnotations.Schema;
 
-namespace NextGen.BiddingPlatform.AddressEntity
+namespace NextGen.BiddingPlatform.State
 {
     [Table("States")]
-    public class State :  CreationAuditedEntity, IHasUniqueIdentifier
+    public class State : CreationAuditedEntity, IHasUniqueIdentifier
     {
-        [Index("IX_State", 1, IsUnique = true, IsClustered = false)]
+        public const int MaxStateNameLength = 25;
+        public const int MaxStateCodeLength = 3;
+
+        [Index("IX_State", IsClustered = false, IsUnique = true)]
         public Guid UniqueId { get; set; }
         [Required]
-        [MaxLength(25)]
+        [MaxLength(MaxStateNameLength)]
         public string StateName { get; set; }
 
         [Required]
-        [MaxLength(3)]
+        [MaxLength(MaxStateCodeLength)]
         public string StateCode { get; set; }
 
         [ForeignKey("Country")]
         public int CountryId { get; set; }
-        public Country Country { get; set; }
+        public Country.Country Country { get; set; }
     }
 }
