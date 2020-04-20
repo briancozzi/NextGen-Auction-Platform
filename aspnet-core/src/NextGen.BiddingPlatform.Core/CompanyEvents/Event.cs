@@ -1,7 +1,6 @@
 ﻿using Abp.Authorization.Users;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
-using NextGen.BiddingPlatform.AddressEntity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -28,6 +27,6 @@ namespace NextGen.BiddingPlatform.CompanyEvents
 
         [ForeignKey("Address")]
         public Guid AddressId { get; set; }
-        public Address Address { get; set; }
+        public Address.Address Address { get; set; }
     }
 }

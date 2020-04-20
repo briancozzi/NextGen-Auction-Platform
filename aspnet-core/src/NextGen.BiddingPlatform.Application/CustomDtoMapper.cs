@@ -161,6 +161,9 @@ namespace NextGen.BiddingPlatform
 
 
             /* ADD YOUR OWN CUSTOM AUTOMAPPER MAPPINGS HERE */
+            //Country
+            configuration.CreateMap<Country.Dto.CountryDto, Country.Country>();
+            configuration.CreateMap< Country.Country, Country.Dto.CountryDto>();
         }
     }
 }

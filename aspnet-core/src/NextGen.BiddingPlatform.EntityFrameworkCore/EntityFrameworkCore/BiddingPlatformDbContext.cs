@@ -38,6 +38,8 @@ namespace NextGen.BiddingPlatform.EntityFrameworkCore
 
         public virtual DbSet<UserDelegation> UserDelegations { get; set; }
 
+        public  virtual DbSet<Country.Country> Countries { get; set; }
+
         public BiddingPlatformDbContext(DbContextOptions<BiddingPlatformDbContext> options)
             : base(options)
         {
