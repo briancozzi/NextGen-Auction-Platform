@@ -12,6 +12,7 @@ using NextGen.BiddingPlatform.MultiTenancy;
 using NextGen.BiddingPlatform.MultiTenancy.Accounting;
 using NextGen.BiddingPlatform.MultiTenancy.Payments;
 using NextGen.BiddingPlatform.Storage;
+using Toolbelt.ComponentModel.DataAnnotations;
 
 namespace NextGen.BiddingPlatform.EntityFrameworkCore
 {
@@ -96,7 +97,24 @@ namespace NextGen.BiddingPlatform.EntityFrameworkCore
             // Remove when https://github.com/aspnetboilerplate/aspnetboilerplate/issues/5457 is fixed
             modelBuilder.Entity<OrganizationUnit>().HasIndex(e => new { e.TenantId, e.Code }).IsUnique(false);
 
+            //make columns unique and non-cluster using fluent api
+            //modelBuilder.Entity<Country>(b =>
+            //{
+            //    b.HasIndex(x => x.UniqueId)
+            //    .IsClustered(false)
+            //    .HasName("IX_Country")
+            //    .IsUnique();
+            //});
+
+            //modelBuilder.Entity<State>(b =>
+            //{
+            //    b.HasIndex(x => x.UniqueId)
+            //    .IsClustered(false)
+            //    .HasName("IX_State")
+            //    .IsUnique();
+            //});
             modelBuilder.ConfigurePersistedGrantEntity();
+            modelBuilder.BuildIndexesFromAnnotations();
         }
     }
 }
