@@ -15,7 +15,7 @@ import { SmsVerificationModalComponent } from '@app/shared/layout/profile/sms-ve
 import { ServiceProxyModule } from '@shared/service-proxies/service-proxy.module';
 import { UtilsModule } from '@shared/utils/utils.module';
 import { FileUploadModule } from 'ng2-file-upload';
-import { ModalModule, TabsModule, TooltipModule, BsDropdownModule, PopoverModule } from 'ngx-bootstrap';
+import { ModalModule, TabsModule, TooltipModule, BsDropdownModule, PopoverModule,BsModalRef } from 'ngx-bootstrap';
 import {BsDatepickerModule} from 'ngx-bootstrap/datepicker';
 import { FileUploadModule as PrimeNgFileUploadModule } from 'primeng/fileupload';
 import { PaginatorModule } from 'primeng/paginator';
@@ -67,7 +67,6 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { TextMaskModule } from 'angular2-text-mask';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { ActiveDelegatedUsersComboComponent } from './shared/layout/active-delegated-users-combo.component';
-
 // Metronic
 import { PerfectScrollbarModule, PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
@@ -136,7 +135,8 @@ import { AppBsModalModule } from '@shared/common/appBsModal/app-bs-modal.module'
         SessionTimeoutModalComponent,
         SessionTimeoutComponent,
         MenuSearchBarComponent,
-        ActiveDelegatedUsersComboComponent
+        ActiveDelegatedUsersComboComponent,
+        
     ],
     imports: [
         CommonModule,
@@ -171,6 +171,7 @@ import { AppBsModalModule } from '@shared/common/appBsModal/app-bs-modal.module'
         ImpersonationService,
         LinkedAccountService,
         UserNotificationHelper,
+        BsModalRef,
         ChatSignalrService,
         {
             provide: PERFECT_SCROLLBAR_CONFIG,

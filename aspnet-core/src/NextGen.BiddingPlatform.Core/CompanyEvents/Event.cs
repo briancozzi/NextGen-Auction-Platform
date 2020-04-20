@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace NextGen.BiddingPlatform.Events
+namespace NextGen.BiddingPlatform.CompanyEvents
 {
     [Table("Events")]
     public class Event : FullAuditedEntity<Guid>, IMustHaveTenant
