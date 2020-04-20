@@ -31,6 +31,7 @@ export class CreateTenantModalComponent extends AppComponentBase {
     isSelectedEditionFree = false;
     tenantAdminPasswordRepeat = '';
 
+    
     constructor(
         injector: Injector,
         private _tenantService: TenantServiceProxy,
