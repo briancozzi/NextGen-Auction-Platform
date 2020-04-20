@@ -18,9 +18,10 @@ namespace NextGen.BiddingPlatform.Country
             _countryRepository = countryRepository;
         }
 
-        public async Task<CountryDto> Create(CountryDto input)
+        public async Task<CountryDto> Create(CreateCountryDto input)
         {
             Country output = ObjectMapper.Map<Country>(input);
+            output.UniqueId = Guid.NewGuid();
             var country = await _countryRepository.InsertAsync(output);
             return ObjectMapper.Map<CountryDto>(country);
         }
@@ -34,10 +35,10 @@ namespace NextGen.BiddingPlatform.Country
             await _countryRepository.DeleteAsync(country);
         }
 
-        public async Task<List<CountryDto>> GetAllCountry()
+        public async Task<List<CountryListDto>> GetAllCountry()
         {
             var countries = await _countryRepository.GetAllListAsync();
-            return ObjectMapper.Map<List<CountryDto>>(countries);
+            return ObjectMapper.Map<List<CountryListDto>>(countries);
         }
 
         public async Task<CountryDto> GetCountryById(EntityDto<Guid> input)

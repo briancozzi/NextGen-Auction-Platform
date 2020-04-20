@@ -10,8 +10,8 @@ namespace NextGen.BiddingPlatform.Country
 {
     public interface ICountryAppService : IApplicationService
     {
-        Task<List<CountryDto>> GetAllCountry();
-        Task<CountryDto> Create(CountryDto input);
+        Task<List<CountryListDto>> GetAllCountry();
+        Task<CountryDto> Create(CreateCountryDto input);
         Task Update(CountryDto input);
         Task Delete(EntityDto<Guid> input);
         Task<CountryDto> GetCountryById(EntityDto<Guid> input);
