@@ -15,7 +15,7 @@ namespace NextGen.BiddingPlatform.Core.Addresses
         public const int MaxCityLength = 25;
         public const int MaxZipCodeLength = 5;
 
-        [Index("IX_Address", IsClustered = false, IsUnique = true)]
+        [Index("IX_Address_UniqueId", IsClustered = false, IsUnique = true)]
         public Guid UniqueId { get; set; }
 
         [Required]
