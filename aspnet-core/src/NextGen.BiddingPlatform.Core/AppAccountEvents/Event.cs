@@ -3,15 +3,18 @@ using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using NextGen.BiddingPlatform.Core.Addresses;
 using NextGen.BiddingPlatform.Core.AppAccounts;
+using NextGen.BiddingPlatform.Core.Auctions;
 using NextGen.BiddingPlatform.CustomInterface;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Toolbelt.ComponentModel.DataAnnotations.Schema;
 
 namespace NextGen.BiddingPlatform.Core.AppAccountEvents
 {
+    [Table("AppAccountEvents")]
     public class Event : FullAuditedEntity, IMustHaveTenant, IHasUniqueIdentifier
     {
         public int TenantId { get; set; }
@@ -45,9 +48,10 @@ namespace NextGen.BiddingPlatform.Core.AppAccountEvents
         public Address Address { get; set; }
 
         //here list of auctions will come
-
+        public ICollection<Auction> EventAuctions { get; set; }
         public Event()
         {
+            EventAuctions = new Collection<Auction>();
             Address = new Address();
         }
     }

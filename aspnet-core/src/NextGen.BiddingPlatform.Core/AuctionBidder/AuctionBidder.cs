@@ -13,6 +13,7 @@ using Toolbelt.ComponentModel.DataAnnotations.Schema;
 
 namespace NextGen.BiddingPlatform.Core.AuctionBidders
 {
+    [Table("AuctionBidders")]
     public class AuctionBidder : FullAuditedEntity, IMustHaveTenant, IHasUniqueIdentifier
     {
         public int TenantId { get; set; }

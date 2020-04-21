@@ -11,6 +11,7 @@ using Toolbelt.ComponentModel.DataAnnotations.Schema;
 
 namespace NextGen.BiddingPlatform.Core.PaymentTransactions
 {
+    [Table("PaymentTransactions")]
     public class PaymentTransaction : FullAuditedEntity, IHasUniqueIdentifier
     {
         [Index("IX_PaymentTransaction_UniqueId", IsClustered = false, IsUnique = true)]

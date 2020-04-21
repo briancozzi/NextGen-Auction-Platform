@@ -13,6 +13,7 @@ using Toolbelt.ComponentModel.DataAnnotations.Schema;
 
 namespace NextGen.BiddingPlatform.Core.Invoices
 {
+    [Table("Invoices")]
     public class Invoice : FullAuditedEntity, IMustHaveTenant, IHasUniqueIdentifier
     {
         public int TenantId { get; set; }

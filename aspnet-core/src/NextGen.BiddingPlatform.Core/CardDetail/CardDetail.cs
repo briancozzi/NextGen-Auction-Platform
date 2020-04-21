@@ -14,6 +14,7 @@ using Toolbelt.ComponentModel.DataAnnotations.Schema;
 
 namespace NextGen.BiddingPlatform.Core.CardDetails
 {
+    [Table("CardDetails")]
     public class CardDetail : FullAuditedEntity, IMustHaveTenant, IHasUniqueIdentifier
     {
         public int TenantId { get; set; }

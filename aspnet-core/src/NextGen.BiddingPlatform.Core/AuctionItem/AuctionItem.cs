@@ -11,7 +11,7 @@ using Toolbelt.ComponentModel.DataAnnotations.Schema;
 
 namespace NextGen.BiddingPlatform.Core.AuctionItems
 {
-    [Table("AuctionItem")]
+    [Table("AuctionItems")]
     public class AuctionItem : AuditedEntity,IHasUniqueIdentifier,IMustHaveTenant
     {
         public int TenantId { get; set; }
