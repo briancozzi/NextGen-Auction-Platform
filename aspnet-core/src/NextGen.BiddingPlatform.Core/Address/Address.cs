@@ -8,9 +8,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using Toolbelt.ComponentModel.DataAnnotations.Schema;
 
-namespace NextGen.BiddingPlatform.Address
+namespace NextGen.BiddingPlatform.Core.Addresses
 {
-    [Table("Addresses")]
     public class Address : AuditedEntity, IHasUniqueIdentifier
     {
         public const int MaxCityLength = 25;
