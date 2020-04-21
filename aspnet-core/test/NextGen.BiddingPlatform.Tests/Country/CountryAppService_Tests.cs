@@ -19,7 +19,7 @@ namespace NextGen.BiddingPlatform.Tests.Country
         }
 
         [Fact]
-        public async Task Should_Get_Country()
+        public async Task Should_Get_All_Country()
         {
             var countries = await _countryAppService.GetAllCountry();
             countries.Count.ShouldBe(0);
@@ -33,6 +33,11 @@ namespace NextGen.BiddingPlatform.Tests.Country
                 CountryCode = "USA",
                 CountryName = "United States of America"
             });
+            await _countryAppService.Create(new CreateCountryDto
+            {
+                CountryCode = "IN",
+                CountryName = "India"
+            });
             await UsingDbContextAsync(async context =>
             {
                 await context.SaveChangesAsync();
@@ -40,7 +45,8 @@ namespace NextGen.BiddingPlatform.Tests.Country
 
             var countries = await _countryAppService.GetAllCountry();
             var country = countries.FirstOrDefault();
-            //country.ShouldNotBe(null);
+
+            country.ShouldNotBe(null);
 
             country.CountryCode.ShouldBe("USA");
 
