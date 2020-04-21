@@ -41,9 +41,9 @@ namespace NextGen.BiddingPlatform.Country
             return ObjectMapper.Map<List<CountryListDto>>(countries);
         }
 
-        public async Task<CountryDto> GetCountryById(EntityDto<Guid> input)
+        public async Task<CountryDto> GetCountryById(Guid Id)
         {
-            var country = await _countryRepository.GetAll().FirstOrDefaultAsync(x => x.UniqueId == input.Id);
+            var country = await _countryRepository.GetAll().FirstOrDefaultAsync(x => x.UniqueId == Id);
             if (country == null)
                 throw new Exception("No data found");
 

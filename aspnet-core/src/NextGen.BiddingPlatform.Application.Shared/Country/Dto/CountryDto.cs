@@ -11,6 +11,7 @@ namespace NextGen.BiddingPlatform.Country.Dto
     {
         public const int MaxCountryCodeLength = 3;
 
+        public int Id { get; set; }
         public Guid UniqueId { get; set; }
 
         [Required]

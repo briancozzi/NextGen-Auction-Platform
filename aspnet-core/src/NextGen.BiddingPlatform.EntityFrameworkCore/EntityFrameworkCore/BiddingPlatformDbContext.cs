@@ -6,6 +6,7 @@ using NextGen.BiddingPlatform.Authorization.Delegation;
 using NextGen.BiddingPlatform.Authorization.Roles;
 using NextGen.BiddingPlatform.Authorization.Users;
 using NextGen.BiddingPlatform.Chat;
+using NextGen.BiddingPlatform.Core.State;
 using NextGen.BiddingPlatform.Editions;
 using NextGen.BiddingPlatform.Friendships;
 using NextGen.BiddingPlatform.MultiTenancy;
@@ -39,6 +40,8 @@ namespace NextGen.BiddingPlatform.EntityFrameworkCore
         public virtual DbSet<UserDelegation> UserDelegations { get; set; }
 
         public  virtual DbSet<Country.Country> Countries { get; set; }
+
+        public virtual DbSet<State> States { get; set; }
 
         public BiddingPlatformDbContext(DbContextOptions<BiddingPlatformDbContext> options)
             : base(options)

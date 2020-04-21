@@ -39,6 +39,7 @@ using NextGen.BiddingPlatform.MultiTenancy.Payments.Dto;
 using NextGen.BiddingPlatform.Notifications.Dto;
 using NextGen.BiddingPlatform.Organizations.Dto;
 using NextGen.BiddingPlatform.Sessions.Dto;
+using NextGen.BiddingPlatform.State.Dto;
 using NextGen.BiddingPlatform.WebHooks.Dto;
 
 namespace NextGen.BiddingPlatform
@@ -165,6 +166,14 @@ namespace NextGen.BiddingPlatform
             configuration.CreateMap<Country.Dto.CreateCountryDto, Country.Country>().ReverseMap();
             configuration.CreateMap<Country.Dto.CountryDto, Country.Country>().ReverseMap();
             configuration.CreateMap<Country.Country, Country.Dto.CountryListDto>();
+
+            //State
+            configuration.CreateMap<CreateStateDto, Core.State.State>().ReverseMap();
+            configuration.CreateMap<StateDto, Core.State.State>()
+                //.ForMember(x=>x., option => option.MapFrom(x=>x.CountryName))
+                //.ForMember(x => x.Country.UniqueId, option => option.MapFrom(x => x.CountryUniqueId))
+                .ReverseMap();
+            configuration.CreateMap<Core.State.State, StateListDto>();
         }
     }
 }
