@@ -9,6 +9,7 @@ using Toolbelt.ComponentModel.DataAnnotations.Schema;
 
 namespace NextGen.BiddingPlatform.Core.Items
 {
+    [Table("ItemGallery")]
     public class ItemGallery : AuditedEntity, IHasUniqueIdentifier
     {
         [Index("IX_ItemGallery_UniqueId", IsClustered = false, IsUnique = true)]
