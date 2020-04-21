@@ -33,7 +33,7 @@ namespace NextGen.BiddingPlatform.Core.Items
         public Category Category { get; set; }
 
         public string ProcurementState { get; set; }//may be an enum like In hand, shipped on address
-        public string State { get; set; }// may be an enum
+        //public string State { get; set; }// may be an enum
         public string Visibility { get; set; }//may be an enum like live
 
         [Required]
@@ -41,21 +41,27 @@ namespace NextGen.BiddingPlatform.Core.Items
         [Required]
         public long DonorUserId { get; set; }
         public string DisplayNameOnItem { get; set; }
+
         public string TypeOfSolicitor { get; set; }//may be an enum like individual, company
         [Required]
         public long SolicitorUserId { get; set; }
         public double FairMarketValue_FMV { get; set; }
+
         [Required]
         public double StartingBidValue { get; set; }
         [Required]
         public double BidStepIncrementValue { get; set; }
         public double AcquisitionValue { get; set; }
         public double BuyNowPrice { get; set; } = 0;//we are just adding this property because in future if we have buy now button then we can use it
+
         public string ItemCertificateNotes { get; set; }
+
         [Required]
         public string MainImageName { get; set; }
+
         public string VideoLink { get; set; }
 
+        public bool IsActive { get; set; }
         public ICollection<ItemGallery> ItemImages { get; set; }
         public Item()
         {

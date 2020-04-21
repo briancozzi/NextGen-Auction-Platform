@@ -12,7 +12,7 @@ namespace NextGen.BiddingPlatform.State
     {
         Task<List<StateListDto>> GetAllStates();
         Task<StateDto> Create(CreateStateDto input);
-        Task Update(StateDto input);
+        Task<UpdateStateDto> Update(UpdateStateDto input);
         Task Delete(EntityDto<Guid> input);
         Task<StateDto> GetStateById(Guid input);
     }

@@ -24,9 +24,11 @@ namespace NextGen.BiddingPlatform.State
         public async Task<StateDto> Create(CreateStateDto input)
         {
             var country = await _countryService.GetCountryById(input.CountryUniqueId);
-            Core.State.State output = ObjectMapper.Map<Core.State.State>(input);
+            var output = ObjectMapper.Map<Core.State.State>(input);
+
             output.UniqueId = Guid.NewGuid();
             output.CountryId = country.Id;
+
             var state = await _stateRepository.InsertAsync(output);
             return ObjectMapper.Map<StateDto>(state);
         }
@@ -48,14 +50,14 @@ namespace NextGen.BiddingPlatform.State
 
         public async Task<StateDto> GetStateById(Guid Id)
         {
-            var state = await _stateRepository.GetAllIncluding(x=>x.Country).FirstOrDefaultAsync(x => x.UniqueId == Id);
+            var state = await _stateRepository.GetAllIncluding(x => x.Country).FirstOrDefaultAsync(x => x.UniqueId == Id);
             if (state == null)
                 throw new Exception("No data found");
 
             return ObjectMapper.Map<StateDto>(state);
         }
 
-        public async Task Update(StateDto input)
+        public async Task<UpdateStateDto> Update(UpdateStateDto input)
         {
 
             var state = await _stateRepository.GetAll().FirstOrDefaultAsync(x => x.UniqueId == input.UniqueId);
@@ -68,6 +70,7 @@ namespace NextGen.BiddingPlatform.State
             state.StateName = input.StateName;
             state.CountryId = country.Id;
             await _stateRepository.UpdateAsync(state);
+            return input;
         }
     }
 }

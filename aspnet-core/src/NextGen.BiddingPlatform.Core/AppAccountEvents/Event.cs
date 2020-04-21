@@ -47,7 +47,9 @@ namespace NextGen.BiddingPlatform.Core.AppAccountEvents
         public int AddressId { get; set; }
         public Address Address { get; set; }
 
-        //here list of auctions will come
+        public string EventUrl { get; set; }
+        public string TimeZone { get; set; }// may be we have timezone table for this field
+        public bool IsActive { get; set; }
         public ICollection<Auction> EventAuctions { get; set; }
         public Event()
         {

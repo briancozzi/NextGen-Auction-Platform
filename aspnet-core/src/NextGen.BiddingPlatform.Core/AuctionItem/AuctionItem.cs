@@ -12,7 +12,7 @@ using Toolbelt.ComponentModel.DataAnnotations.Schema;
 namespace NextGen.BiddingPlatform.Core.AuctionItems
 {
     [Table("AuctionItems")]
-    public class AuctionItem : AuditedEntity,IHasUniqueIdentifier,IMustHaveTenant
+    public class AuctionItem : AuditedEntity, IHasUniqueIdentifier, IMustHaveTenant
     {
         public int TenantId { get; set; }
 
@@ -20,12 +20,13 @@ namespace NextGen.BiddingPlatform.Core.AuctionItems
         public Guid UniqueId { get; set; }
 
         [ForeignKey("Auction")]
-        public int AuctionId { get; set; } 
+        public int AuctionId { get; set; }
         public Auction Auction { get; set; }
 
         [ForeignKey("Item")]
         public int ItemId { get; set; }
         public Item Item { get; set; }
 
+        public bool IsActive { get; set; }
     }
 }

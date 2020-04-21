@@ -33,11 +33,15 @@ namespace NextGen.BiddingPlatform.Core.Auctions
         public int EventId { get; set; }
         public Event Event { get; set; }
 
+        public string AuctionType { get; set; }// may be enum like Live Auction, Silent Auction, Item Inventory
+
         [Required]
         public DateTime AuctionStartDateTime { get; set; }
 
         [Required]
         public DateTime AuctionEndDateTime { get; set; }
+
+        public bool IsActive { get; set; }
 
         [ForeignKey("Address")]
         public int AddressId { get; set; }

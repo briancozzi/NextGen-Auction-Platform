@@ -169,11 +169,15 @@ namespace NextGen.BiddingPlatform
 
             //State
             configuration.CreateMap<CreateStateDto, Core.State.State>().ReverseMap();
-            configuration.CreateMap<StateDto, Core.State.State>()
-                //.ForMember(x=>x., option => option.MapFrom(x=>x.CountryName))
-                //.ForMember(x => x.Country.UniqueId, option => option.MapFrom(x => x.CountryUniqueId))
-                .ReverseMap();
-            configuration.CreateMap<Core.State.State, StateListDto>();
+
+            configuration.CreateMap<Core.State.State, StateDto>()
+                .ForMember(x => x.CountryName, option => option.MapFrom(x => x.Country.CountryName))
+                .ForMember(x => x.CountryUniqueId, option => option.MapFrom(x => x.Country.UniqueId)).ReverseMap();
+
+            configuration.CreateMap<UpdateStateDto, Core.State.State>().ReverseMap();
+            configuration.CreateMap<Core.State.State, StateListDto>()
+                .ForMember(x => x.CountryName, option => option.MapFrom(x => x.Country.CountryName))
+                .ForMember(x => x.CountryUniqueId, option => option.MapFrom(x => x.Country.UniqueId)).ReverseMap();
         }
     }
 }

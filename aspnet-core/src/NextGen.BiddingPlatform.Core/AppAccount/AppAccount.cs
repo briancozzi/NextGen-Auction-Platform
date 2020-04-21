@@ -23,14 +23,23 @@ namespace NextGen.BiddingPlatform.Core.AppAccounts
         public Guid UniqueId { get; set; }
 
         [Required]
-        [MaxLength(AbpUserBase.MaxUserNameLength)]
-        public string Name { get; set; }
-
-        [Required]
-        public string MobileNo { get; set; }
-
-        [Required]
+        [EmailAddress]
         public string Email { get; set; }
+
+        [Required]
+        [MaxLength(AbpUserBase.MaxNameLength)]
+        public string FirstName { get; set; }
+
+        [Required]
+        [MaxLength(AbpUserBase.MaxNameLength)]
+        public string LastName { get; set; }
+
+        [Required]
+        public string PhoneNo { get; set; }
+
+        public string Logo { get; set; } // Account/Company logo
+
+        public bool IsActive { get; set; }
 
         [ForeignKey("Address")]
         public int AddressId { get; set; }
