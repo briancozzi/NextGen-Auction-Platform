@@ -183,9 +183,13 @@ namespace NextGen.BiddingPlatform
             //Country
             configuration.CreateMap<CreateAppAccountDto, Core.AppAccounts.AppAccount>().ReverseMap();
             configuration.CreateMap<UpdateAppAccountDto, Core.AppAccounts.AppAccount>().ReverseMap();
-            configuration.CreateMap<Address.Dto.AddressDto, NextGen.BiddingPlatform.Core.Addresses.Address>().ReverseMap();
-            //.ForMember(x=>x.Address,option => option.MapFrom(x=>x.Address))
-            configuration.CreateMap<AppAccountDto, Core.AppAccounts.AppAccount>().ReverseMap();
+
+            configuration.CreateMap<Address.Dto.AddressDto, Core.Addresses.Address>().ReverseMap();
+            configuration.CreateMap<Core.Addresses.Address, Address.Dto.AddressDto>()
+                .ForMember(x => x.StateUniqueId, option => option.MapFrom(x => x.State.UniqueId))
+                .ForMember(x => x.CountryUniqueId, option => option.MapFrom(x => x.Country.UniqueId));
+
+            configuration.CreateMap<Core.AppAccounts.AppAccount, AppAccountDto>().ReverseMap();
             configuration.CreateMap<Core.AppAccounts.AppAccount, AppAccountListDto>();
         }
     }

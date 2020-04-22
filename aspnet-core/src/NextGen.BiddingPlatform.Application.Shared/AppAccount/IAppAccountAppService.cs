@@ -11,11 +11,10 @@ namespace NextGen.BiddingPlatform.AppAccount
 {
     public interface IAppAccountAppService : IApplicationService
     {
-        Task<List<AppAccountListDto>> GetAllAccount();
-        Task Create(CreateAppAccountDto input);
-        Task Update(UpdateAppAccountDto input);
+        Task<ListResultDto<AppAccountListDto>> GetAllAccount();
+        Task<CreateAppAccountDto> Create(CreateAppAccountDto input);
+        Task<UpdateAppAccountDto> Update(UpdateAppAccountDto input);
         Task Delete(EntityDto<Guid> input);
         Task<AppAccountDto> GetAccountById(Guid input);
-
     }
 }
