@@ -11,6 +11,16 @@
   <ItemGroup>
     <Compile Remove="Migrations\20200305145558_Add_Dynamic_Entity_Parameters.cs" />
     <Compile Remove="Migrations\20200305145558_Add_Dynamic_Entity_Parameters.Designer.cs" />
+    <Compile Remove="Migrations\20200422101919_Add_AppAccount_and_Address_entities.cs" />
+    <Compile Remove="Migrations\20200422101919_Add_AppAccount_and_Address_entities.Designer.cs" />
+    <Compile Remove="Migrations\20200422103354_Add_AppAccount_and_Address_entities.cs" />
+    <Compile Remove="Migrations\20200422103354_Add_AppAccount_and_Address_entities.Designer.cs" />
+    <Compile Remove="Migrations\20200422104907_add_AppAccount_and_Address_Entity.cs" />
+    <Compile Remove="Migrations\20200422104907_add_AppAccount_and_Address_Entity.Designer.cs" />
+    <Compile Remove="Migrations\20200422111039_add_AppAccount_and_Address_Entity.cs" />
+    <Compile Remove="Migrations\20200422111039_add_AppAccount_and_Address_Entity.Designer.cs" />
+    <Compile Remove="Migrations\20200422114836_ADD_AppAccount_Entity.cs" />
+    <Compile Remove="Migrations\20200422114836_ADD_AppAccount_Entity.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.3" />

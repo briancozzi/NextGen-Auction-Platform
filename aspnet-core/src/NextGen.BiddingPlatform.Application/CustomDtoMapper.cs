@@ -11,6 +11,7 @@ using Abp.Organizations;
 using Abp.UI.Inputs;
 using Abp.Webhooks;
 using AutoMapper;
+using NextGen.BiddingPlatform.AppAccount.Dto;
 using NextGen.BiddingPlatform.Auditing.Dto;
 using NextGen.BiddingPlatform.Authorization.Accounts.Dto;
 using NextGen.BiddingPlatform.Authorization.Delegation;
@@ -178,6 +179,14 @@ namespace NextGen.BiddingPlatform
             configuration.CreateMap<Core.State.State, StateListDto>()
                 .ForMember(x => x.CountryName, option => option.MapFrom(x => x.Country.CountryName))
                 .ForMember(x => x.CountryUniqueId, option => option.MapFrom(x => x.Country.UniqueId)).ReverseMap();
+
+            //Country
+            configuration.CreateMap<CreateAppAccountDto, Core.AppAccounts.AppAccount>().ReverseMap();
+            configuration.CreateMap<UpdateAppAccountDto, Core.AppAccounts.AppAccount>().ReverseMap();
+            configuration.CreateMap<Address.Dto.AddressDto, NextGen.BiddingPlatform.Core.Addresses.Address>().ReverseMap();
+            //.ForMember(x=>x.Address,option => option.MapFrom(x=>x.Address))
+            configuration.CreateMap<AppAccountDto, Core.AppAccounts.AppAccount>().ReverseMap();
+            configuration.CreateMap<Core.AppAccounts.AppAccount, AppAccountListDto>();
         }
     }
 }
