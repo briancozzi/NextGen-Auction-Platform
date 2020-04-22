@@ -77,6 +77,11 @@
         public const string Pages_Administration_Tenant_Settings = "Pages.Administration.Tenant.Settings";
 
         public const string Pages_Administration_Tenant_SubscriptionManagement = "Pages.Administration.Tenant.SubscriptionManagement";
+        //Change Added by ALPESH
+        public const string Pages_Administration_Tenant_Country = "Pages.Administration.Tenant.Country";
+        public const string Pages_Administration_Tenant_Country_Create = "Pages.Administration.Tenant.Country.Create";
+        public const string Pages_Administration_Tenant_Country_Edit = "Pages.Administration.Tenant.Country.Edit";
+        public const string Pages_Administration_Tenant_Country_Delete = "Pages.Administration.Tenant.Country.Delete";
 
         //HOST-SPECIFIC PERMISSIONS
 

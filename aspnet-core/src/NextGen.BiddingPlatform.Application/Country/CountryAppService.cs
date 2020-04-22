@@ -1,6 +1,8 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using NextGen.BiddingPlatform.Authorization;
 using NextGen.BiddingPlatform.Country.Dto;
 using System;
 using System.Collections.Generic;
@@ -10,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace NextGen.BiddingPlatform.Country
 {
+    [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Country)]
     public class CountryAppService : BiddingPlatformAppServiceBase, ICountryAppService
     {
         private readonly IRepository<Country> _countryRepository;
