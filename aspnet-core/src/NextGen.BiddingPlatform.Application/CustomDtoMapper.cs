@@ -12,6 +12,7 @@ using Abp.UI.Inputs;
 using Abp.Webhooks;
 using AutoMapper;
 using NextGen.BiddingPlatform.AppAccount.Dto;
+using NextGen.BiddingPlatform.AppAccountEvent.Dto;
 using NextGen.BiddingPlatform.Auditing.Dto;
 using NextGen.BiddingPlatform.Authorization.Accounts.Dto;
 using NextGen.BiddingPlatform.Authorization.Delegation;
@@ -180,7 +181,7 @@ namespace NextGen.BiddingPlatform
                 .ForMember(x => x.CountryName, option => option.MapFrom(x => x.Country.CountryName))
                 .ForMember(x => x.CountryUniqueId, option => option.MapFrom(x => x.Country.UniqueId)).ReverseMap();
 
-            //Country
+            //AppAccount
             configuration.CreateMap<CreateAppAccountDto, Core.AppAccounts.AppAccount>().ReverseMap();
             configuration.CreateMap<UpdateAppAccountDto, Core.AppAccounts.AppAccount>().ReverseMap();
 
@@ -191,6 +192,17 @@ namespace NextGen.BiddingPlatform
 
             configuration.CreateMap<Core.AppAccounts.AppAccount, AppAccountDto>().ReverseMap();
             configuration.CreateMap<Core.AppAccounts.AppAccount, AppAccountListDto>();
+
+            //AccountEvent
+            configuration.CreateMap<CreateAccountEventDto, Core.AppAccountEvents.Event>().ReverseMap();
+            configuration.CreateMap<Core.AppAccountEvents.Event, AccountEventDto>().ReverseMap();
+            configuration.CreateMap<Core.AppAccountEvents.Event, AccountEventListDto>().ReverseMap();
+            configuration.CreateMap<Core.Addresses.Address, Address.Dto.AddressDto>()
+                .ForMember(x => x.StateUniqueId, option => option.MapFrom(x => x.State.UniqueId))
+                .ForMember(x => x.CountryUniqueId, option => option.MapFrom(x => x.Country.UniqueId));
+            configuration.CreateMap<UpdateAccountEventDto, Core.AppAccountEvents.Event>().ReverseMap();
+            configuration.CreateMap<Address.Dto.AddressDto, Core.AppAccountEvents.Event>().ReverseMap();
+            configuration.CreateMap<AppAccount.Dto.AppAccountDto, Core.AppAccountEvents.Event>().ReverseMap();
         }
     }
 }

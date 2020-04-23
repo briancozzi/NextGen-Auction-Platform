@@ -70,7 +70,7 @@ namespace NextGen.BiddingPlatform.AppAccount
             account.Address.Address1 = input.Address.Address1;
             account.Address.Address2 = input.Address.Address2;
             account.Address.City = input.Address.City;
-            account.Address.ZipCode = input.Address.ZipCode;
+            account.Address.ZipCode = input.Address.ZipCode; 
             account.Address.StateId = state.Id;
             account.Address.CountryId = country.Id;
             await _accountRepository.UpdateAsync(account);
