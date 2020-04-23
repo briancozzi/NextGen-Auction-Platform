@@ -15,7 +15,7 @@ import {BsDatepickerModule} from 'ngx-bootstrap/datepicker';
 import { NgxBootstrapDatePickerConfigService } from 'assets/ngx-bootstrap/ngx-bootstrap-datepicker-config.service';
 import { CompanyeventsComponent } from './companyevents/companyevents.component';
 import { CreateEventModalComponent } from './companyevents/create-event-modal.component';
-
+import {CountryComponent} from './country/country.component';
 NgxBootstrapDatePickerConfigService.registerNgxBootstrapDatePickerLocales();
 
 @NgModule({
@@ -38,7 +38,8 @@ NgxBootstrapDatePickerConfigService.registerNgxBootstrapDatePickerLocales();
     declarations: [
         DashboardComponent,
         CompanyeventsComponent,
-        CreateEventModalComponent
+        CreateEventModalComponent,
+        CountryComponent
     ],
     providers: [
         BsModalRef,
