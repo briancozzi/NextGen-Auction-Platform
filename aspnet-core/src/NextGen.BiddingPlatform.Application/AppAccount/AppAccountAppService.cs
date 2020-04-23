@@ -30,19 +30,19 @@ namespace NextGen.BiddingPlatform.AppAccount
 
         public async Task<CreateAppAccountDto> Create(CreateAppAccountDto input)
         {
-            var country = await _countryRepository.GetAll().FirstOrDefaultAsync(x => x.UniqueId == input.Address.CountryUniqueId);
-            var state = await _stateRepository.GetAll().FirstOrDefaultAsync(x => x.UniqueId == input.Address.StateUniqueId);
+            var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.CountryUniqueId);
+            var state = await _stateRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.StateUniqueId);
             if (country == null || state == null)
                 throw new Exception("Country or State not found");
+
+            if (!AbpSession.TenantId.HasValue)
+                throw new Exception("You are not Authorized user.");
 
             var account = ObjectMapper.Map<Core.AppAccounts.AppAccount>(input);
             account.UniqueId = Guid.NewGuid();
             account.Address.UniqueId = Guid.NewGuid();
             account.Address.StateId = state.Id;
             account.Address.CountryId = country.Id;
-            if (!AbpSession.TenantId.HasValue)
-                throw new Exception("You are not Authorized user.");
-
             account.TenantId = AbpSession.TenantId.Value;
             await _accountRepository.InsertAsync(account);
             return input;
@@ -50,14 +50,14 @@ namespace NextGen.BiddingPlatform.AppAccount
 
         public async Task<UpdateAppAccountDto> Update(UpdateAppAccountDto input)
         {
-            var country = await _countryRepository.GetAll().FirstOrDefaultAsync(x => x.UniqueId == input.Address.CountryUniqueId);
-            var state = await _stateRepository.GetAll().FirstOrDefaultAsync(x => x.UniqueId == input.Address.StateUniqueId);
+            var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.CountryUniqueId);
+            var state = await _stateRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.StateUniqueId);
             if (country == null || state == null)
                 throw new Exception("Country or State not found");
 
             var account = await _accountRepository.GetAllIncluding(x => x.Address).FirstOrDefaultAsync(x => x.UniqueId == input.UniqueId);
             if (account == null)
-                throw new Exception("No data found");
+                throw new Exception("AppAccount not found for given Id");
 
             //AppAccount Properties
             account.FirstName = input.FirstName;
@@ -77,13 +77,13 @@ namespace NextGen.BiddingPlatform.AppAccount
             return input;
         }
 
-        public async Task Delete(EntityDto<Guid> input)
+        public async Task Delete(Guid Id)
         {
-            var state = await _accountRepository.GetAll().FirstOrDefaultAsync(x => x.UniqueId == input.Id);
-            if (state == null)
-                throw new Exception("No data found");
+            var appAccount = await _accountRepository.FirstOrDefaultAsync(x => x.UniqueId == Id);
+            if (appAccount == null)
+                throw new Exception("AppAccount not found for given Id");
 
-            await _accountRepository.DeleteAsync(state);
+            await _accountRepository.DeleteAsync(appAccount);
         }
 
         public async Task<ListResultDto<AppAccountListDto>> GetAllAccount()
@@ -99,12 +99,9 @@ namespace NextGen.BiddingPlatform.AppAccount
         {
             var account = await _accountRepository.GetAllIncluding(x => x.Address, x => x.Address.State, x => x.Address.Country).FirstOrDefaultAsync(x => x.UniqueId == Id);
             if (account == null)
-                throw new Exception("No data found");
+                throw new Exception("AppAccount not found for given Id");
 
             return ObjectMapper.Map<AppAccountDto>(account);
         }
-
-
-
     }
 }
