@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { CompanyeventsComponent } from './companyevents/companyevents.component';
+import{CountryComponent} from './country/country.component';
 
 @NgModule({
     imports: [
@@ -11,6 +12,7 @@ import { CompanyeventsComponent } from './companyevents/companyevents.component'
                 children: [
                     { path: 'dashboard', component: DashboardComponent, data: { permission: 'Pages.Tenant.Dashboard' } },
                     { path: 'companyevents', component: CompanyeventsComponent},
+                    { path: 'country', component:CountryComponent},
                     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
                     { path: '**', redirectTo: 'dashboard' },
                    

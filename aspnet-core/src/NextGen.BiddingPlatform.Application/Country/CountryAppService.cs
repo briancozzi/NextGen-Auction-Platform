@@ -38,10 +38,11 @@ namespace NextGen.BiddingPlatform.Country
             await _countryRepository.DeleteAsync(country);
         }
 
-        public async Task<List<CountryListDto>> GetAllCountry()
+        public async Task<ListResultDto<CountryListDto>> GetAllCountry()
         {
             var countries = await _countryRepository.GetAllListAsync();
-            return ObjectMapper.Map<List<CountryListDto>>(countries);
+            var result = ObjectMapper.Map<List<CountryListDto>>(countries);
+            return new ListResultDto<CountryListDto>(result);
         }
         //get all countries with filter method
         //public async Task<PagedResultDto<CountryListDto>> GetAllCountry(GetCountryInput input)
