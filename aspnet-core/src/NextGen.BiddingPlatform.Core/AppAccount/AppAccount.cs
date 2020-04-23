@@ -46,6 +46,7 @@ namespace NextGen.BiddingPlatform.Core.AppAccounts
         public Address Address { get; set; }
 
         public ICollection<Event> AppAccountEvents { get; set; }
+        public int CountryId { get; set; }
 
         public AppAccount()
         {

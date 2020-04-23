@@ -259,6 +259,14 @@
     <text name="EditingLanguage">Editing language</text>
     <text name="DeletingLanguages">Deleting language</text>
     <text name="ChangingTexts">Changing texts</text>
+
+    <!--Custom Changes applied By ALPESH-->
+    <text name="Country">Country</text>
+    <text name="CreateNewCountry">Create new country</text>
+    <text name="EditingCountry">Editing Country</text>
+    <text name="DeletingCountry">Deleting Country</text>
+    <!--Custom changes end-->
+
     <text name="SuccessfullySaved">Successfully saved.</text>
     <text name="Language">Language</text>
     <text name="Flag">Flag</text>

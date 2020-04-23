@@ -96,8 +96,13 @@ namespace NextGen.BiddingPlatform.Authorization
             administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Settings, L("Settings"), multiTenancySides: MultiTenancySides.Tenant);
             administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_SubscriptionManagement, L("Subscription"), multiTenancySides: MultiTenancySides.Tenant);
 
-            //HOST-SPECIFIC PERMISSIONS
+            //Change Added by ALPESH
+            var country = administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Country, L("Country"), multiTenancySides: MultiTenancySides.Tenant);
+            country.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Country_Create, L("CreateNewCountry"), multiTenancySides: MultiTenancySides.Tenant);
+            country.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Country_Edit, L("EditingCountry"), multiTenancySides: MultiTenancySides.Tenant);
+            country.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Country_Delete, L("DeletingCountry"), multiTenancySides: MultiTenancySides.Tenant);
 
+            //HOST-SPECIFIC PERMISSIONS
             var editions = pages.CreateChildPermission(AppPermissions.Pages_Editions, L("Editions"), multiTenancySides: MultiTenancySides.Host);
             editions.CreateChildPermission(AppPermissions.Pages_Editions_Create, L("CreatingNewEdition"), multiTenancySides: MultiTenancySides.Host);
             editions.CreateChildPermission(AppPermissions.Pages_Editions_Edit, L("EditingEdition"), multiTenancySides: MultiTenancySides.Host);

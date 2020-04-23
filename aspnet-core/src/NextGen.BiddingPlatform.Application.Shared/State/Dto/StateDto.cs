@@ -9,7 +9,7 @@ namespace NextGen.BiddingPlatform.State.Dto
     {
         public const int MaxStateNameLength = 25;
         public const int MaxStateCodeLength = 3;
-
+        public int Id { get; set; }
         public Guid UniqueId { get; set; }
         [Required]
         [MaxLength(MaxStateNameLength)]
@@ -19,8 +19,8 @@ namespace NextGen.BiddingPlatform.State.Dto
         [MaxLength(MaxStateCodeLength)]
         public string StateCode { get; set; }
 
-        [Required]
-        public Guid CountryUniqueId { get; set; }
+       [Required]
+        public Guid CountryUniqueId { get; set; } 
         public string CountryName { get; set; }
     }
 }

@@ -10,7 +10,7 @@ using Toolbelt.ComponentModel.DataAnnotations.Schema;
 
 namespace NextGen.BiddingPlatform.Core.Categories
 {
-    [Table("Categories")]
+    //[Table("Categories")]
     public class Category : FullAuditedEntity, IMustHaveTenant, IHasUniqueIdentifier
     {
         public int TenantId { get; set; }
