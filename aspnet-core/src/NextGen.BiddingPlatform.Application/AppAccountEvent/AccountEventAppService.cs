@@ -16,43 +16,46 @@ using System.Threading.Tasks;
 
 namespace NextGen.BiddingPlatform.AppAccountEvent
 {
-    public class AccountEventAppService : BiddingPlatformDomainServiceBase,IAccountEventAppService
+    public class AccountEventAppService : BiddingPlatformDomainServiceBase, IAccountEventAppService
     {
         private readonly IRepository<Event> _eventRepository;
         private readonly IAbpSession _abpSession;
         private readonly IRepository<Core.AppAccounts.AppAccount> _accountRepository;
-        private readonly ICountryAppService _countryService;
-        private readonly IStateAppService _stateService;
+        private readonly IRepository<Core.State.State> _stateRepository;
+        private readonly IRepository<Country.Country> _countryRepository;
         public AccountEventAppService(IRepository<Event> eventRepository,
                                       IRepository<Core.AppAccounts.AppAccount> accountRepository,
                                       IAbpSession abpSession,
-                                      ICountryAppService countryService,
-                                      IStateAppService stateService)
+                                      IRepository<Core.State.State> stateRepository,
+                                      IRepository<Country.Country> countryRepository)
         {
             _eventRepository = eventRepository;
             _accountRepository = accountRepository;
             _abpSession = abpSession;
-            _countryService = countryService;
-            _stateService = stateService;
+            _countryRepository = countryRepository;
+            _stateRepository = stateRepository;
         }
 
         public async Task<CreateAccountEventDto> Create(CreateAccountEventDto input)
         {
-            var account = await _accountRepository.GetAll().FirstOrDefaultAsync(x => x.UniqueId == input.AppAccountUniqueId);
-            var country = await _countryService.GetCountryById(input.Address.CountryUniqueId);
-            var state = await _stateService.GetStateById(input.Address.StateUniqueId);
+            var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.CountryUniqueId);
+            if (country == null)
+                throw new Exception("Country not found for given id");
+            var state = await _stateRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.StateUniqueId);
+            if (state == null)
+                throw new Exception("State not found for given id");
+            var account = await _accountRepository.FirstOrDefaultAsync(x => x.UniqueId == input.AppAccountUniqueId);
             if (account == null)
-                throw new Exception("Country or State not found");
+                throw new Exception("Account not found for given id");
+            if (!_abpSession.TenantId.HasValue)
+                throw new Exception("You are not Authorized user.");
 
-            var events = ObjectMapper.Map<Core.AppAccountEvents.Event>(input);
+            var events = ObjectMapper.Map<Event>(input);
             events.UniqueId = Guid.NewGuid();
             events.Address.UniqueId = Guid.NewGuid();
             events.AppAccountId = account.Id;
             events.Address.CountryId = country.Id;
             events.Address.StateId = state.Id;
-            if (!_abpSession.TenantId.HasValue)
-                throw new Exception("You are not Authorized user.");
-
             account.TenantId = _abpSession.TenantId.Value;
             await _eventRepository.InsertAsync(events);
             return input;
@@ -60,17 +63,18 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
 
         public async Task<UpdateAccountEventDto> Update(UpdateAccountEventDto input)
         {
-            var account = await _accountRepository.GetAll().FirstOrDefaultAsync(x => x.UniqueId == input.AppAccountUniqueId);
-            var country = await _countryService.GetCountryById(input.Address.CountryUniqueId);
-            var state = await _stateService.GetStateById(input.Address.StateUniqueId);
-            if (account == null && country == null && state == null)
-                throw new Exception("account, Country or State not found");
+            var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.CountryUniqueId);
+            if (country == null)
+                throw new Exception("Country not found for given id");
+            var state = await _stateRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.StateUniqueId);
+            if (state == null)
+                throw new Exception("State not found for given id");
 
             var events = await _eventRepository.GetAllIncluding(x => x.Address).FirstOrDefaultAsync(x => x.UniqueId == input.UniqueId);
             if (events == null)
-                throw new Exception("No data found");
+                throw new Exception("Event not found for given id");
 
-            //AppAccount Properties
+            //Event Properties
             events.Email = input.Email;
             events.EventName = input.EventName;
             events.EventDate = input.EventDate;
@@ -87,17 +91,15 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             events.Address.ZipCode = input.Address.ZipCode;
             events.Address.StateId = state.Id;
             events.Address.CountryId = country.Id;
-            //AppAccount
-            events.AppAccount.Id = account.Id;
             await _eventRepository.UpdateAsync(events);
             return input;
         }
 
         public async Task Delete(EntityDto<Guid> input)
         {
-            var events = await _eventRepository.GetAll().FirstOrDefaultAsync(x => x.UniqueId == input.Id);
+            var events = await _eventRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Id);
             if (events == null)
-                throw new Exception("No data found");
+                throw new Exception("Event not found for given id");
 
             await _eventRepository.DeleteAsync(events);
         }
@@ -105,24 +107,20 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
         public async Task<ListResultDto<AccountEventListDto>> GetAllAccountEvents()
         {
             var eventsData = await _eventRepository
-                    .GetAllIncluding(x => x.Address, x => x.Address.Country, x => x.Address.State)
+                    .GetAllIncluding(x => x.AppAccount, x => x.Address, x => x.Address.Country, x => x.Address.State)
                     .ToListAsync();
-            if (eventsData == null)
-                throw new Exception("No data found");
 
             return new ListResultDto<AccountEventListDto>(ObjectMapper.Map<List<AccountEventListDto>>(eventsData));
         }
 
         public async Task<AccountEventDto> GetAccountEventById(Guid Id)
         {
-            var Event = await _eventRepository.GetAllIncluding(x => x.Address, x => x.Address.State, x => x.Address.Country)
+            var Event = await _eventRepository.GetAllIncluding(x => x.AppAccount, x => x.Address, x => x.Address.State, x => x.Address.Country)
                                               .FirstOrDefaultAsync(x => x.UniqueId == Id);
             if (Event == null)
-                throw new Exception("No data found");
+                throw new Exception("Event not found for given id");
 
             return ObjectMapper.Map<AccountEventDto>(Event);
         }
-
-
     }
 }

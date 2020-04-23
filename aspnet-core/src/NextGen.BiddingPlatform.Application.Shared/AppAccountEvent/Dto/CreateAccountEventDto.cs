@@ -11,6 +11,8 @@ namespace NextGen.BiddingPlatform.AppAccountEvent.Dto
     public class CreateAccountEventDto
     {
         [Required]
+        public Guid AppAccountUniqueId { get; set; }
+        [Required]
         [MaxLength(AbpUserBase.MaxUserNameLength)]
         public string EventName { get; set; }
         [Required]
@@ -23,10 +25,8 @@ namespace NextGen.BiddingPlatform.AppAccountEvent.Dto
         public string MobileNo { get; set; }
         public string EventUrl { get; set; }
         public string TimeZone { get; set; }// may be we have timezone table for this field
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
         [Required]
         public AddressDto Address { get; set; }
-        [Required]
-        public Guid AppAccountUniqueId { get; set; }
     }
 }

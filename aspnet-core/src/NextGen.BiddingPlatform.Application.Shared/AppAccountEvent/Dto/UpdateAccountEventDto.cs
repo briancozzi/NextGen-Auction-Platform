@@ -27,7 +27,6 @@ namespace NextGen.BiddingPlatform.AppAccountEvent.Dto
         public string TimeZone { get; set; }// may be we have timezone table for this field
         public bool IsActive { get; set; }
         [Required]
-        public Guid AppAccountUniqueId { get; set; }
         public AddressDto Address { get; set; }
     }
 }
