@@ -24,7 +24,7 @@ export class AppNavigationService {
             new AppMenuItem('Events', null , 'flaticon-event-calendar-symbol', '/app/main/companyevents'),
             new AppMenuItem('Parameter','','flaticon-interface-8','',[],[
                 new AppMenuItem('Countries',null,'flaticon-app','/app/main/country'),
-                new AppMenuItem('States',null, 'flaticon-app','')
+                new AppMenuItem('States',null, 'flaticon-app','/app/admin/states')
             ]),
             new AppMenuItem('Administration', '', 'flaticon-interface-8', '', [], [
                 new AppMenuItem('OrganizationUnits', 'Pages.Administration.OrganizationUnits', 'flaticon-map', '/app/admin/organization-units'),
@@ -41,7 +41,8 @@ export class AppNavigationService {
                 new AppMenuItem('DynamicParameters', '', 'flaticon-interface-8', '', [], [
                     new AppMenuItem('Definitions', 'Pages.Administration.DynamicParameters', '', '/app/admin/dynamic-parameter'),
                     new AppMenuItem('EntityDynamicParameters', 'Pages.Administration.EntityDynamicParameters', '', '/app/admin/entity-dynamic-parameter'),
-                ])
+                ]),
+                
             ]),
             new AppMenuItem('DemoUiComponents', 'Pages.DemoUiComponents', 'flaticon-shapes', '/app/admin/demo-ui-components')
         ]);

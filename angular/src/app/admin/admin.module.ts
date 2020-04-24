@@ -102,7 +102,7 @@ import { CreateEntityDynamicParameterModalComponent } from './dynamic-entity-par
 import { EntityDynamicParameterValueComponent } from './dynamic-entity-parameters/entity-dynamic-parameter/entity-dynamic-parameter-value/entity-dynamic-parameter-value.component';
 import { ManageEntityDynamicParameterValuesModalComponent } from './dynamic-entity-parameters/entity-dynamic-parameter/entity-dynamic-parameter-value/manage-entity-dynamic-parameter-values-modal.component';
 import { StatesComponent } from './parameter/states/states.component';
-
+import {CreateStateModalComponent} from './parameter/states/create-states-modal.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     // suppressScrollX: true
@@ -214,7 +214,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         CreateEntityDynamicParameterModalComponent,
         EntityDynamicParameterValueComponent,
         ManageEntityDynamicParameterValuesModalComponent,
-        StatesComponent
+        StatesComponent,
+        CreateStateModalComponent
     ],
     exports: [
         AddMemberModalComponent,

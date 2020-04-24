@@ -628,6 +628,289 @@ export class AccountServiceProxy {
 }
 
 @Injectable()
+export class AccountEventServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    create(body: CreateAccountEventDto | undefined): Observable<CreateAccountEventDto> {
+        let url_ = this.baseUrl + "/api/services/app/AccountEvent/Create";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json", 
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreate(<any>response_);
+                } catch (e) {
+                    return <Observable<CreateAccountEventDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CreateAccountEventDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreate(response: HttpResponseBase): Observable<CreateAccountEventDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = CreateAccountEventDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CreateAccountEventDto>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    update(body: UpdateAccountEventDto | undefined): Observable<UpdateAccountEventDto> {
+        let url_ = this.baseUrl + "/api/services/app/AccountEvent/Update";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json", 
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdate(<any>response_);
+                } catch (e) {
+                    return <Observable<UpdateAccountEventDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<UpdateAccountEventDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdate(response: HttpResponseBase): Observable<UpdateAccountEventDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UpdateAccountEventDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<UpdateAccountEventDto>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    delete(id: string | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/AccountEvent/Delete?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDelete(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDelete(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    getAllAccountEvents(): Observable<ListResultDtoOfAccountEventListDto> {
+        let url_ = this.baseUrl + "/api/services/app/AccountEvent/GetAllAccountEvents";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAllAccountEvents(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAllAccountEvents(<any>response_);
+                } catch (e) {
+                    return <Observable<ListResultDtoOfAccountEventListDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<ListResultDtoOfAccountEventListDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAllAccountEvents(response: HttpResponseBase): Observable<ListResultDtoOfAccountEventListDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ListResultDtoOfAccountEventListDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ListResultDtoOfAccountEventListDto>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    getAccountEventById(id: string | undefined): Observable<AccountEventDto> {
+        let url_ = this.baseUrl + "/api/services/app/AccountEvent/GetAccountEventById?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAccountEventById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAccountEventById(<any>response_);
+                } catch (e) {
+                    return <Observable<AccountEventDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<AccountEventDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAccountEventById(response: HttpResponseBase): Observable<AccountEventDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AccountEventDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AccountEventDto>(<any>null);
+    }
+}
+
+@Injectable()
 export class AppAccountServiceProxy {
     private http: HttpClient;
     private baseUrl: string;
@@ -907,6 +1190,229 @@ export class AppAccountServiceProxy {
             }));
         }
         return _observableOf<AppAccountDto>(<any>null);
+    }
+}
+
+@Injectable()
+export class AuctionServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    /**
+     * @return Success
+     */
+    getAll(): Observable<ListResultDtoOfAuctionListDto> {
+        let url_ = this.baseUrl + "/api/services/app/Auction/GetAll";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAll(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAll(<any>response_);
+                } catch (e) {
+                    return <Observable<ListResultDtoOfAuctionListDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<ListResultDtoOfAuctionListDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAll(response: HttpResponseBase): Observable<ListResultDtoOfAuctionListDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ListResultDtoOfAuctionListDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ListResultDtoOfAuctionListDto>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    getAuctionById(id: string | undefined): Observable<AuctionDto> {
+        let url_ = this.baseUrl + "/api/services/app/Auction/GetAuctionById?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAuctionById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAuctionById(<any>response_);
+                } catch (e) {
+                    return <Observable<AuctionDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<AuctionDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAuctionById(response: HttpResponseBase): Observable<AuctionDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AuctionDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AuctionDto>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    createAuction(body: CreateAuctionDto | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/Auction/CreateAuction";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json", 
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateAuction(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateAuction(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreateAuction(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    updateAuction(body: UpdateAuctionDto | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/Auction/UpdateAuction";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json", 
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateAuction(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateAuction(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdateAuction(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
     }
 }
 
@@ -2139,6 +2645,73 @@ export class CountryServiceProxy {
             }));
         }
         return _observableOf<ListResultDtoOfCountryListDto>(<any>null);
+    }
+
+    /**
+     * @param countryName (optional) 
+     * @param sorting (optional) 
+     * @param maxResultCount (optional) 
+     * @param skipCount (optional) 
+     * @return Success
+     */
+    getCountriesByFilter(countryName: string | null | undefined, sorting: string | null | undefined, maxResultCount: number | undefined, skipCount: number | undefined): Observable<PagedResultDtoOfCountryListDto> {
+        let url_ = this.baseUrl + "/api/services/app/Country/GetCountriesByFilter?";
+        if (countryName !== undefined)
+            url_ += "CountryName=" + encodeURIComponent("" + countryName) + "&"; 
+        if (sorting !== undefined)
+            url_ += "Sorting=" + encodeURIComponent("" + sorting) + "&"; 
+        if (maxResultCount === null)
+            throw new Error("The parameter 'maxResultCount' cannot be null.");
+        else if (maxResultCount !== undefined)
+            url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&"; 
+        if (skipCount === null)
+            throw new Error("The parameter 'skipCount' cannot be null.");
+        else if (skipCount !== undefined)
+            url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetCountriesByFilter(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetCountriesByFilter(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfCountryListDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfCountryListDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetCountriesByFilter(response: HttpResponseBase): Observable<PagedResultDtoOfCountryListDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultDtoOfCountryListDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfCountryListDto>(<any>null);
     }
 
     /**
@@ -9853,7 +10426,7 @@ export class StateServiceProxy {
     /**
      * @return Success
      */
-    getAllStates(): Observable<StateListDto[]> {
+    getAllStates(): Observable<ListResultDtoOfStateListDto> {
         let url_ = this.baseUrl + "/api/services/app/State/GetAllStates";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -9872,14 +10445,14 @@ export class StateServiceProxy {
                 try {
                     return this.processGetAllStates(<any>response_);
                 } catch (e) {
-                    return <Observable<StateListDto[]>><any>_observableThrow(e);
+                    return <Observable<ListResultDtoOfStateListDto>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<StateListDto[]>><any>_observableThrow(response_);
+                return <Observable<ListResultDtoOfStateListDto>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetAllStates(response: HttpResponseBase): Observable<StateListDto[]> {
+    protected processGetAllStates(response: HttpResponseBase): Observable<ListResultDtoOfStateListDto> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -9890,11 +10463,7 @@ export class StateServiceProxy {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(StateListDto.fromJS(item));
-            }
+            result200 = ListResultDtoOfStateListDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -9902,7 +10471,74 @@ export class StateServiceProxy {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<StateListDto[]>(<any>null);
+        return _observableOf<ListResultDtoOfStateListDto>(<any>null);
+    }
+
+    /**
+     * @param stateCode (optional) 
+     * @param sorting (optional) 
+     * @param maxResultCount (optional) 
+     * @param skipCount (optional) 
+     * @return Success
+     */
+    getStatesByFilter(stateCode: string | null | undefined, sorting: string | null | undefined, maxResultCount: number | undefined, skipCount: number | undefined): Observable<PagedResultDtoOfStateListDto> {
+        let url_ = this.baseUrl + "/api/services/app/State/GetStatesByFilter?";
+        if (stateCode !== undefined)
+            url_ += "StateCode=" + encodeURIComponent("" + stateCode) + "&"; 
+        if (sorting !== undefined)
+            url_ += "Sorting=" + encodeURIComponent("" + sorting) + "&"; 
+        if (maxResultCount === null)
+            throw new Error("The parameter 'maxResultCount' cannot be null.");
+        else if (maxResultCount !== undefined)
+            url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&"; 
+        if (skipCount === null)
+            throw new Error("The parameter 'skipCount' cannot be null.");
+        else if (skipCount !== undefined)
+            url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetStatesByFilter(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetStatesByFilter(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfStateListDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfStateListDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetStatesByFilter(response: HttpResponseBase): Observable<PagedResultDtoOfStateListDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultDtoOfStateListDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfStateListDto>(<any>null);
     }
 
     /**
@@ -15263,6 +15899,368 @@ export interface IAddressDto {
     zipCode: string;
 }
 
+export class CreateAccountEventDto implements ICreateAccountEventDto {
+    appAccountUniqueId!: string;
+    eventName!: string;
+    eventDate!: moment.Moment;
+    eventStartDateTime!: moment.Moment;
+    eventEndDateTime!: moment.Moment;
+    email!: string | undefined;
+    mobileNo!: string | undefined;
+    eventUrl!: string | undefined;
+    timeZone!: string | undefined;
+    isActive!: boolean;
+    address!: AddressDto;
+
+    constructor(data?: ICreateAccountEventDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.address = new AddressDto();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.appAccountUniqueId = _data["appAccountUniqueId"];
+            this.eventName = _data["eventName"];
+            this.eventDate = _data["eventDate"] ? moment(_data["eventDate"].toString()) : <any>undefined;
+            this.eventStartDateTime = _data["eventStartDateTime"] ? moment(_data["eventStartDateTime"].toString()) : <any>undefined;
+            this.eventEndDateTime = _data["eventEndDateTime"] ? moment(_data["eventEndDateTime"].toString()) : <any>undefined;
+            this.email = _data["email"];
+            this.mobileNo = _data["mobileNo"];
+            this.eventUrl = _data["eventUrl"];
+            this.timeZone = _data["timeZone"];
+            this.isActive = _data["isActive"];
+            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : new AddressDto();
+        }
+    }
+
+    static fromJS(data: any): CreateAccountEventDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateAccountEventDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["appAccountUniqueId"] = this.appAccountUniqueId;
+        data["eventName"] = this.eventName;
+        data["eventDate"] = this.eventDate ? this.eventDate.toISOString() : <any>undefined;
+        data["eventStartDateTime"] = this.eventStartDateTime ? this.eventStartDateTime.toISOString() : <any>undefined;
+        data["eventEndDateTime"] = this.eventEndDateTime ? this.eventEndDateTime.toISOString() : <any>undefined;
+        data["email"] = this.email;
+        data["mobileNo"] = this.mobileNo;
+        data["eventUrl"] = this.eventUrl;
+        data["timeZone"] = this.timeZone;
+        data["isActive"] = this.isActive;
+        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface ICreateAccountEventDto {
+    appAccountUniqueId: string;
+    eventName: string;
+    eventDate: moment.Moment;
+    eventStartDateTime: moment.Moment;
+    eventEndDateTime: moment.Moment;
+    email: string | undefined;
+    mobileNo: string | undefined;
+    eventUrl: string | undefined;
+    timeZone: string | undefined;
+    isActive: boolean;
+    address: AddressDto;
+}
+
+export class UpdateAccountEventDto implements IUpdateAccountEventDto {
+    uniqueId!: string;
+    eventName!: string;
+    eventDate!: moment.Moment;
+    eventStartDateTime!: moment.Moment;
+    eventEndDateTime!: moment.Moment;
+    email!: string | undefined;
+    mobileNo!: string | undefined;
+    eventUrl!: string | undefined;
+    timeZone!: string | undefined;
+    isActive!: boolean;
+    address!: AddressDto;
+
+    constructor(data?: IUpdateAccountEventDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.address = new AddressDto();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.uniqueId = _data["uniqueId"];
+            this.eventName = _data["eventName"];
+            this.eventDate = _data["eventDate"] ? moment(_data["eventDate"].toString()) : <any>undefined;
+            this.eventStartDateTime = _data["eventStartDateTime"] ? moment(_data["eventStartDateTime"].toString()) : <any>undefined;
+            this.eventEndDateTime = _data["eventEndDateTime"] ? moment(_data["eventEndDateTime"].toString()) : <any>undefined;
+            this.email = _data["email"];
+            this.mobileNo = _data["mobileNo"];
+            this.eventUrl = _data["eventUrl"];
+            this.timeZone = _data["timeZone"];
+            this.isActive = _data["isActive"];
+            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : new AddressDto();
+        }
+    }
+
+    static fromJS(data: any): UpdateAccountEventDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateAccountEventDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["uniqueId"] = this.uniqueId;
+        data["eventName"] = this.eventName;
+        data["eventDate"] = this.eventDate ? this.eventDate.toISOString() : <any>undefined;
+        data["eventStartDateTime"] = this.eventStartDateTime ? this.eventStartDateTime.toISOString() : <any>undefined;
+        data["eventEndDateTime"] = this.eventEndDateTime ? this.eventEndDateTime.toISOString() : <any>undefined;
+        data["email"] = this.email;
+        data["mobileNo"] = this.mobileNo;
+        data["eventUrl"] = this.eventUrl;
+        data["timeZone"] = this.timeZone;
+        data["isActive"] = this.isActive;
+        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IUpdateAccountEventDto {
+    uniqueId: string;
+    eventName: string;
+    eventDate: moment.Moment;
+    eventStartDateTime: moment.Moment;
+    eventEndDateTime: moment.Moment;
+    email: string | undefined;
+    mobileNo: string | undefined;
+    eventUrl: string | undefined;
+    timeZone: string | undefined;
+    isActive: boolean;
+    address: AddressDto;
+}
+
+export class AccountEventListDto implements IAccountEventListDto {
+    uniqueId!: string;
+    accountUniqueId!: string;
+    eventName!: string | undefined;
+    eventDate!: moment.Moment;
+    eventStartDateTime!: moment.Moment;
+    eventEndDateTime!: moment.Moment;
+    email!: string | undefined;
+    mobileNo!: string | undefined;
+    eventUrl!: string | undefined;
+    timeZone!: string | undefined;
+    isActive!: boolean;
+    address!: AddressDto;
+
+    constructor(data?: IAccountEventListDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.uniqueId = _data["uniqueId"];
+            this.accountUniqueId = _data["accountUniqueId"];
+            this.eventName = _data["eventName"];
+            this.eventDate = _data["eventDate"] ? moment(_data["eventDate"].toString()) : <any>undefined;
+            this.eventStartDateTime = _data["eventStartDateTime"] ? moment(_data["eventStartDateTime"].toString()) : <any>undefined;
+            this.eventEndDateTime = _data["eventEndDateTime"] ? moment(_data["eventEndDateTime"].toString()) : <any>undefined;
+            this.email = _data["email"];
+            this.mobileNo = _data["mobileNo"];
+            this.eventUrl = _data["eventUrl"];
+            this.timeZone = _data["timeZone"];
+            this.isActive = _data["isActive"];
+            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): AccountEventListDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AccountEventListDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["uniqueId"] = this.uniqueId;
+        data["accountUniqueId"] = this.accountUniqueId;
+        data["eventName"] = this.eventName;
+        data["eventDate"] = this.eventDate ? this.eventDate.toISOString() : <any>undefined;
+        data["eventStartDateTime"] = this.eventStartDateTime ? this.eventStartDateTime.toISOString() : <any>undefined;
+        data["eventEndDateTime"] = this.eventEndDateTime ? this.eventEndDateTime.toISOString() : <any>undefined;
+        data["email"] = this.email;
+        data["mobileNo"] = this.mobileNo;
+        data["eventUrl"] = this.eventUrl;
+        data["timeZone"] = this.timeZone;
+        data["isActive"] = this.isActive;
+        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IAccountEventListDto {
+    uniqueId: string;
+    accountUniqueId: string;
+    eventName: string | undefined;
+    eventDate: moment.Moment;
+    eventStartDateTime: moment.Moment;
+    eventEndDateTime: moment.Moment;
+    email: string | undefined;
+    mobileNo: string | undefined;
+    eventUrl: string | undefined;
+    timeZone: string | undefined;
+    isActive: boolean;
+    address: AddressDto;
+}
+
+export class ListResultDtoOfAccountEventListDto implements IListResultDtoOfAccountEventListDto {
+    items!: AccountEventListDto[] | undefined;
+
+    constructor(data?: IListResultDtoOfAccountEventListDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(AccountEventListDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ListResultDtoOfAccountEventListDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ListResultDtoOfAccountEventListDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IListResultDtoOfAccountEventListDto {
+    items: AccountEventListDto[] | undefined;
+}
+
+export class AccountEventDto implements IAccountEventDto {
+    uniqueId!: string;
+    eventName!: string | undefined;
+    eventDate!: moment.Moment;
+    eventStartDateTime!: moment.Moment;
+    eventEndDateTime!: moment.Moment;
+    email!: string | undefined;
+    mobileNo!: string | undefined;
+    eventUrl!: string | undefined;
+    timeZone!: string | undefined;
+    isActive!: boolean;
+    address!: AddressDto;
+    accountUniqueId!: string;
+
+    constructor(data?: IAccountEventDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.uniqueId = _data["uniqueId"];
+            this.eventName = _data["eventName"];
+            this.eventDate = _data["eventDate"] ? moment(_data["eventDate"].toString()) : <any>undefined;
+            this.eventStartDateTime = _data["eventStartDateTime"] ? moment(_data["eventStartDateTime"].toString()) : <any>undefined;
+            this.eventEndDateTime = _data["eventEndDateTime"] ? moment(_data["eventEndDateTime"].toString()) : <any>undefined;
+            this.email = _data["email"];
+            this.mobileNo = _data["mobileNo"];
+            this.eventUrl = _data["eventUrl"];
+            this.timeZone = _data["timeZone"];
+            this.isActive = _data["isActive"];
+            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
+            this.accountUniqueId = _data["accountUniqueId"];
+        }
+    }
+
+    static fromJS(data: any): AccountEventDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AccountEventDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["uniqueId"] = this.uniqueId;
+        data["eventName"] = this.eventName;
+        data["eventDate"] = this.eventDate ? this.eventDate.toISOString() : <any>undefined;
+        data["eventStartDateTime"] = this.eventStartDateTime ? this.eventStartDateTime.toISOString() : <any>undefined;
+        data["eventEndDateTime"] = this.eventEndDateTime ? this.eventEndDateTime.toISOString() : <any>undefined;
+        data["email"] = this.email;
+        data["mobileNo"] = this.mobileNo;
+        data["eventUrl"] = this.eventUrl;
+        data["timeZone"] = this.timeZone;
+        data["isActive"] = this.isActive;
+        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        data["accountUniqueId"] = this.accountUniqueId;
+        return data; 
+    }
+}
+
+export interface IAccountEventDto {
+    uniqueId: string;
+    eventName: string | undefined;
+    eventDate: moment.Moment;
+    eventStartDateTime: moment.Moment;
+    eventEndDateTime: moment.Moment;
+    email: string | undefined;
+    mobileNo: string | undefined;
+    eventUrl: string | undefined;
+    timeZone: string | undefined;
+    isActive: boolean;
+    address: AddressDto;
+    accountUniqueId: string;
+}
+
 export class CreateAppAccountDto implements ICreateAppAccountDto {
     email!: string;
     firstName!: string;
@@ -15552,6 +16550,270 @@ export interface IAppAccountDto {
     phoneNo: string;
     logo: string | undefined;
     isActive: boolean;
+    address: AddressDto;
+}
+
+export class AuctionListDto implements IAuctionListDto {
+    uniqueId!: string;
+    auctionType!: string | undefined;
+    auctionStartDateTime!: moment.Moment;
+    auctionEndDateTime!: moment.Moment;
+    address!: AddressDto;
+
+    constructor(data?: IAuctionListDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.uniqueId = _data["uniqueId"];
+            this.auctionType = _data["auctionType"];
+            this.auctionStartDateTime = _data["auctionStartDateTime"] ? moment(_data["auctionStartDateTime"].toString()) : <any>undefined;
+            this.auctionEndDateTime = _data["auctionEndDateTime"] ? moment(_data["auctionEndDateTime"].toString()) : <any>undefined;
+            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): AuctionListDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AuctionListDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["uniqueId"] = this.uniqueId;
+        data["auctionType"] = this.auctionType;
+        data["auctionStartDateTime"] = this.auctionStartDateTime ? this.auctionStartDateTime.toISOString() : <any>undefined;
+        data["auctionEndDateTime"] = this.auctionEndDateTime ? this.auctionEndDateTime.toISOString() : <any>undefined;
+        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IAuctionListDto {
+    uniqueId: string;
+    auctionType: string | undefined;
+    auctionStartDateTime: moment.Moment;
+    auctionEndDateTime: moment.Moment;
+    address: AddressDto;
+}
+
+export class ListResultDtoOfAuctionListDto implements IListResultDtoOfAuctionListDto {
+    items!: AuctionListDto[] | undefined;
+
+    constructor(data?: IListResultDtoOfAuctionListDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(AuctionListDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ListResultDtoOfAuctionListDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ListResultDtoOfAuctionListDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IListResultDtoOfAuctionListDto {
+    items: AuctionListDto[] | undefined;
+}
+
+export class AuctionDto implements IAuctionDto {
+    uniqueId!: string;
+    eventUniqueId!: string;
+    appAccountUniqueId!: string;
+    auctionType!: string | undefined;
+    auctionStartDateTime!: moment.Moment;
+    auctionEndDateTime!: moment.Moment;
+    address!: AddressDto;
+
+    constructor(data?: IAuctionDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.uniqueId = _data["uniqueId"];
+            this.eventUniqueId = _data["eventUniqueId"];
+            this.appAccountUniqueId = _data["appAccountUniqueId"];
+            this.auctionType = _data["auctionType"];
+            this.auctionStartDateTime = _data["auctionStartDateTime"] ? moment(_data["auctionStartDateTime"].toString()) : <any>undefined;
+            this.auctionEndDateTime = _data["auctionEndDateTime"] ? moment(_data["auctionEndDateTime"].toString()) : <any>undefined;
+            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): AuctionDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AuctionDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["uniqueId"] = this.uniqueId;
+        data["eventUniqueId"] = this.eventUniqueId;
+        data["appAccountUniqueId"] = this.appAccountUniqueId;
+        data["auctionType"] = this.auctionType;
+        data["auctionStartDateTime"] = this.auctionStartDateTime ? this.auctionStartDateTime.toISOString() : <any>undefined;
+        data["auctionEndDateTime"] = this.auctionEndDateTime ? this.auctionEndDateTime.toISOString() : <any>undefined;
+        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IAuctionDto {
+    uniqueId: string;
+    eventUniqueId: string;
+    appAccountUniqueId: string;
+    auctionType: string | undefined;
+    auctionStartDateTime: moment.Moment;
+    auctionEndDateTime: moment.Moment;
+    address: AddressDto;
+}
+
+export class CreateAuctionDto implements ICreateAuctionDto {
+    accountId!: string;
+    eventUniqueId!: string;
+    auctionType!: string;
+    auctionStartDateTime!: moment.Moment;
+    auctionEndDateTime!: moment.Moment;
+    address!: AddressDto;
+
+    constructor(data?: ICreateAuctionDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.accountId = _data["accountId"];
+            this.eventUniqueId = _data["eventUniqueId"];
+            this.auctionType = _data["auctionType"];
+            this.auctionStartDateTime = _data["auctionStartDateTime"] ? moment(_data["auctionStartDateTime"].toString()) : <any>undefined;
+            this.auctionEndDateTime = _data["auctionEndDateTime"] ? moment(_data["auctionEndDateTime"].toString()) : <any>undefined;
+            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): CreateAuctionDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateAuctionDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["accountId"] = this.accountId;
+        data["eventUniqueId"] = this.eventUniqueId;
+        data["auctionType"] = this.auctionType;
+        data["auctionStartDateTime"] = this.auctionStartDateTime ? this.auctionStartDateTime.toISOString() : <any>undefined;
+        data["auctionEndDateTime"] = this.auctionEndDateTime ? this.auctionEndDateTime.toISOString() : <any>undefined;
+        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface ICreateAuctionDto {
+    accountId: string;
+    eventUniqueId: string;
+    auctionType: string;
+    auctionStartDateTime: moment.Moment;
+    auctionEndDateTime: moment.Moment;
+    address: AddressDto;
+}
+
+export class UpdateAuctionDto implements IUpdateAuctionDto {
+    id!: string;
+    auctionType!: string;
+    auctionStartDateTime!: moment.Moment;
+    auctionEndDateTime!: moment.Moment;
+    address!: AddressDto;
+
+    constructor(data?: IUpdateAuctionDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.auctionType = _data["auctionType"];
+            this.auctionStartDateTime = _data["auctionStartDateTime"] ? moment(_data["auctionStartDateTime"].toString()) : <any>undefined;
+            this.auctionEndDateTime = _data["auctionEndDateTime"] ? moment(_data["auctionEndDateTime"].toString()) : <any>undefined;
+            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): UpdateAuctionDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateAuctionDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["auctionType"] = this.auctionType;
+        data["auctionStartDateTime"] = this.auctionStartDateTime ? this.auctionStartDateTime.toISOString() : <any>undefined;
+        data["auctionEndDateTime"] = this.auctionEndDateTime ? this.auctionEndDateTime.toISOString() : <any>undefined;
+        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IUpdateAuctionDto {
+    id: string;
+    auctionType: string;
+    auctionStartDateTime: moment.Moment;
+    auctionEndDateTime: moment.Moment;
     address: AddressDto;
 }
 
@@ -16757,6 +18019,54 @@ export class ListResultDtoOfCountryListDto implements IListResultDtoOfCountryLis
 }
 
 export interface IListResultDtoOfCountryListDto {
+    items: CountryListDto[] | undefined;
+}
+
+export class PagedResultDtoOfCountryListDto implements IPagedResultDtoOfCountryListDto {
+    totalCount!: number;
+    items!: CountryListDto[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfCountryListDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.totalCount = _data["totalCount"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(CountryListDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfCountryListDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfCountryListDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfCountryListDto {
+    totalCount: number;
     items: CountryListDto[] | undefined;
 }
 
@@ -24164,6 +25474,98 @@ export interface IStateListDto {
     stateCode: string | undefined;
     countryUniqueId: string;
     countryName: string | undefined;
+}
+
+export class ListResultDtoOfStateListDto implements IListResultDtoOfStateListDto {
+    items!: StateListDto[] | undefined;
+
+    constructor(data?: IListResultDtoOfStateListDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(StateListDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ListResultDtoOfStateListDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ListResultDtoOfStateListDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IListResultDtoOfStateListDto {
+    items: StateListDto[] | undefined;
+}
+
+export class PagedResultDtoOfStateListDto implements IPagedResultDtoOfStateListDto {
+    totalCount!: number;
+    items!: StateListDto[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfStateListDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.totalCount = _data["totalCount"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(StateListDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfStateListDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfStateListDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfStateListDto {
+    totalCount: number;
+    items: StateListDto[] | undefined;
 }
 
 export class UpdateStateDto implements IUpdateStateDto {
