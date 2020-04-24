@@ -49,7 +49,8 @@ namespace NextGen.BiddingPlatform.State
         public async Task<ListResultDto<StateListDto>> GetAllStates()
         {
             var states = await _stateRepository.GetAllIncluding(x => x.Country).ToListAsync();
-            return ObjectMapper.Map<ListResultDto<StateListDto>>(states);
+            var result = ObjectMapper.Map<List<StateListDto>>(states);
+            return new ListResultDto<StateListDto>(result);
         }
 
         public async Task<PagedResultDto<StateListDto>> GetStatesByFilter(GetStateInput input)
