@@ -64,7 +64,7 @@ namespace NextGen.BiddingPlatform.Country
         }
         public async Task<CountryDto> GetCountryById(Guid Id)
         {
-            var country = await _countryRepository.GetAll().FirstOrDefaultAsync(x => x.UniqueId == Id);
+            var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == Id);
             if (country == null)
                 throw new Exception("No data found");
 
@@ -74,7 +74,7 @@ namespace NextGen.BiddingPlatform.Country
         public async Task Update(CountryDto input)
         {
 
-            var country = await _countryRepository.GetAll().FirstOrDefaultAsync(x => x.UniqueId == input.UniqueId);
+            var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == input.UniqueId);
             if (country == null)
                 throw new Exception("No data found");
 
