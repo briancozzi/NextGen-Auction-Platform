@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using NextGen.BiddingPlatform.Country.Dto;
+using Microsoft.EntityFrameworkCore;
 
 namespace NextGen.BiddingPlatform.Tests.Country
 {
@@ -22,7 +23,7 @@ namespace NextGen.BiddingPlatform.Tests.Country
         public async Task Should_Get_All_Country()
         {
             var countries = await _countryAppService.GetAllCountry();
-            countries.Count.ShouldBe(0);
+            countries.Items.Count.ShouldBe(0);
         }
 
         [Fact]
@@ -44,7 +45,7 @@ namespace NextGen.BiddingPlatform.Tests.Country
             });
 
             var countries = await _countryAppService.GetAllCountry();
-            var country = countries.FirstOrDefault();
+            var country = countries.Items.FirstOrDefault();
 
             country.ShouldNotBe(null);
 
@@ -63,7 +64,7 @@ namespace NextGen.BiddingPlatform.Tests.Country
             });
 
             var updatedCountries = await _countryAppService.GetAllCountry();
-            var updatedCountry = updatedCountries.FirstOrDefault();
+            var updatedCountry = updatedCountries.Items.FirstOrDefault();
 
             updatedCountry.CountryCode.ShouldBe("US");
         }

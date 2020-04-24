@@ -44,7 +44,21 @@ namespace NextGen.BiddingPlatform.Country
             var result = ObjectMapper.Map<List<CountryListDto>>(countries);
             return new ListResultDto<CountryListDto>(result);
         }
+        //get all countries with filter method
+        //public async Task<PagedResultDto<CountryListDto>> GetAllCountry(GetCountryInput input)
+        //{
+        //    var countries = _countryRepository
+        //                                .GetAll()
+        //                                .AsNoTracking()
+        //                                .WhereIf(!input.CountryName.IsNullOrWhiteSpace(), x => x.CountryName.ToLower().Contains(input.CountryName))
+        //                                .AsQueryable();
 
+        //    var resultCount = await countries.CountAsync();
+
+        //    var result = await countries.PageBy(input).ToListAsync();
+
+        //    return new PagedResultDto<CountryListDto>(resultCount, ObjectMapper.Map<IReadOnlyList<CountryListDto>>(result));
+        //}
         public async Task<CountryDto> GetCountryById(Guid Id)
         {
             var country = await _countryRepository.GetAll().FirstOrDefaultAsync(x => x.UniqueId == Id);

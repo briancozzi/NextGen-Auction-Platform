@@ -14,7 +14,7 @@ namespace NextGen.BiddingPlatform.AppAccount
         Task<ListResultDto<AppAccountListDto>> GetAllAccount();
         Task<CreateAppAccountDto> Create(CreateAppAccountDto input);
         Task<UpdateAppAccountDto> Update(UpdateAppAccountDto input);
-        Task Delete(EntityDto<Guid> input);
+        Task Delete(Guid Id);
         Task<AppAccountDto> GetAccountById(Guid input);
     }
 }
