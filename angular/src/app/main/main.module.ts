@@ -18,6 +18,7 @@ import { CreateEventModalComponent } from './companyevents/create-event-modal.co
 
 import {CountryComponent} from './country/country.component';
 import { CreateCountryModalComponent } from './country/create-country-modal.component';
+import { EditCountryModalComponent } from './country/edit-country-modal.component';
 
 import { TableModule } from 'primeng/table';
 NgxBootstrapDatePickerConfigService.registerNgxBootstrapDatePickerLocales();
@@ -45,7 +46,8 @@ NgxBootstrapDatePickerConfigService.registerNgxBootstrapDatePickerLocales();
         CompanyeventsComponent,
         CreateEventModalComponent,
         CountryComponent,
-        CreateCountryModalComponent
+        CreateCountryModalComponent,
+        EditCountryModalComponent
     ],
     providers: [
         BsModalRef,

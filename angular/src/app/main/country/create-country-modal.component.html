@@ -2,7 +2,7 @@
     aria-labelledby="createModal" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form #tenantCreateForm="ngForm" role="form" novalidate class="form-validation" *ngIf="active"
+            <form #countryCreateForm="ngForm" role="form" novalidate class="form-validation" *ngIf="active"
             (submit)="save()">
             <div class="modal-header">
                 <h5 class="modal-title">
@@ -40,7 +40,7 @@
                 <button type="submit" [buttonBusy]="saving" [busyText]="l('SavingWithThreeDot')"
                     class="btn btn-primary"
                     [disabled]="!countryCreateForm.form.valid || saving"><i
-                        class="fa fa-save"></i> <span>{{"Save" | localize}}</span></button>
+                        class="fa fa-save"></i> <span>Save</span></button>
             </div>
         </form>
         </div>

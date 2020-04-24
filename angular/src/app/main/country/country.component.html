@@ -48,7 +48,7 @@
                                                 <ul class="dropdown-menu" *dropdownMenu>
                                                     <li>
                                                         <a href="javascript:;"
-                                                            (click)="editCountryModal.show(record.id)">{{'Edit' | localize}}</a>
+                                                            (click)="editCountryModal.show(record.uniqueId)">{{'Edit' | localize}}</a>
                                                     </li>
 
                                                     <li>
@@ -64,7 +64,6 @@
                                         <td>
                                             {{record.countryName}}
                                         </td>
-
                                     </tr>
                                 </ng-template>
                             </p-table>
@@ -76,6 +75,7 @@
                 </div>
             </div>
         </div>
-        <createCountryModal #createCountryModal></createCountryModal>
+        <createCountryModal #createCountryModal (modalSave)="getCountries()"></createCountryModal>
+        <editCountryModal #editCountryModal (modalSave)="getCountries()"></editCountryModal>
     </div>
 </div>
