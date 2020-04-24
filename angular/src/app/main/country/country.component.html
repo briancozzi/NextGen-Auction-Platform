@@ -2,6 +2,21 @@
     <div class="kt-content  kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor">
         <div [class]="containerClass + ' kt-grid__item kt-grid__item--fluid'">
             <div class="kt-portlet">
+                <div class="kt-subheader kt-grid__item">
+                    <div [class]="containerClass">
+                        <div class="kt-subheader__main">
+                            <h3 class="kt-subheader__title">
+                                <span>{{"Country" | localize}}</span>
+                            </h3>
+                        </div>
+                        <div class="kt-subheader__toolbar">
+                            <div class="kt-subheader__wrapper">
+                                <button class="btn btn-primary"
+        (click)="createCountryEvent()" ><i class="fa fa-plus"></i>{{"CreateNewCountry" | localize}}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="kt-portlet__body">
                     <div class="row align-items-center">
                         <!--<Primeng-TurboTable-Start>-->
@@ -12,21 +27,44 @@
                                 <ng-template pTemplate="header">
                                     <tr>
                                         <th style="width: 130px">
-                                            "Country Code"
+                                        Actions
+                                        </th>
+                                        <th style="width: 130px">
+                                            Code
                                         </th>
                                         <th>
-                                            "Country Name"
+                                            Name
                                         </th>
                                     </tr>
                                 </ng-template>
                                 <ng-template pTemplate="body" let-record="$implicit">
                                     <tr>
+                                        <td style="width: 130px;text-align:center">
+                                            <div class="btn-group dropdown" dropdown>
+                                                <button dropdownToggle class="dropdown-toggle btn btn-sm btn-primary">
+                                                    <i class="fa fa-cog"></i><span class="caret"></span>
+                                                    {{"Actions" | localize}}
+                                                </button>
+                                                <ul class="dropdown-menu" *dropdownMenu>
+                                                    <li>
+                                                        <a href="javascript:;"
+                                                            (click)="editCountryModal.show(record.id)">{{'Edit' | localize}}</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="javascript:;"
+                                                            (click)="deleteCountry(record)">{{'Delete' | localize}}</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </td>
                                         <td>
                                             {{record.countryCode}}
                                         </td>
                                         <td>
                                             {{record.countryName}}
                                         </td>
+
                                     </tr>
                                 </ng-template>
                             </p-table>
@@ -38,5 +76,6 @@
                 </div>
             </div>
         </div>
+        <createCountryModal #createCountryModal></createCountryModal>
     </div>
 </div>
