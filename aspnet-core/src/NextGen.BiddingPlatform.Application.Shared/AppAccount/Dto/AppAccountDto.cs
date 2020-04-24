@@ -1,5 +1,6 @@
 ﻿using Abp.Authorization.Users;
 using NextGen.BiddingPlatform.Address.Dto;
+using NextGen.BiddingPlatform.Dto;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace NextGen.BiddingPlatform.AppAccount.Dto
 {
-    public class AppAccountDto
+    public class AppAccountDto :  PagedAndSortedInputDto
     {
         public Guid UniqueId { get; set; }
         [Required]

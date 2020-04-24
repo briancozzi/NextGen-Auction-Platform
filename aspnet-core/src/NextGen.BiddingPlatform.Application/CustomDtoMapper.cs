@@ -183,7 +183,9 @@ namespace NextGen.BiddingPlatform
             //AppAccount
             configuration.CreateMap<CreateAppAccountDto, Core.AppAccounts.AppAccount>().ReverseMap();
             configuration.CreateMap<Core.AppAccounts.AppAccount, AppAccountDto>().ReverseMap();
-            configuration.CreateMap<Core.AppAccounts.AppAccount, AppAccountListDto>();
+            configuration.CreateMap<Core.AppAccounts.AppAccount, AppAccountListDto>()
+                .ForMember(x => x.FirstName, option => option.MapFrom(x => x.FirstName))
+                .ForMember(x => x.LastName, option => option.MapFrom(x => x.LastName));
 
             //Address
             configuration.CreateMap<Address.Dto.AddressDto, Core.Addresses.Address>().ReverseMap();
@@ -200,7 +202,10 @@ namespace NextGen.BiddingPlatform
                 .ForMember(x => x.AccountUniqueId, option => option.MapFrom(x => x.AppAccount.UniqueId));
 
             //Auction
-            configuration.CreateMap<Core.Auctions.Auction, AuctionListDto>();
+            configuration.CreateMap<Core.Auctions.Auction, AuctionListDto>()
+                .ForMember(x => x.AuctionType, option => option.MapFrom(x => x.AuctionType))
+                .ForMember(x => x.AppAccountUniqueId, option => option.MapFrom(x => x.AppAccount.UniqueId))
+                .ForMember(x => x.EventUniqueId, option => option.MapFrom(x => x.Event.UniqueId));
             configuration.CreateMap<Core.Auctions.Auction, AuctionDto>()
                 .ForMember(x => x.AppAccountUniqueId, option => option.MapFrom(x => x.AppAccount.UniqueId))
                 .ForMember(x => x.EventUniqueId, option => option.MapFrom(x => x.Event.UniqueId));

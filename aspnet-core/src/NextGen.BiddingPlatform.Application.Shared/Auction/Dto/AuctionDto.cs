@@ -1,11 +1,14 @@
-﻿using NextGen.BiddingPlatform.Address.Dto;
+﻿using Abp.Extensions;
+using Abp.Runtime.Validation;
+using NextGen.BiddingPlatform.Address.Dto;
+using NextGen.BiddingPlatform.Dto;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace NextGen.BiddingPlatform.Auction.Dto
 {
-    public class AuctionDto
+    public class AuctionDto : PagedAndSortedInputDto
     {
         public Guid UniqueId { get; set; }
         public Guid EventUniqueId { get; set; }
@@ -14,5 +17,6 @@ namespace NextGen.BiddingPlatform.Auction.Dto
         public DateTime AuctionStartDateTime { get; set; }
         public DateTime AuctionEndDateTime { get; set; }
         public AddressDto Address { get; set; }
+
     }
 }
