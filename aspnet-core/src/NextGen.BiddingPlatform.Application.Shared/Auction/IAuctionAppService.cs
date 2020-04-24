@@ -12,7 +12,11 @@ namespace NextGen.BiddingPlatform.Auction
     {
         Task<ListResultDto<AuctionListDto>> GetAll();
         Task<AuctionDto> GetAuctionById(Guid Id);
-        Task CreateAuction(CreateAuctionDto input);
-        Task UpdateAuction(UpdateAuctionDto input);
+        Task<CreateAuctionDto> CreateAuction(CreateAuctionDto input);
+        Task<UpdateAuctionDto> UpdateAuction(UpdateAuctionDto input);
+        Task Delete(EntityDto<Guid> input);
+
+        // AuctionType Filter.
+        Task<PagedResultDto<AuctionListDto>> GetAllAuctionFilter(AuctionTypeFilter input);
     }
 }

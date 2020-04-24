@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace NextGen.BiddingPlatform.Country
 {
-    [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Country)]
+   // [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Country)]
     public class CountryAppService : BiddingPlatformAppServiceBase, ICountryAppService
     {
         private readonly IRepository<Country> _countryRepository;

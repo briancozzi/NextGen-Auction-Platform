@@ -4,10 +4,17 @@ using Abp.Runtime.Session;
 using Microsoft.EntityFrameworkCore;
 using NextGen.BiddingPlatform.Auction.Dto;
 using NextGen.BiddingPlatform.Core.AppAccountEvents;
+using NextGen.BiddingPlatform.DashboardCustomization.Dto;
+using Org.BouncyCastle.Math.EC.Rfc7748;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Text;
 using System.Threading.Tasks;
+using Abp.Linq.Extensions;
+using IdentityServer4.Extensions;
+using Abp.Extensions;
 
 namespace NextGen.BiddingPlatform.Auction
 {
@@ -34,22 +41,46 @@ namespace NextGen.BiddingPlatform.Auction
             _stateRepository = stateRepository;
         }
 
+        public async Task<PagedResultDto<AuctionListDto>> GetAllAuctionFilter(AuctionTypeFilter input)
+        {
+            var query = _auctionRepository.GetAllIncluding(x => x.Address, x => x.Event, x => x.AppAccount, x => x.Address.Country, x => x.Address.State)
+                                          .WhereIf(!input.AuctionType.IsNullOrWhiteSpace(), x => x.AuctionType.ToLower().Trim().Contains(input.AuctionType.ToLower().Trim()));
+
+
+            if (query == null)
+                throw new Exception("no data found");
+
+            var resultCount = query.Count();
+            if (resultCount == 0)
+                throw new Exception("account data count is Zero");
+
+            var results = await query.OrderBy(x => x.AuctionType)
+                                .PageBy(input)
+                                .ToListAsync();
+            if (results == null)
+                throw new Exception("no data found");
+
+            return new PagedResultDto<AuctionListDto>(resultCount, ObjectMapper.Map<List<AuctionListDto>>(results));
+        }
+
         public async Task<ListResultDto<AuctionListDto>> GetAll()
         {
-            var auctions = await _auctionRepository.GetAllIncluding(x => x.Address).ToListAsync();
+            var auctions = await _auctionRepository.GetAllIncluding(x => x.Address, x => x.Event, x => x.AppAccount, x => x.Address.Country, x => x.Address.State)
+                                                   .ToListAsync();
             return new ListResultDto<AuctionListDto>(ObjectMapper.Map<IReadOnlyList<AuctionListDto>>(auctions));
         }
 
         public async Task<AuctionDto> GetAuctionById(Guid Id)
         {
-            var existingAuction = await _auctionRepository.GetAllIncluding(x => x.Address, x => x.Event, x => x.AppAccount).FirstOrDefaultAsync(x => x.UniqueId == Id);
+            var existingAuction = await _auctionRepository.GetAllIncluding(x => x.Address, x => x.Event, x => x.AppAccount,x => x.Address.Country , x =>x.Address.State)
+                                                          .FirstOrDefaultAsync(x => x.UniqueId == Id);
             if (existingAuction == null)
                 throw new Exception("Auction data not found for given id");
 
             return ObjectMapper.Map<AuctionDto>(existingAuction);
         }
 
-        public async Task CreateAuction(CreateAuctionDto input)
+        public async Task<CreateAuctionDto> CreateAuction(CreateAuctionDto input)
         {
             var account = await _appAccountRepository.FirstOrDefaultAsync(x => x.UniqueId == input.AccountId);
             if (account == null)
@@ -76,9 +107,10 @@ namespace NextGen.BiddingPlatform.Auction
             auction.Address.StateId = state.Id;
             auction.Address.CountryId = country.Id;
             await _auctionRepository.InsertAsync(auction);
+            return input;
         }
 
-        public async Task UpdateAuction(UpdateAuctionDto input)
+        public async Task<UpdateAuctionDto> UpdateAuction(UpdateAuctionDto input)
         {
             var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.CountryUniqueId);
             if (country == null)
@@ -104,6 +136,16 @@ namespace NextGen.BiddingPlatform.Auction
             exisingAuction.Address.ZipCode = input.Address.ZipCode;
             exisingAuction.Address.CountryId = country.Id;
             exisingAuction.Address.StateId = state.Id;
+            await _auctionRepository.UpdateAsync(exisingAuction);
+            return input;
+        }
+
+        public async Task Delete(EntityDto<Guid> input) 
+        {
+            var auction = await _auctionRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Id);
+            if (auction == null)
+                throw new Exception("Auction not found for given Id");
+            await _auctionRepository.DeleteAsync(auction);
         }
     }
 }

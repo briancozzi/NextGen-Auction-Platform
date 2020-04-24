@@ -8,6 +8,12 @@ using NextGen.BiddingPlatform.AppAccount.Dto;
 using NextGen.BiddingPlatform.Country;
 using Abp.Runtime.Session;
 using System.Linq;
+using Abp.Collections.Extensions;
+using Abp.Extensions;
+using System.Linq.Dynamic.Core;
+using IdentityServer4.Extensions;
+using Abp.Linq.Extensions;
+using NextGen.BiddingPlatform.DashboardCustomization.Dto;
 
 namespace NextGen.BiddingPlatform.AppAccount
 {
@@ -26,6 +32,31 @@ namespace NextGen.BiddingPlatform.AppAccount
             _countryRepository = countryRepository;
             _stateRepository = stateRepository;
             AbpSession = abpSession;
+        }
+
+        public async Task<PagedResultDto<AppAccountListDto>> GetAllAccountFilter(AppAccountFilter input)
+        {
+           
+            var accountQuery =  _accountRepository.GetAllIncluding(x => x.Address, x => x.Address.Country, x => x.Address.State)
+                                                    .WhereIf(!input.SearchName.IsNullOrWhiteSpace(), x => x.FirstName.ToLower()
+                                                    .Contains(input.SearchName.ToLower().Trim()) || x.LastName.ToLower()
+                                                    .Contains(input.SearchName.ToLower().Trim()))
+                                                    .AsQueryable();
+            if (accountQuery == null)
+                throw new Exception("no data found");
+             
+            var resultCount = await accountQuery.CountAsync();
+
+            if (resultCount == 0)
+                throw new Exception("account data count is Zero");
+
+            var results = await accountQuery.OrderBy(x => x.FirstName)
+                                .PageBy(input)
+                                .ToListAsync();
+            if (results == null)
+                throw new Exception("no data found");
+
+            return new PagedResultDto<AppAccountListDto>(resultCount, ObjectMapper.Map<List<AppAccountListDto>>(results));
         }
 
         public async Task<CreateAppAccountDto> Create(CreateAppAccountDto input)

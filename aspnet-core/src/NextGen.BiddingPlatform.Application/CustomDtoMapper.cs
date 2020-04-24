@@ -177,33 +177,38 @@ namespace NextGen.BiddingPlatform
                 .ForMember(x => x.CountryUniqueId, option => option.MapFrom(x => x.Country.UniqueId)).ReverseMap();
             configuration.CreateMap<UpdateStateDto, Core.State.State>().ReverseMap();
             configuration.CreateMap<Core.State.State, StateListDto>()
-                .ForMember(x => x.CountryName, option => option.MapFrom(x => x.Country.CountryName))
-                .ForMember(x => x.CountryUniqueId, option => option.MapFrom(x => x.Country.UniqueId)).ReverseMap();
+                .ForMember(x => x.CountryName, option => option.MapFrom(c => c.Country.CountryName))
+                .ForMember(x => x.CountryUniqueId, option => option.MapFrom(c => c.Country.UniqueId));
 
             //AppAccount
             configuration.CreateMap<CreateAppAccountDto, Core.AppAccounts.AppAccount>().ReverseMap();
             configuration.CreateMap<Core.AppAccounts.AppAccount, AppAccountDto>().ReverseMap();
-            configuration.CreateMap<Core.AppAccounts.AppAccount, AppAccountListDto>();
+            configuration.CreateMap<Core.AppAccounts.AppAccount, AppAccountListDto>()
+                .ForMember(x => x.FirstName, option => option.MapFrom(a => a.FirstName))
+                .ForMember(x => x.LastName, option => option.MapFrom(a => a.LastName));
 
             //Address
             configuration.CreateMap<Address.Dto.AddressDto, Core.Addresses.Address>().ReverseMap();
             configuration.CreateMap<Core.Addresses.Address, Address.Dto.AddressDto>()
-                .ForMember(x => x.StateUniqueId, option => option.MapFrom(x => x.State.UniqueId))
-                .ForMember(x => x.CountryUniqueId, option => option.MapFrom(x => x.Country.UniqueId));
+                .ForMember(x => x.StateUniqueId, option => option.MapFrom(s => s.State.UniqueId))
+                .ForMember(x => x.CountryUniqueId, option => option.MapFrom(c => c.Country.UniqueId));
 
             //AccountEvent
             configuration.CreateMap<CreateAccountEventDto, Core.AppAccountEvents.Event>().ReverseMap();
             configuration.CreateMap<UpdateAccountEventDto, Core.AppAccountEvents.Event>().ReverseMap();
             configuration.CreateMap<Core.AppAccountEvents.Event, AccountEventDto>()
-                .ForMember(x => x.AccountUniqueId, option => option.MapFrom(x => x.AppAccount.UniqueId));
+                .ForMember(x => x.AccountUniqueId, option => option.MapFrom(a => a.AppAccount.UniqueId));
             configuration.CreateMap<Core.AppAccountEvents.Event, AccountEventListDto>()
-                .ForMember(x => x.AccountUniqueId, option => option.MapFrom(x => x.AppAccount.UniqueId));
+                .ForMember(x => x.AccountUniqueId, option => option.MapFrom(a => a.AppAccount.UniqueId));
 
             //Auction
-            configuration.CreateMap<Core.Auctions.Auction, AuctionListDto>();
+            configuration.CreateMap<Core.Auctions.Auction, AuctionListDto>()
+                .ForMember(x => x.AuctionType, option => option.MapFrom(au => au.AuctionType))
+                .ForMember(x => x.AppAccountUniqueId, option => option.MapFrom(ap => ap.AppAccount.UniqueId))
+                .ForMember(x => x.EventUniqueId, option => option.MapFrom(e => e.Event.UniqueId));
             configuration.CreateMap<Core.Auctions.Auction, AuctionDto>()
-                .ForMember(x => x.AppAccountUniqueId, option => option.MapFrom(x => x.AppAccount.UniqueId))
-                .ForMember(x => x.EventUniqueId, option => option.MapFrom(x => x.Event.UniqueId));
+                .ForMember(x => x.AppAccountUniqueId, option => option.MapFrom(ap => ap.AppAccount.UniqueId))
+                .ForMember(x => x.EventUniqueId, option => option.MapFrom(e => e.Event.UniqueId));
             configuration.CreateMap<CreateAuctionDto, Core.Auctions.Auction>().ReverseMap();
 
         }

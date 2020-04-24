@@ -11,6 +11,7 @@ using Abp.EntityHistory;
 using Abp.Extensions;
 using Abp.Linq.Extensions;
 using Microsoft.EntityFrameworkCore;
+using NextGen.BiddingPlatform.Auction.Dto;
 using NextGen.BiddingPlatform.Auditing.Dto;
 using NextGen.BiddingPlatform.Auditing.Exporting;
 using NextGen.BiddingPlatform.Authorization;
@@ -70,6 +71,7 @@ namespace NextGen.BiddingPlatform.Auditing
 
             return new PagedResultDto<AuditLogListDto>(resultCount, auditLogListDtos);
         }
+
 
         public async Task<FileDto> GetAuditLogsToExcel(GetAuditLogsInput input)
         {
