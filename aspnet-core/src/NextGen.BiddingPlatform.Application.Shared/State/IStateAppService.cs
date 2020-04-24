@@ -10,7 +10,8 @@ namespace NextGen.BiddingPlatform.State
 {
     public interface IStateAppService : IApplicationService
     {
-        Task<List<StateListDto>> GetAllStates();
+        Task<ListResultDto<StateListDto>> GetAllStates();
+        Task<PagedResultDto<StateListDto>> GetStatesByFilter(GetStateInput input);
         Task<StateDto> Create(CreateStateDto input);
         Task<UpdateStateDto> Update(UpdateStateDto input);
         Task Delete(EntityDto<Guid> input);

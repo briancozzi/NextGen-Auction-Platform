@@ -15,7 +15,12 @@ import {BsDatepickerModule} from 'ngx-bootstrap/datepicker';
 import { NgxBootstrapDatePickerConfigService } from 'assets/ngx-bootstrap/ngx-bootstrap-datepicker-config.service';
 import { CompanyeventsComponent } from './companyevents/companyevents.component';
 import { CreateEventModalComponent } from './companyevents/create-event-modal.component';
+
 import {CountryComponent} from './country/country.component';
+import { CreateCountryModalComponent } from './country/create-country-modal.component';
+import { EditCountryModalComponent } from './country/edit-country-modal.component';
+
+import { TableModule } from 'primeng/table';
 NgxBootstrapDatePickerConfigService.registerNgxBootstrapDatePickerLocales();
 
 @NgModule({
@@ -33,13 +38,16 @@ NgxBootstrapDatePickerConfigService.registerNgxBootstrapDatePickerLocales();
         BsDatepickerModule.forRoot(),
         BsDropdownModule.forRoot(),
         PopoverModule.forRoot(),
-        AppBsModalModule
+        AppBsModalModule,
+        TableModule
     ],
     declarations: [
         DashboardComponent,
         CompanyeventsComponent,
         CreateEventModalComponent,
-        CountryComponent
+        CountryComponent,
+        CreateCountryModalComponent,
+        EditCountryModalComponent
     ],
     providers: [
         BsModalRef,

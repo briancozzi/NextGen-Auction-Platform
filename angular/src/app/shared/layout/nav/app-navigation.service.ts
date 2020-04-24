@@ -22,7 +22,10 @@ export class AppNavigationService {
             new AppMenuItem('Tenants', 'Pages.Tenants', 'flaticon-list-3', '/app/admin/tenants'),
             new AppMenuItem('Editions', 'Pages.Editions', 'flaticon-app', '/app/admin/editions'),
             new AppMenuItem('Events', null , 'flaticon-event-calendar-symbol', '/app/main/companyevents'),
-            new AppMenuItem('Country',null,'flaticon-app','/app/main/country'),
+            new AppMenuItem('Parameter','','flaticon-interface-8','',[],[
+                new AppMenuItem('Countries',null,'flaticon-app','/app/main/country'),
+                new AppMenuItem('States',null, 'flaticon-app','')
+            ]),
             new AppMenuItem('Administration', '', 'flaticon-interface-8', '', [], [
                 new AppMenuItem('OrganizationUnits', 'Pages.Administration.OrganizationUnits', 'flaticon-map', '/app/admin/organization-units'),
                 new AppMenuItem('Roles', 'Pages.Administration.Roles', 'flaticon-suitcase', '/app/admin/roles'),

@@ -1,11 +1,15 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
+using Abp.Extensions;
+using Abp.Linq.Extensions;
 using Microsoft.EntityFrameworkCore;
 using NextGen.BiddingPlatform.Core.State;
 using NextGen.BiddingPlatform.Country;
 using NextGen.BiddingPlatform.State.Dto;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,24 +39,39 @@ namespace NextGen.BiddingPlatform.State
 
         public async Task Delete(EntityDto<Guid> input)
         {
-            var state = await _stateRepository.GetAll().FirstOrDefaultAsync(x => x.UniqueId == input.Id);
+            var state = await _stateRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Id);
             if (state == null)
                 throw new Exception("No data found");
 
             await _stateRepository.DeleteAsync(state);
         }
 
-        public async Task<List<StateListDto>> GetAllStates()
+        public async Task<ListResultDto<StateListDto>> GetAllStates()
         {
             var states = await _stateRepository.GetAllIncluding(x => x.Country).ToListAsync();
-            return ObjectMapper.Map<List<StateListDto>>(states);
+            return ObjectMapper.Map<ListResultDto<StateListDto>>(states);
+        }
+
+        public async Task<PagedResultDto<StateListDto>> GetStatesByFilter(GetStateInput input)
+        {
+            var query = _stateRepository.GetAllIncluding(x => x.Country)
+                                                .AsNoTracking()
+                                               .WhereIf(!input.StateCode.IsNullOrWhiteSpace(), x => x.StateCode.ToLower().Contains(input.StateCode.ToLower()))
+                                               .AsQueryable();
+
+            var resultCount = await query.CountAsync();
+
+            var result = await query.PageBy(input).ToListAsync();
+
+            return new PagedResultDto<StateListDto>(resultCount, ObjectMapper.Map<IReadOnlyList<StateListDto>>(result));
+
         }
 
         public async Task<StateDto> GetStateById(Guid Id)
         {
-            var state = await _stateRepository.GetAllIncluding(x => x.Country).FirstOrDefaultAsync(x => x.UniqueId == Id);
+            var state = await _stateRepository.FirstOrDefaultAsync(x => x.UniqueId == Id);
             if (state == null)
-                throw new Exception("No data found");
+                throw new Exception("State not found for given id");
 
             return ObjectMapper.Map<StateDto>(state);
         }
@@ -60,9 +79,9 @@ namespace NextGen.BiddingPlatform.State
         public async Task<UpdateStateDto> Update(UpdateStateDto input)
         {
 
-            var state = await _stateRepository.GetAll().FirstOrDefaultAsync(x => x.UniqueId == input.UniqueId);
+            var state = await _stateRepository.FirstOrDefaultAsync(x => x.UniqueId == input.UniqueId);
             if (state == null)
-                throw new Exception("No data found");
+                throw new Exception("State not available for given id");
 
             var country = await _countryService.GetCountryById(input.CountryUniqueId);
 

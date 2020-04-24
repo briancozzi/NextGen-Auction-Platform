@@ -1,6 +1,9 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
+using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
+using Abp.Extensions;
+using Abp.Linq.Extensions;
 using Microsoft.EntityFrameworkCore;
 using NextGen.BiddingPlatform.Authorization;
 using NextGen.BiddingPlatform.Country.Dto;
@@ -45,23 +48,23 @@ namespace NextGen.BiddingPlatform.Country
             return new ListResultDto<CountryListDto>(result);
         }
         //get all countries with filter method
-        //public async Task<PagedResultDto<CountryListDto>> GetAllCountry(GetCountryInput input)
-        //{
-        //    var countries = _countryRepository
-        //                                .GetAll()
-        //                                .AsNoTracking()
-        //                                .WhereIf(!input.CountryName.IsNullOrWhiteSpace(), x => x.CountryName.ToLower().Contains(input.CountryName))
-        //                                .AsQueryable();
+        public async Task<PagedResultDto<CountryListDto>> GetCountriesByFilter(GetCountryInput input)
+        {
+            var countries = _countryRepository
+                                        .GetAll()
+                                        .AsNoTracking()
+                                        .WhereIf(!input.CountryName.IsNullOrWhiteSpace(), x => x.CountryName.ToLower().Contains(input.CountryName))
+                                        .AsQueryable();
 
-        //    var resultCount = await countries.CountAsync();
+            var resultCount = await countries.CountAsync();
 
-        //    var result = await countries.PageBy(input).ToListAsync();
+            var result = await countries.PageBy(input).ToListAsync();
 
-        //    return new PagedResultDto<CountryListDto>(resultCount, ObjectMapper.Map<IReadOnlyList<CountryListDto>>(result));
-        //}
+            return new PagedResultDto<CountryListDto>(resultCount, ObjectMapper.Map<IReadOnlyList<CountryListDto>>(result));
+        }
         public async Task<CountryDto> GetCountryById(Guid Id)
         {
-            var country = await _countryRepository.GetAll().FirstOrDefaultAsync(x => x.UniqueId == Id);
+            var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == Id);
             if (country == null)
                 throw new Exception("No data found");
 
@@ -71,7 +74,7 @@ namespace NextGen.BiddingPlatform.Country
         public async Task Update(CountryDto input)
         {
 
-            var country = await _countryRepository.GetAll().FirstOrDefaultAsync(x => x.UniqueId == input.UniqueId);
+            var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == input.UniqueId);
             if (country == null)
                 throw new Exception("No data found");
 

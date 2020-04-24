@@ -93,5 +93,6 @@ export class CreateEditionModalComponent extends AppComponentBase {
     close(): void {
         this.active = false;
         this.modal.hide();
+        
     }
 }

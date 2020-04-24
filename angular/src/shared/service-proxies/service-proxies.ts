@@ -628,6 +628,289 @@ export class AccountServiceProxy {
 }
 
 @Injectable()
+export class AppAccountServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    create(body: CreateAppAccountDto | undefined): Observable<CreateAppAccountDto> {
+        let url_ = this.baseUrl + "/api/services/app/AppAccount/Create";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json", 
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreate(<any>response_);
+                } catch (e) {
+                    return <Observable<CreateAppAccountDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CreateAppAccountDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreate(response: HttpResponseBase): Observable<CreateAppAccountDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = CreateAppAccountDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CreateAppAccountDto>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    update(body: UpdateAppAccountDto | undefined): Observable<UpdateAppAccountDto> {
+        let url_ = this.baseUrl + "/api/services/app/AppAccount/Update";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json", 
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdate(<any>response_);
+                } catch (e) {
+                    return <Observable<UpdateAppAccountDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<UpdateAppAccountDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdate(response: HttpResponseBase): Observable<UpdateAppAccountDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UpdateAppAccountDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<UpdateAppAccountDto>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    delete(id: string | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/AppAccount/Delete?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDelete(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDelete(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    getAllAccount(): Observable<ListResultDtoOfAppAccountListDto> {
+        let url_ = this.baseUrl + "/api/services/app/AppAccount/GetAllAccount";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAllAccount(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAllAccount(<any>response_);
+                } catch (e) {
+                    return <Observable<ListResultDtoOfAppAccountListDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<ListResultDtoOfAppAccountListDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAllAccount(response: HttpResponseBase): Observable<ListResultDtoOfAppAccountListDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ListResultDtoOfAppAccountListDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ListResultDtoOfAppAccountListDto>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    getAccountById(id: string | undefined): Observable<AppAccountDto> {
+        let url_ = this.baseUrl + "/api/services/app/AppAccount/GetAccountById?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAccountById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAccountById(<any>response_);
+                } catch (e) {
+                    return <Observable<AppAccountDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<AppAccountDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAccountById(response: HttpResponseBase): Observable<AppAccountDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AppAccountDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AppAccountDto>(<any>null);
+    }
+}
+
+@Injectable()
 export class AuditLogServiceProxy {
     private http: HttpClient;
     private baseUrl: string;
@@ -14924,6 +15207,354 @@ export interface ISwitchToLinkedAccountOutput {
     tenancyName: string | undefined;
 }
 
+export class AddressDto implements IAddressDto {
+    address1!: string;
+    address2!: string | undefined;
+    city!: string;
+    stateUniqueId!: string;
+    countryUniqueId!: string;
+    zipCode!: string;
+
+    constructor(data?: IAddressDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.address1 = _data["address1"];
+            this.address2 = _data["address2"];
+            this.city = _data["city"];
+            this.stateUniqueId = _data["stateUniqueId"];
+            this.countryUniqueId = _data["countryUniqueId"];
+            this.zipCode = _data["zipCode"];
+        }
+    }
+
+    static fromJS(data: any): AddressDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AddressDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["address1"] = this.address1;
+        data["address2"] = this.address2;
+        data["city"] = this.city;
+        data["stateUniqueId"] = this.stateUniqueId;
+        data["countryUniqueId"] = this.countryUniqueId;
+        data["zipCode"] = this.zipCode;
+        return data; 
+    }
+}
+
+export interface IAddressDto {
+    address1: string;
+    address2: string | undefined;
+    city: string;
+    stateUniqueId: string;
+    countryUniqueId: string;
+    zipCode: string;
+}
+
+export class CreateAppAccountDto implements ICreateAppAccountDto {
+    email!: string;
+    firstName!: string;
+    lastName!: string;
+    phoneNo!: string;
+    logo!: string | undefined;
+    address!: AddressDto;
+
+    constructor(data?: ICreateAppAccountDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.email = _data["email"];
+            this.firstName = _data["firstName"];
+            this.lastName = _data["lastName"];
+            this.phoneNo = _data["phoneNo"];
+            this.logo = _data["logo"];
+            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): CreateAppAccountDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateAppAccountDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["email"] = this.email;
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
+        data["phoneNo"] = this.phoneNo;
+        data["logo"] = this.logo;
+        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface ICreateAppAccountDto {
+    email: string;
+    firstName: string;
+    lastName: string;
+    phoneNo: string;
+    logo: string | undefined;
+    address: AddressDto;
+}
+
+export class UpdateAppAccountDto implements IUpdateAppAccountDto {
+    uniqueId!: string;
+    email!: string;
+    firstName!: string;
+    lastName!: string;
+    phoneNo!: string;
+    logo!: string | undefined;
+    isActive!: boolean;
+    address!: AddressDto;
+
+    constructor(data?: IUpdateAppAccountDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.uniqueId = _data["uniqueId"];
+            this.email = _data["email"];
+            this.firstName = _data["firstName"];
+            this.lastName = _data["lastName"];
+            this.phoneNo = _data["phoneNo"];
+            this.logo = _data["logo"];
+            this.isActive = _data["isActive"];
+            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): UpdateAppAccountDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateAppAccountDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["uniqueId"] = this.uniqueId;
+        data["email"] = this.email;
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
+        data["phoneNo"] = this.phoneNo;
+        data["logo"] = this.logo;
+        data["isActive"] = this.isActive;
+        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IUpdateAppAccountDto {
+    uniqueId: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    phoneNo: string;
+    logo: string | undefined;
+    isActive: boolean;
+    address: AddressDto;
+}
+
+export class AppAccountListDto implements IAppAccountListDto {
+    uniqueId!: string;
+    email!: string | undefined;
+    firstName!: string | undefined;
+    lastName!: string | undefined;
+    phoneNo!: string | undefined;
+    logo!: string | undefined;
+    isActive!: boolean;
+    address!: AddressDto;
+
+    constructor(data?: IAppAccountListDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.uniqueId = _data["uniqueId"];
+            this.email = _data["email"];
+            this.firstName = _data["firstName"];
+            this.lastName = _data["lastName"];
+            this.phoneNo = _data["phoneNo"];
+            this.logo = _data["logo"];
+            this.isActive = _data["isActive"];
+            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): AppAccountListDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AppAccountListDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["uniqueId"] = this.uniqueId;
+        data["email"] = this.email;
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
+        data["phoneNo"] = this.phoneNo;
+        data["logo"] = this.logo;
+        data["isActive"] = this.isActive;
+        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IAppAccountListDto {
+    uniqueId: string;
+    email: string | undefined;
+    firstName: string | undefined;
+    lastName: string | undefined;
+    phoneNo: string | undefined;
+    logo: string | undefined;
+    isActive: boolean;
+    address: AddressDto;
+}
+
+export class ListResultDtoOfAppAccountListDto implements IListResultDtoOfAppAccountListDto {
+    items!: AppAccountListDto[] | undefined;
+
+    constructor(data?: IListResultDtoOfAppAccountListDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(AppAccountListDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ListResultDtoOfAppAccountListDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ListResultDtoOfAppAccountListDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IListResultDtoOfAppAccountListDto {
+    items: AppAccountListDto[] | undefined;
+}
+
+export class AppAccountDto implements IAppAccountDto {
+    uniqueId!: string;
+    email!: string;
+    firstName!: string;
+    lastName!: string;
+    phoneNo!: string;
+    logo!: string | undefined;
+    isActive!: boolean;
+    address!: AddressDto;
+
+    constructor(data?: IAppAccountDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.uniqueId = _data["uniqueId"];
+            this.email = _data["email"];
+            this.firstName = _data["firstName"];
+            this.lastName = _data["lastName"];
+            this.phoneNo = _data["phoneNo"];
+            this.logo = _data["logo"];
+            this.isActive = _data["isActive"];
+            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): AppAccountDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AppAccountDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["uniqueId"] = this.uniqueId;
+        data["email"] = this.email;
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
+        data["phoneNo"] = this.phoneNo;
+        data["logo"] = this.logo;
+        data["isActive"] = this.isActive;
+        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IAppAccountDto {
+    uniqueId: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    phoneNo: string;
+    logo: string | undefined;
+    isActive: boolean;
+    address: AddressDto;
+}
+
 export class AuditLogListDto implements IAuditLogListDto {
     userId!: number | undefined;
     userName!: string | undefined;
@@ -23428,6 +24059,7 @@ export interface ICreateStateDto {
 }
 
 export class StateDto implements IStateDto {
+    id!: number;
     uniqueId!: string;
     stateName!: string;
     stateCode!: string;
@@ -23445,6 +24077,7 @@ export class StateDto implements IStateDto {
 
     init(_data?: any) {
         if (_data) {
+            this.id = _data["id"];
             this.uniqueId = _data["uniqueId"];
             this.stateName = _data["stateName"];
             this.stateCode = _data["stateCode"];
@@ -23462,6 +24095,7 @@ export class StateDto implements IStateDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
         data["uniqueId"] = this.uniqueId;
         data["stateName"] = this.stateName;
         data["stateCode"] = this.stateCode;
@@ -23472,6 +24106,7 @@ export class StateDto implements IStateDto {
 }
 
 export interface IStateDto {
+    id: number;
     uniqueId: string;
     stateName: string;
     stateCode: string;
