@@ -29,17 +29,17 @@ export class EditStateModalComponent extends AppComponentBase{
 
     show(stateId?: string):void{
         this.active = true;
+        this.state = new StateDto();
         forkJoin([
+            this._countryService.getAllCountry(),
             this._stateService.getStateById(stateId),
-            this._countryService.getAllCountry()
           ]).subscribe(allResults =>{
-            this.state = allResults[0];
-            this.countryList = allResults[1].items;
+            this.countryList = allResults[0].items;
+            this.state = allResults[1];
+            this.modal.show();
            });
-        this.modal.show();
     }
-    init(){
-    }
+    
     close(): void {
         this.active = false;
         this.modal.hide();
@@ -48,7 +48,7 @@ export class EditStateModalComponent extends AppComponentBase{
         const input = new UpdateStateDto();
         input.countryUniqueId = this.state.countryUniqueId;
         input.stateName = this.state.stateName;        
-        input.stateCode = this.state.stateCode;
+        input.stateCode = this.state.stateCode.toUpperCase();
         input.uniqueId = this.state.uniqueId;
         this._stateService.update(input)
             .pipe(finalize(() => this.saving = false))

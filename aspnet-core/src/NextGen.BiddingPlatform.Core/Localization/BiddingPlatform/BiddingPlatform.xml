@@ -260,11 +260,25 @@
     <text name="DeletingLanguages">Deleting language</text>
     <text name="ChangingTexts">Changing texts</text>
 
-    <!--Custom Changes applied By ALPESH-->
+    <!--Custom Changes -->
     <text name="Country">Country</text>
     <text name="CreateNewCountry">Create new country</text>
-    <text name="EditingCountry">Editing Country</text>
-    <text name="DeletingCountry">Deleting Country</text>
+    <text name="EditingCountry">Editing country</text>
+    <text name="DeletingCountry">Deleting country</text>
+    <text name="CountryName">Country name</text>
+    <text name="Countries">Countries</text>
+    <text name="CountryCode">Country code</text>
+
+    <text name="StateNameOrStateCode">State name or state code</text>
+    <text name="EditState">Edit state</text>
+    <text name="StateCode">State code</text>
+    <text name="States">States</text>
+    <text name="State">State</text>
+    <text name="StateName">State name</text>
+    <text name="CreateNewState">Create new state</text>
+    <text name="EditingState">Editing state</text>
+    <text name="DeletingState">Deleting state</text>
+    
     <!--Custom changes end-->
 
     <text name="SuccessfullySaved">Successfully saved.</text>

@@ -6,7 +6,7 @@
             (submit)="save()">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <span>Create New State</span>
+                    <span>{{"CreateNewState" | localize}}</span>
                 </h5>
                 <button type="button" class="close" (click)="close()" [attr.aria-label]="l('Close')"
                     [disabled]="saving">
@@ -17,7 +17,7 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label
-                        for="CountryCombobox">Country Name</label>
+                        for="CountryCombobox">{{"CountryName" | localize}}</label>
                     <select #CountryCombobox name="countryName"
                         class="form-control bs-select" [(ngModel)]="state.countryUniqueId" required>
                         <option *ngFor="let country of countryList" [value]="country.uniqueId"
@@ -25,7 +25,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="stateCode">State Code *</label>
+                    <label for="stateCode">{{"StateCode" | localize}} *</label>
                     <input id="stateCode" #StateCodeInput="ngModel" class="form-control" type="text"
                         [ngClass]="{'edited':state.stateCode}" name="StateCode"
                         [(ngModel)]="state.stateCode" #countryCode="ngModel" required maxlength="64"
@@ -36,7 +36,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="stateName">State Name *</label>
+                    <label for="stateName">{{"StateName" | localize}} *</label>
                     <input id="stateName" #stateNameInput="ngModel" type="text" name="stateName" class="form-control"
                         [ngClass]="{'edited':state.stateName}" [(ngModel)]="state.stateName" required maxlength="128">
                     <validation-messages [formCtrl]="stateNameInput"></validation-messages>
@@ -45,10 +45,10 @@
             </div>
             <div class="modal-footer">
                 <button type="button" [disabled]="saving" class="btn btn-secondary"
-                    (click)="close()">Cancel</button>
+                    (click)="close()">{{"Cancel" | localize}}</button>
                 <button type="submit" [buttonBusy]="saving" [busyText]="l('SavingWithThreeDot')"
                     class="btn btn-primary"><i
-                        class="fa fa-save"></i> <span>Save</span></button>
+                        class="fa fa-save"></i> <span>{{"Save" | localize}}</span></button>
             </div>
         </form>
         </div>

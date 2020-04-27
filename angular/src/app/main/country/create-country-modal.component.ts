@@ -40,7 +40,7 @@ export class CreateCountryModalComponent extends AppComponentBase {
     }
     save(): void {
         const input = new CreateCountryDto();
-        input.countryCode = this.country.countryCode;
+        input.countryCode = this.country.countryCode.toUpperCase();
         input.countryName = this.country.countryName;        
 
         this._countryService.create(input)
