@@ -12,10 +12,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq.Dynamic.Core;
 
 namespace NextGen.BiddingPlatform.Country
 {
-   // [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Country)]
+    // [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Country)]
     public class CountryAppService : BiddingPlatformAppServiceBase, ICountryAppService
     {
         private readonly IRepository<Country> _countryRepository;
@@ -53,14 +54,17 @@ namespace NextGen.BiddingPlatform.Country
             var countries = _countryRepository
                                         .GetAll()
                                         .AsNoTracking()
-                                        .WhereIf(!input.CountryName.IsNullOrWhiteSpace(), x => x.CountryName.ToLower().Contains(input.CountryName))
+                                        .WhereIf(!input.CountryName.IsNullOrWhiteSpace(), x => x.CountryName.ToLower().IndexOf(input.CountryName) > -1)
                                         .AsQueryable();
 
             var resultCount = await countries.CountAsync();
 
-            var result = await countries.PageBy(input).ToListAsync();
+            if (!string.IsNullOrWhiteSpace(input.Sorting))
+                countries = countries.OrderBy(input.Sorting);
 
-            return new PagedResultDto<CountryListDto>(resultCount, ObjectMapper.Map<IReadOnlyList<CountryListDto>>(result));
+            countries = countries.PageBy(input);
+
+            return new PagedResultDto<CountryListDto>(resultCount, ObjectMapper.Map<IReadOnlyList<CountryListDto>>(countries));
         }
         public async Task<CountryDto> GetCountryById(Guid Id)
         {

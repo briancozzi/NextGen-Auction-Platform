@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Linq.Dynamic.Core;
 namespace NextGen.BiddingPlatform.State
 {
     public class StateAppService : BiddingPlatformDomainServiceBase, IStateAppService
@@ -57,20 +57,30 @@ namespace NextGen.BiddingPlatform.State
         {
             var query = _stateRepository.GetAllIncluding(x => x.Country)
                                                 .AsNoTracking()
-                                               .WhereIf(!input.StateCode.IsNullOrWhiteSpace(), x => x.StateCode.ToLower().Contains(input.StateCode.ToLower()))
-                                               .AsQueryable();
+                                               .WhereIf(!input.StateCode.IsNullOrWhiteSpace(), x => x.StateCode.ToLower().IndexOf(input.StateCode.ToLower()) > -1)
+                                               .Select(x => new StateListDto
+                                               {
+                                                   CountryName = x.Country.CountryName,
+                                                   CountryUniqueId = x.Country.UniqueId,
+                                                   StateCode = x.StateCode,
+                                                   StateName = x.StateName,
+                                                   UniqueId = x.UniqueId
+                                               });
 
             var resultCount = await query.CountAsync();
 
-            var result = await query.PageBy(input).ToListAsync();
+            if (!string.IsNullOrWhiteSpace(input.Sorting))
+                query = query.OrderBy(input.Sorting);
 
-            return new PagedResultDto<StateListDto>(resultCount, ObjectMapper.Map<IReadOnlyList<StateListDto>>(result));
+            query = query.PageBy(input);
+
+            return new PagedResultDto<StateListDto>(resultCount, query.ToList());
 
         }
 
         public async Task<StateDto> GetStateById(Guid Id)
         {
-            var state = await _stateRepository.GetAllIncluding(x=>x.Country).FirstOrDefaultAsync(x => x.UniqueId == Id);
+            var state = await _stateRepository.GetAllIncluding(x => x.Country).FirstOrDefaultAsync(x => x.UniqueId == Id);
 
             if (state == null)
                 throw new Exception("State not found for given id");
