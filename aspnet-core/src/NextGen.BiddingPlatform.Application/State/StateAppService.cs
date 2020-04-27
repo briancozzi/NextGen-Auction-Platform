@@ -70,7 +70,8 @@ namespace NextGen.BiddingPlatform.State
 
         public async Task<StateDto> GetStateById(Guid Id)
         {
-            var state = await _stateRepository.FirstOrDefaultAsync(x => x.UniqueId == Id);
+            var state = await _stateRepository.GetAllIncluding(x=>x.Country).FirstOrDefaultAsync(x => x.UniqueId == Id);
+
             if (state == null)
                 throw new Exception("State not found for given id");
 

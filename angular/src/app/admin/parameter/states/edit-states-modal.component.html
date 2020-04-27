@@ -1,0 +1,43 @@
+<div appBsModal #editModal="bs-modal"  class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editModal"
+     aria-hidden="true" [config]="{backdrop: 'static', keyboard: !saving}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form *ngIf="active" #stateForm="ngForm" novalidate (ngSubmit)="save()">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <span>Edit State</span>
+                    </h5>
+                    <button type="button" class="close" (click)="close()" [attr.aria-label]="l('Close')" [disabled]="saving">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label
+                            for="CountryCombobox">Country Name</label>
+                        <select #CountryCombobox name="countryName"
+                            class="form-control bs-select" [(ngModel)]="state.countryUniqueId" required>
+                            <option *ngFor="let country of countryList" [value]="country.uniqueId"
+                                >{{country.countryName}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="stateCode">State Code *</label>
+                        <input id="stateCode" #stateCodeInput="ngModel" class="form-control" type="text" name="stateCode" [ngClass]="state.stateCode" [(ngModel)]="state.stateCode" required maxlength="64">
+                        <validation-messages [formCtrl]="stateCodeInput"></validation-messages>
+                    </div>
+                    <div class="form-group">
+                        <label for="stateName">State Name *</label>
+                        <input id="stateName" #stateNameInput="ngModel" class="form-control" type="text" name="stateName" [ngClass]="state.stateName" [(ngModel)]="state.stateName" required maxlength="64">
+                        <validation-messages [formCtrl]="stateNameInput"></validation-messages>
+                    </div>
+                   
+                </div>
+                <div class="modal-footer">
+                    <button [disabled]="saving" type="button" class="btn btn-secondary" (click)="close()">{{l("Cancel")}}</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> <span>{{l("Save")}}</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

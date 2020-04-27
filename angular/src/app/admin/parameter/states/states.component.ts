@@ -1,11 +1,12 @@
 import { Component,Injector,ViewChild } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
-import { CountryServiceProxy,CountryListDto,StateServiceProxy, StateListDto } from '@shared/service-proxies/service-proxies';
+import { CountryServiceProxy,CountryListDto,StateServiceProxy, StateListDto, StateDto } from '@shared/service-proxies/service-proxies';
 import { Table } from 'primeng/table';
 import { Paginator } from 'primeng/paginator';
 import { finalize } from 'rxjs/operators';
 import { LazyLoadEvent } from 'primeng/public_api';
-import{CreateStateModalComponent} from './create-states-modal.component'
+import{ CreateStateModalComponent } from './create-states-modal.component'
+import{ EditStateModalComponent } from './edit-states-modal.component'
 
 @Component({
   selector: 'app-states',
@@ -13,6 +14,7 @@ import{CreateStateModalComponent} from './create-states-modal.component'
 })
 export class StatesComponent extends AppComponentBase {
   @ViewChild('createStateModal',{static: true}) createStateModal: CreateStateModalComponent;
+  @ViewChild('editStateModal', {static: true}) editStateModal: EditStateModalComponent;
   @ViewChild('dataTable', {static: true}) dataTable: Table;
   @ViewChild('paginator', {static: true}) paginator: Paginator;
 
@@ -45,5 +47,18 @@ export class StatesComponent extends AppComponentBase {
             this.primengTableHelper.hideLoadingIndicator();
         });
     }
-
+    deleteState(state: StateDto): void {
+      this.message.confirm(
+          this.l('DeletingState', state.stateName),
+          this.l('AreYouSure'),
+          isConfirmed => {
+              if (isConfirmed) {
+                  this._stateService.delete(state.uniqueId).subscribe(() => {
+                      this.getStates();
+                      this.notify.success(this.l('SuccessfullyDeleted'));
+                  });
+              }
+          }
+      );
+    }
 }

@@ -4,10 +4,8 @@ import * as _ from 'lodash';
 import { ModalDirective } from 'ngx-bootstrap';
 import { finalize } from 'rxjs/operators';
 import {
-     CreateCountryDto,
     CountryServiceProxy,
     StateServiceProxy,
-    CountryListDto,
     CreateStateDto
 } from '@shared/service-proxies/service-proxies';
 @Component({
@@ -19,9 +17,10 @@ export class CreateStateModalComponent extends AppComponentBase {
     @ViewChild('createModal', { static: true }) modal: ModalDirective;
     @Output() modalSave: EventEmitter<any> = new EventEmitter<any>();
 
-    active= false;
+    active = false;
     saving = false;
     state : CreateStateDto;
+
     countryList =[];
     constructor(
         injector: Injector,
@@ -46,6 +45,7 @@ export class CreateStateModalComponent extends AppComponentBase {
         this._countryService.getAllCountry().subscribe(result => {
             this.countryList = result.items  
         });
+        this.state.countryUniqueId = this.countryList[0].uniqueId;
     }
     save(): void {
         const input = new CreateStateDto();

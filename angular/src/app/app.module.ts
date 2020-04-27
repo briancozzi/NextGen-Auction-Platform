@@ -81,6 +81,7 @@ import { MenuSearchBarComponent } from './shared/layout/nav/menu-search-bar/menu
 import { NgxSpinnerModule, NgxSpinnerComponent } from 'ngx-spinner';
 import { ScrollTopComponent } from './shared/layout/scroll-top.component';
 import { AppBsModalModule } from '@shared/common/appBsModal/app-bs-modal.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
 @NgModule({
@@ -136,7 +137,6 @@ import { AppBsModalModule } from '@shared/common/appBsModal/app-bs-modal.module'
         SessionTimeoutComponent,
         MenuSearchBarComponent,
         ActiveDelegatedUsersComboComponent,
-        
     ],
     imports: [
         CommonModule,
@@ -165,7 +165,8 @@ import { AppBsModalModule } from '@shared/common/appBsModal/app-bs-modal.module'
         ImageCropperModule,
         AutoCompleteModule,
         NgxSpinnerModule,
-        AppBsModalModule
+        AppBsModalModule,
+        BrowserAnimationsModule
     ],
     providers: [
         ImpersonationService,

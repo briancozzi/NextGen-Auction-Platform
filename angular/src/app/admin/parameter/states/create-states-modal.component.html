@@ -15,7 +15,15 @@
             </div>
 
             <div class="modal-body">
-
+                <div class="form-group">
+                    <label
+                        for="CountryCombobox">Country Name</label>
+                    <select #CountryCombobox name="countryName"
+                        class="form-control bs-select" [(ngModel)]="state.countryUniqueId" required>
+                        <option *ngFor="let country of countryList" [value]="country.uniqueId"
+                            >{{country.countryName}}</option>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label for="stateCode">State Code *</label>
                     <input id="stateCode" #StateCodeInput="ngModel" class="form-control" type="text"
@@ -33,16 +41,7 @@
                         [ngClass]="{'edited':state.stateName}" [(ngModel)]="state.stateName" required maxlength="128">
                     <validation-messages [formCtrl]="stateNameInput"></validation-messages>
                 </div>
-                <div class="form-group">
-                    <label
-                        for="CountryCombobox">Country Name</label>
-                    <select #CountryCombobox name="countryName"
-                        class="form-control bs-select" [(ngModel)]="state.countryUniqueId" required>
-                        <option>--Select Country--</option>
-                        <option *ngFor="let country of countryList" [value]="country.uniqueId"
-                            >{{country.countryName}}</option>
-                    </select>
-                </div>
+               
             </div>
             <div class="modal-footer">
                 <button type="button" [disabled]="saving" class="btn btn-secondary"
