@@ -21,7 +21,9 @@ namespace NextGen.BiddingPlatform.Core.Categories
         [Required]
         public string CategoryName { get; set; }
 
-        [Required]
-        public string CategoryType { get; set; }//may be enum
+        [ForeignKey("ParentCategoryId")]
+        public int? ParentId { get; set; }
+        public Category ParentCategoryId { get; set; }
+
     }
 }
