@@ -51,7 +51,7 @@ export class CreateStateModalComponent extends AppComponentBase {
         const input = new CreateStateDto();
         input.countryUniqueId = this.state.countryUniqueId;
         input.stateName = this.state.stateName;        
-        input.stateCode = this.state.stateCode;
+        input.stateCode = this.state.stateCode.toUpperCase();
         this._stateService.create(input)
             .pipe(finalize(() => this.saving = false))
             .subscribe(() => {

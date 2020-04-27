@@ -48,7 +48,7 @@ export class EditStateModalComponent extends AppComponentBase{
         const input = new UpdateStateDto();
         input.countryUniqueId = this.state.countryUniqueId;
         input.stateName = this.state.stateName;        
-        input.stateCode = this.state.stateCode;
+        input.stateCode = this.state.stateCode.toUpperCase();
         input.uniqueId = this.state.uniqueId;
         this._stateService.update(input)
             .pipe(finalize(() => this.saving = false))

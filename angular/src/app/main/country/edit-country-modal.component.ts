@@ -29,7 +29,7 @@ export class EditCountryModalComponent extends AppComponentBase {
     show(countryId?: string):void {
         this.active = true;
         this._countryService.getCountryById(countryId).subscribe(countryResult => {
-                this.country.countryCode = countryResult.countryCode;
+                this.country.countryCode = countryResult.countryCode.toUpperCase();
                 this.country.countryName = countryResult.countryName;
                 this.country.uniqueId = countryResult.uniqueId;
                 this.modal.show();
