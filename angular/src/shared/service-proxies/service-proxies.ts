@@ -922,6 +922,73 @@ export class AppAccountServiceProxy {
     }
 
     /**
+     * @param searchName (optional) 
+     * @param sorting (optional) 
+     * @param maxResultCount (optional) 
+     * @param skipCount (optional) 
+     * @return Success
+     */
+    getAllAccountFilter(searchName: string | null | undefined, sorting: string | null | undefined, maxResultCount: number | undefined, skipCount: number | undefined): Observable<PagedResultDtoOfAppAccountListDto> {
+        let url_ = this.baseUrl + "/api/services/app/AppAccount/GetAllAccountFilter?";
+        if (searchName !== undefined)
+            url_ += "SearchName=" + encodeURIComponent("" + searchName) + "&"; 
+        if (sorting !== undefined)
+            url_ += "Sorting=" + encodeURIComponent("" + sorting) + "&"; 
+        if (maxResultCount === null)
+            throw new Error("The parameter 'maxResultCount' cannot be null.");
+        else if (maxResultCount !== undefined)
+            url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&"; 
+        if (skipCount === null)
+            throw new Error("The parameter 'skipCount' cannot be null.");
+        else if (skipCount !== undefined)
+            url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAllAccountFilter(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAllAccountFilter(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfAppAccountListDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfAppAccountListDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAllAccountFilter(response: HttpResponseBase): Observable<PagedResultDtoOfAppAccountListDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultDtoOfAppAccountListDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfAppAccountListDto>(<any>null);
+    }
+
+    /**
      * @param body (optional) 
      * @return Success
      */
@@ -1205,6 +1272,73 @@ export class AuctionServiceProxy {
     }
 
     /**
+     * @param auctionType (optional) 
+     * @param sorting (optional) 
+     * @param maxResultCount (optional) 
+     * @param skipCount (optional) 
+     * @return Success
+     */
+    getAllAuctionFilter(auctionType: string | null | undefined, sorting: string | null | undefined, maxResultCount: number | undefined, skipCount: number | undefined): Observable<PagedResultDtoOfAuctionListDto> {
+        let url_ = this.baseUrl + "/api/services/app/Auction/GetAllAuctionFilter?";
+        if (auctionType !== undefined)
+            url_ += "AuctionType=" + encodeURIComponent("" + auctionType) + "&"; 
+        if (sorting !== undefined)
+            url_ += "Sorting=" + encodeURIComponent("" + sorting) + "&"; 
+        if (maxResultCount === null)
+            throw new Error("The parameter 'maxResultCount' cannot be null.");
+        else if (maxResultCount !== undefined)
+            url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&"; 
+        if (skipCount === null)
+            throw new Error("The parameter 'skipCount' cannot be null.");
+        else if (skipCount !== undefined)
+            url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAllAuctionFilter(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAllAuctionFilter(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfAuctionListDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfAuctionListDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAllAuctionFilter(response: HttpResponseBase): Observable<PagedResultDtoOfAuctionListDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultDtoOfAuctionListDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfAuctionListDto>(<any>null);
+    }
+
+    /**
      * @return Success
      */
     getAll(): Observable<ListResultDtoOfAuctionListDto> {
@@ -1315,7 +1449,7 @@ export class AuctionServiceProxy {
      * @param body (optional) 
      * @return Success
      */
-    createAuction(body: CreateAuctionDto | undefined): Observable<void> {
+    createAuction(body: CreateAuctionDto | undefined): Observable<CreateAuctionDto> {
         let url_ = this.baseUrl + "/api/services/app/Auction/CreateAuction";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1327,6 +1461,7 @@ export class AuctionServiceProxy {
             responseType: "blob",			
             headers: new HttpHeaders({
                 "Content-Type": "application/json-patch+json", 
+                "Accept": "text/plain"
             })
         };
 
@@ -1337,14 +1472,14 @@ export class AuctionServiceProxy {
                 try {
                     return this.processCreateAuction(<any>response_);
                 } catch (e) {
-                    return <Observable<void>><any>_observableThrow(e);
+                    return <Observable<CreateAuctionDto>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<void>><any>_observableThrow(response_);
+                return <Observable<CreateAuctionDto>><any>_observableThrow(response_);
         }));
     }
 
-    protected processCreateAuction(response: HttpResponseBase): Observable<void> {
+    protected processCreateAuction(response: HttpResponseBase): Observable<CreateAuctionDto> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -1353,21 +1488,24 @@ export class AuctionServiceProxy {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(<any>null);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = CreateAuctionDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(<any>null);
+        return _observableOf<CreateAuctionDto>(<any>null);
     }
 
     /**
      * @param body (optional) 
      * @return Success
      */
-    updateAuction(body: UpdateAuctionDto | undefined): Observable<void> {
+    updateAuction(body: UpdateAuctionDto | undefined): Observable<UpdateAuctionDto> {
         let url_ = this.baseUrl + "/api/services/app/Auction/UpdateAuction";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1379,6 +1517,7 @@ export class AuctionServiceProxy {
             responseType: "blob",			
             headers: new HttpHeaders({
                 "Content-Type": "application/json-patch+json", 
+                "Accept": "text/plain"
             })
         };
 
@@ -1389,6 +1528,61 @@ export class AuctionServiceProxy {
                 try {
                     return this.processUpdateAuction(<any>response_);
                 } catch (e) {
+                    return <Observable<UpdateAuctionDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<UpdateAuctionDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdateAuction(response: HttpResponseBase): Observable<UpdateAuctionDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UpdateAuctionDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<UpdateAuctionDto>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    delete(id: string | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/Auction/Delete?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDelete(<any>response_);
+                } catch (e) {
                     return <Observable<void>><any>_observableThrow(e);
                 }
             } else
@@ -1396,7 +1590,7 @@ export class AuctionServiceProxy {
         }));
     }
 
-    protected processUpdateAuction(response: HttpResponseBase): Observable<void> {
+    protected processDelete(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -16261,6 +16455,118 @@ export interface IAccountEventDto {
     accountUniqueId: string;
 }
 
+export class AppAccountListDto implements IAppAccountListDto {
+    uniqueId!: string;
+    email!: string | undefined;
+    firstName!: string | undefined;
+    lastName!: string | undefined;
+    phoneNo!: string | undefined;
+    logo!: string | undefined;
+    isActive!: boolean;
+    address!: AddressDto;
+
+    constructor(data?: IAppAccountListDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.uniqueId = _data["uniqueId"];
+            this.email = _data["email"];
+            this.firstName = _data["firstName"];
+            this.lastName = _data["lastName"];
+            this.phoneNo = _data["phoneNo"];
+            this.logo = _data["logo"];
+            this.isActive = _data["isActive"];
+            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): AppAccountListDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AppAccountListDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["uniqueId"] = this.uniqueId;
+        data["email"] = this.email;
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
+        data["phoneNo"] = this.phoneNo;
+        data["logo"] = this.logo;
+        data["isActive"] = this.isActive;
+        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IAppAccountListDto {
+    uniqueId: string;
+    email: string | undefined;
+    firstName: string | undefined;
+    lastName: string | undefined;
+    phoneNo: string | undefined;
+    logo: string | undefined;
+    isActive: boolean;
+    address: AddressDto;
+}
+
+export class PagedResultDtoOfAppAccountListDto implements IPagedResultDtoOfAppAccountListDto {
+    totalCount!: number;
+    items!: AppAccountListDto[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfAppAccountListDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.totalCount = _data["totalCount"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(AppAccountListDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfAppAccountListDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfAppAccountListDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfAppAccountListDto {
+    totalCount: number;
+    items: AppAccountListDto[] | undefined;
+}
+
 export class CreateAppAccountDto implements ICreateAppAccountDto {
     email!: string;
     firstName!: string;
@@ -16381,70 +16687,6 @@ export interface IUpdateAppAccountDto {
     address: AddressDto;
 }
 
-export class AppAccountListDto implements IAppAccountListDto {
-    uniqueId!: string;
-    email!: string | undefined;
-    firstName!: string | undefined;
-    lastName!: string | undefined;
-    phoneNo!: string | undefined;
-    logo!: string | undefined;
-    isActive!: boolean;
-    address!: AddressDto;
-
-    constructor(data?: IAppAccountListDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.uniqueId = _data["uniqueId"];
-            this.email = _data["email"];
-            this.firstName = _data["firstName"];
-            this.lastName = _data["lastName"];
-            this.phoneNo = _data["phoneNo"];
-            this.logo = _data["logo"];
-            this.isActive = _data["isActive"];
-            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): AppAccountListDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new AppAccountListDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["uniqueId"] = this.uniqueId;
-        data["email"] = this.email;
-        data["firstName"] = this.firstName;
-        data["lastName"] = this.lastName;
-        data["phoneNo"] = this.phoneNo;
-        data["logo"] = this.logo;
-        data["isActive"] = this.isActive;
-        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
-        return data; 
-    }
-}
-
-export interface IAppAccountListDto {
-    uniqueId: string;
-    email: string | undefined;
-    firstName: string | undefined;
-    lastName: string | undefined;
-    phoneNo: string | undefined;
-    logo: string | undefined;
-    isActive: boolean;
-    address: AddressDto;
-}
-
 export class ListResultDtoOfAppAccountListDto implements IListResultDtoOfAppAccountListDto {
     items!: AppAccountListDto[] | undefined;
 
@@ -16498,6 +16740,9 @@ export class AppAccountDto implements IAppAccountDto {
     logo!: string | undefined;
     isActive!: boolean;
     address!: AddressDto;
+    sorting!: string | undefined;
+    maxResultCount!: number;
+    skipCount!: number;
 
     constructor(data?: IAppAccountDto) {
         if (data) {
@@ -16518,6 +16763,9 @@ export class AppAccountDto implements IAppAccountDto {
             this.logo = _data["logo"];
             this.isActive = _data["isActive"];
             this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
+            this.sorting = _data["sorting"];
+            this.maxResultCount = _data["maxResultCount"];
+            this.skipCount = _data["skipCount"];
         }
     }
 
@@ -16538,6 +16786,9 @@ export class AppAccountDto implements IAppAccountDto {
         data["logo"] = this.logo;
         data["isActive"] = this.isActive;
         data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        data["sorting"] = this.sorting;
+        data["maxResultCount"] = this.maxResultCount;
+        data["skipCount"] = this.skipCount;
         return data; 
     }
 }
@@ -16551,10 +16802,15 @@ export interface IAppAccountDto {
     logo: string | undefined;
     isActive: boolean;
     address: AddressDto;
+    sorting: string | undefined;
+    maxResultCount: number;
+    skipCount: number;
 }
 
 export class AuctionListDto implements IAuctionListDto {
     uniqueId!: string;
+    eventUniqueId!: string;
+    appAccountUniqueId!: string;
     auctionType!: string | undefined;
     auctionStartDateTime!: moment.Moment;
     auctionEndDateTime!: moment.Moment;
@@ -16572,6 +16828,8 @@ export class AuctionListDto implements IAuctionListDto {
     init(_data?: any) {
         if (_data) {
             this.uniqueId = _data["uniqueId"];
+            this.eventUniqueId = _data["eventUniqueId"];
+            this.appAccountUniqueId = _data["appAccountUniqueId"];
             this.auctionType = _data["auctionType"];
             this.auctionStartDateTime = _data["auctionStartDateTime"] ? moment(_data["auctionStartDateTime"].toString()) : <any>undefined;
             this.auctionEndDateTime = _data["auctionEndDateTime"] ? moment(_data["auctionEndDateTime"].toString()) : <any>undefined;
@@ -16589,6 +16847,8 @@ export class AuctionListDto implements IAuctionListDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["uniqueId"] = this.uniqueId;
+        data["eventUniqueId"] = this.eventUniqueId;
+        data["appAccountUniqueId"] = this.appAccountUniqueId;
         data["auctionType"] = this.auctionType;
         data["auctionStartDateTime"] = this.auctionStartDateTime ? this.auctionStartDateTime.toISOString() : <any>undefined;
         data["auctionEndDateTime"] = this.auctionEndDateTime ? this.auctionEndDateTime.toISOString() : <any>undefined;
@@ -16599,10 +16859,60 @@ export class AuctionListDto implements IAuctionListDto {
 
 export interface IAuctionListDto {
     uniqueId: string;
+    eventUniqueId: string;
+    appAccountUniqueId: string;
     auctionType: string | undefined;
     auctionStartDateTime: moment.Moment;
     auctionEndDateTime: moment.Moment;
     address: AddressDto;
+}
+
+export class PagedResultDtoOfAuctionListDto implements IPagedResultDtoOfAuctionListDto {
+    totalCount!: number;
+    items!: AuctionListDto[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfAuctionListDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.totalCount = _data["totalCount"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(AuctionListDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfAuctionListDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfAuctionListDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfAuctionListDto {
+    totalCount: number;
+    items: AuctionListDto[] | undefined;
 }
 
 export class ListResultDtoOfAuctionListDto implements IListResultDtoOfAuctionListDto {
@@ -16657,6 +16967,9 @@ export class AuctionDto implements IAuctionDto {
     auctionStartDateTime!: moment.Moment;
     auctionEndDateTime!: moment.Moment;
     address!: AddressDto;
+    sorting!: string | undefined;
+    maxResultCount!: number;
+    skipCount!: number;
 
     constructor(data?: IAuctionDto) {
         if (data) {
@@ -16676,6 +16989,9 @@ export class AuctionDto implements IAuctionDto {
             this.auctionStartDateTime = _data["auctionStartDateTime"] ? moment(_data["auctionStartDateTime"].toString()) : <any>undefined;
             this.auctionEndDateTime = _data["auctionEndDateTime"] ? moment(_data["auctionEndDateTime"].toString()) : <any>undefined;
             this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
+            this.sorting = _data["sorting"];
+            this.maxResultCount = _data["maxResultCount"];
+            this.skipCount = _data["skipCount"];
         }
     }
 
@@ -16695,6 +17011,9 @@ export class AuctionDto implements IAuctionDto {
         data["auctionStartDateTime"] = this.auctionStartDateTime ? this.auctionStartDateTime.toISOString() : <any>undefined;
         data["auctionEndDateTime"] = this.auctionEndDateTime ? this.auctionEndDateTime.toISOString() : <any>undefined;
         data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        data["sorting"] = this.sorting;
+        data["maxResultCount"] = this.maxResultCount;
+        data["skipCount"] = this.skipCount;
         return data; 
     }
 }
@@ -16707,6 +17026,9 @@ export interface IAuctionDto {
     auctionStartDateTime: moment.Moment;
     auctionEndDateTime: moment.Moment;
     address: AddressDto;
+    sorting: string | undefined;
+    maxResultCount: number;
+    skipCount: number;
 }
 
 export class CreateAuctionDto implements ICreateAuctionDto {
