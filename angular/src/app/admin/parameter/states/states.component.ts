@@ -1,6 +1,6 @@
 import { Component,Injector,ViewChild } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
-import { CountryServiceProxy,CountryListDto,StateServiceProxy, StateListDto, StateDto } from '@shared/service-proxies/service-proxies';
+import { StateServiceProxy, StateDto } from '@shared/service-proxies/service-proxies';
 import { Table } from 'primeng/table';
 import { Paginator } from 'primeng/paginator';
 import { finalize } from 'rxjs/operators';
@@ -20,8 +20,7 @@ export class StatesComponent extends AppComponentBase {
 
   constructor(
     injector:Injector,
-    private _stateService: StateServiceProxy,
-    private _countryService: CountryServiceProxy 
+    private _stateService: StateServiceProxy
     ) {
     super(injector)
    }

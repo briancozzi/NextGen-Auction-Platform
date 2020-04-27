@@ -16,7 +16,7 @@
                         <label
                             for="CountryCombobox">Country Name</label>
                         <select #CountryCombobox name="countryName"
-                            class="form-control bs-select" [(ngModel)]="state.countryUniqueId" required>
+                            class="form-control bs-select" [(ngModel)]="state.countryUniqueId" [ngClass] = "state.countryUniqueId" required>
                             <option *ngFor="let country of countryList" [value]="country.uniqueId"
                                 >{{country.countryName}}</option>
                         </select>

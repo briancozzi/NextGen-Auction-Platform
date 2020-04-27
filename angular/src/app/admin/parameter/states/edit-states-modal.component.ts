@@ -29,17 +29,17 @@ export class EditStateModalComponent extends AppComponentBase{
 
     show(stateId?: string):void{
         this.active = true;
+        this.state = new StateDto();
         forkJoin([
+            this._countryService.getAllCountry(),
             this._stateService.getStateById(stateId),
-            this._countryService.getAllCountry()
           ]).subscribe(allResults =>{
-            this.state = allResults[0];
-            this.countryList = allResults[1].items;
+            this.countryList = allResults[0].items;
+            this.state = allResults[1];
+            this.modal.show();
            });
-        this.modal.show();
     }
-    init(){
-    }
+    
     close(): void {
         this.active = false;
         this.modal.hide();
