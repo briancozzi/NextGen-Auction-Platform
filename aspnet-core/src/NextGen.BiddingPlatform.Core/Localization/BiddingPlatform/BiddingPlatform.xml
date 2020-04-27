@@ -269,6 +269,7 @@
     <text name="Countries">Countries</text>
     <text name="CountryCode">CountryCode</text>
 
+    <text name="StateNameOrStateCode">State Name or State Code</text>
     <text name="EditState">Edit State</text>
     <text name="StateCode">StateCode</text>
     <text name="States">States</text>

@@ -3,7 +3,7 @@
         <div [class]="containerClass">
             <div class="kt-subheader__main">
                 <h3 class="kt-subheader__title">
-                    <span>States</span>
+                    <span>{{"States" | localize}}</span>
                 </h3>
                 <span class="kt-subheader__separator kt-subheader__separator--v"></span>
                 <span class="kt-subheader__desc">
@@ -12,7 +12,7 @@
             <div class="kt-subheader__toolbar">
                 <div class="kt-subheader__wrapper">
                     <button  class="btn btn-primary"
-                        (click)="createState()"><i class="fa fa-plus"></i>Create New State</button>
+                        (click)="createState()"><i class="fa fa-plus"></i>{{"CreateNewState" | localize}}</button>
                 </div>
             </div>
         </div>
@@ -26,7 +26,7 @@
                             <div class="row mb-4">
                                 <div class="col-xl-6">
                                     <label
-                                        for="StateNameOrStateCode">State Name or State Code</label>
+                                        for="StateNameOrStateCode">{{"StateNameOrStateCode" | localize}}</label>
                                     <div class="input-group">
                                         <input id="StateNameOrStateCode" [(ngModel)]="filters.filterText"
                                             name="filterText" class="form-control"
@@ -52,15 +52,15 @@
                                 <tr>
                                     <th style="width:130px">{{'Actions' | localize}}</th>
                                     <th pSortableColumn="stateCode">
-                                        State Code
+                                        {{"StateCode" | localize}}
                                         <p-sortIcon field="stateCode"></p-sortIcon>
                                     </th>
                                     <th pSortableColumn="stateName">
-                                        State Name
+                                        {{"StateName" | localize}}
                                         <p-sortIcon field="stateName"></p-sortIcon>
                                     </th>
                                     <th pSortableColumn="countryName">
-                                        Country Name
+                                        {{"CountryName" | localize}}
                                         <p-sortIcon field="countryName"></p-sortIcon>
                                     </th>
                                 </tr>
@@ -86,15 +86,15 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="ui-column-title">State Code</span>
+                                        <span class="ui-column-title">{{"StateCode" | localize}}</span>
                                         {{record.stateCode}}
                                     </td>
                                     <td>
-                                        <span class="ui-column-title">State Name</span>
+                                        <span class="ui-column-title">{{"StateName" | localize}}</span>
                                         {{record.stateName}}
                                     </td>
                                     <td>
-                                        <span class="ui-column-title">Country Name</span>
+                                        <span class="ui-column-title">{{"CountryName" | localize}}</span>
                                         {{record.countryName}}
                                     </td>
                                 </tr>

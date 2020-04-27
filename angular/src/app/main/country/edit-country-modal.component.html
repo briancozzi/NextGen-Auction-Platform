@@ -5,7 +5,7 @@
             <form *ngIf="active" #countryForm="ngForm" novalidate (ngSubmit)="save()">
                 <div class="modal-header">
                     <h5 class="modal-title">
-                        <span>Edit Country</span>
+                        <span>{{"EditCountry" | localize}}</span>
                     </h5>
                     <button type="button" class="close" (click)="close()" [attr.aria-label]="l('Close')" [disabled]="saving">
                         <span aria-hidden="true">&times;</span>
@@ -13,12 +13,12 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="countryCode">Country Code *</label>
+                        <label for="countryCode">{{"CountryCode" | localize}} *</label>
                         <input id="countryCode" #countryCodeInput="ngModel" class="form-control" type="text" name="countryCode" [ngClass]="country.countryCode" [(ngModel)]="country.countryCode" required maxlength="64">
                         <validation-messages [formCtrl]="countryCodeInput"></validation-messages>
                     </div>
                     <div class="form-group">
-                        <label for="countryName">Country Name *</label>
+                        <label for="countryName">{{"CountryName" | localize}} *</label>
                         <input id="countryName" #countryNameInput="ngModel" class="form-control" type="text" name="countryName" [ngClass]="country.countryName" [(ngModel)]="country.countryName" required maxlength="164">
                         <validation-messages [formCtrl]="countryNameInput"></validation-messages>
                     </div>

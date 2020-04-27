@@ -17,7 +17,7 @@
             <div class="modal-body">
 
                 <div class="form-group">
-                    <label for="countryCode">Country Code *</label>
+                    <label for="countryCode">{{"CountryCode" | localize}} *</label>
                     <input id="countryCode" #CountryCodeInput="ngModel" class="form-control" type="text"
                         [ngClass]="{'edited':country.countryCode}" name="countryCode"
                         [(ngModel)]="country.countryCode" #countryCode="ngModel" required maxlength="64"
@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="countryName">Country Name *</label>
+                    <label for="countryName">{{"CountryName" | localize}} *</label>
                     <input id="countryName" #countryNameInput="ngModel" type="text" name="countryName" class="form-control"
                         [ngClass]="{'edited':country.countryName}" [(ngModel)]="country.countryName" required maxlength="128">
                     <validation-messages [formCtrl]="countryNameInput"></validation-messages>
