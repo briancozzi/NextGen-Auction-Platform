@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq.Dynamic.Core;
 
 namespace NextGen.BiddingPlatform.State
 {
@@ -61,6 +62,10 @@ namespace NextGen.BiddingPlatform.State
                                                .AsQueryable();
 
             var resultCount = await query.CountAsync();
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                query = query.OrderBy(input.Sorting);
+            }
 
             var result = await query.PageBy(input).ToListAsync();
 
