@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import { ModalDirective } from 'ngx-bootstrap';
 import { finalize } from 'rxjs/operators';
 import { StateServiceProxy, StateDto, UpdateStateDto, CountryServiceProxy } from '@shared/service-proxies/service-proxies';
+import {forkJoin} from "rxjs";
 
 @Component({
     selector: 'editStateModal',
@@ -28,19 +29,16 @@ export class EditStateModalComponent extends AppComponentBase{
 
     show(stateId?: string):void{
         this.active = true;
-        this.init();
-       this._stateService.getStateById(stateId).subscribe((stateResult) =>{
-            this.state.countryUniqueId = stateResult.countryUniqueId;
-            this.state.stateCode = stateResult.stateCode;
-            this.state.stateName = stateResult.stateName;
-            this.state.uniqueId = stateResult.uniqueId;
-        });
+        forkJoin([
+            this._stateService.getStateById(stateId),
+            this._countryService.getAllCountry()
+          ]).subscribe(allResults =>{
+            this.state = allResults[0];
+            this.countryList = allResults[1].items;
+           });
         this.modal.show();
     }
     init(){
-        this._countryService.getAllCountry().subscribe(result => {
-            this.countryList = result.items  
-        });
     }
     close(): void {
         this.active = false;
