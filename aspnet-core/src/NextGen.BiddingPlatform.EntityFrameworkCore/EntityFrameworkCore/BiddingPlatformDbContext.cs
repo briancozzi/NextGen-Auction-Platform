@@ -19,6 +19,7 @@ using NextGen.BiddingPlatform.Core.Invoices;
 using NextGen.BiddingPlatform.Core.Items;
 using NextGen.BiddingPlatform.Core.PaymentTransactions;
 using NextGen.BiddingPlatform.Core.State;
+using NextGen.BiddingPlatform.Core.Types;
 using NextGen.BiddingPlatform.Editions;
 using NextGen.BiddingPlatform.Friendships;
 using NextGen.BiddingPlatform.MultiTenancy;
@@ -65,6 +66,8 @@ namespace NextGen.BiddingPlatform.EntityFrameworkCore
         public virtual DbSet<Core.Invoices.Invoice> UserInvoices { get; set; }
         public virtual DbSet<CardDetail> CardDetails { get; set; }
         public virtual DbSet<PaymentTransaction> PaymentTransactions { get; set; }
+        public virtual DbSet<Types> Types { get; set; }
+        public virtual DbSet<ItemCategory.ItemCategory> ItemCategories { get; set; }
 
         public BiddingPlatformDbContext(DbContextOptions<BiddingPlatformDbContext> options)
             : base(options)

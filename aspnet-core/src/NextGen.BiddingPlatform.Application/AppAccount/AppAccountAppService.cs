@@ -36,27 +36,27 @@ namespace NextGen.BiddingPlatform.AppAccount
 
         public async Task<PagedResultDto<AppAccountListDto>> GetAllAccountFilter(AppAccountFilter input)
         {
-           
-            var accountQuery =  _accountRepository.GetAllIncluding(x => x.Address, x => x.Address.Country, x => x.Address.State)
-                                                    .WhereIf(!input.SearchName.IsNullOrWhiteSpace(), x => x.FirstName.ToLower()
-                                                    .Contains(input.SearchName.ToLower().Trim()) || x.LastName.ToLower()
-                                                    .Contains(input.SearchName.ToLower().Trim()))
-                                                    .AsQueryable();
-            if (accountQuery == null)
-                throw new Exception("no data found");
-             
-            var resultCount = await accountQuery.CountAsync();
+            var query = _accountRepository.GetAll()
+                                                    .WhereIf(!input.SearchName.IsNullOrWhiteSpace(), x => x.FirstName.ToLower().IndexOf(input.SearchName.ToLower()) > -1 || x.LastName.ToLower().IndexOf(input.SearchName.ToLower()) > -1)
+                                                    .Select(x => new AppAccountListDto
+                                                    {
+                                                        UniqueId = x.UniqueId,
+                                                        Email = x.Email,
+                                                        FirstName = x.FirstName,
+                                                        LastName = x.LastName,
+                                                        PhoneNo = x.PhoneNo,
+                                                        Logo = x.Logo
+                                                    });
 
-            if (resultCount == 0)
-                throw new Exception("account data count is Zero");
+            var resultCount = await query.CountAsync();
 
-            var results = await accountQuery.OrderBy(x => x.FirstName)
-                                .PageBy(input)
-                                .ToListAsync();
-            if (results == null)
-                throw new Exception("no data found");
+            //FirstName ASC OR DESC
+            if (!string.IsNullOrWhiteSpace(input.Sorting))
+                query = query.OrderBy(input.Sorting);
 
-            return new PagedResultDto<AppAccountListDto>(resultCount, ObjectMapper.Map<List<AppAccountListDto>>(results));
+            query = query.PageBy(input);
+
+            return new PagedResultDto<AppAccountListDto>(resultCount, await query.ToListAsync());
         }
 
         public async Task<CreateAppAccountDto> Create(CreateAppAccountDto input)
@@ -101,7 +101,7 @@ namespace NextGen.BiddingPlatform.AppAccount
             account.Address.Address1 = input.Address.Address1;
             account.Address.Address2 = input.Address.Address2;
             account.Address.City = input.Address.City;
-            account.Address.ZipCode = input.Address.ZipCode; 
+            account.Address.ZipCode = input.Address.ZipCode;
             account.Address.StateId = state.Id;
             account.Address.CountryId = country.Id;
             await _accountRepository.UpdateAsync(account);
@@ -119,10 +119,7 @@ namespace NextGen.BiddingPlatform.AppAccount
 
         public async Task<ListResultDto<AppAccountListDto>> GetAllAccount()
         {
-            var accountsData = await _accountRepository
-                    .GetAllIncluding(x => x.Address, x => x.Address.Country, x => x.Address.State)
-                    .ToListAsync();
-
+            var accountsData = await _accountRepository.GetAll().ToListAsync();
             return new ListResultDto<AppAccountListDto>(ObjectMapper.Map<List<AppAccountListDto>>(accountsData));
         }
 

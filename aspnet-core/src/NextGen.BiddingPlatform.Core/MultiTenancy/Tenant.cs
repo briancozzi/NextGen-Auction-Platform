@@ -1,10 +1,15 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Abp.MultiTenancy;
 using Abp.Timing;
 using NextGen.BiddingPlatform.Authorization.Users;
+using NextGen.BiddingPlatform.Core.Addresses;
+using NextGen.BiddingPlatform.Core.State;
+using NextGen.BiddingPlatform.CustomInterface;
 using NextGen.BiddingPlatform.Editions;
 using NextGen.BiddingPlatform.MultiTenancy.Payments;
+using Toolbelt.ComponentModel.DataAnnotations.Schema;
 
 namespace NextGen.BiddingPlatform.MultiTenancy
 {
@@ -31,6 +36,18 @@ namespace NextGen.BiddingPlatform.MultiTenancy
         public virtual string LogoFileType { get; set; }
 
         public SubscriptionPaymentType SubscriptionPaymentType { get; set; }
+
+        public string PhoneNo { get; set; }
+        public string Address1 { get; set; }
+        public string Address2 { get; set; }
+        public string City { get; set; }
+        [ForeignKey("State")]
+        public int? StateId { get; set; }
+        public State State { get; set; }
+        [ForeignKey("Country")]
+        public int? CountryId { get; set; }
+        public Country.Country Country { get; set; }
+        public string ZipCode { get; set; }
 
         protected Tenant()
         {

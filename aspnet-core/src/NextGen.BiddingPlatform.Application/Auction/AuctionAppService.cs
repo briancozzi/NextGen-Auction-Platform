@@ -43,36 +43,41 @@ namespace NextGen.BiddingPlatform.Auction
 
         public async Task<PagedResultDto<AuctionListDto>> GetAllAuctionFilter(AuctionTypeFilter input)
         {
-            var query = _auctionRepository.GetAllIncluding(x => x.Address, x => x.Event, x => x.AppAccount, x => x.Address.Country, x => x.Address.State)
-                                          .WhereIf(!input.AuctionType.IsNullOrWhiteSpace(), x => x.AuctionType.ToLower().Trim().Contains(input.AuctionType.ToLower().Trim()));
+            var query = _auctionRepository.GetAllIncluding(x => x.Event, x => x.AppAccount)
+                                          .WhereIf(!input.AuctionType.IsNullOrWhiteSpace(), x => x.AuctionType.ToLower().IndexOf(input.AuctionType.ToLower()) > -1)
+                                          .Select(x => new AuctionListDto
+                                          {
+                                              UniqueId = x.UniqueId,
+                                              AppAccountUniqueId = x.AppAccount.UniqueId,
+                                              EventUniqueId = x.Event.UniqueId,
+                                              AuctionEndDateTime = x.AuctionEndDateTime,
+                                              AuctionStartDateTime = x.AuctionStartDateTime,
+                                              AuctionType = x.AuctionType
+                                          });
 
+            var resultCount = await query.CountAsync();
 
-            if (query == null)
-                throw new Exception("no data found");
+            if (!string.IsNullOrWhiteSpace(input.Sorting))
+                query = query.OrderBy(input.Sorting);
 
-            var resultCount = query.Count();
-            if (resultCount == 0)
-                throw new Exception("account data count is Zero");
+            query = query.PageBy(input);
 
-            var results = await query.OrderBy(x => x.AuctionType)
-                                .PageBy(input)
-                                .ToListAsync();
-            if (results == null)
-                throw new Exception("no data found");
-
-            return new PagedResultDto<AuctionListDto>(resultCount, ObjectMapper.Map<List<AuctionListDto>>(results));
+            return new PagedResultDto<AuctionListDto>(resultCount, await query.ToListAsync());
         }
 
         public async Task<ListResultDto<AuctionListDto>> GetAll()
         {
-            var auctions = await _auctionRepository.GetAllIncluding(x => x.Address, x => x.Event, x => x.AppAccount, x => x.Address.Country, x => x.Address.State)
-                                                   .ToListAsync();
+            var auctions = await _auctionRepository.GetAllIncluding(x => x.Event, x => x.AppAccount).ToListAsync();
             return new ListResultDto<AuctionListDto>(ObjectMapper.Map<IReadOnlyList<AuctionListDto>>(auctions));
         }
 
         public async Task<AuctionDto> GetAuctionById(Guid Id)
         {
-            var existingAuction = await _auctionRepository.GetAllIncluding(x => x.Address, x => x.Event, x => x.AppAccount,x => x.Address.Country , x =>x.Address.State)
+            var existingAuction = await _auctionRepository.GetAllIncluding(x => x.Address,
+                                                                           x => x.Event,
+                                                                           x => x.AppAccount,
+                                                                           x => x.Address.Country,
+                                                                           x => x.Address.State)
                                                           .FirstOrDefaultAsync(x => x.UniqueId == Id);
             if (existingAuction == null)
                 throw new Exception("Auction data not found for given id");
@@ -140,7 +145,7 @@ namespace NextGen.BiddingPlatform.Auction
             return input;
         }
 
-        public async Task Delete(EntityDto<Guid> input) 
+        public async Task Delete(EntityDto<Guid> input)
         {
             var auction = await _auctionRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Id);
             if (auction == null)
