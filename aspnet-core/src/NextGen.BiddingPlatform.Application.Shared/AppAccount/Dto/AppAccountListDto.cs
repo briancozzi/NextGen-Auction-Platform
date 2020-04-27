@@ -15,7 +15,5 @@ namespace NextGen.BiddingPlatform.AppAccount.Dto
         public string LastName { get; set; }
         public string PhoneNo { get; set; }
         public string Logo { get; set; } // Account/Company logo
-        public bool IsActive { get; set; }
-        public AddressDto Address { get; set; }
     }
 }
