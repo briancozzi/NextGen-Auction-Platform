@@ -14,9 +14,12 @@ using System.Linq.Dynamic.Core;
 using IdentityServer4.Extensions;
 using Abp.Linq.Extensions;
 using NextGen.BiddingPlatform.DashboardCustomization.Dto;
+using Abp.Authorization;
+using NextGen.BiddingPlatform.Authorization;
 
 namespace NextGen.BiddingPlatform.AppAccount
 {
+    [AbpAuthorize(AppPermissions.Pages_Tenant_AppAccount)]
     public class AppAccountAppService : BiddingPlatformDomainServiceBase, IAppAccountAppService
     {
         private readonly IRepository<Core.AppAccounts.AppAccount> _accountRepository;
