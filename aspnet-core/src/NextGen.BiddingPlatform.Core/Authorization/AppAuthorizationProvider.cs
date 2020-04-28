@@ -102,6 +102,11 @@ namespace NextGen.BiddingPlatform.Authorization
             country.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Country_Edit, L("EditingCountry"), multiTenancySides: MultiTenancySides.Tenant);
             country.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Country_Delete, L("DeletingCountry"), multiTenancySides: MultiTenancySides.Tenant);
 
+            var appAccountPermisson = administration.CreateChildPermission(AppPermissions.Pages_Tenant_AppAccount, L("AppAccounts"), multiTenancySides: MultiTenancySides.Tenant);
+            appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Tenant_AppAccount_Create, L("CreateAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
+            appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Tenant_AppAccount_Edit, L("EditAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
+            appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Tenant_AppAccount_Delete, L("DeleteAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
+
             //HOST-SPECIFIC PERMISSIONS
             var editions = pages.CreateChildPermission(AppPermissions.Pages_Editions, L("Editions"), multiTenancySides: MultiTenancySides.Host);
             editions.CreateChildPermission(AppPermissions.Pages_Editions_Create, L("CreatingNewEdition"), multiTenancySides: MultiTenancySides.Host);

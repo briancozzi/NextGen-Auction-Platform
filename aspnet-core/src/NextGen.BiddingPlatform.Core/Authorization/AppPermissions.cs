@@ -83,6 +83,11 @@
         public const string Pages_Administration_Tenant_Country_Edit = "Pages.Administration.Tenant.Country.Edit";
         public const string Pages_Administration_Tenant_Country_Delete = "Pages.Administration.Tenant.Country.Delete";
 
+        public const string Pages_Tenant_AppAccount = "Pages.Tenant.AppAccount";
+        public const string Pages_Tenant_AppAccount_Create = "Pages.Tenant.AppAccount.Create";
+        public const string Pages_Tenant_AppAccount_Edit = "Pages.Tenant.AppAccount.Edit";
+        public const string Pages_Tenant_AppAccount_Delete = "Pages.Tenant.AppAccount.Delete";
+
         //HOST-SPECIFIC PERMISSIONS
 
         public const string Pages_Editions = "Pages.Editions";

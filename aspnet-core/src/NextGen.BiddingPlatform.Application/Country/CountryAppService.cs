@@ -20,9 +20,12 @@ namespace NextGen.BiddingPlatform.Country
     public class CountryAppService : BiddingPlatformAppServiceBase, ICountryAppService
     {
         private readonly IRepository<Country> _countryRepository;
-        public CountryAppService(IRepository<Country> countryRepository)
+        private readonly IRepository<Core.State.State> _stateRepository;
+        public CountryAppService(IRepository<Country> countryRepository,
+                                IRepository<Core.State.State> stateRepository)
         {
             _countryRepository = countryRepository;
+            _stateRepository = stateRepository;
         }
 
         public async Task<CountryDto> Create(CreateCountryDto input)
@@ -66,6 +69,7 @@ namespace NextGen.BiddingPlatform.Country
 
             return new PagedResultDto<CountryListDto>(resultCount, ObjectMapper.Map<IReadOnlyList<CountryListDto>>(countries));
         }
+
         public async Task<CountryDto> GetCountryById(Guid Id)
         {
             var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == Id);
@@ -85,6 +89,31 @@ namespace NextGen.BiddingPlatform.Country
             country.CountryCode = input.CountryCode;
             country.CountryName = input.CountryName;
             await _countryRepository.UpdateAsync(country);
+        }
+
+        public async Task<List<CountryStateDto>> GetCountriesWithState()
+        {
+            var countries = await _countryRepository.GetAllListAsync();
+            var states = await _stateRepository.GetAllListAsync();
+            List<CountryStateDto> list = new List<CountryStateDto>();
+            foreach (var item in countries)
+            {
+                var countryState = states.Where(x => x.CountryId == item.Id).Select(x => new CountryStateListDto
+                {
+                    StateCode = x.StateCode,
+                    StateName = x.StateName,
+                    StateUniqueId = x.UniqueId
+                }).ToList();
+
+                list.Add(new CountryStateDto
+                {
+                    CountryUniqueId = item.UniqueId,
+                    CountryCode = item.CountryCode,
+                    CountryName = item.CountryName,
+                    States = countryState
+                });
+            }
+            return list;
         }
     }
 }
