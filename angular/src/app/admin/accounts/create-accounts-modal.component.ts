@@ -33,7 +33,6 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
     countryList = [];
     stateList =[];
     stateDropdown = true;
-    uploadUrl: string;
     uploadedFiles: any[] = [];
     logo: string;
 
@@ -45,7 +44,6 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
         private _tokenService: TokenService
     ) {
         super(injector);
-        this.uploadUrl = AppConsts.remoteServiceBaseUrl + '/AppAccounts/UploadFiles';
     }
     ngOnInit(): void {
         this.initUploaders();
