@@ -16,7 +16,6 @@ using System.Linq.Dynamic.Core;
 
 namespace NextGen.BiddingPlatform.Country
 {
-    // [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Country)]
     public class CountryAppService : BiddingPlatformAppServiceBase, ICountryAppService
     {
         private readonly IRepository<Country> _countryRepository;
@@ -27,7 +26,7 @@ namespace NextGen.BiddingPlatform.Country
             _countryRepository = countryRepository;
             _stateRepository = stateRepository;
         }
-
+        [AbpAuthorize(AppPermissions.Pages_Administration_Country_Create)]
         public async Task<CountryDto> Create(CreateCountryDto input)
         {
             Country output = ObjectMapper.Map<Country>(input);
@@ -36,6 +35,7 @@ namespace NextGen.BiddingPlatform.Country
             return ObjectMapper.Map<CountryDto>(country);
         }
 
+        [AbpAuthorize(AppPermissions.Pages_Administration_Country_Delete)]
         public async Task Delete(EntityDto<Guid> input)
         {
             var country = await _countryRepository.GetAll().FirstOrDefaultAsync(x => x.UniqueId == input.Id);
@@ -45,6 +45,7 @@ namespace NextGen.BiddingPlatform.Country
             await _countryRepository.DeleteAsync(country);
         }
 
+        [AbpAuthorize(AppPermissions.Pages_Administration_Country)]
         public async Task<ListResultDto<CountryListDto>> GetAllCountry()
         {
             var countries = await _countryRepository.GetAllListAsync();
@@ -52,6 +53,7 @@ namespace NextGen.BiddingPlatform.Country
             return new ListResultDto<CountryListDto>(result);
         }
         //get all countries with filter method
+        [AbpAuthorize(AppPermissions.Pages_Administration_Country)]
         public async Task<PagedResultDto<CountryListDto>> GetCountriesByFilter(GetCountryInput input)
         {
             var countries = _countryRepository
@@ -79,6 +81,7 @@ namespace NextGen.BiddingPlatform.Country
             return ObjectMapper.Map<CountryDto>(country);
         }
 
+        [AbpAuthorize(AppPermissions.Pages_Administration_Country_Edit)]
         public async Task Update(CountryDto input)
         {
 

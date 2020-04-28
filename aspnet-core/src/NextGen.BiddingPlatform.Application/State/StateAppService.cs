@@ -13,8 +13,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Dynamic.Core;
+using Abp.Authorization;
+using NextGen.BiddingPlatform.Authorization;
+
 namespace NextGen.BiddingPlatform.State
 {
+    [AbpAuthorize(AppPermissions.Pages_Administration_State)]
     public class StateAppService : BiddingPlatformDomainServiceBase, IStateAppService
     {
         private readonly IRepository<Core.State.State> _stateRepository;
@@ -25,6 +29,7 @@ namespace NextGen.BiddingPlatform.State
             _countryService = countryService;
         }
 
+        [AbpAuthorize(AppPermissions.Pages_Administration_State_Create)]
         public async Task<StateDto> Create(CreateStateDto input)
         {
             var country = await _countryService.GetCountryById(input.CountryUniqueId);
@@ -37,6 +42,7 @@ namespace NextGen.BiddingPlatform.State
             return ObjectMapper.Map<StateDto>(state);
         }
 
+        [AbpAuthorize(AppPermissions.Pages_Administration_State_Delete)]
         public async Task Delete(EntityDto<Guid> input)
         {
             var state = await _stateRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Id);
@@ -88,6 +94,7 @@ namespace NextGen.BiddingPlatform.State
             return ObjectMapper.Map<StateDto>(state);
         }
 
+        [AbpAuthorize(AppPermissions.Pages_Administration_State_Edit)]
         public async Task<UpdateStateDto> Update(UpdateStateDto input)
         {
 

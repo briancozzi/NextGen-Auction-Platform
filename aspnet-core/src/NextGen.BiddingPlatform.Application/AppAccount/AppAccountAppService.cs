@@ -19,7 +19,7 @@ using NextGen.BiddingPlatform.Authorization;
 
 namespace NextGen.BiddingPlatform.AppAccount
 {
-    [AbpAuthorize(AppPermissions.Pages_Tenant_AppAccount)]
+    [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_AppAccount)]
     public class AppAccountAppService : BiddingPlatformDomainServiceBase, IAppAccountAppService
     {
         private readonly IRepository<Core.AppAccounts.AppAccount> _accountRepository;
@@ -61,7 +61,7 @@ namespace NextGen.BiddingPlatform.AppAccount
 
             return new PagedResultDto<AppAccountListDto>(resultCount, await query.ToListAsync());
         }
-
+        [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_AppAccount_Create)]
         public async Task<CreateAppAccountDto> Create(CreateAppAccountDto input)
         {
             var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.CountryUniqueId);
@@ -82,6 +82,7 @@ namespace NextGen.BiddingPlatform.AppAccount
             return input;
         }
 
+        [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_AppAccount_Edit)]
         public async Task<UpdateAppAccountDto> Update(UpdateAppAccountDto input)
         {
             var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.CountryUniqueId);
@@ -110,7 +111,7 @@ namespace NextGen.BiddingPlatform.AppAccount
             await _accountRepository.UpdateAsync(account);
             return input;
         }
-
+        [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_AppAccount_Delete)]
         public async Task Delete(Guid Id)
         {
             var appAccount = await _accountRepository.FirstOrDefaultAsync(x => x.UniqueId == Id);
