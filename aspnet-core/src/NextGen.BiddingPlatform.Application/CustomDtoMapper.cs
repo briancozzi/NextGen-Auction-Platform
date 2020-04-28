@@ -27,12 +27,14 @@ using NextGen.BiddingPlatform.Authorization.Users.Importing.Dto;
 using NextGen.BiddingPlatform.Authorization.Users.Profile.Dto;
 using NextGen.BiddingPlatform.Chat;
 using NextGen.BiddingPlatform.Chat.Dto;
+using NextGen.BiddingPlatform.Core.Items;
 using NextGen.BiddingPlatform.DynamicEntityParameters.Dto;
 using NextGen.BiddingPlatform.Editions;
 using NextGen.BiddingPlatform.Editions.Dto;
 using NextGen.BiddingPlatform.Friendships;
 using NextGen.BiddingPlatform.Friendships.Cache;
 using NextGen.BiddingPlatform.Friendships.Dto;
+using NextGen.BiddingPlatform.Items.Dto;
 using NextGen.BiddingPlatform.Localization.Dto;
 using NextGen.BiddingPlatform.MultiTenancy;
 using NextGen.BiddingPlatform.MultiTenancy.Dto;
@@ -211,6 +213,8 @@ namespace NextGen.BiddingPlatform
                 .ForMember(x => x.EventUniqueId, option => option.MapFrom(e => e.Event.UniqueId));
             configuration.CreateMap<CreateAuctionDto, Core.Auctions.Auction>().ReverseMap();
 
+            //item
+            configuration.CreateMap<ItemDto, Item>().ReverseMap();
         }
     }
 }
