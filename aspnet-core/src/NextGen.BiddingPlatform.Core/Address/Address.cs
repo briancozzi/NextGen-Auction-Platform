@@ -13,7 +13,6 @@ namespace NextGen.BiddingPlatform.Core.Addresses
     public class Address : AuditedEntity, IHasUniqueIdentifier
     {
         public const int MaxCityLength = 25;
-        public const int MaxZipCodeLength = 5;
 
         [Index("IX_Address_UniqueId", IsClustered = false, IsUnique = true)]
         public Guid UniqueId { get; set; }
@@ -38,7 +37,6 @@ namespace NextGen.BiddingPlatform.Core.Addresses
         public Country.Country Country { get; set; }
 
         [Required]
-        [MaxLength(MaxZipCodeLength)]
         public string ZipCode { get; set; }
     }
 }
