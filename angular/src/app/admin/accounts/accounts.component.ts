@@ -27,6 +27,7 @@ export class AccountsComponent extends AppComponentBase {
       alert("Hi");
     }
   getAccounts(event?: LazyLoadEvent): void {
+    
     this.primengTableHelper.showLoadingIndicator();
     this._appAccountService.getAllAccountFilter(
     this.filters.filterText,

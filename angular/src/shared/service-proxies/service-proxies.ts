@@ -854,6 +854,73 @@ export class AccountEventServiceProxy {
     }
 
     /**
+     * @param search (optional) 
+     * @param sorting (optional) 
+     * @param maxResultCount (optional) 
+     * @param skipCount (optional) 
+     * @return Success
+     */
+    getAccountEventsWithFilter(search: string | null | undefined, sorting: string | null | undefined, maxResultCount: number | undefined, skipCount: number | undefined): Observable<PagedResultDtoOfAccountEventListDto> {
+        let url_ = this.baseUrl + "/api/services/app/AccountEvent/GetAccountEventsWithFilter?";
+        if (search !== undefined)
+            url_ += "Search=" + encodeURIComponent("" + search) + "&"; 
+        if (sorting !== undefined)
+            url_ += "Sorting=" + encodeURIComponent("" + sorting) + "&"; 
+        if (maxResultCount === null)
+            throw new Error("The parameter 'maxResultCount' cannot be null.");
+        else if (maxResultCount !== undefined)
+            url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&"; 
+        if (skipCount === null)
+            throw new Error("The parameter 'skipCount' cannot be null.");
+        else if (skipCount !== undefined)
+            url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAccountEventsWithFilter(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAccountEventsWithFilter(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfAccountEventListDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfAccountEventListDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAccountEventsWithFilter(response: HttpResponseBase): Observable<PagedResultDtoOfAccountEventListDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultDtoOfAccountEventListDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfAccountEventListDto>(<any>null);
+    }
+
+    /**
      * @param id (optional) 
      * @return Success
      */
@@ -16258,12 +16325,8 @@ export class AccountEventListDto implements IAccountEventListDto {
     eventDate!: moment.Moment;
     eventStartDateTime!: moment.Moment;
     eventEndDateTime!: moment.Moment;
-    email!: string | undefined;
-    mobileNo!: string | undefined;
     eventUrl!: string | undefined;
     timeZone!: string | undefined;
-    isActive!: boolean;
-    address!: AddressDto;
 
     constructor(data?: IAccountEventListDto) {
         if (data) {
@@ -16282,12 +16345,8 @@ export class AccountEventListDto implements IAccountEventListDto {
             this.eventDate = _data["eventDate"] ? moment(_data["eventDate"].toString()) : <any>undefined;
             this.eventStartDateTime = _data["eventStartDateTime"] ? moment(_data["eventStartDateTime"].toString()) : <any>undefined;
             this.eventEndDateTime = _data["eventEndDateTime"] ? moment(_data["eventEndDateTime"].toString()) : <any>undefined;
-            this.email = _data["email"];
-            this.mobileNo = _data["mobileNo"];
             this.eventUrl = _data["eventUrl"];
             this.timeZone = _data["timeZone"];
-            this.isActive = _data["isActive"];
-            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
         }
     }
 
@@ -16306,12 +16365,8 @@ export class AccountEventListDto implements IAccountEventListDto {
         data["eventDate"] = this.eventDate ? this.eventDate.toISOString() : <any>undefined;
         data["eventStartDateTime"] = this.eventStartDateTime ? this.eventStartDateTime.toISOString() : <any>undefined;
         data["eventEndDateTime"] = this.eventEndDateTime ? this.eventEndDateTime.toISOString() : <any>undefined;
-        data["email"] = this.email;
-        data["mobileNo"] = this.mobileNo;
         data["eventUrl"] = this.eventUrl;
         data["timeZone"] = this.timeZone;
-        data["isActive"] = this.isActive;
-        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
         return data; 
     }
 }
@@ -16323,12 +16378,8 @@ export interface IAccountEventListDto {
     eventDate: moment.Moment;
     eventStartDateTime: moment.Moment;
     eventEndDateTime: moment.Moment;
-    email: string | undefined;
-    mobileNo: string | undefined;
     eventUrl: string | undefined;
     timeZone: string | undefined;
-    isActive: boolean;
-    address: AddressDto;
 }
 
 export class ListResultDtoOfAccountEventListDto implements IListResultDtoOfAccountEventListDto {
@@ -16372,6 +16423,54 @@ export class ListResultDtoOfAccountEventListDto implements IListResultDtoOfAccou
 }
 
 export interface IListResultDtoOfAccountEventListDto {
+    items: AccountEventListDto[] | undefined;
+}
+
+export class PagedResultDtoOfAccountEventListDto implements IPagedResultDtoOfAccountEventListDto {
+    totalCount!: number;
+    items!: AccountEventListDto[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfAccountEventListDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.totalCount = _data["totalCount"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(AccountEventListDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfAccountEventListDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfAccountEventListDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfAccountEventListDto {
+    totalCount: number;
     items: AccountEventListDto[] | undefined;
 }
 
@@ -16462,8 +16561,6 @@ export class AppAccountListDto implements IAppAccountListDto {
     lastName!: string | undefined;
     phoneNo!: string | undefined;
     logo!: string | undefined;
-    isActive!: boolean;
-    address!: AddressDto;
 
     constructor(data?: IAppAccountListDto) {
         if (data) {
@@ -16482,8 +16579,6 @@ export class AppAccountListDto implements IAppAccountListDto {
             this.lastName = _data["lastName"];
             this.phoneNo = _data["phoneNo"];
             this.logo = _data["logo"];
-            this.isActive = _data["isActive"];
-            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
         }
     }
 
@@ -16502,8 +16597,6 @@ export class AppAccountListDto implements IAppAccountListDto {
         data["lastName"] = this.lastName;
         data["phoneNo"] = this.phoneNo;
         data["logo"] = this.logo;
-        data["isActive"] = this.isActive;
-        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
         return data; 
     }
 }
@@ -16515,8 +16608,6 @@ export interface IAppAccountListDto {
     lastName: string | undefined;
     phoneNo: string | undefined;
     logo: string | undefined;
-    isActive: boolean;
-    address: AddressDto;
 }
 
 export class PagedResultDtoOfAppAccountListDto implements IPagedResultDtoOfAppAccountListDto {
@@ -16814,7 +16905,6 @@ export class AuctionListDto implements IAuctionListDto {
     auctionType!: string | undefined;
     auctionStartDateTime!: moment.Moment;
     auctionEndDateTime!: moment.Moment;
-    address!: AddressDto;
 
     constructor(data?: IAuctionListDto) {
         if (data) {
@@ -16833,7 +16923,6 @@ export class AuctionListDto implements IAuctionListDto {
             this.auctionType = _data["auctionType"];
             this.auctionStartDateTime = _data["auctionStartDateTime"] ? moment(_data["auctionStartDateTime"].toString()) : <any>undefined;
             this.auctionEndDateTime = _data["auctionEndDateTime"] ? moment(_data["auctionEndDateTime"].toString()) : <any>undefined;
-            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
         }
     }
 
@@ -16852,7 +16941,6 @@ export class AuctionListDto implements IAuctionListDto {
         data["auctionType"] = this.auctionType;
         data["auctionStartDateTime"] = this.auctionStartDateTime ? this.auctionStartDateTime.toISOString() : <any>undefined;
         data["auctionEndDateTime"] = this.auctionEndDateTime ? this.auctionEndDateTime.toISOString() : <any>undefined;
-        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
         return data; 
     }
 }
@@ -16864,7 +16952,6 @@ export interface IAuctionListDto {
     auctionType: string | undefined;
     auctionStartDateTime: moment.Moment;
     auctionEndDateTime: moment.Moment;
-    address: AddressDto;
 }
 
 export class PagedResultDtoOfAuctionListDto implements IPagedResultDtoOfAuctionListDto {

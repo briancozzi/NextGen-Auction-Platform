@@ -32,7 +32,6 @@ export class CreateStateModalComponent extends AppComponentBase {
 
     show() {
         this.active = true;
-       
         this.init();
         this.modal.show();
     }
@@ -52,6 +51,7 @@ export class CreateStateModalComponent extends AppComponentBase {
         input.countryUniqueId = this.state.countryUniqueId;
         input.stateName = this.state.stateName;        
         input.stateCode = this.state.stateCode.toUpperCase();
+        this.saving = true;
         this._stateService.create(input)
             .pipe(finalize(() => this.saving = false))
             .subscribe(() => {
