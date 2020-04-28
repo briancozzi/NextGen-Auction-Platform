@@ -6,8 +6,9 @@ using System.Text;
 
 namespace NextGen.BiddingPlatform.Items.Dto
 {
-    public class ItemDto
+    public class UpdateItemDto
     {
+        public Guid UniqueId { get; set; }
         [Required]
         public int ItemType { get; set; }//may be enum or dropdown
         [Required]
@@ -37,12 +38,12 @@ namespace NextGen.BiddingPlatform.Items.Dto
         public string VideoLink { get; set; }
         public bool IsActive { get; set; } = true;
         public ICollection<ItemGalleryDto> ItemImages { get; set; }
-        public ICollection<int> Categories { get; set; }
+        public ICollection<int> ItemCategories { get; set; }
 
-        public ItemDto()
+        public UpdateItemDto()
         {
             ItemImages = new Collection<ItemGalleryDto>();
-            Categories = new Collection<int>();
+            ItemCategories = new Collection<int>();
         }
     }
 }

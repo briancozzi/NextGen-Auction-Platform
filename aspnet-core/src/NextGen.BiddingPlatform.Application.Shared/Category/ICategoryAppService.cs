@@ -10,11 +10,11 @@ namespace NextGen.BiddingPlatform.Category
 {
     public interface ICategoryAppService : IApplicationService
     {
+        Task<CategoryDto> GetCategoryById(Guid Id);
         Task<ListResultDto<CategoryListDto>> GetAllCategory();
-        Task<UpdateCategoryDto> Update(UpdateCategoryDto input);
-        Task<CreateCategoryDto> CreateSubCategory(CreateCategoryDto input);
-        Task<CreateCategoryDto> Create(CreateCategoryDto input);
+        Task<CategoryDto> Create(CreateCategoryDto input);
+        Task CreateSubCategory(CreateSubCategoryDto input);
+        Task Update(UpdateCategoryDto input);
         Task Delete(EntityDto<Guid> input);
-        
     }
 }

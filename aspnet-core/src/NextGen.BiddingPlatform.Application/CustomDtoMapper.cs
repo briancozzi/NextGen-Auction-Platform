@@ -216,14 +216,14 @@ namespace NextGen.BiddingPlatform
             configuration.CreateMap<CreateAuctionDto, Core.Auctions.Auction>().ReverseMap();
 
             //Category
-            configuration.CreateMap<CreateCategoryDto, Core.Categories.Category>().ReverseMap();
-            configuration.CreateMap<CreateSubCategory, Core.Categories.Category>().ReverseMap();
-            configuration.CreateMap<Core.Categories.Category,CategoryListDto>();
-            configuration.CreateMap<UpdateCategoryDto, Core.Categories.Category>().ReverseMap();
+            configuration.CreateMap<Core.Categories.Category, CategoryListDto>();
             configuration.CreateMap<CategoryDto, Core.Categories.Category>().ReverseMap();
 
             //item
-            configuration.CreateMap<ItemDto, Item>().ReverseMap();
+            configuration.CreateMap<ItemDto, Item>();
+            configuration.CreateMap<UpdateItemDto, Item>();
+            configuration.CreateMap<ItemGalleryDto, ItemGallery>().ReverseMap();
+            configuration.CreateMap<GetItemDto, Item>().ReverseMap();
         }
     }
 }

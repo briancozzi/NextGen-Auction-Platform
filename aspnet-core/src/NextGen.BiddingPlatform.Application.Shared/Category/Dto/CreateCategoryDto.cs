@@ -7,9 +7,13 @@ namespace NextGen.BiddingPlatform.Category.Dto
 {
     public class CreateCategoryDto
     {
-        public Guid UniqueId { get; set; }
-
         [Required]
         public string CategoryName { get; set; }
+    }
+
+    public class CreateSubCategoryDto
+    {
+        public string SubCategoryName { get; set; }
+        public Guid CategoryId { get; set; }
     }
 }

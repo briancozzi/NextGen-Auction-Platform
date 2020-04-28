@@ -7,8 +7,8 @@ namespace NextGen.BiddingPlatform.Category.Dto
 {
     public class CategoryListDto
     {
+        public int Id { get; set; }
         public Guid UniqueId { get; set; }
         public string CategoryName { get; set; }
-        public int? ParentId { get; set; }
     }
 }

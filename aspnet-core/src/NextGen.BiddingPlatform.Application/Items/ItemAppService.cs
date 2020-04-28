@@ -17,13 +17,13 @@ using Abp.Runtime.Session;
 
 namespace NextGen.BiddingPlatform.Items
 {
-    public class ItemService : BiddingPlatformAppServiceBase, IItemService
+    public class ItemAppService : BiddingPlatformAppServiceBase, IItemAppService
     {
         private readonly IRepository<Item> _itemRepository;
         private readonly IRepository<ItemGallery> _itemGalleryRepository;
         private readonly IRepository<ItemCategory.ItemCategory> _itemCategoryRepository;
         private readonly IAbpSession _abpSession;
-        public ItemService(IRepository<Item> itemRepository,
+        public ItemAppService(IRepository<Item> itemRepository,
                            IRepository<ItemGallery> itemGalleryRepository,
                            IRepository<ItemCategory.ItemCategory> itemCategoryRepository,
                            IAbpSession abpSession)
@@ -74,10 +74,30 @@ namespace NextGen.BiddingPlatform.Items
             return new PagedResultDto<ItemListDto>(resultCount, await query.ToListAsync());
         }
 
+        public async Task<GetItemDto> GetItemById(Guid Id)
+        {
+            var existingItem = await _itemRepository.GetAllIncluding(x => x.ItemImages).FirstOrDefaultAsync(x => x.UniqueId == Id);
+            if (existingItem == null)
+                throw new Exception("Item not available for given id");
+
+            var mappedItem = ObjectMapper.Map<GetItemDto>(existingItem);
+            var itemCategories = await _itemCategoryRepository.GetAllIncluding(x => x.Category)
+                                                              .Where(x => x.ItemId == existingItem.Id)
+                                                              .Select(s => new GetCategoryDto
+                                                              {
+                                                                  Id = s.Id,
+                                                                  CategoryName = s.Category.CategoryName
+                                                              })
+                                                              .ToListAsync();
+
+            mappedItem.ItemCategories = itemCategories;
+            return mappedItem;
+        }
+
         public async Task CreateItem(ItemDto input)
         {
-            //if (input.ItemCategories.Count() == 0)
-            //    throw new Exception("Please select at least one category for item");
+            if (input.Categories.Count() == 0)
+                throw new Exception("Please select at least one category for item");
 
             if (!_abpSession.TenantId.HasValue)
                 throw new Exception("You are not authorized user");
@@ -86,10 +106,14 @@ namespace NextGen.BiddingPlatform.Items
             mappedItem.UniqueId = Guid.NewGuid();
             mappedItem.TenantId = _abpSession.TenantId.Value;
             //add category to ItemCategory Table
-            //foreach (var category in input.ItemCategories)
-            //{
-
-            //}
+            foreach (var category in input.Categories)
+            {
+                mappedItem.ItemCategories.Add(new ItemCategory.ItemCategory
+                {
+                    UniqueId = Guid.NewGuid(),
+                    CategoryId = category
+                });
+            }
             //add images to ItemGallery Table
             foreach (var image in input.ItemImages)
             {
@@ -106,11 +130,14 @@ namespace NextGen.BiddingPlatform.Items
             await _itemRepository.InsertAsync(mappedItem);
         }
 
-        public async Task UpdateItem(ItemDto input)
+        public async Task UpdateItem(UpdateItemDto input)
         {
             var existingItem = await _itemRepository.FirstOrDefaultAsync(x => x.UniqueId == input.UniqueId);
             if (existingItem == null)
                 throw new Exception("Item not available for given id");
+
+            if (input.ItemCategories.Count() == 0)
+                throw new Exception("Please select at least one category for item");
 
             //first remove gallery
             var itemImages = await _itemGalleryRepository.GetAllListAsync(x => x.ItemId == existingItem.Id);
@@ -123,10 +150,14 @@ namespace NextGen.BiddingPlatform.Items
                 await _itemCategoryRepository.DeleteAsync(x => x.ItemId == existingItem.Id);
 
             //add category to ItemCategory Table
-            //foreach (var category in input.ItemCategories)
-            //{
-
-            //}
+            foreach (var category in input.ItemCategories)
+            {
+                existingItem.ItemCategories.Add(new ItemCategory.ItemCategory
+                {
+                    UniqueId = Guid.NewGuid(),
+                    CategoryId = category
+                });
+            }
             //add images to ItemGallery Table
             foreach (var image in input.ItemImages)
             {
@@ -155,6 +186,8 @@ namespace NextGen.BiddingPlatform.Items
             existingItem.ItemCertificateNotes = input.ItemCertificateNotes;
             existingItem.MainImageName = input.MainImageName;
             existingItem.VideoLink = input.VideoLink;
+
+            await _itemRepository.UpdateAsync(existingItem);
         }
 
         public async Task DeleteItem(Guid Id)
