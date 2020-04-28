@@ -13,6 +13,5 @@ namespace NextGen.BiddingPlatform.Auction.Dto
         public string AuctionType { get; set; }
         public DateTime AuctionStartDateTime { get; set; }
         public DateTime AuctionEndDateTime { get; set; }
-        public AddressDto Address { get; set; }
     }
 }

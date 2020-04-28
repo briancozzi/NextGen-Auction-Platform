@@ -50,6 +50,7 @@ export class EditStateModalComponent extends AppComponentBase{
         input.stateName = this.state.stateName;        
         input.stateCode = this.state.stateCode.toUpperCase();
         input.uniqueId = this.state.uniqueId;
+        this.saving = true;
         this._stateService.update(input)
             .pipe(finalize(() => this.saving = false))
             .subscribe(() => {

@@ -4,28 +4,33 @@ import * as _ from 'lodash';
 import { ModalDirective } from 'ngx-bootstrap';
 import { finalize } from 'rxjs/operators';
 import {
-    CountryServiceProxy,
+    AppAccountServiceProxy,
     StateServiceProxy,
-    CreateStateDto
+    CreateAppAccountDto,
+    CountryServiceProxy,
+    AddressDto
 } from '@shared/service-proxies/service-proxies';
 @Component({
-    selector: 'createStateModal',
-    templateUrl: './create-states-modal.component.html'
+    selector: 'createAccountsModal',
+    templateUrl: './create-accounts-modal.component.html'
 })
-export class CreateStateModalComponent extends AppComponentBase {
+export class CreateAccountsModalComponent extends AppComponentBase {
 
     @ViewChild('createModal', { static: true }) modal: ModalDirective;
     @Output() modalSave: EventEmitter<any> = new EventEmitter<any>();
 
     active = false;
     saving = false;
-    state : CreateStateDto;
-
+    account: CreateAppAccountDto = new CreateAppAccountDto();
     countryList =[];
+    stateList =[];
+    stateDropdown = true;
+
     constructor(
         injector: Injector,
-        private _countryService:CountryServiceProxy,
-        private _stateService: StateServiceProxy 
+        private _accountsService:AppAccountServiceProxy,
+        private _countryService: CountryServiceProxy,
+        private _stateService: StateServiceProxy
     ) {
         super(injector);
     }
@@ -40,25 +45,19 @@ export class CreateStateModalComponent extends AppComponentBase {
     }
 
     init(): void {
-        this.state =  new CreateStateDto();
+        debugger;
+        this.account = new CreateAppAccountDto();
+        this.account.address = new AddressDto();
         this._countryService.getAllCountry().subscribe(result => {
             this.countryList = result.items  
         });
-        this.state.countryUniqueId = this.countryList[0].uniqueId;
+    }
+    loadStateList(countryId):void{
+        debugger;
+        this.stateDropdown = false;
     }
     save(): void {
-        const input = new CreateStateDto();
-        input.countryUniqueId = this.state.countryUniqueId;
-        input.stateName = this.state.stateName;        
-        input.stateCode = this.state.stateCode.toUpperCase();
-        this.saving = true;
-        this._stateService.create(input)
-            .pipe(finalize(() => this.saving = false))
-            .subscribe(() => {
-                this.notify.info(this.l('SavedSuccessfully'));
-                this.close();
-                this.modalSave.emit(null);
-            });
+        
     }
     close(): void {
         this.active = false;

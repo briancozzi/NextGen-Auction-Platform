@@ -1,5 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
+using Abp.Extensions;
 using Abp.Runtime.Session;
 using Microsoft.EntityFrameworkCore;
 using NextGen.BiddingPlatform.AppAccountEvent.Dto;
@@ -11,8 +13,11 @@ using NextGen.BiddingPlatform.Country;
 using NextGen.BiddingPlatform.State;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq.Dynamic.Core;
+using Abp.Linq.Extensions;
 
 namespace NextGen.BiddingPlatform.AppAccountEvent
 {
@@ -106,16 +111,43 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
 
         public async Task<ListResultDto<AccountEventListDto>> GetAllAccountEvents()
         {
-            var eventsData = await _eventRepository
-                    .GetAllIncluding(x => x.AppAccount, x => x.Address, x => x.Address.Country, x => x.Address.State)
-                    .ToListAsync();
-
+            var eventsData = await _eventRepository.GetAllIncluding(x => x.AppAccount).ToListAsync();
             return new ListResultDto<AccountEventListDto>(ObjectMapper.Map<List<AccountEventListDto>>(eventsData));
+        }
+
+        public async Task<PagedResultDto<AccountEventListDto>> GetAccountEventsWithFilter(AccountEventFilter input)
+        {
+            var query = _eventRepository.GetAllIncluding(x => x.AppAccount)
+                                         .WhereIf(!input.Search.IsNullOrWhiteSpace(), x => x.EventName.ToLower().IndexOf(input.Search.ToLower()) > -1)
+                                         .Select(x => new AccountEventListDto
+                                         {
+                                             UniqueId = x.UniqueId,
+                                             AccountUniqueId = x.AppAccount.UniqueId,
+                                             EventName = x.EventName,
+                                             EventDate = x.EventDate,
+                                             EventStartDateTime = x.EventStartDateTime,
+                                             EventEndDateTime = x.EventEndDateTime,
+                                             EventUrl = x.EventUrl,
+                                             TimeZone = x.TimeZone
+                                         });
+
+            var resultCount = await query.CountAsync();
+
+            if (!string.IsNullOrWhiteSpace(input.Sorting))
+                query = query.OrderBy(input.Sorting);
+
+            query = query.PageBy(input);
+
+            return new PagedResultDto<AccountEventListDto>(resultCount, await query.ToListAsync());
         }
 
         public async Task<AccountEventDto> GetAccountEventById(Guid Id)
         {
-            var Event = await _eventRepository.GetAllIncluding(x => x.AppAccount, x => x.Address, x => x.Address.State, x => x.Address.Country)
+            var Event = await _eventRepository.GetAllIncluding(x =>
+                                                               x.AppAccount,
+                                                               x => x.Address,
+                                                               x => x.Address.State,
+                                                               x => x.Address.Country)
                                               .FirstOrDefaultAsync(x => x.UniqueId == Id);
             if (Event == null)
                 throw new Exception("Event not found for given id");

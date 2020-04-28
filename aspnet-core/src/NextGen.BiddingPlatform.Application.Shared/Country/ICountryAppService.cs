@@ -16,5 +16,6 @@ namespace NextGen.BiddingPlatform.Country
         Task Update(CountryDto input);
         Task Delete(EntityDto<Guid> input);
         Task<CountryDto> GetCountryById(Guid input);
+        Task<List<CountryStateDto>> GetCountriesWithState();
     }
 }

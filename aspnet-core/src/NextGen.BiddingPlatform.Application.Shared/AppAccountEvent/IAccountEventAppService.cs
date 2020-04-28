@@ -11,6 +11,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
     public interface IAccountEventAppService : IApplicationService
     {
         Task<ListResultDto<AccountEventListDto>> GetAllAccountEvents();
+        Task<PagedResultDto<AccountEventListDto>> GetAccountEventsWithFilter(AccountEventFilter input);
         Task<CreateAccountEventDto> Create(CreateAccountEventDto input);
         Task<UpdateAccountEventDto> Update(UpdateAccountEventDto input);
         Task Delete(EntityDto<Guid> input);

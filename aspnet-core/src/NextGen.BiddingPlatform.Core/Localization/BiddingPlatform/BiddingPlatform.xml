@@ -1,6 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <localizationDictionary culture="en">
   <texts>
+    <!--Custom Changes start from here -->
+    <text name="Country">Country</text>
+    <text name="CreateNewCountry">Create New Country</text>
+    <text name="EditingCountry">Editing Country</text>
+    <text name="DeletingCountry">Deleting Country</text>
+    <text name="CountryName">Country Name</text>
+    <text name="Countries">Countries</text>
+
+    <text name="AppAccounts">AppAccounts</text>
+    <text name="CreateAppAccount">Create New AppAccount</text>
+    <text name="EditAppAccount">Edit AppAccount</text>
+    <text name="DeleteAppAccount">Delete AppAccount</text>
+    <!-- Custom Changes end here-->
     <text name="HomePage">Home page</text>
     <text name="AboutUs">About us</text>
     <text name="Administration">Administration</text>
@@ -259,16 +272,6 @@
     <text name="EditingLanguage">Editing language</text>
     <text name="DeletingLanguages">Deleting language</text>
     <text name="ChangingTexts">Changing texts</text>
-
-    <!--Custom Changes -->
-    <text name="Country">Country</text>
-    <text name="CreateNewCountry">Create new country</text>
-    <text name="EditingCountry">Editing country</text>
-    <text name="DeletingCountry">Deleting country</text>
-    <text name="CountryName">Country name</text>
-    <text name="Countries">Countries</text>
-    <text name="CountryCode">Country code</text>
-
     <text name="StateNameOrStateCode">State name or state code</text>
     <text name="EditState">Edit state</text>
     <text name="StateCode">State code</text>
@@ -278,9 +281,6 @@
     <text name="CreateNewState">Create new state</text>
     <text name="EditingState">Editing state</text>
     <text name="DeletingState">Deleting state</text>
-    
-    <!--Custom changes end-->
-
     <text name="SuccessfullySaved">Successfully saved.</text>
     <text name="Language">Language</text>
     <text name="Flag">Flag</text>

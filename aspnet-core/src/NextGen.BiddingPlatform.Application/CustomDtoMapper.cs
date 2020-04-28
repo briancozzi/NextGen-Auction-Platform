@@ -29,12 +29,14 @@ using NextGen.BiddingPlatform.Category.Dto;
 using NextGen.BiddingPlatform.Chat;
 using NextGen.BiddingPlatform.Chat.Dto;
 using NextGen.BiddingPlatform.Core.Categories;
+using NextGen.BiddingPlatform.Core.Items;
 using NextGen.BiddingPlatform.DynamicEntityParameters.Dto;
 using NextGen.BiddingPlatform.Editions;
 using NextGen.BiddingPlatform.Editions.Dto;
 using NextGen.BiddingPlatform.Friendships;
 using NextGen.BiddingPlatform.Friendships.Cache;
 using NextGen.BiddingPlatform.Friendships.Dto;
+using NextGen.BiddingPlatform.Items.Dto;
 using NextGen.BiddingPlatform.Localization.Dto;
 using NextGen.BiddingPlatform.MultiTenancy;
 using NextGen.BiddingPlatform.MultiTenancy.Dto;
@@ -220,6 +222,8 @@ namespace NextGen.BiddingPlatform
             configuration.CreateMap<UpdateCategoryDto, Core.Categories.Category>().ReverseMap();
             configuration.CreateMap<CategoryDto, Core.Categories.Category>().ReverseMap();
 
+            //item
+            configuration.CreateMap<ItemDto, Item>().ReverseMap();
         }
     }
 }
