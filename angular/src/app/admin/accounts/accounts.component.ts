@@ -5,12 +5,15 @@ import { Table } from 'primeng/table';
 import { Paginator } from 'primeng/paginator';
 import { finalize } from 'rxjs/operators';
 import { LazyLoadEvent } from 'primeng/public_api';
+import {CreateAccountsModalComponent} from './create-accounts-modal.component'
 
 @Component({
   selector: 'app-accounts',
   templateUrl: './accounts.component.html'
 })
 export class AccountsComponent extends AppComponentBase {
+  @ViewChild('createAccountsModal',{static: true}) createAccountsModal: CreateAccountsModalComponent;
+
   @ViewChild('dataTable', {static: true}) dataTable: Table;
   @ViewChild('paginator', {static: true}) paginator: Paginator;
 
@@ -24,10 +27,10 @@ export class AccountsComponent extends AppComponentBase {
     } = <any>{};
 
     createAccount(){
-      alert("Hi");
+      this.createAccountsModal.show();
     }
   getAccounts(event?: LazyLoadEvent): void {
-    
+
     this.primengTableHelper.showLoadingIndicator();
     this._appAccountService.getAllAccountFilter(
     this.filters.filterText,
