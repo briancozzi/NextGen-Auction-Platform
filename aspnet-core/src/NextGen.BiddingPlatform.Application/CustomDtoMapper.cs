@@ -25,8 +25,10 @@ using NextGen.BiddingPlatform.Authorization.Users.Delegation.Dto;
 using NextGen.BiddingPlatform.Authorization.Users.Dto;
 using NextGen.BiddingPlatform.Authorization.Users.Importing.Dto;
 using NextGen.BiddingPlatform.Authorization.Users.Profile.Dto;
+using NextGen.BiddingPlatform.Category.Dto;
 using NextGen.BiddingPlatform.Chat;
 using NextGen.BiddingPlatform.Chat.Dto;
+using NextGen.BiddingPlatform.Core.Categories;
 using NextGen.BiddingPlatform.Core.Items;
 using NextGen.BiddingPlatform.DynamicEntityParameters.Dto;
 using NextGen.BiddingPlatform.Editions;
@@ -213,8 +215,15 @@ namespace NextGen.BiddingPlatform
                 .ForMember(x => x.EventUniqueId, option => option.MapFrom(e => e.Event.UniqueId));
             configuration.CreateMap<CreateAuctionDto, Core.Auctions.Auction>().ReverseMap();
 
+            //Category
+            configuration.CreateMap<Core.Categories.Category, CategoryListDto>();
+            configuration.CreateMap<CategoryDto, Core.Categories.Category>().ReverseMap();
+
             //item
-            configuration.CreateMap<ItemDto, Item>().ReverseMap();
+            configuration.CreateMap<ItemDto, Item>();
+            configuration.CreateMap<UpdateItemDto, Item>();
+            configuration.CreateMap<ItemGalleryDto, ItemGallery>().ReverseMap();
+            configuration.CreateMap<GetItemDto, Item>().ReverseMap();
         }
     }
 }

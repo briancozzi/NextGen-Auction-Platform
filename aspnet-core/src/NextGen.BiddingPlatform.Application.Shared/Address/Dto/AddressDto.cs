@@ -9,8 +9,6 @@ namespace NextGen.BiddingPlatform.Address.Dto
     public class AddressDto
     {
         public const int MaxCityLength = 25;
-        public const int MaxZipCodeLength = 5;
-
 
         [Required]
         [MaxLength(AbpUserBase.MaxUserNameLength)]
@@ -30,7 +28,6 @@ namespace NextGen.BiddingPlatform.Address.Dto
         public Guid CountryUniqueId { get; set; }
 
         [Required]
-        [MaxLength(MaxZipCodeLength)]
         public string ZipCode { get; set; }
 
     }

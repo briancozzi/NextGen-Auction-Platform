@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 
 namespace NextGen.BiddingPlatform.Items
 {
-    public interface IItemService : IApplicationService
+    public interface IItemAppService : IApplicationService
     {
         Task<List<ItemListDto>> GetAllItems();
         Task<PagedResultDto<ItemListDto>> GetItemsWithFilter(ItemFilter input);
+        Task<GetItemDto> GetItemById(Guid Id);
         Task CreateItem(ItemDto input);
-        Task UpdateItem(ItemDto input);
+        Task UpdateItem(UpdateItemDto input);
         Task DeleteItem(Guid Id);
     }
 }
