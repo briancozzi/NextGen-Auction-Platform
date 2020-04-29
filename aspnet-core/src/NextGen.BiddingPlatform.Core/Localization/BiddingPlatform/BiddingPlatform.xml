@@ -9,7 +9,6 @@
     <text name="CountryName">Country Name</text>
     <text name="Countries">Countries</text>
 
-    <text name="State">State</text>
     <text name="CreateState">Create New State</text>
     <text name="EditState">Edit State</text>
     <text name="DeleteState">Delete State</text>
@@ -279,7 +278,6 @@
     <text name="DeletingLanguages">Deleting language</text>
     <text name="ChangingTexts">Changing texts</text>
     <text name="StateNameOrStateCode">State name or state code</text>
-    <text name="EditState">Edit state</text>
     <text name="StateCode">State code</text>
     <text name="States">States</text>
     <text name="State">State</text>
