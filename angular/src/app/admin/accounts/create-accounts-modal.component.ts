@@ -58,7 +58,6 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
         uploader.onSuccessItem = (item, response, status) => {
             const ajaxResponse = <IAjaxResponse>JSON.parse(response);
             if (ajaxResponse.success) {
-                this.notify.info(this.l('SavedSuccessfully'));
                 if (success) {
                     success(ajaxResponse.result);
                 }
@@ -76,9 +75,16 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
 
     initUploaders(): void {
         this.logoUploader = this.createUploader(
-            '/TenantCustomization/UploadLogo',
+            '/AppAccounts/UploadLogo',
             result => {
-                this.logo = result.id;
+                this.account.logo = result.path;
+                this._accountsService.create(this.account)
+                .pipe(finalize(() => this.saving = false))
+                .subscribe(() => {
+                    this.notify.info(this.l('SavedSuccessfully'));
+                    this.close();
+                    this.modalSave.emit(null);
+                });
             }
         );
     }
@@ -110,14 +116,6 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
     save(): void {
         this.saving = true;
         this.logoUploader.uploadAll();
-        this.account.logo = this.logo;
-        this._accountsService.create(this.account)
-        .pipe(finalize(() => this.saving = false))
-            .subscribe(() => {
-                this.notify.info(this.l('SavedSuccessfully'));
-                this.close();
-                this.modalSave.emit(null);
-            });
     }
     
     close(): void {

@@ -1,11 +1,12 @@
 import { Component,Injector,ViewChild } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
-import { AppAccountServiceProxy } from '@shared/service-proxies/service-proxies';
+import { AppAccountServiceProxy,AppAccountDto } from '@shared/service-proxies/service-proxies';
 import { Table } from 'primeng/table';
 import { Paginator } from 'primeng/paginator';
 import { finalize } from 'rxjs/operators';
 import { LazyLoadEvent } from 'primeng/public_api';
 import {CreateAccountsModalComponent} from './create-accounts-modal.component'
+import { AppConsts } from '@shared/AppConsts';
 
 @Component({
   selector: 'app-accounts',
@@ -22,6 +23,8 @@ export class AccountsComponent extends AppComponentBase {
     super(injector)
   }
 
+  webHostUrl = AppConsts.remoteServiceBaseUrl;
+  Logo : any;
   filters: {
     filterText: string;
     } = <any>{};
@@ -29,7 +32,7 @@ export class AccountsComponent extends AppComponentBase {
     createAccount(){
       this.createAccountsModal.show();
     }
-  getAccounts(event?: LazyLoadEvent): void {
+    getAccounts(event?: LazyLoadEvent): void {
 
     this.primengTableHelper.showLoadingIndicator();
     this._appAccountService.getAllAccountFilter(
@@ -44,5 +47,19 @@ export class AccountsComponent extends AppComponentBase {
             this.primengTableHelper.records = result.items;
             this.primengTableHelper.hideLoadingIndicator();
         });
+    }
+    deleteAccount(account: AppAccountDto): void {
+      this.message.confirm(
+          this.l('DeletingAccount', account.email),
+          this.l('AreYouSure'),
+          isConfirmed => {
+              if (isConfirmed) {
+                  this._appAccountService.delete(account.uniqueId).subscribe(() => {
+                      this.getAccounts();
+                      this.notify.success(this.l('SuccessfullyDeleted'));
+                  });
+              }
+          }
+      );
     }
 }

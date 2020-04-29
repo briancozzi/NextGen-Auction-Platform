@@ -11,6 +11,7 @@ using Abp.UI;
 using Abp.Web.Models;
 using CHI.UI.Web.Helper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using NextGen.BiddingPlatform.AppAccount;
 using NextGen.BiddingPlatform.AppAccount.Dto;
@@ -25,27 +26,36 @@ namespace NextGen.BiddingPlatform.Web.Controllers
     {
 
         private const int MaxProfilePictureSize = 5242880; //5MB
-        private readonly IAppAccountAppService _appAccountAppService;
-        public AppAccountsControllerBase(IAppAccountAppService appAccountAppService)
+        private readonly IWebHostEnvironment _env;
+        public AppAccountsControllerBase(IWebHostEnvironment env)
         {
-            _appAccountAppService = appAccountAppService;
+            _env = env;
         }
-        public async Task<JsonResult> SaveWithLogo(CreateAppAccountDto createAppAccountDto)
+        public async Task<JsonResult> UploadLogo()
         {
             try
             {
                 var logoFile = Request.Form.Files.First();
-                CommonFileUpload commonFileUpload = new CommonFileUpload();
-                var fullpath = await commonFileUpload.UploadFileRelativePath(logoFile, "/AppAccounts/Logo", "logo");
-                createAppAccountDto.Logo = fullpath;
-                await _appAccountAppService.Create(createAppAccountDto);
-                return Json(new AjaxResponse(new { status = true }));
+                if(logoFile != null)
+                {
+                    var fileName = DateTime.Now.Ticks + "_" + logoFile.FileName;
+                    var pathLocation = _env.WebRootPath + "/Uploads/AppAccountLogo";
+                    
+                    CommonFileUpload commonFileUpload = new CommonFileUpload();
+                    var fullpath = await commonFileUpload.UploadFileRelativePath(logoFile, pathLocation, fileName);
+                    return Json(new AjaxResponse(new { Path = pathLocation + "/" + fileName, Status = true }));
+                }
+                else
+                {
+                    return Json(new AjaxResponse(new { Status = true, Path="" }));
+                }
             }
             catch (UserFriendlyException ex)
             {
-                return Json(new AjaxResponse(new { status = false }));
+                return Json(new AjaxResponse(new { Status = false }));
             }
         }
+      
        
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Abp.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using NextGen.BiddingPlatform.AppAccount;
 using NextGen.BiddingPlatform.Storage;
 
@@ -6,7 +7,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
 {
     public class AppAccountsController : AppAccountsControllerBase
     {
-        public AppAccountsController(IAppAccountAppService appAccountAppService):base(appAccountAppService)
+        public AppAccountsController(IWebHostEnvironment webHostEnvironment):base(webHostEnvironment)
         {
         }
     }

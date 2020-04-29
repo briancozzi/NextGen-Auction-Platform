@@ -49,6 +49,7 @@
     <EmbeddedResource Include="wwwroot\swagger\ui\index.html" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="wwwroot\Uploads\" />
     <Folder Include="wwwroot\Plugins\" />
   </ItemGroup>
 </Project>

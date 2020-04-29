@@ -18,17 +18,16 @@ namespace CHI.UI.Web.Helper
 
         string pathString = "";
         string newPathString = "";
-        string basePath = "C:\\Projects\\NextGen-Auction-Platform";
         
         string fullPath { get; set; }
         string newFullPath { get; set; }
         public async Task<string> UploadFileRelativePath(IFormFile fileBase, string uploadLocation, string fileName)
         {
-            pathString = basePath + uploadLocation;
+            pathString = uploadLocation;
 
             pathString = pathString.Replace('\\', '/');
 
-            fullPath = Path.Combine((basePath + uploadLocation), fileName);
+            fullPath = Path.Combine(uploadLocation, fileName);
 
             fullPath = fullPath.Replace('\\', '/');
             
@@ -37,39 +36,6 @@ namespace CHI.UI.Web.Helper
             return fullPath;
         }
 
-    
-
-        public string UploadBase64RelativePath(string source, string uploadLocation, string fileName)
-        {
-            try
-            {
-                pathString = basePath + uploadLocation;
-                pathString = pathString.Replace('\\', '/');
-
-                fullPath = Path.Combine((basePath + uploadLocation), fileName);
-                fullPath = fullPath.Replace('\\', '/');
-
-                string base64 = source.Substring(source.IndexOf(',') + 1);
-                base64 = base64.Trim('\0');
-                byte[] chartData = Convert.FromBase64String(base64);
-
-
-                bool isExists = System.IO.Directory.Exists(pathString);
-
-                if (!isExists)
-                    System.IO.Directory.CreateDirectory(pathString);
-
-                using (var imageFile = new FileStream(fullPath, FileMode.Create))
-                {
-
-                    imageFile.Write(chartData, 0, chartData.Length);
-                    imageFile.Flush();
-                }
-            }
-            catch (Exception ex) {
-            }
-            return fullPath;
-        }
 
         public bool FileExists(string filePath)
         {
