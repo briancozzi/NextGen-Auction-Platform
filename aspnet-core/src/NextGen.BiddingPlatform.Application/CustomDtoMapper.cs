@@ -230,16 +230,7 @@ namespace NextGen.BiddingPlatform
             //AuctionItem
             configuration.CreateMap<Core.AuctionItems.AuctionItem, AuctionItemDto>()
                 .ForMember(x => x.AuctionId, option => option.MapFrom(a => a.Auction.UniqueId))
-                .ForMember(x=>x.ItemId,option => option.MapFrom(i=>i.Item.UniqueId)).ReverseMap();
-            configuration.CreateMap<Core.AuctionItems.AuctionItem, AuctionItemListDto>()
-                .ForMember(x => x.AuctionId, option => option.MapFrom(a => a.Auction.UniqueId))
-                .ForMember(x => x.ItemId, option => option.MapFrom(i => i.Item.UniqueId))
-                .ForMember(x => x.AuctionStartDateTime, option => option.MapFrom(i => i.Auction.AuctionStartDateTime))
-                .ForMember(x => x.AuctionEndDateTime, option => option.MapFrom(i => i.Auction.AuctionEndDateTime))
-                .ForMember(x => x.AuctionType, option => option.MapFrom(i => i.Auction.AuctionType))
-                .ForMember(x => x.ItemName, option => option.MapFrom(i => i.Item.ItemName))
-                .ForMember(x => x.ItemNumber, option => option.MapFrom(i => i.Item.ItemNumber))
-                .ForMember(x => x.ItemType, option => option.MapFrom(i => i.Item.ItemType));
+                .ForMember(x => x.ItemId, option => option.MapFrom(i => i.Item.UniqueId)).ReverseMap();
         }
     }
 }

@@ -11,10 +11,10 @@ namespace NextGen.BiddingPlatform.AuctionItem
     public interface IAuctionItemAppService : IApplicationService
     {
         Task<ListResultDto<AuctionItemListDto>> GetAllAuctionItems();
-        //Task<PagedResultDto<AuctionItemDto>> GetItemsWithFilter(ItemFilter input);
+        Task<ListResultDto<AuctionItemListDto>> GetAuctionItemsByAuctionId(Guid auctionId);
         Task<AuctionItemDto> GetAuctionItemById(Guid Id);
         Task<AuctionItemDto> Create(CreateAuctionItemDto input);
-        Task Update(UpdateAuctionItemDto input);
+        Task CreateAuctionItems(List<CreateAuctionItemDto> auctionItems);
         Task Delete(Guid Id);
     }
 }

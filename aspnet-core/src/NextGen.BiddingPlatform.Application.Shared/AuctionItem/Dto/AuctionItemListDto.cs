@@ -17,7 +17,5 @@ namespace NextGen.BiddingPlatform.AuctionItem.Dto
         public string ItemName { get; set; }
         public int ItemType { get; set; }//may be enum or dropdown
         public int ItemNumber { get; set; }
-
-        public bool IsActive { get; set; }
     }
 }

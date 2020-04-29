@@ -8,11 +8,7 @@ namespace NextGen.BiddingPlatform.AuctionItem.Dto
     public class AuctionItemDto
     {
         public Guid UniqueId { get; set; }
-
-        [Required]
         public Guid AuctionId { get; set; }
-        [Required]
         public Guid ItemId { get; set; }
-        public bool IsActive { get; set; }
     }
 }

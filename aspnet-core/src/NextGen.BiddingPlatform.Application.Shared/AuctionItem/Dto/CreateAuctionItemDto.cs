@@ -11,6 +11,6 @@ namespace NextGen.BiddingPlatform.AuctionItem.Dto
         public Guid AuctionId { get; set; }
         [Required]
         public Guid ItemId { get; set; }
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 }
