@@ -43,7 +43,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                     
                     CommonFileUpload commonFileUpload = new CommonFileUpload();
                     var fullpath = await commonFileUpload.UploadFileRelativePath(logoFile, pathLocation, fileName);
-                    return Json(new AjaxResponse(new { Path = pathLocation + "/" + fileName, Status = true }));
+                    return Json(new AjaxResponse(new { Path = "/Uploads/AppAccountLogo/" + fileName, Status = true }));
                 }
                 else
                 {

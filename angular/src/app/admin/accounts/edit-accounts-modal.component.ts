@@ -25,7 +25,7 @@ export class EditAccountsModalComponent extends AppComponentBase{
         super(injector);
     }
 
-    show(stateId?: string):void{
+    show(AccountId?: string):void{
         
     }
     
