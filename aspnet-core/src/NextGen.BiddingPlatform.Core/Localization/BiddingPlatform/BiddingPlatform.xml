@@ -4,15 +4,20 @@
     <!--Custom Changes start from here -->
     <text name="Country">Country</text>
     <text name="CreateNewCountry">Create New Country</text>
-    <text name="EditingCountry">Editing Country</text>
-    <text name="DeletingCountry">Deleting Country</text>
+    <text name="EditingCountry">Edit Country</text>
+    <text name="DeletingCountry">Delete Country</text>
     <text name="CountryName">Country Name</text>
     <text name="Countries">Countries</text>
 
-    <text name="AppAccounts">AppAccounts</text>
-    <text name="CreateAppAccount">Create New AppAccount</text>
-    <text name="EditAppAccount">Edit AppAccount</text>
-    <text name="DeleteAppAccount">Delete AppAccount</text>
+    <text name="CreateState">Create New State</text>
+    <text name="EditState">Edit State</text>
+    <text name="DeleteState">Delete State</text>
+
+    <text name="AppAccounts">Accounts</text>
+    <text name="CreateAppAccount">Create New Account</text>
+    <text name="EditAppAccount">Edit Account</text>
+    <text name="DeleteAppAccount">Delete Account</text>
+
     <!-- Custom Changes end here-->
     <text name="HomePage">Home page</text>
     <text name="AboutUs">About us</text>
@@ -273,7 +278,6 @@
     <text name="DeletingLanguages">Deleting language</text>
     <text name="ChangingTexts">Changing texts</text>
     <text name="StateNameOrStateCode">State name or state code</text>
-    <text name="EditState">Edit state</text>
     <text name="StateCode">State code</text>
     <text name="States">States</text>
     <text name="State">State</text>

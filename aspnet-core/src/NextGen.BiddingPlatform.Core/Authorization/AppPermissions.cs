@@ -70,23 +70,31 @@
         public const string Pages_Administration_EntityDynamicParameterValue_Create = "Pages.Administration.EntityDynamicParameterValue.Create";
         public const string Pages_Administration_EntityDynamicParameterValue_Edit = "Pages.Administration.EntityDynamicParameterValue.Edit";
         public const string Pages_Administration_EntityDynamicParameterValue_Delete = "Pages.Administration.EntityDynamicParameterValue.Delete";
-        //TENANT-SPECIFIC PERMISSIONS
 
+        //Country permission
+        public const string Pages_Administration_Country = "Pages.Administration.Country";
+        public const string Pages_Administration_Country_Create = "Pages.Administration.Country.Create";
+        public const string Pages_Administration_Country_Edit = "Pages.Administration.Country.Edit";
+        public const string Pages_Administration_Country_Delete = "Pages.Administration.Country.Delete";
+
+        //State Permission
+        public const string Pages_Administration_State = "Pages.Administration.State";
+        public const string Pages_Administration_State_Create = "Pages.Administration.State.Create";
+        public const string Pages_Administration_State_Edit = "Pages.Administration.State.Edit";
+        public const string Pages_Administration_State_Delete = "Pages.Administration.State.Delete";
+
+        //TENANT-SPECIFIC PERMISSIONS
         public const string Pages_Tenant_Dashboard = "Pages.Tenant.Dashboard";
 
         public const string Pages_Administration_Tenant_Settings = "Pages.Administration.Tenant.Settings";
 
         public const string Pages_Administration_Tenant_SubscriptionManagement = "Pages.Administration.Tenant.SubscriptionManagement";
-        //Change Added by ALPESH
-        public const string Pages_Administration_Tenant_Country = "Pages.Administration.Tenant.Country";
-        public const string Pages_Administration_Tenant_Country_Create = "Pages.Administration.Tenant.Country.Create";
-        public const string Pages_Administration_Tenant_Country_Edit = "Pages.Administration.Tenant.Country.Edit";
-        public const string Pages_Administration_Tenant_Country_Delete = "Pages.Administration.Tenant.Country.Delete";
 
-        public const string Pages_Tenant_AppAccount = "Pages.Tenant.AppAccount";
-        public const string Pages_Tenant_AppAccount_Create = "Pages.Tenant.AppAccount.Create";
-        public const string Pages_Tenant_AppAccount_Edit = "Pages.Tenant.AppAccount.Edit";
-        public const string Pages_Tenant_AppAccount_Delete = "Pages.Tenant.AppAccount.Delete";
+        //Account Permission
+        public const string Pages_Administration_Tenant_AppAccount = "Pages.Tenant.AppAccount";
+        public const string Pages_Administration_Tenant_AppAccount_Create = "Pages.Tenant.AppAccount.Create";
+        public const string Pages_Administration_Tenant_AppAccount_Edit = "Pages.Tenant.AppAccount.Edit";
+        public const string Pages_Administration_Tenant_AppAccount_Delete = "Pages.Tenant.AppAccount.Delete";
 
         //HOST-SPECIFIC PERMISSIONS
 

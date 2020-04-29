@@ -89,6 +89,8 @@ namespace NextGen.BiddingPlatform.Authorization
             entityDynamicParameterValues.CreateChildPermission(AppPermissions.Pages_Administration_EntityDynamicParameterValue_Edit, L("EditingEntityDynamicParameterValue"));
             entityDynamicParameterValues.CreateChildPermission(AppPermissions.Pages_Administration_EntityDynamicParameterValue_Delete, L("DeletingEntityDynamicParameterValue"));
 
+
+
             //TENANT-SPECIFIC PERMISSIONS
 
             pages.CreateChildPermission(AppPermissions.Pages_Tenant_Dashboard, L("Dashboard"), multiTenancySides: MultiTenancySides.Tenant);
@@ -97,17 +99,22 @@ namespace NextGen.BiddingPlatform.Authorization
             administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_SubscriptionManagement, L("Subscription"), multiTenancySides: MultiTenancySides.Tenant);
 
             //Change Added by ALPESH
-            var country = administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Country, L("Country"), multiTenancySides: MultiTenancySides.Tenant);
-            country.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Country_Create, L("CreateNewCountry"), multiTenancySides: MultiTenancySides.Tenant);
-            country.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Country_Edit, L("EditingCountry"), multiTenancySides: MultiTenancySides.Tenant);
-            country.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Country_Delete, L("DeletingCountry"), multiTenancySides: MultiTenancySides.Tenant);
-
-            var appAccountPermisson = administration.CreateChildPermission(AppPermissions.Pages_Tenant_AppAccount, L("AppAccounts"), multiTenancySides: MultiTenancySides.Tenant);
-            appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Tenant_AppAccount_Create, L("CreateAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
-            appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Tenant_AppAccount_Edit, L("EditAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
-            appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Tenant_AppAccount_Delete, L("DeleteAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
+            var appAccountPermisson = administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AppAccount, L("AppAccounts"), multiTenancySides: MultiTenancySides.Tenant);
+            appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AppAccount_Create, L("CreateAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
+            appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AppAccount_Edit, L("EditAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
+            appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AppAccount_Delete, L("DeleteAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
 
             //HOST-SPECIFIC PERMISSIONS
+            var country = administration.CreateChildPermission(AppPermissions.Pages_Administration_Country, L("Country"), multiTenancySides: MultiTenancySides.Host);
+            country.CreateChildPermission(AppPermissions.Pages_Administration_Country_Create, L("CreateNewCountry"), multiTenancySides: MultiTenancySides.Host);
+            country.CreateChildPermission(AppPermissions.Pages_Administration_Country_Edit, L("EditingCountry"), multiTenancySides: MultiTenancySides.Host);
+            country.CreateChildPermission(AppPermissions.Pages_Administration_Country_Delete, L("DeletingCountry"), multiTenancySides: MultiTenancySides.Host);
+
+            var statePermission = administration.CreateChildPermission(AppPermissions.Pages_Administration_State, L("State"), multiTenancySides: MultiTenancySides.Host);
+            statePermission.CreateChildPermission(AppPermissions.Pages_Administration_State_Create, L("CreateState"), multiTenancySides: MultiTenancySides.Host);
+            statePermission.CreateChildPermission(AppPermissions.Pages_Administration_State_Edit, L("EditState"), multiTenancySides: MultiTenancySides.Host);
+            statePermission.CreateChildPermission(AppPermissions.Pages_Administration_State_Delete, L("DeleteState"), multiTenancySides: MultiTenancySides.Host);
+
             var editions = pages.CreateChildPermission(AppPermissions.Pages_Editions, L("Editions"), multiTenancySides: MultiTenancySides.Host);
             editions.CreateChildPermission(AppPermissions.Pages_Editions_Create, L("CreatingNewEdition"), multiTenancySides: MultiTenancySides.Host);
             editions.CreateChildPermission(AppPermissions.Pages_Editions_Edit, L("EditingEdition"), multiTenancySides: MultiTenancySides.Host);

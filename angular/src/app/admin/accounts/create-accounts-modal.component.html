@@ -57,7 +57,8 @@
                                 <label for="address.address1">Address 1 *</label>
                                 <input id="address.address1" #address1Input="ngModel" class="form-control" type="text"
                                     [ngClass]="{'edited':account.address.address1}" name="address.address1"
-                                    [(ngModel)]="account.address.address1" #address.address1="ngModel" required maxlength="64">
+                                    [(ngModel)]="account.address.address1" #address.address1="ngModel" required
+                                    maxlength="64">
                                 <validation-messages [formCtrl]="address1Input"></validation-messages>
                             </div>
                             <div class="col-xl-6">
@@ -74,16 +75,18 @@
                             <div class="col-xl-6">
                                 <label for="CountryCombobox">Country Name *</label>
                                 <select #CountryCombobox name="countryName" class="form-control bs-select"
-                                    [(ngModel)]="account.address.countryUniqueId" (onChange) = "loadStateList($event.target.value)" required>
-                                    <option *ngFor="let country of countryList" [value]="country.uniqueId">
+                                    [(ngModel)]="account.address.countryUniqueId"
+                                    (change)="loadStateList($event.target.value)" required>
+                                    <option *ngFor="let country of countryList" [value]="country.countryUniqueId">
                                         {{country.countryName}}</option>
                                 </select>
                             </div>
                             <div class="col-xl-6">
                                 <label for="StateCombobox">State Name *</label>
-                                <select #StateCombobox name="stateName" [disabled] = "stateDropdown" class="form-control bs-select"
-                                    [(ngModel)]="account.address.stateUniqueId" required>
-                                    <option *ngFor="let state of stateList" [value]="state.uniqueId">{{state.stateName}}
+                                <select #StateCombobox name="stateName" [disabled]="stateDropdown"
+                                    class="form-control bs-select" [(ngModel)]="account.address.stateUniqueId" required>
+                                    <option *ngFor="let state of stateList.states" [value]="state.stateUniqueId">
+                                        {{state.stateName}}
                                     </option>
                                 </select>
                             </div>
@@ -94,20 +97,26 @@
                             <div class="col-xl-6">
                                 <label for="city">City *</label>
                                 <input id="city" #cityInput="ngModel" class="form-control" type="text"
-                                    [ngClass]="{'edited':account.address.city}" name="city" [(ngModel)]="account.address.city"
-                                    #address1="ngModel" required maxlength="64">
+                                    [ngClass]="{'edited':account.address.city}" name="city"
+                                    [(ngModel)]="account.address.city" #address1="ngModel" required maxlength="64">
                                 <validation-messages [formCtrl]="cityInput"></validation-messages>
                             </div>
                             <div class="col-xl-6">
 
                                 <label for="zipCode">Zip Code *</label>
                                 <input id="zipCode" #zipCodeInput="ngModel" class="form-control" type="text"
-                                    [ngClass]="{'edited':account.address.zipCode}" name="zipCode" [(ngModel)]="account.address.zipCode"
-                                    #address1="ngModel" required maxlength="10">
+                                    [ngClass]="{'edited':account.address.zipCode}" name="zipCode"
+                                    [(ngModel)]="account.address.zipCode" #address1="ngModel" required maxlength="10">
                                 <validation-messages [formCtrl]="zipCodeInput"></validation-messages>
                             </div>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label for="logo">Logo</label>
+                        <input id="logo" #inputFile type="file" ng2FileSelect [uploader]="logoUploader" class="col-lg-12" required />
+                        <span class="form-text text-muted col-lg-12">{{"UploadLogo_Info" | localize}}</span>
+                    </div>
+                    <button class="btn btn-default" type="button" (click)="clearLogo()">{{"Clear" | localize}}</button>
                 </div>
                 <div class="modal-footer">
                     <button type="button" [disabled]="saving" class="btn btn-secondary"
