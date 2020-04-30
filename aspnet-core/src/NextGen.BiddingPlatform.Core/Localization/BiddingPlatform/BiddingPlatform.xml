@@ -17,6 +17,14 @@
     <text name="CreateAppAccount">Create New Account</text>
     <text name="EditAppAccount">Edit Account</text>
     <text name="DeleteAppAccount">Delete Account</text>
+    <text name="FirstName">First Name</text>
+    <text name="LastName">Last Name</text>
+    <text name="Address1">Address1</text>
+    <text name="Address2">Address2</text>
+    <text name="ZipCode">Zip Code</text>
+
+
+
 
     <!-- Custom Changes end here-->
     <text name="HomePage">Home page</text>
