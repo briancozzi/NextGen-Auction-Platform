@@ -26,6 +26,7 @@ using NextGen.BiddingPlatform.Authorization.Users.Delegation.Dto;
 using NextGen.BiddingPlatform.Authorization.Users.Dto;
 using NextGen.BiddingPlatform.Authorization.Users.Importing.Dto;
 using NextGen.BiddingPlatform.Authorization.Users.Profile.Dto;
+using NextGen.BiddingPlatform.CardDetail.Dto;
 using NextGen.BiddingPlatform.Category.Dto;
 using NextGen.BiddingPlatform.Chat;
 using NextGen.BiddingPlatform.Chat.Dto;
@@ -231,6 +232,13 @@ namespace NextGen.BiddingPlatform
             configuration.CreateMap<Core.AuctionItems.AuctionItem, AuctionItemDto>()
                 .ForMember(x => x.AuctionId, option => option.MapFrom(a => a.Auction.UniqueId))
                 .ForMember(x => x.ItemId, option => option.MapFrom(i => i.Item.UniqueId)).ReverseMap();
+
+            //CardDetail
+            configuration.CreateMap<CreateCardDetailDto, Core.CardDetails.CardDetail>();
+            configuration.CreateMap<Core.CardDetails.CardDetail,CreateCardDetailDto > ()
+                .ForMember(x => x.FullName, option => option.MapFrom(x => x.User.FullName));
+            configuration.CreateMap<Core.CardDetails.CardDetail,CardDetailDto>()
+                .ForMember(x=>x.FullName,option => option.MapFrom(x=>x.User.FullName)).ReverseMap();
         }
     }
 }
