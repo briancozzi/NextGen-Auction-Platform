@@ -6,6 +6,8 @@ import { Paginator } from 'primeng/paginator';
 import { finalize } from 'rxjs/operators';
 import { LazyLoadEvent } from 'primeng/public_api';
 import {CreateAccountsModalComponent} from './create-accounts-modal.component'
+import {EditAccountsModalComponent} from './edit-accounts-modal.component'
+
 import { AppConsts } from '@shared/AppConsts';
 
 @Component({
@@ -14,6 +16,7 @@ import { AppConsts } from '@shared/AppConsts';
 })
 export class AccountsComponent extends AppComponentBase {
   @ViewChild('createAccountsModal',{static: true}) createAccountsModal: CreateAccountsModalComponent;
+  @ViewChild('editAccountsModal',{static: true}) editAccountsModal: EditAccountsModalComponent;
 
   @ViewChild('dataTable', {static: true}) dataTable: Table;
   @ViewChild('paginator', {static: true}) paginator: Paginator;

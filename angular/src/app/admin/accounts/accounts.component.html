@@ -77,7 +77,7 @@
                                             <ul class="dropdown-menu" *dropdownMenu>
                                                 <li>
                                                     <a href="javascript:;"
-                                                        (click)="editAccountModal.show(record.uniqueId)">{{'Edit' | localize}}</a>
+                                                        (click)="editAccountsModal.show(record.uniqueId)">{{'Edit' | localize}}</a>
                                                 </li>
                                                 <li>
                                                     <a href="javascript:;"
@@ -125,4 +125,6 @@
         </div>
     </div>
     <createAccountsModal #createAccountsModal (modalSave)=getAccounts()></createAccountsModal>
+    <editAccountsModal #editAccountsModal (modalSave)=getAccounts()></editAccountsModal>
+
 </div>
