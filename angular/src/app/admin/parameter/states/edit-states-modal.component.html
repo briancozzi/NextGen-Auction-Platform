@@ -2,7 +2,7 @@
      aria-hidden="true" [config]="{backdrop: 'static', keyboard: !saving}">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form *ngIf="active" #stateForm="ngForm" novalidate (ngSubmit)="save()">
+            <form *ngIf="active" #editStateForm="ngForm" novalidate (ngSubmit)="save()">
                 <div class="modal-header">
                     <h5 class="modal-title">
                         <span>{{"EditState" | localize}}</span>
@@ -35,7 +35,7 @@
                 </div>
                 <div class="modal-footer">
                     <button [disabled]="saving" type="button" class="btn btn-secondary" (click)="close()">{{l("Cancel")}}</button>
-                    <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> <span>{{l("Save")}}</span></button>
+                    <button type="submit" class="btn btn-primary" [disabled]="!editStateForm.form.valid"><i class="fa fa-save"></i> <span>{{l("Save")}}</span></button>
                 </div>
             </form>
         </div>

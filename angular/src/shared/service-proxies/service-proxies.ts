@@ -1678,6 +1678,341 @@ export class AuctionServiceProxy {
 }
 
 @Injectable()
+export class AuctionItemServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    /**
+     * @return Success
+     */
+    getAllAuctionItems(): Observable<ListResultDtoOfAuctionItemListDto> {
+        let url_ = this.baseUrl + "/api/services/app/AuctionItem/GetAllAuctionItems";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAllAuctionItems(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAllAuctionItems(<any>response_);
+                } catch (e) {
+                    return <Observable<ListResultDtoOfAuctionItemListDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<ListResultDtoOfAuctionItemListDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAllAuctionItems(response: HttpResponseBase): Observable<ListResultDtoOfAuctionItemListDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ListResultDtoOfAuctionItemListDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ListResultDtoOfAuctionItemListDto>(<any>null);
+    }
+
+    /**
+     * @param auctionId (optional) 
+     * @return Success
+     */
+    getAuctionItemsByAuctionId(auctionId: string | undefined): Observable<ListResultDtoOfAuctionItemListDto> {
+        let url_ = this.baseUrl + "/api/services/app/AuctionItem/GetAuctionItemsByAuctionId?";
+        if (auctionId === null)
+            throw new Error("The parameter 'auctionId' cannot be null.");
+        else if (auctionId !== undefined)
+            url_ += "auctionId=" + encodeURIComponent("" + auctionId) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAuctionItemsByAuctionId(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAuctionItemsByAuctionId(<any>response_);
+                } catch (e) {
+                    return <Observable<ListResultDtoOfAuctionItemListDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<ListResultDtoOfAuctionItemListDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAuctionItemsByAuctionId(response: HttpResponseBase): Observable<ListResultDtoOfAuctionItemListDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ListResultDtoOfAuctionItemListDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ListResultDtoOfAuctionItemListDto>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    getAuctionItemById(id: string | undefined): Observable<AuctionItemDto> {
+        let url_ = this.baseUrl + "/api/services/app/AuctionItem/GetAuctionItemById?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAuctionItemById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAuctionItemById(<any>response_);
+                } catch (e) {
+                    return <Observable<AuctionItemDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<AuctionItemDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAuctionItemById(response: HttpResponseBase): Observable<AuctionItemDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AuctionItemDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AuctionItemDto>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    create(body: CreateAuctionItemDto | undefined): Observable<AuctionItemDto> {
+        let url_ = this.baseUrl + "/api/services/app/AuctionItem/Create";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json", 
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreate(<any>response_);
+                } catch (e) {
+                    return <Observable<AuctionItemDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<AuctionItemDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreate(response: HttpResponseBase): Observable<AuctionItemDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AuctionItemDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AuctionItemDto>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    createAuctionItems(body: CreateAuctionItemDto[] | null | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/AuctionItem/CreateAuctionItems";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json", 
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateAuctionItems(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateAuctionItems(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreateAuctionItems(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    delete(id: string | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/AuctionItem/Delete?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDelete(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDelete(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+}
+
+@Injectable()
 export class AuditLogServiceProxy {
     private http: HttpClient;
     private baseUrl: string;
@@ -17786,9 +18121,6 @@ export class AuctionDto implements IAuctionDto {
     auctionStartDateTime!: moment.Moment;
     auctionEndDateTime!: moment.Moment;
     address!: AddressDto;
-    sorting!: string | undefined;
-    maxResultCount!: number;
-    skipCount!: number;
 
     constructor(data?: IAuctionDto) {
         if (data) {
@@ -17808,9 +18140,6 @@ export class AuctionDto implements IAuctionDto {
             this.auctionStartDateTime = _data["auctionStartDateTime"] ? moment(_data["auctionStartDateTime"].toString()) : <any>undefined;
             this.auctionEndDateTime = _data["auctionEndDateTime"] ? moment(_data["auctionEndDateTime"].toString()) : <any>undefined;
             this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
-            this.sorting = _data["sorting"];
-            this.maxResultCount = _data["maxResultCount"];
-            this.skipCount = _data["skipCount"];
         }
     }
 
@@ -17830,9 +18159,6 @@ export class AuctionDto implements IAuctionDto {
         data["auctionStartDateTime"] = this.auctionStartDateTime ? this.auctionStartDateTime.toISOString() : <any>undefined;
         data["auctionEndDateTime"] = this.auctionEndDateTime ? this.auctionEndDateTime.toISOString() : <any>undefined;
         data["address"] = this.address ? this.address.toJSON() : <any>undefined;
-        data["sorting"] = this.sorting;
-        data["maxResultCount"] = this.maxResultCount;
-        data["skipCount"] = this.skipCount;
         return data; 
     }
 }
@@ -17845,9 +18171,6 @@ export interface IAuctionDto {
     auctionStartDateTime: moment.Moment;
     auctionEndDateTime: moment.Moment;
     address: AddressDto;
-    sorting: string | undefined;
-    maxResultCount: number;
-    skipCount: number;
 }
 
 export class CreateAuctionDto implements ICreateAuctionDto {
@@ -17956,6 +18279,202 @@ export interface IUpdateAuctionDto {
     auctionStartDateTime: moment.Moment;
     auctionEndDateTime: moment.Moment;
     address: AddressDto;
+}
+
+export class AuctionItemListDto implements IAuctionItemListDto {
+    auctionId!: string;
+    auctionType!: string | undefined;
+    auctionStartDateTime!: moment.Moment;
+    auctionEndDateTime!: moment.Moment;
+    itemId!: string;
+    itemName!: string | undefined;
+    itemType!: number;
+    itemNumber!: number;
+
+    constructor(data?: IAuctionItemListDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.auctionId = _data["auctionId"];
+            this.auctionType = _data["auctionType"];
+            this.auctionStartDateTime = _data["auctionStartDateTime"] ? moment(_data["auctionStartDateTime"].toString()) : <any>undefined;
+            this.auctionEndDateTime = _data["auctionEndDateTime"] ? moment(_data["auctionEndDateTime"].toString()) : <any>undefined;
+            this.itemId = _data["itemId"];
+            this.itemName = _data["itemName"];
+            this.itemType = _data["itemType"];
+            this.itemNumber = _data["itemNumber"];
+        }
+    }
+
+    static fromJS(data: any): AuctionItemListDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AuctionItemListDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["auctionId"] = this.auctionId;
+        data["auctionType"] = this.auctionType;
+        data["auctionStartDateTime"] = this.auctionStartDateTime ? this.auctionStartDateTime.toISOString() : <any>undefined;
+        data["auctionEndDateTime"] = this.auctionEndDateTime ? this.auctionEndDateTime.toISOString() : <any>undefined;
+        data["itemId"] = this.itemId;
+        data["itemName"] = this.itemName;
+        data["itemType"] = this.itemType;
+        data["itemNumber"] = this.itemNumber;
+        return data; 
+    }
+}
+
+export interface IAuctionItemListDto {
+    auctionId: string;
+    auctionType: string | undefined;
+    auctionStartDateTime: moment.Moment;
+    auctionEndDateTime: moment.Moment;
+    itemId: string;
+    itemName: string | undefined;
+    itemType: number;
+    itemNumber: number;
+}
+
+export class ListResultDtoOfAuctionItemListDto implements IListResultDtoOfAuctionItemListDto {
+    items!: AuctionItemListDto[] | undefined;
+
+    constructor(data?: IListResultDtoOfAuctionItemListDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(AuctionItemListDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ListResultDtoOfAuctionItemListDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ListResultDtoOfAuctionItemListDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IListResultDtoOfAuctionItemListDto {
+    items: AuctionItemListDto[] | undefined;
+}
+
+export class AuctionItemDto implements IAuctionItemDto {
+    uniqueId!: string;
+    auctionId!: string;
+    itemId!: string;
+
+    constructor(data?: IAuctionItemDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.uniqueId = _data["uniqueId"];
+            this.auctionId = _data["auctionId"];
+            this.itemId = _data["itemId"];
+        }
+    }
+
+    static fromJS(data: any): AuctionItemDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AuctionItemDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["uniqueId"] = this.uniqueId;
+        data["auctionId"] = this.auctionId;
+        data["itemId"] = this.itemId;
+        return data; 
+    }
+}
+
+export interface IAuctionItemDto {
+    uniqueId: string;
+    auctionId: string;
+    itemId: string;
+}
+
+export class CreateAuctionItemDto implements ICreateAuctionItemDto {
+    auctionId!: string;
+    itemId!: string;
+    isActive!: boolean;
+
+    constructor(data?: ICreateAuctionItemDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.auctionId = _data["auctionId"];
+            this.itemId = _data["itemId"];
+            this.isActive = _data["isActive"];
+        }
+    }
+
+    static fromJS(data: any): CreateAuctionItemDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateAuctionItemDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["auctionId"] = this.auctionId;
+        data["itemId"] = this.itemId;
+        data["isActive"] = this.isActive;
+        return data; 
+    }
+}
+
+export interface ICreateAuctionItemDto {
+    auctionId: string;
+    itemId: string;
+    isActive: boolean;
 }
 
 export class AuditLogListDto implements IAuditLogListDto {

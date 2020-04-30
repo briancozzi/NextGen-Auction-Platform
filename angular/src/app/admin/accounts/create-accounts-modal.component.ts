@@ -40,7 +40,6 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
         injector: Injector,
         private _accountsService:AppAccountServiceProxy,
         private _countryService: CountryServiceProxy,
-        private _stateService: StateServiceProxy,
         private _tokenService: TokenService
     ) {
         super(injector);
@@ -78,13 +77,8 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
             '/AppAccounts/UploadLogo',
             result => {
                 this.account.logo = result.path;
-                this._accountsService.create(this.account)
-                .pipe(finalize(() => this.saving = false))
-                .subscribe(() => {
-                    this.notify.info(this.l('SavedSuccessfully'));
-                    this.close();
-                    this.modalSave.emit(null);
-                });
+                this.saveAccount();
+                
             }
         );
     }
@@ -115,9 +109,22 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
 
     save(): void {
         this.saving = true;
-        this.logoUploader.uploadAll();
+        if(this.inputFile.nativeElement.value !=""){
+            this.logoUploader.uploadAll();
+        }
+        else{
+            this.saveAccount();
+        }
     }
-    
+    saveAccount():void{
+        this._accountsService.create(this.account)
+        .pipe(finalize(() => this.saving = false))
+        .subscribe(() => {
+            this.notify.info(this.l('SavedSuccessfully'));
+            this.close();
+            this.modalSave.emit(null);
+        });
+    }
     close(): void {
         this.active = false;
         this.modal.hide();
