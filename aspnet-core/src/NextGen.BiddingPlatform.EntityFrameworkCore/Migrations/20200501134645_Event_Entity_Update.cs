@@ -7,9 +7,9 @@ namespace NextGen.BiddingPlatform.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "EventDate",
-                table: "AppAccountEvents");
+            //migrationBuilder.DropColumn(
+            //    name: "EventDate",
+            //    table: "AppAccountEvents");
 
             migrationBuilder.DropColumn(
                 name: "EventEndTime",
