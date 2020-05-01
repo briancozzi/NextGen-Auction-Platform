@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace NextGen.BiddingPlatform.AuctionItem
 {
-    public class AuctionItemAppService : BiddingPlatformDomainServiceBase, IAuctionItemAppService
+    public class AuctionItemAppService : BiddingPlatformAppServiceBase, IAuctionItemAppService
     {
 
         private readonly IRepository<Core.AuctionItems.AuctionItem> _auctionitemRepository;
