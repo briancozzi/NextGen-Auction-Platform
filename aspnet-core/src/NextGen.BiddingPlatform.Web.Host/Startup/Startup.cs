@@ -39,6 +39,7 @@ using NextGen.BiddingPlatform.Schemas;
 using NextGen.BiddingPlatform.Web.HealthCheck;
 using HealthChecksUISettings = HealthChecks.UI.Configuration.Settings;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Abp.Timing;
 
 namespace NextGen.BiddingPlatform.Web.Startup
 {
@@ -52,6 +53,7 @@ namespace NextGen.BiddingPlatform.Web.Startup
         public Startup(IWebHostEnvironment env)
         {
             _hostingEnvironment = env;
+            Clock.Provider = ClockProviders.Utc;
             _appConfiguration = env.GetAppConfiguration();
         }
 
@@ -203,6 +205,8 @@ namespace NextGen.BiddingPlatform.Web.Startup
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             //Initializes ABP framework.
+           
+
             app.UseAbp(options =>
             {
                 options.UseAbpRequestLocalization = false; //used below: UseAbpRequestLocalization
