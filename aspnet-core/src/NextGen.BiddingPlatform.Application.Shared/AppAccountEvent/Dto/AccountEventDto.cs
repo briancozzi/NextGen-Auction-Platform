@@ -13,8 +13,8 @@ namespace NextGen.BiddingPlatform.AppAccountEvent.Dto
         public Guid UniqueId { get; set; }
         public string EventName { get; set; }
         public DateTime EventDate { get; set; }
-        public DateTime EventStartDateTime { get; set; }
-        public DateTime EventEndDateTime { get; set; }
+        public TimeSpan EventStartTime { get; set; }
+        public TimeSpan EventEndTime { get; set; }
         public string Email { get; set; }
         public string MobileNo { get; set; }
         public string EventUrl { get; set; }

@@ -1,5 +1,7 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
+using NextGen.BiddingPlatform.Core.AuctionBidders;
+using NextGen.BiddingPlatform.Core.AuctionItems;
 using NextGen.BiddingPlatform.CustomInterface;
 using System;
 using System.Collections.Generic;
@@ -20,11 +22,11 @@ namespace NextGen.BiddingPlatform.Core.AuctionHistories
 
         [ForeignKey("AuctionBidder")]
         public int AuctionBidderId { get; set; }
-        //public AuctionBidder AuctionBidder { get; set; }
+        public AuctionBidder AuctionBidder { get; set; }
 
         [ForeignKey("AuctionItem")]
         public int AuctionItemId { get; set; }
-        //public AuctionItem AuctionItem { get; set; }
+        public AuctionItem AuctionItem { get; set; }
 
         [Required]
         public double BidAmount { get; set; }
