@@ -8,33 +8,19 @@ import {
     AddressDto,
     AppAccountServiceProxy,
     CreateAccountEventDto,
-    TimingServiceProxy,
-    SettingScopes, 
-    NameValueDto,
     AccountEventServiceProxy
 } from '@shared/service-proxies/service-proxies';
 import {forkJoin} from "rxjs";
-import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
     selector: 'createEventsModal',
     templateUrl: './create-events-modal.component.html',
-    providers: [{
-        provide: NG_VALUE_ACCESSOR,
-        useExisting: forwardRef(() => CreateEventsModalComponent),
-        multi: true,
-    }]
+    
 })
-export class CreateEventsModalComponent extends AppComponentBase implements OnInit, ControlValueAccessor{
+export class CreateEventsModalComponent extends AppComponentBase {
 
     @ViewChild('createModal', { static: true }) modal: ModalDirective;
-    @Input() defaultTimezoneScope: SettingScopes;
     @Output() modalSave: EventEmitter<any> = new EventEmitter<any>();
-
-
-    timeZoneList: NameValueDto[] = [];
-    selectedTimeZone = new FormControl('');
-    onTouched: any = () => { };
 
     active = false;
     saving = false;
@@ -44,13 +30,12 @@ export class CreateEventsModalComponent extends AppComponentBase implements OnIn
     accountList = [];
     stateDropdown = true;
     logo: string;
-    startTime: any;
-    endTime:any;
+    startTime: Date = new Date();
+    endTime: Date = new Date();
 
     constructor(
         injector: Injector,
         private _countryService: CountryServiceProxy,
-        private _timingService: TimingServiceProxy,
         private _accountService: AppAccountServiceProxy,
         private _eventService: AccountEventServiceProxy
     ) {
@@ -64,35 +49,6 @@ export class CreateEventsModalComponent extends AppComponentBase implements OnIn
     }
 
     onShown(): void {
-    }
-
-    ngOnInit(): void {
-        debugger;
-        let self = this;
-        self._timingService.getTimezones(self.defaultTimezoneScope).subscribe(result => {
-            self.timeZoneList = result.items;
-        });
-    }
-    writeValue(obj: any): void {
-        if (this.selectedTimeZone) {
-            this.selectedTimeZone.setValue(obj);
-        }
-    }
-
-    registerOnChange(fn: any): void {
-        this.selectedTimeZone.valueChanges.subscribe(fn);
-    }
-
-    registerOnTouched(fn: any): void {
-        this.onTouched = fn;
-    }
-
-    setDisabledState?(isDisabled: boolean): void {
-        if (isDisabled) {
-            this.selectedTimeZone.disable();
-        } else {
-            this.selectedTimeZone.enable();
-        }
     }
 
     init(): void {
@@ -114,13 +70,10 @@ export class CreateEventsModalComponent extends AppComponentBase implements OnIn
     }
 
     save(): void {
+        debugger;
         this.saving = true;
-        let stime = this.event.eventStartTime.split(":");
-        this.startTime = new Date(0, 0, 0, parseInt(stime[0]), parseInt(stime[1]), 0, 0);
-        let ltime = this.event.eventEndTime.split(":");
-        this.endTime = new Date(0, 0, 0, parseInt(ltime[0]), parseInt(ltime[1]), 0, 0);
-        this.event.eventStartTime = this.startTime;
-        this.event.eventEndTime = this.endTime;
+        var stime = this.startTime;
+        var etime = this.endTime;
         this._eventService.create(this.event)
         .pipe(finalize(() => this.saving = false))
         .subscribe(() => {
@@ -130,6 +83,7 @@ export class CreateEventsModalComponent extends AppComponentBase implements OnIn
         });
     
     }
+
   
     close(): void {
         this.active = false;

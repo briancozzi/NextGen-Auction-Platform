@@ -16,7 +16,8 @@ import { ServiceProxyModule } from '@shared/service-proxies/service-proxy.module
 import { UtilsModule } from '@shared/utils/utils.module';
 import { FileUploadModule } from 'ng2-file-upload';
 import { ModalModule, TabsModule, TooltipModule, BsDropdownModule, PopoverModule,BsModalRef } from 'ngx-bootstrap';
-import {BsDatepickerModule} from 'ngx-bootstrap/datepicker';
+import { BsDatepickerModule} from 'ngx-bootstrap/datepicker';
+import { TimepickerModule } from 'ngx-bootstrap/timepicker';
 import { FileUploadModule as PrimeNgFileUploadModule } from 'primeng/fileupload';
 import { PaginatorModule } from 'primeng/paginator';
 import { ProgressBarModule } from 'primeng/progressbar';
@@ -149,6 +150,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
         BsDropdownModule.forRoot(),
         PopoverModule.forRoot(),
         BsDatepickerModule.forRoot(),
+        TimepickerModule.forRoot(),
         FileUploadModule,
         AppRoutingModule,
         UtilsModule,

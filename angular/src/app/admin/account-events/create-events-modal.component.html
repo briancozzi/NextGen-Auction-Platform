@@ -2,7 +2,7 @@
     aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form #accountCreateForm="ngForm" role="form" novalidate class="form-validation" *ngIf="active"
+            <form #eventCreateForm="ngForm" role="form" novalidate class="form-validation" *ngIf="active"
                 (submit)="save()">
                 <div class="modal-header">
                     <h5 class="modal-title">
@@ -24,52 +24,47 @@
                                     [(ngModel)]="event.eventName" #firstName="ngModel" required maxlength="64">
                                 <validation-messages [formCtrl]="eventNameInput"></validation-messages>
                             </div>
-                            <div class="col-xl-6">
-                                <label for="eventDate">{{"EventDate" | localize}} *</label>
-                                <input id="eventDate" type="text" #eventDateUtc
-                            name="eventDate" class="form-control" 
-                            bsDatepicker 
-                            datePickerMomentModifier
-                            [(date)]="event.eventDate"
-                            >
-                            </div>
+
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="row">
-                            <div class="col-xl-6">
+                            <div class="col-xl-3">
                                 <label for="eventStartTime">{{"EventStartTime" | localize}} *</label>
-                               <input type="time"  id="eventStartTime" class="form-control" [ngClass]="{'edited':event.eventStartTime}" name="eventStartTime"
-                               [(ngModel)]="event.eventStartTime" #eventDateStartTime="ngModel"/>
+                                <input id="eventStartTime" type="text" #eventStartTimeUtc name="eventStartTime"
+                                    class="form-control" bsDatepicker datePickerMomentModifier
+                                    [(date)]="event.eventStartTime">
                             </div>
-                            <div class="col-xl-6">
-                                <label for="eventEndTime">{{"eventEndTime" | localize}} *</label>
-                               <input type="time"  id="eventEndTime" class="form-control" [ngClass]="{'edited':event.eventEndTime}" name="eventEndTime"
-                               [(ngModel)]="event.eventEndTime" #eventDateEndTime="ngModel"/>
+                            <div class="col-xl-3">
+                                <timepicker [(ngModel)]="startTime"></timepicker>
+                            </div>
+                            <div class="col-xl-3">
+                                <label for="eventEndTime">{{"EventEndTime" | localize}} *</label>
+                                <input id="eventEndTime" type="text" #eventEndTimeUtc name="eventEndTime"
+                                    class="form-control" bsDatepicker datePickerMomentModifier
+                                    [(date)]="event.eventEndTime">
+                            </div>
+                            <div class="col-xl-3">
+                                <timepicker [(ngModel)]="endTime" ></timepicker>
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="row">
-                            <!-- <div class="col-xl-6">
-                                <label for="timeZone">{{"TimeZone" | localize}} *</label>
-                                <select class="form-control" [formControl]="selectedTimeZone" id="timeZone" [(ngModel)]="event.timeZone">
-                                    <option *ngFor="let timeZone of timeZoneList" [value]="timeZone.value">{{timeZone.name}}</option>
-                                </select>
-                            </div> -->
                             <div class="col-xl-6">
                                 <label for="appAccountUniqueId">{{"AccountName" | localize}} *</label>
-                                <select #AppAccountUniqueId name="appAccountUniqueId" 
-                                    class="form-control bs-select" [(ngModel)]="event.appAccountUniqueId" required>
+                                <select #AppAccountUniqueId name="appAccountUniqueId" class="form-control bs-select"
+                                    [(ngModel)]="event.appAccountUniqueId" required>
                                     <option *ngFor="let account of accountList" [value]="account.uniqueId">
-                                        {{account.firstName}}
+                                        {{account.firstName }}
                                     </option>
                                 </select>
                             </div>
                             <div class="col-xl-6">
                                 <label for="eventUrl">{{"EventUrl" | localize}} *</label>
-                               <input type="text"  id="eventUrl" class="form-control" [ngClass]="{'edited':event.eventUrl}" name="eventUrl"
-                               [(ngModel)]="event.eventUrl" #eventUrl="ngModel"/>
+                                <input type="text" id="eventUrl" class="form-control"
+                                    [ngClass]="{'edited':event.eventUrl}" name="eventUrl" [(ngModel)]="event.eventUrl"
+                                    #eventUrl="ngModel" />
                             </div>
                         </div>
                     </div>
@@ -129,7 +124,8 @@
                                 <label for="zipCode">{{"ZipCode" | localize}} *</label>
                                 <input id="zipCode" #zipCodeInput="ngModel" class="form-control" type="text"
                                     [ngClass]="{'edited':event.address.zipCode}" name="zipCode"
-                                    [(ngModel)]="event.address.zipCode" #address1="ngModel" required maxlength="10" pattern="^[0-9]\d*$">
+                                    [(ngModel)]="event.address.zipCode" #address1="ngModel" required maxlength="10"
+                                    pattern="^[0-9]\d*$">
                                 <validation-messages [formCtrl]="zipCodeInput"></validation-messages>
                             </div>
                         </div>
@@ -138,8 +134,9 @@
                 <div class="modal-footer">
                     <button type="button" [disabled]="saving" class="btn btn-secondary"
                         (click)="close()">{{l("Cancel")}}</button>
-                    <button [disabled]="!accountCreateForm.form.valid" type="submit" [buttonBusy]="saving" [busyText]="l('SavingWithThreeDot')"
-                        class="btn btn-primary"><i class="fa fa-save"></i> <span>{{l("Save")}}</span></button>
+                    <button [disabled]="!eventCreateForm.form.valid" type="submit" [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')" class="btn btn-primary"><i class="fa fa-save"></i>
+                        <span>{{l("Save")}}</span></button>
                 </div>
             </form>
         </div>
