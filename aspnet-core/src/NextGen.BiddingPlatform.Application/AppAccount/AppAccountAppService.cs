@@ -20,7 +20,7 @@ using NextGen.BiddingPlatform.Authorization;
 namespace NextGen.BiddingPlatform.AppAccount
 {
     [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_AppAccount)]
-    public class AppAccountAppService : BiddingPlatformDomainServiceBase, IAppAccountAppService
+    public class AppAccountAppService : BiddingPlatformAppServiceBase, IAppAccountAppService
     {
         private readonly IRepository<Core.AppAccounts.AppAccount> _accountRepository;
         private readonly IRepository<Country.Country> _countryRepository;

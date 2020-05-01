@@ -26,6 +26,7 @@ import { EntityDynamicParameterComponent } from './dynamic-entity-parameters/ent
 import { EntityDynamicParameterValueComponent } from './dynamic-entity-parameters/entity-dynamic-parameter/entity-dynamic-parameter-value/entity-dynamic-parameter-value.component';
 import { StatesComponent } from './parameter/states/states.component';
 import {AccountsComponent} from "./accounts/accounts.component";
+import { AccountEventsComponent } from './account-events/account-events.component';
 
 
 @NgModule({
@@ -60,6 +61,7 @@ import {AccountsComponent} from "./accounts/accounts.component";
                     { path: 'entity-dynamic-parameter-value/manage-all/:entityFullName/:rowId', component: EntityDynamicParameterValueComponent, data: { permission: 'Pages.Administration.EntityDynamicParameters' } },
                     { path: 'states',component: StatesComponent},
                     {path:'accounts',component:AccountsComponent},
+                    {path:'events',component:AccountEventsComponent},
                     { path: '', redirectTo: 'hostDashboard', pathMatch: 'full' },
                     { path: '**', redirectTo: 'hostDashboard' }
                 ]

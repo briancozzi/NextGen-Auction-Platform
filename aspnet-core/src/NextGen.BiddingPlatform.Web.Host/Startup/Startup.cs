@@ -52,8 +52,8 @@ namespace NextGen.BiddingPlatform.Web.Startup
 
         public Startup(IWebHostEnvironment env)
         {
-            Clock.Provider = ClockProviders.Utc;
             _hostingEnvironment = env;
+            Clock.Provider = ClockProviders.Utc;
             _appConfiguration = env.GetAppConfiguration();
         }
 
@@ -205,6 +205,8 @@ namespace NextGen.BiddingPlatform.Web.Startup
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             //Initializes ABP framework.
+           
+
             app.UseAbp(options =>
             {
                 options.UseAbpRequestLocalization = false; //used below: UseAbpRequestLocalization

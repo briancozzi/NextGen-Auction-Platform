@@ -3,7 +3,7 @@
         <div [class]="containerClass">
             <div class="kt-subheader__main">
                 <h3 class="kt-subheader__title">
-                    <span>{{"Accounts" | localize}}</span>
+                    <span>{{"Events" | localize}}</span>
                 </h3>
                 <span class="kt-subheader__separator kt-subheader__separator--v"></span>
                 <span class="kt-subheader__desc">
@@ -11,8 +11,8 @@
             </div>
             <div class="kt-subheader__toolbar">
                 <div class="kt-subheader__wrapper">
-                    <button class="btn btn-primary" (click)="createAccount()"><i
-                            class="fa fa-plus"></i>{{"CreateAppAccount" | localize}}</button>
+                    <button class="btn btn-primary" (click)="createEvent()"><i
+                            class="fa fa-plus"></i>{{"CreateEvents" | localize}}</button>
                 </div>
             </div>
         </div>
@@ -21,11 +21,11 @@
         <div class="kt-portlet">
             <div class="kt-portlet__body">
                 <div class="kt-form">
-                    <form (submit)="getAccounts()" autocomplete="new-password">
+                    <form (submit)="getEvents()" autocomplete="new-password">
                         <div class="form-body">
                             <div class="row mb-4">
                                 <div class="col-xl-6">
-                                    <label for="SearchAccounts">{{"SearchAccounts" | localize}}</label>
+                                    <label for="SearchAccounts">{{"SearchEvents" | localize}}</label>
                                     <div class="input-group">
                                         <input id="StateNameOrStateCode" [(ngModel)]="filters.filterText"
                                             name="filterText" class="form-control"
@@ -43,26 +43,33 @@
                 <div class="row align-items-center">
                     <!--<Primeng-TurboTable-Start>-->
                     <div class="col primeng-datatable-container" [busyIf]="primengTableHelper.isLoading">
-                        <p-table #dataTable (onLazyLoad)="getAccounts($event)" [value]="primengTableHelper.records"
+                        <p-table #dataTable (onLazyLoad)="getEvents($event)" [value]="primengTableHelper.records"
                             rows="{{primengTableHelper.defaultRecordsCountPerPage}}" [paginator]="false" [lazy]="true"
                             [responsive]="primengTableHelper.isResponsive">
                             <ng-template pTemplate="header">
                                 <tr>
                                     <th style="width:130px">{{'Actions' | localize}}</th>
-                                    <th pSortableColumn="firstName">
-                                        {{"FirstName" | localize}}
-                                        <p-sortIcon field="firstName"></p-sortIcon>
+                                    <th pSortableColumn="eventName">
+                                        {{"EventName" | localize}}
+                                        <p-sortIcon field="eventName"></p-sortIcon>
                                     </th>
-                                    <th pSortableColumn="lastName">
-                                        {{"LastName" | localize}}
-                                        <p-sortIcon field="lastName"></p-sortIcon>
+                                    <th pSortableColumn="eventDate">
+                                        {{"EventDate" | localize}}
+                                        <p-sortIcon field="eventDate"></p-sortIcon>
                                     </th>
-                                    <th pSortableColumn="email">
-                                        {{"Email" | localize}}
-                                        <p-sortIcon field="email"></p-sortIcon>
+                                    <th pSortableColumn="eventStartTime">
+                                        {{"EventStartTime" | localize}}
+                                        <p-sortIcon field="eventStartTime"></p-sortIcon>
+                                    </th>
+                                    <th pSortableColumn="eventEndTime">
+                                        {{"EventEndTime" | localize}}
+                                        <p-sortIcon field="eventEndTime"></p-sortIcon>
                                     </th>
                                     <th>
-                                        {{"Logo" | localize}}
+                                        {{"EventUrl" | localize}}
+                                    </th>
+                                    <th>
+                                        {{"TimeZone" | localize}}
                                     </th>
                                 </tr>
                             </ng-template>
@@ -77,32 +84,38 @@
                                             <ul class="dropdown-menu" *dropdownMenu>
                                                 <li>
                                                     <a href="javascript:;"
-                                                        (click)="editAccountsModal.show(record.uniqueId)">{{'Edit' | localize}}</a>
+                                                        (click)="editEventsModal.show(record.uniqueId)">{{'Edit' | localize}}</a>
                                                 </li>
                                                 <li>
                                                     <a href="javascript:;"
-                                                        (click)="deleteAccount(record)">{{'Delete' | localize}}</a>
+                                                        (click)="deleteEvents(record)">{{'Delete' | localize}}</a>
                                                 </li>
                                             </ul>
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="ui-column-title">{{"FirstName" | localize}}</span>
-                                        {{record.firstName}}
+                                        <span class="ui-column-title">{{"EventName" | localize}}</span>
+                                        {{record.eventName}}
                                     </td>
                                     <td>
-                                        <span class="ui-column-title">{{"StateName" | localize}}</span>
-                                        {{record.lastName}}
+                                        <span class="ui-column-title">{{"EventDate" | localize}}</span>
+                                        {{record.eventDate | date: "MMM d, y"}}
                                     </td>
                                     <td>
-                                        <span class="ui-column-title">{{"CountryName" | localize}}</span>
-                                        {{record.email}}
+                                        <span class="ui-column-title">{{"EventStartTime" | localize}}</span>
+                                        {{record.eventStartTime}}
                                     </td>
                                     <td>
-                                        <span class="ui-column-title">{{"Logo" | localize}}</span>
-                                        <div *ngIf="record.logo!=null && record.logo!=''">
-                                        <img src="{{webHostUrl}}{{record.logo}}" alt="logo" />
-                                        </div>
+                                        <span class="ui-column-title">{{"EventEndTime" | localize}}</span>
+                                        {{record.eventEndTime}}
+                                    </td>
+                                    <td>
+                                        <span class="ui-column-title">{{"EventUrl" | localize}}</span>
+                                        {{record.eventUrl}}
+                                    </td>
+                                    <td>
+                                        <span class="ui-column-title">{{"TimeZone" | localize}}</span>
+                                        {{record.timeZone}}
                                     </td>
                                 </tr>
                             </ng-template>
@@ -112,7 +125,7 @@
                         </div>
                         <div class="primeng-paging-container">
                             <p-paginator [rows]="primengTableHelper.defaultRecordsCountPerPage" #paginator
-                                (onPageChange)="getAccounts($event)"
+                                (onPageChange)="getEvents($event)"
                                 [totalRecords]="primengTableHelper.totalRecordsCount"
                                 [rowsPerPageOptions]="primengTableHelper.predefinedRecordsCountPerPage">
                             </p-paginator>
@@ -126,7 +139,7 @@
             </div>
         </div>
     </div>
-    <createAccountsModal #createAccountsModal (modalSave)=getAccounts()></createAccountsModal>
-    <editAccountsModal #editAccountsModal (modalSave)=getAccounts()></editAccountsModal>
+    <createEventsModal #createEventsModal (modalSave)=getEvents()></createEventsModal>
+    <editEventsModal #editEventsModal (modalSave)=getEvents()></editEventsModal>
 
 </div>

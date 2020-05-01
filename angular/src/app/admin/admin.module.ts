@@ -9,6 +9,7 @@ import { FileUploadModule } from 'ng2-file-upload';
 import { ModalModule, PopoverModule, TabsModule, TooltipModule, BsDropdownModule } from 'ngx-bootstrap';
 import { BsDatepickerConfig, BsDaterangepickerConfig, BsLocaleService } from 'ngx-bootstrap/datepicker';
 import {BsDatepickerModule} from 'ngx-bootstrap/datepicker';
+import { TimepickerConfig,TimepickerModule } from 'ngx-bootstrap/timepicker';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { EditorModule } from 'primeng/editor';
 import { FileUploadModule as PrimeNgFileUploadModule } from 'primeng/fileupload';
@@ -107,7 +108,9 @@ import{EditStateModalComponent} from './parameter/states/edit-states-modal.compo
 import { AccountsComponent } from './accounts/accounts.component';
 import{CreateAccountsModalComponent} from './accounts/create-accounts-modal.component';
 import{EditAccountsModalComponent} from './accounts/edit-accounts-modal.component';
-
+import { AccountEventsComponent } from './account-events/account-events.component';
+import{CreateEventsModalComponent} from './account-events/create-events-modal.component';
+import{EditEventsModalComponent} from './account-events/edit-events-modal.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     // suppressScrollX: true
@@ -125,6 +128,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         PopoverModule.forRoot(),
         BsDropdownModule.forRoot(),
         BsDatepickerModule.forRoot(),
+        TimepickerModule.forRoot(),
         AdminRoutingModule,
         UtilsModule,
         AppCommonModule,
@@ -224,7 +228,10 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         EditStateModalComponent,
         AccountsComponent,
         CreateAccountsModalComponent,
-        EditAccountsModalComponent
+        EditAccountsModalComponent,
+        AccountEventsComponent,
+        CreateEventsModalComponent,
+        EditEventsModalComponent
     ],
     exports: [
         AddMemberModalComponent,

@@ -22,7 +22,7 @@ using Abp.Timing;
 
 namespace NextGen.BiddingPlatform.AppAccountEvent
 {
-    public class AccountEventAppService : BiddingPlatformDomainServiceBase, IAccountEventAppService
+    public class AccountEventAppService : BiddingPlatformAppServiceBase, IAccountEventAppService
     {
         private readonly IRepository<Event> _eventRepository;
         private readonly IAbpSession _abpSession;
@@ -57,6 +57,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
                 throw new Exception("You are not Authorized user.");
 
             var events = ObjectMapper.Map<Event>(input);
+            events.EventDate = input.EventDate.Date;
             events.UniqueId = Guid.NewGuid();
             events.Address.UniqueId = Guid.NewGuid();
             events.AppAccountId = account.Id;
