@@ -18335,8 +18335,8 @@ export class AccountEventDto implements IAccountEventDto {
     uniqueId!: string;
     eventName!: string | undefined;
     eventDate!: moment.Moment;
-    eventStartTime!: string;
-    eventEndTime!: string;
+    eventStartDateTime!: string;
+    eventEndDateTime!: string;
     email!: string | undefined;
     mobileNo!: string | undefined;
     eventUrl!: string | undefined;
@@ -18359,8 +18359,8 @@ export class AccountEventDto implements IAccountEventDto {
             this.uniqueId = _data["uniqueId"];
             this.eventName = _data["eventName"];
             this.eventDate = _data["eventDate"] ? moment(_data["eventDate"].toString()) : <any>undefined;
-            this.eventStartTime = _data["eventStartTime"];
-            this.eventEndTime = _data["eventEndTime"];
+            this.eventStartDateTime = _data["eventStartDateTime"];
+            this.eventEndDateTime = _data["eventEndDateTime"];
             this.email = _data["email"];
             this.mobileNo = _data["mobileNo"];
             this.eventUrl = _data["eventUrl"];
@@ -18383,8 +18383,8 @@ export class AccountEventDto implements IAccountEventDto {
         data["uniqueId"] = this.uniqueId;
         data["eventName"] = this.eventName;
         data["eventDate"] = this.eventDate ? this.eventDate.toISOString() : <any>undefined;
-        data["eventStartTime"] = this.eventStartTime;
-        data["eventEndTime"] = this.eventEndTime;
+        data["eventStartDateTime"] = this.eventStartDateTime;
+        data["eventEndDateTime"] = this.eventEndDateTime;
         data["email"] = this.email;
         data["mobileNo"] = this.mobileNo;
         data["eventUrl"] = this.eventUrl;
@@ -18400,8 +18400,8 @@ export interface IAccountEventDto {
     uniqueId: string;
     eventName: string | undefined;
     eventDate: moment.Moment;
-    eventStartTime: string;
-    eventEndTime: string;
+    eventStartDateTime: string;
+    eventEndDateTime: string;
     email: string | undefined;
     mobileNo: string | undefined;
     eventUrl: string | undefined;
