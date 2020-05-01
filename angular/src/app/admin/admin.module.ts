@@ -9,6 +9,7 @@ import { FileUploadModule } from 'ng2-file-upload';
 import { ModalModule, PopoverModule, TabsModule, TooltipModule, BsDropdownModule } from 'ngx-bootstrap';
 import { BsDatepickerConfig, BsDaterangepickerConfig, BsLocaleService } from 'ngx-bootstrap/datepicker';
 import {BsDatepickerModule} from 'ngx-bootstrap/datepicker';
+import { TimepickerConfig,TimepickerModule } from 'ngx-bootstrap/timepicker';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { EditorModule } from 'primeng/editor';
 import { FileUploadModule as PrimeNgFileUploadModule } from 'primeng/fileupload';
@@ -127,6 +128,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         PopoverModule.forRoot(),
         BsDropdownModule.forRoot(),
         BsDatepickerModule.forRoot(),
+        TimepickerModule.forRoot(),
         AdminRoutingModule,
         UtilsModule,
         AppCommonModule,

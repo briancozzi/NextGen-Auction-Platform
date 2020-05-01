@@ -38,23 +38,32 @@
                     <div class="form-group">
                         <div class="row">
                             <div class="col-xl-6">
-                                <label for="eventDateStartTime">{{"EventDateStartTime" | localize}} *</label>
-                               <input type="time"  id="eventDateStartTime" class="form-control" [ngClass]="{'edited':event.eventDateStartTime}" name="eventDateStartTime"
-                               [(ngModel)]="event.eventDateStartTime" #eventDateStartTime="ngModel"/>
+                                <label for="eventStartTime">{{"EventStartTime" | localize}} *</label>
+                               <input type="time"  id="eventStartTime" class="form-control" [ngClass]="{'edited':event.eventStartTime}" name="eventStartTime"
+                               [(ngModel)]="event.eventStartTime" #eventDateStartTime="ngModel"/>
                             </div>
                             <div class="col-xl-6">
-                                <label for="eventDateEndTime">{{"EventDateEndTime" | localize}} *</label>
-                               <input type="time"  id="eventDateEndTime" class="form-control" [ngClass]="{'edited':event.eventDateEndTime}" name="eventDateEndTime"
-                               [(ngModel)]="event.eventDateEndTime" #eventDateEndTime="ngModel"/>
+                                <label for="eventEndTime">{{"eventEndTime" | localize}} *</label>
+                               <input type="time"  id="eventEndTime" class="form-control" [ngClass]="{'edited':event.eventEndTime}" name="eventEndTime"
+                               [(ngModel)]="event.eventEndTime" #eventDateEndTime="ngModel"/>
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="row">
-                            <div class="col-xl-6">
+                            <!-- <div class="col-xl-6">
                                 <label for="timeZone">{{"TimeZone" | localize}} *</label>
                                 <select class="form-control" [formControl]="selectedTimeZone" id="timeZone" [(ngModel)]="event.timeZone">
                                     <option *ngFor="let timeZone of timeZoneList" [value]="timeZone.value">{{timeZone.name}}</option>
+                                </select>
+                            </div> -->
+                            <div class="col-xl-6">
+                                <label for="appAccountUniqueId">{{"AccountName" | localize}} *</label>
+                                <select #AppAccountUniqueId name="appAccountUniqueId" 
+                                    class="form-control bs-select" [(ngModel)]="event.appAccountUniqueId" required>
+                                    <option *ngFor="let account of accountList" [value]="account.uniqueId">
+                                        {{account.firstName}}
+                                    </option>
                                 </select>
                             </div>
                             <div class="col-xl-6">
@@ -67,8 +76,8 @@
                     <div class="form-group">
                         <div class="row">
                             <div class="col-xl-6">
-                                <label for="address.address1">{{"Address1" | localize}} *</label>
-                                <input id="address.address1" #address1Input="ngModel" class="form-control" type="text"
+                                <label for="address1">{{"Address1" | localize}} *</label>
+                                <input id="address1" #address1Input="ngModel" class="form-control" type="text"
                                     [ngClass]="{'edited':event.address.address1}" name="event.address1"
                                     [(ngModel)]="event.address.address1" #address.address1="ngModel" required
                                     maxlength="64">

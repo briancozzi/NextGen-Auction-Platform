@@ -10,7 +10,8 @@ import {
     CreateAccountEventDto,
     TimingServiceProxy,
     SettingScopes, 
-    NameValueDto
+    NameValueDto,
+    AccountEventServiceProxy
 } from '@shared/service-proxies/service-proxies';
 import {forkJoin} from "rxjs";
 import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -27,7 +28,7 @@ import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/f
 export class CreateEventsModalComponent extends AppComponentBase implements OnInit, ControlValueAccessor{
 
     @ViewChild('createModal', { static: true }) modal: ModalDirective;
-    @Input() defaultTimezoneScope: SettingScopes.Tenant;
+    @Input() defaultTimezoneScope: SettingScopes;
     @Output() modalSave: EventEmitter<any> = new EventEmitter<any>();
 
 
@@ -43,12 +44,15 @@ export class CreateEventsModalComponent extends AppComponentBase implements OnIn
     accountList = [];
     stateDropdown = true;
     logo: string;
+    startTime: any;
+    endTime:any;
 
     constructor(
         injector: Injector,
         private _countryService: CountryServiceProxy,
         private _timingService: TimingServiceProxy,
-        private _accountService: AppAccountServiceProxy
+        private _accountService: AppAccountServiceProxy,
+        private _eventService: AccountEventServiceProxy
     ) {
         super(injector);
     }
@@ -111,12 +115,22 @@ export class CreateEventsModalComponent extends AppComponentBase implements OnIn
 
     save(): void {
         this.saving = true;
-        this.saveAccount();
+        let stime = this.event.eventStartTime.split(":");
+        this.startTime = new Date(0, 0, 0, parseInt(stime[0]), parseInt(stime[1]), 0, 0);
+        let ltime = this.event.eventEndTime.split(":");
+        this.endTime = new Date(0, 0, 0, parseInt(ltime[0]), parseInt(ltime[1]), 0, 0);
+        this.event.eventStartTime = this.startTime;
+        this.event.eventEndTime = this.endTime;
+        this._eventService.create(this.event)
+        .pipe(finalize(() => this.saving = false))
+        .subscribe(() => {
+            this.notify.info(this.l('SavedSuccessfully'));
+            this.close();
+            this.modalSave.emit(null);
+        });
     
     }
-    saveAccount():void{
-       
-    }
+  
     close(): void {
         this.active = false;
         this.modal.hide();

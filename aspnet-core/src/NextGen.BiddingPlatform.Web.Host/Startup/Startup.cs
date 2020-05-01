@@ -52,7 +52,6 @@ namespace NextGen.BiddingPlatform.Web.Startup
 
         public Startup(IWebHostEnvironment env)
         {
-            Clock.Provider = ClockProviders.Utc;
             _hostingEnvironment = env;
             Clock.Provider = ClockProviders.Utc;
             _appConfiguration = env.GetAppConfiguration();

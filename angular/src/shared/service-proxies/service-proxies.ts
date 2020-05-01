@@ -1678,6 +1678,517 @@ export class AuctionServiceProxy {
 }
 
 @Injectable()
+export class AuctionBidderServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    createBidder(body: CreateAuctionBidderDto | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/AuctionBidder/CreateBidder";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json", 
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateBidder(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateBidder(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreateBidder(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    deleteBidder(id: string | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/AuctionBidder/DeleteBidder?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteBidder(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteBidder(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDeleteBidder(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    getAllBidders(): Observable<ListResultDtoOfAuctionBidderListDto> {
+        let url_ = this.baseUrl + "/api/services/app/AuctionBidder/GetAllBidders";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAllBidders(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAllBidders(<any>response_);
+                } catch (e) {
+                    return <Observable<ListResultDtoOfAuctionBidderListDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<ListResultDtoOfAuctionBidderListDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAllBidders(response: HttpResponseBase): Observable<ListResultDtoOfAuctionBidderListDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ListResultDtoOfAuctionBidderListDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ListResultDtoOfAuctionBidderListDto>(<any>null);
+    }
+
+    /**
+     * @param auctionId (optional) 
+     * @return Success
+     */
+    getBiddersByAuctionId(auctionId: string | undefined): Observable<ListResultDtoOfAuctionBidderListDto> {
+        let url_ = this.baseUrl + "/api/services/app/AuctionBidder/GetBiddersByAuctionId?";
+        if (auctionId === null)
+            throw new Error("The parameter 'auctionId' cannot be null.");
+        else if (auctionId !== undefined)
+            url_ += "auctionId=" + encodeURIComponent("" + auctionId) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetBiddersByAuctionId(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetBiddersByAuctionId(<any>response_);
+                } catch (e) {
+                    return <Observable<ListResultDtoOfAuctionBidderListDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<ListResultDtoOfAuctionBidderListDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetBiddersByAuctionId(response: HttpResponseBase): Observable<ListResultDtoOfAuctionBidderListDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ListResultDtoOfAuctionBidderListDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ListResultDtoOfAuctionBidderListDto>(<any>null);
+    }
+}
+
+@Injectable()
+export class AuctionHistoryServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    createHistory(body: CreateAuctionHistoryDto | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/AuctionHistory/CreateHistory";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json", 
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateHistory(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateHistory(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreateHistory(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    getAllHistory(): Observable<ListResultDtoOfAuctionHistoryListDto> {
+        let url_ = this.baseUrl + "/api/services/app/AuctionHistory/GetAllHistory";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAllHistory(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAllHistory(<any>response_);
+                } catch (e) {
+                    return <Observable<ListResultDtoOfAuctionHistoryListDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<ListResultDtoOfAuctionHistoryListDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAllHistory(response: HttpResponseBase): Observable<ListResultDtoOfAuctionHistoryListDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ListResultDtoOfAuctionHistoryListDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ListResultDtoOfAuctionHistoryListDto>(<any>null);
+    }
+
+    /**
+     * @param auctionBidderId (optional) 
+     * @return Success
+     */
+    getHistoryByBidderId(auctionBidderId: string | undefined): Observable<ListResultDtoOfAuctionHistoryListDto> {
+        let url_ = this.baseUrl + "/api/services/app/AuctionHistory/GetHistoryByBidderId?";
+        if (auctionBidderId === null)
+            throw new Error("The parameter 'auctionBidderId' cannot be null.");
+        else if (auctionBidderId !== undefined)
+            url_ += "auctionBidderId=" + encodeURIComponent("" + auctionBidderId) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetHistoryByBidderId(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetHistoryByBidderId(<any>response_);
+                } catch (e) {
+                    return <Observable<ListResultDtoOfAuctionHistoryListDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<ListResultDtoOfAuctionHistoryListDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetHistoryByBidderId(response: HttpResponseBase): Observable<ListResultDtoOfAuctionHistoryListDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ListResultDtoOfAuctionHistoryListDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ListResultDtoOfAuctionHistoryListDto>(<any>null);
+    }
+
+    /**
+     * @param auctionBidderID (optional) 
+     * @param auctionItemId (optional) 
+     * @return Success
+     */
+    getHistoryByIds(auctionBidderID: string | undefined, auctionItemId: string | undefined): Observable<ListResultDtoOfAuctionHistoryListDto> {
+        let url_ = this.baseUrl + "/api/services/app/AuctionHistory/GetHistoryByIds?";
+        if (auctionBidderID === null)
+            throw new Error("The parameter 'auctionBidderID' cannot be null.");
+        else if (auctionBidderID !== undefined)
+            url_ += "auctionBidderID=" + encodeURIComponent("" + auctionBidderID) + "&"; 
+        if (auctionItemId === null)
+            throw new Error("The parameter 'auctionItemId' cannot be null.");
+        else if (auctionItemId !== undefined)
+            url_ += "auctionItemId=" + encodeURIComponent("" + auctionItemId) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetHistoryByIds(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetHistoryByIds(<any>response_);
+                } catch (e) {
+                    return <Observable<ListResultDtoOfAuctionHistoryListDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<ListResultDtoOfAuctionHistoryListDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetHistoryByIds(response: HttpResponseBase): Observable<ListResultDtoOfAuctionHistoryListDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ListResultDtoOfAuctionHistoryListDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ListResultDtoOfAuctionHistoryListDto>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    getHistoryByAuctionHistoryId(id: string | undefined): Observable<AuctionHistoryListDto> {
+        let url_ = this.baseUrl + "/api/services/app/AuctionHistory/GetHistoryByAuctionHistoryId?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetHistoryByAuctionHistoryId(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetHistoryByAuctionHistoryId(<any>response_);
+                } catch (e) {
+                    return <Observable<AuctionHistoryListDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<AuctionHistoryListDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetHistoryByAuctionHistoryId(response: HttpResponseBase): Observable<AuctionHistoryListDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AuctionHistoryListDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AuctionHistoryListDto>(<any>null);
+    }
+}
+
+@Injectable()
 export class AuctionItemServiceProxy {
     private http: HttpClient;
     private baseUrl: string;
@@ -17518,12 +18029,12 @@ export class CreateAccountEventDto implements ICreateAccountEventDto {
     appAccountUniqueId!: string;
     eventName!: string;
     eventDate!: moment.Moment;
-    eventStartDateTime!: moment.Moment;
-    eventEndDateTime!: moment.Moment;
+    eventStartTime!: string;
+    eventEndTime!: string;
     email!: string | undefined;
     mobileNo!: string | undefined;
     eventUrl!: string | undefined;
-    timeZone!: string | undefined;
+    timeZone!: string;
     isActive!: boolean;
     address!: AddressDto;
 
@@ -17544,8 +18055,8 @@ export class CreateAccountEventDto implements ICreateAccountEventDto {
             this.appAccountUniqueId = _data["appAccountUniqueId"];
             this.eventName = _data["eventName"];
             this.eventDate = _data["eventDate"] ? moment(_data["eventDate"].toString()) : <any>undefined;
-            this.eventStartDateTime = _data["eventStartDateTime"] ? moment(_data["eventStartDateTime"].toString()) : <any>undefined;
-            this.eventEndDateTime = _data["eventEndDateTime"] ? moment(_data["eventEndDateTime"].toString()) : <any>undefined;
+            this.eventStartTime = _data["eventStartTime"];
+            this.eventEndTime = _data["eventEndTime"];
             this.email = _data["email"];
             this.mobileNo = _data["mobileNo"];
             this.eventUrl = _data["eventUrl"];
@@ -17567,8 +18078,8 @@ export class CreateAccountEventDto implements ICreateAccountEventDto {
         data["appAccountUniqueId"] = this.appAccountUniqueId;
         data["eventName"] = this.eventName;
         data["eventDate"] = this.eventDate ? this.eventDate.toISOString() : <any>undefined;
-        data["eventStartDateTime"] = this.eventStartDateTime ? this.eventStartDateTime.toISOString() : <any>undefined;
-        data["eventEndDateTime"] = this.eventEndDateTime ? this.eventEndDateTime.toISOString() : <any>undefined;
+        data["eventStartTime"] = this.eventStartTime;
+        data["eventEndTime"] = this.eventEndTime;
         data["email"] = this.email;
         data["mobileNo"] = this.mobileNo;
         data["eventUrl"] = this.eventUrl;
@@ -17583,12 +18094,12 @@ export interface ICreateAccountEventDto {
     appAccountUniqueId: string;
     eventName: string;
     eventDate: moment.Moment;
-    eventStartDateTime: moment.Moment;
-    eventEndDateTime: moment.Moment;
+    eventStartTime: string;
+    eventEndTime: string;
     email: string | undefined;
     mobileNo: string | undefined;
     eventUrl: string | undefined;
-    timeZone: string | undefined;
+    timeZone: string;
     isActive: boolean;
     address: AddressDto;
 }
@@ -17597,8 +18108,8 @@ export class UpdateAccountEventDto implements IUpdateAccountEventDto {
     uniqueId!: string;
     eventName!: string;
     eventDate!: moment.Moment;
-    eventStartDateTime!: moment.Moment;
-    eventEndDateTime!: moment.Moment;
+    eventStartTime!: string;
+    eventEndTime!: string;
     email!: string | undefined;
     mobileNo!: string | undefined;
     eventUrl!: string | undefined;
@@ -17623,8 +18134,8 @@ export class UpdateAccountEventDto implements IUpdateAccountEventDto {
             this.uniqueId = _data["uniqueId"];
             this.eventName = _data["eventName"];
             this.eventDate = _data["eventDate"] ? moment(_data["eventDate"].toString()) : <any>undefined;
-            this.eventStartDateTime = _data["eventStartDateTime"] ? moment(_data["eventStartDateTime"].toString()) : <any>undefined;
-            this.eventEndDateTime = _data["eventEndDateTime"] ? moment(_data["eventEndDateTime"].toString()) : <any>undefined;
+            this.eventStartTime = _data["eventStartTime"];
+            this.eventEndTime = _data["eventEndTime"];
             this.email = _data["email"];
             this.mobileNo = _data["mobileNo"];
             this.eventUrl = _data["eventUrl"];
@@ -17646,8 +18157,8 @@ export class UpdateAccountEventDto implements IUpdateAccountEventDto {
         data["uniqueId"] = this.uniqueId;
         data["eventName"] = this.eventName;
         data["eventDate"] = this.eventDate ? this.eventDate.toISOString() : <any>undefined;
-        data["eventStartDateTime"] = this.eventStartDateTime ? this.eventStartDateTime.toISOString() : <any>undefined;
-        data["eventEndDateTime"] = this.eventEndDateTime ? this.eventEndDateTime.toISOString() : <any>undefined;
+        data["eventStartTime"] = this.eventStartTime;
+        data["eventEndTime"] = this.eventEndTime;
         data["email"] = this.email;
         data["mobileNo"] = this.mobileNo;
         data["eventUrl"] = this.eventUrl;
@@ -17662,8 +18173,8 @@ export interface IUpdateAccountEventDto {
     uniqueId: string;
     eventName: string;
     eventDate: moment.Moment;
-    eventStartDateTime: moment.Moment;
-    eventEndDateTime: moment.Moment;
+    eventStartTime: string;
+    eventEndTime: string;
     email: string | undefined;
     mobileNo: string | undefined;
     eventUrl: string | undefined;
@@ -17677,8 +18188,8 @@ export class AccountEventListDto implements IAccountEventListDto {
     accountUniqueId!: string;
     eventName!: string | undefined;
     eventDate!: moment.Moment;
-    eventStartDateTime!: moment.Moment;
-    eventEndDateTime!: moment.Moment;
+    eventStartTime!: string;
+    eventEndTime!: string;
     eventUrl!: string | undefined;
     timeZone!: string | undefined;
 
@@ -17697,8 +18208,8 @@ export class AccountEventListDto implements IAccountEventListDto {
             this.accountUniqueId = _data["accountUniqueId"];
             this.eventName = _data["eventName"];
             this.eventDate = _data["eventDate"] ? moment(_data["eventDate"].toString()) : <any>undefined;
-            this.eventStartDateTime = _data["eventStartDateTime"] ? moment(_data["eventStartDateTime"].toString()) : <any>undefined;
-            this.eventEndDateTime = _data["eventEndDateTime"] ? moment(_data["eventEndDateTime"].toString()) : <any>undefined;
+            this.eventStartTime = _data["eventStartTime"];
+            this.eventEndTime = _data["eventEndTime"];
             this.eventUrl = _data["eventUrl"];
             this.timeZone = _data["timeZone"];
         }
@@ -17717,8 +18228,8 @@ export class AccountEventListDto implements IAccountEventListDto {
         data["accountUniqueId"] = this.accountUniqueId;
         data["eventName"] = this.eventName;
         data["eventDate"] = this.eventDate ? this.eventDate.toISOString() : <any>undefined;
-        data["eventStartDateTime"] = this.eventStartDateTime ? this.eventStartDateTime.toISOString() : <any>undefined;
-        data["eventEndDateTime"] = this.eventEndDateTime ? this.eventEndDateTime.toISOString() : <any>undefined;
+        data["eventStartTime"] = this.eventStartTime;
+        data["eventEndTime"] = this.eventEndTime;
         data["eventUrl"] = this.eventUrl;
         data["timeZone"] = this.timeZone;
         return data; 
@@ -17730,8 +18241,8 @@ export interface IAccountEventListDto {
     accountUniqueId: string;
     eventName: string | undefined;
     eventDate: moment.Moment;
-    eventStartDateTime: moment.Moment;
-    eventEndDateTime: moment.Moment;
+    eventStartTime: string;
+    eventEndTime: string;
     eventUrl: string | undefined;
     timeZone: string | undefined;
 }
@@ -17832,8 +18343,8 @@ export class AccountEventDto implements IAccountEventDto {
     uniqueId!: string;
     eventName!: string | undefined;
     eventDate!: moment.Moment;
-    eventStartDateTime!: moment.Moment;
-    eventEndDateTime!: moment.Moment;
+    eventStartTime!: string;
+    eventEndTime!: string;
     email!: string | undefined;
     mobileNo!: string | undefined;
     eventUrl!: string | undefined;
@@ -17856,8 +18367,8 @@ export class AccountEventDto implements IAccountEventDto {
             this.uniqueId = _data["uniqueId"];
             this.eventName = _data["eventName"];
             this.eventDate = _data["eventDate"] ? moment(_data["eventDate"].toString()) : <any>undefined;
-            this.eventStartDateTime = _data["eventStartDateTime"] ? moment(_data["eventStartDateTime"].toString()) : <any>undefined;
-            this.eventEndDateTime = _data["eventEndDateTime"] ? moment(_data["eventEndDateTime"].toString()) : <any>undefined;
+            this.eventStartTime = _data["eventStartTime"];
+            this.eventEndTime = _data["eventEndTime"];
             this.email = _data["email"];
             this.mobileNo = _data["mobileNo"];
             this.eventUrl = _data["eventUrl"];
@@ -17880,8 +18391,8 @@ export class AccountEventDto implements IAccountEventDto {
         data["uniqueId"] = this.uniqueId;
         data["eventName"] = this.eventName;
         data["eventDate"] = this.eventDate ? this.eventDate.toISOString() : <any>undefined;
-        data["eventStartDateTime"] = this.eventStartDateTime ? this.eventStartDateTime.toISOString() : <any>undefined;
-        data["eventEndDateTime"] = this.eventEndDateTime ? this.eventEndDateTime.toISOString() : <any>undefined;
+        data["eventStartTime"] = this.eventStartTime;
+        data["eventEndTime"] = this.eventEndTime;
         data["email"] = this.email;
         data["mobileNo"] = this.mobileNo;
         data["eventUrl"] = this.eventUrl;
@@ -17897,8 +18408,8 @@ export interface IAccountEventDto {
     uniqueId: string;
     eventName: string | undefined;
     eventDate: moment.Moment;
-    eventStartDateTime: moment.Moment;
-    eventEndDateTime: moment.Moment;
+    eventStartTime: string;
+    eventEndTime: string;
     email: string | undefined;
     mobileNo: string | undefined;
     eventUrl: string | undefined;
@@ -18568,7 +19079,312 @@ export interface IUpdateAuctionDto {
     address: AddressDto;
 }
 
+export class CreateAuctionBidderDto implements ICreateAuctionBidderDto {
+    userId!: number;
+    auctionId!: string;
+    bidderName!: string;
+
+    constructor(data?: ICreateAuctionBidderDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userId = _data["userId"];
+            this.auctionId = _data["auctionId"];
+            this.bidderName = _data["bidderName"];
+        }
+    }
+
+    static fromJS(data: any): CreateAuctionBidderDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateAuctionBidderDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userId"] = this.userId;
+        data["auctionId"] = this.auctionId;
+        data["bidderName"] = this.bidderName;
+        return data; 
+    }
+}
+
+export interface ICreateAuctionBidderDto {
+    userId: number;
+    auctionId: string;
+    bidderName: string;
+}
+
+export class AuctionBidderListDto implements IAuctionBidderListDto {
+    uniqueID!: string;
+    bidderName!: string | undefined;
+    auctionUniqueId!: string;
+    auctionType!: string | undefined;
+    auctionStartDateTime!: moment.Moment;
+    auctionEndDateTime!: moment.Moment;
+    fullName!: string | undefined;
+
+    constructor(data?: IAuctionBidderListDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.uniqueID = _data["uniqueID"];
+            this.bidderName = _data["bidderName"];
+            this.auctionUniqueId = _data["auctionUniqueId"];
+            this.auctionType = _data["auctionType"];
+            this.auctionStartDateTime = _data["auctionStartDateTime"] ? moment(_data["auctionStartDateTime"].toString()) : <any>undefined;
+            this.auctionEndDateTime = _data["auctionEndDateTime"] ? moment(_data["auctionEndDateTime"].toString()) : <any>undefined;
+            this.fullName = _data["fullName"];
+        }
+    }
+
+    static fromJS(data: any): AuctionBidderListDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AuctionBidderListDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["uniqueID"] = this.uniqueID;
+        data["bidderName"] = this.bidderName;
+        data["auctionUniqueId"] = this.auctionUniqueId;
+        data["auctionType"] = this.auctionType;
+        data["auctionStartDateTime"] = this.auctionStartDateTime ? this.auctionStartDateTime.toISOString() : <any>undefined;
+        data["auctionEndDateTime"] = this.auctionEndDateTime ? this.auctionEndDateTime.toISOString() : <any>undefined;
+        data["fullName"] = this.fullName;
+        return data; 
+    }
+}
+
+export interface IAuctionBidderListDto {
+    uniqueID: string;
+    bidderName: string | undefined;
+    auctionUniqueId: string;
+    auctionType: string | undefined;
+    auctionStartDateTime: moment.Moment;
+    auctionEndDateTime: moment.Moment;
+    fullName: string | undefined;
+}
+
+export class ListResultDtoOfAuctionBidderListDto implements IListResultDtoOfAuctionBidderListDto {
+    items!: AuctionBidderListDto[] | undefined;
+
+    constructor(data?: IListResultDtoOfAuctionBidderListDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(AuctionBidderListDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ListResultDtoOfAuctionBidderListDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ListResultDtoOfAuctionBidderListDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IListResultDtoOfAuctionBidderListDto {
+    items: AuctionBidderListDto[] | undefined;
+}
+
+export class CreateAuctionHistoryDto implements ICreateAuctionHistoryDto {
+    auctionBidderId!: string;
+    auctionItemId!: string;
+    bidAmount!: number;
+    bidStatus!: string;
+
+    constructor(data?: ICreateAuctionHistoryDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.auctionBidderId = _data["auctionBidderId"];
+            this.auctionItemId = _data["auctionItemId"];
+            this.bidAmount = _data["bidAmount"];
+            this.bidStatus = _data["bidStatus"];
+        }
+    }
+
+    static fromJS(data: any): CreateAuctionHistoryDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateAuctionHistoryDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["auctionBidderId"] = this.auctionBidderId;
+        data["auctionItemId"] = this.auctionItemId;
+        data["bidAmount"] = this.bidAmount;
+        data["bidStatus"] = this.bidStatus;
+        return data; 
+    }
+}
+
+export interface ICreateAuctionHistoryDto {
+    auctionBidderId: string;
+    auctionItemId: string;
+    bidAmount: number;
+    bidStatus: string;
+}
+
+export class AuctionHistoryListDto implements IAuctionHistoryListDto {
+    uniqueId!: string;
+    bidderId!: string;
+    auctionItemId!: string;
+    bidderName!: string | undefined;
+    itemName!: string | undefined;
+    itemType!: number;
+    bidStatus!: string | undefined;
+    bidAmount!: number;
+
+    constructor(data?: IAuctionHistoryListDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.uniqueId = _data["uniqueId"];
+            this.bidderId = _data["bidderId"];
+            this.auctionItemId = _data["auctionItemId"];
+            this.bidderName = _data["bidderName"];
+            this.itemName = _data["itemName"];
+            this.itemType = _data["itemType"];
+            this.bidStatus = _data["bidStatus"];
+            this.bidAmount = _data["bidAmount"];
+        }
+    }
+
+    static fromJS(data: any): AuctionHistoryListDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AuctionHistoryListDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["uniqueId"] = this.uniqueId;
+        data["bidderId"] = this.bidderId;
+        data["auctionItemId"] = this.auctionItemId;
+        data["bidderName"] = this.bidderName;
+        data["itemName"] = this.itemName;
+        data["itemType"] = this.itemType;
+        data["bidStatus"] = this.bidStatus;
+        data["bidAmount"] = this.bidAmount;
+        return data; 
+    }
+}
+
+export interface IAuctionHistoryListDto {
+    uniqueId: string;
+    bidderId: string;
+    auctionItemId: string;
+    bidderName: string | undefined;
+    itemName: string | undefined;
+    itemType: number;
+    bidStatus: string | undefined;
+    bidAmount: number;
+}
+
+export class ListResultDtoOfAuctionHistoryListDto implements IListResultDtoOfAuctionHistoryListDto {
+    items!: AuctionHistoryListDto[] | undefined;
+
+    constructor(data?: IListResultDtoOfAuctionHistoryListDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(AuctionHistoryListDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ListResultDtoOfAuctionHistoryListDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ListResultDtoOfAuctionHistoryListDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IListResultDtoOfAuctionHistoryListDto {
+    items: AuctionHistoryListDto[] | undefined;
+}
+
 export class AuctionItemListDto implements IAuctionItemListDto {
+    auctionItemId!: string;
     auctionId!: string;
     auctionType!: string | undefined;
     auctionStartDateTime!: moment.Moment;
@@ -18589,6 +19405,7 @@ export class AuctionItemListDto implements IAuctionItemListDto {
 
     init(_data?: any) {
         if (_data) {
+            this.auctionItemId = _data["auctionItemId"];
             this.auctionId = _data["auctionId"];
             this.auctionType = _data["auctionType"];
             this.auctionStartDateTime = _data["auctionStartDateTime"] ? moment(_data["auctionStartDateTime"].toString()) : <any>undefined;
@@ -18609,6 +19426,7 @@ export class AuctionItemListDto implements IAuctionItemListDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["auctionItemId"] = this.auctionItemId;
         data["auctionId"] = this.auctionId;
         data["auctionType"] = this.auctionType;
         data["auctionStartDateTime"] = this.auctionStartDateTime ? this.auctionStartDateTime.toISOString() : <any>undefined;
@@ -18622,6 +19440,7 @@ export class AuctionItemListDto implements IAuctionItemListDto {
 }
 
 export interface IAuctionItemListDto {
+    auctionItemId: string;
     auctionId: string;
     auctionType: string | undefined;
     auctionStartDateTime: moment.Moment;
