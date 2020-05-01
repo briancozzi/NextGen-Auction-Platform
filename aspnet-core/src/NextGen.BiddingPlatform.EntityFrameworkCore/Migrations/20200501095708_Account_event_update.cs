@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace NextGen.BiddingPlatform.Migrations
 {
-    public partial class changes_type_in_event : Migration
+    public partial class Account_event_update : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -15,17 +15,17 @@ namespace NextGen.BiddingPlatform.Migrations
                 name: "EventStartDateTime",
                 table: "AppAccountEvents");
 
-            migrationBuilder.AddColumn<TimeSpan>(
+            migrationBuilder.AddColumn<DateTime>(
                 name: "EventEndTime",
                 table: "AppAccountEvents",
                 nullable: false,
-                defaultValue: new TimeSpan(0, 0, 0, 0, 0));
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
-            migrationBuilder.AddColumn<TimeSpan>(
+            migrationBuilder.AddColumn<DateTime>(
                 name: "EventStartTime",
                 table: "AppAccountEvents",
                 nullable: false,
-                defaultValue: new TimeSpan(0, 0, 0, 0, 0));
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
             migrationBuilder.CreateIndex(
                 name: "IX_AuctionHistory_AuctionItemId",

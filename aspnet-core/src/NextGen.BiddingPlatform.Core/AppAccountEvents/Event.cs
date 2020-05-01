@@ -34,10 +34,10 @@ namespace NextGen.BiddingPlatform.Core.AppAccountEvents
         public DateTime EventDate { get; set; }
 
         [Required]
-        public TimeSpan EventStartTime { get; set; }
+        public DateTime EventStartTime { get; set; }
 
         [Required]
-        public TimeSpan EventEndTime { get; set; }
+        public DateTime EventEndTime { get; set; }
 
         public string Email { get; set; }
 
