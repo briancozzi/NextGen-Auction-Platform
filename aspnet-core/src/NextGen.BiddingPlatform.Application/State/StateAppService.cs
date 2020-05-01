@@ -19,7 +19,7 @@ using NextGen.BiddingPlatform.Authorization;
 namespace NextGen.BiddingPlatform.State
 {
     [AbpAuthorize(AppPermissions.Pages_Administration_State)]
-    public class StateAppService : BiddingPlatformDomainServiceBase, IStateAppService
+    public class StateAppService : BiddingPlatformAppServiceBase, IStateAppService
     {
         private readonly IRepository<Core.State.State> _stateRepository;
         private readonly ICountryAppService _countryService;

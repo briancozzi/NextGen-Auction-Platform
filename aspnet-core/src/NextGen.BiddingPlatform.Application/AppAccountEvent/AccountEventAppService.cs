@@ -22,7 +22,7 @@ using Abp.Timing;
 
 namespace NextGen.BiddingPlatform.AppAccountEvent
 {
-    public class AccountEventAppService : BiddingPlatformDomainServiceBase, IAccountEventAppService
+    public class AccountEventAppService : BiddingPlatformAppServiceBase, IAccountEventAppService
     {
         private readonly IRepository<Event> _eventRepository;
         private readonly IAbpSession _abpSession;
