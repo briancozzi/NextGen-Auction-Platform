@@ -18,9 +18,9 @@ namespace NextGen.BiddingPlatform.AppAccountEvent.Dto
         [Required]
         public DateTime EventDate { get; set; }
         [Required]
-        public DateTime EventStartDateTime { get; set; }
+        public TimeSpan EventStartTime { get; set; }
         [Required]
-        public DateTime EventEndDateTime { get; set; }
+        public TimeSpan EventEndTime { get; set; }
         public string Email { get; set; }
         public string MobileNo { get; set; }
         public string EventUrl { get; set; }

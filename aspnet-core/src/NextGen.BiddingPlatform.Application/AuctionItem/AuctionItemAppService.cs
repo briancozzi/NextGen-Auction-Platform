@@ -37,6 +37,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
             var auctionItems = await _auctionitemRepository.GetAllIncluding(x => x.Auction, x => x.Item)
                                                             .Select(s => new AuctionItemListDto
                                                             {
+                                                                AuctionItemId = s.UniqueId,
                                                                 AuctionId = s.Auction.UniqueId,
                                                                 AuctionEndDateTime = s.Auction.AuctionEndDateTime,
                                                                 AuctionStartDateTime = s.Auction.AuctionStartDateTime,

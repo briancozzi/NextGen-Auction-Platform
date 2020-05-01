@@ -18,6 +18,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Dynamic.Core;
 using Abp.Linq.Extensions;
+using Abp.Timing;
 
 namespace NextGen.BiddingPlatform.AppAccountEvent
 {
@@ -65,7 +66,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             await _eventRepository.InsertAsync(events);
             return input;
         }
-
+        
         public async Task<UpdateAccountEventDto> Update(UpdateAccountEventDto input)
         {
             var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.CountryUniqueId);
@@ -84,8 +85,8 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             events.EventName = input.EventName;
             events.EventDate = input.EventDate;
             events.EventUrl = input.EventUrl;
-            events.EventStartDateTime = input.EventStartDateTime;
-            events.EventEndDateTime = input.EventEndDateTime;
+            events.EventStartTime = input.EventStartTime;
+            events.EventEndTime = input.EventEndTime;
             events.MobileNo = input.MobileNo;
             events.TimeZone = input.TimeZone;
             events.IsActive = input.IsActive;
@@ -125,8 +126,8 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
                                              AccountUniqueId = x.AppAccount.UniqueId,
                                              EventName = x.EventName,
                                              EventDate = x.EventDate,
-                                             EventStartDateTime = x.EventStartDateTime,
-                                             EventEndDateTime = x.EventEndDateTime,
+                                             EventStartTime = x.EventStartTime,
+                                             EventEndTime = x.EventEndTime,
                                              EventUrl = x.EventUrl,
                                              TimeZone = x.TimeZone
                                          });
