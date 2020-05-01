@@ -57,7 +57,6 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
                 throw new Exception("You are not Authorized user.");
 
             var events = ObjectMapper.Map<Event>(input);
-            events.EventDate = input.EventDate.Date;
             events.UniqueId = Guid.NewGuid();
             events.Address.UniqueId = Guid.NewGuid();
             events.AppAccountId = account.Id;

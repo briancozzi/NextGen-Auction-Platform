@@ -53,10 +53,6 @@
                                         {{"EventName" | localize}}
                                         <p-sortIcon field="eventName"></p-sortIcon>
                                     </th>
-                                    <th pSortableColumn="eventDate">
-                                        {{"EventDate" | localize}}
-                                        <p-sortIcon field="eventDate"></p-sortIcon>
-                                    </th>
                                     <th pSortableColumn="eventStartTime">
                                         {{"EventStartTime" | localize}}
                                         <p-sortIcon field="eventStartTime"></p-sortIcon>
@@ -68,9 +64,7 @@
                                     <th>
                                         {{"EventUrl" | localize}}
                                     </th>
-                                    <th>
-                                        {{"TimeZone" | localize}}
-                                    </th>
+                                   
                                 </tr>
                             </ng-template>
                             <ng-template pTemplate="body" let-record="$implicit">
@@ -98,10 +92,6 @@
                                         {{record.eventName}}
                                     </td>
                                     <td>
-                                        <span class="ui-column-title">{{"EventDate" | localize}}</span>
-                                        {{record.eventDate | date: "MMM d, y"}}
-                                    </td>
-                                    <td>
                                         <span class="ui-column-title">{{"EventStartTime" | localize}}</span>
                                         {{record.eventStartTime}}
                                     </td>
@@ -112,10 +102,6 @@
                                     <td>
                                         <span class="ui-column-title">{{"EventUrl" | localize}}</span>
                                         {{record.eventUrl}}
-                                    </td>
-                                    <td>
-                                        <span class="ui-column-title">{{"TimeZone" | localize}}</span>
-                                        {{record.timeZone}}
                                     </td>
                                 </tr>
                             </ng-template>
