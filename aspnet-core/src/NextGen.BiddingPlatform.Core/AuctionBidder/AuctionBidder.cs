@@ -27,7 +27,7 @@ namespace NextGen.BiddingPlatform.Core.AuctionBidders
 
         [ForeignKey("Auction")]
         public int AuctionId { get; set; }
-        //public Auctions.Auction Auction { get; set; }
+        public Auctions.Auction Auction { get; set; }
 
         [Required]
         public string BidderName { get; set; }

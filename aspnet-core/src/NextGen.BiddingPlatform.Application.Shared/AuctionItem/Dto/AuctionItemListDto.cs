@@ -6,6 +6,7 @@ namespace NextGen.BiddingPlatform.AuctionItem.Dto
 {
     public class AuctionItemListDto
     {
+        public Guid AuctionItemId { get; set; }
         //Auction
         public Guid AuctionId { get; set; }
         public string AuctionType { get; set; }
