@@ -10,8 +10,8 @@ using NextGen.BiddingPlatform.EntityFrameworkCore;
 namespace NextGen.BiddingPlatform.Migrations
 {
     [DbContext(typeof(BiddingPlatformDbContext))]
-    [Migration("20200501104524_update_event_entity")]
-    partial class update_event_entity
+    [Migration("20200501134645_Event_Entity_Update")]
+    partial class Event_Entity_Update
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -1762,7 +1762,7 @@ namespace NextGen.BiddingPlatform.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("EventEndDateTime")
+                    b.Property<DateTime>("EventEndDateTimee")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("EventName")
@@ -1770,7 +1770,7 @@ namespace NextGen.BiddingPlatform.Migrations
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
-                    b.Property<DateTime>("EventStartDateTime")
+                    b.Property<DateTime>("EventStartDateTimee")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("EventUrl")

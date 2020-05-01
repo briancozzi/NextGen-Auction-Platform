@@ -67,7 +67,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             await _eventRepository.InsertAsync(events);
             return input;
         }
-        
+
         public async Task<UpdateAccountEventDto> Update(UpdateAccountEventDto input)
         {
             var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.CountryUniqueId);
