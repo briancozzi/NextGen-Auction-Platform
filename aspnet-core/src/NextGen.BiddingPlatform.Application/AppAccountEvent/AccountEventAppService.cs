@@ -83,10 +83,10 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             //Event Properties
             events.Email = input.Email;
             events.EventName = input.EventName;
-            events.EventDate = input.EventDate;
+            //events.EventDate = input.EventDate;
             events.EventUrl = input.EventUrl;
-            events.EventStartTime = input.EventStartTime;
-            events.EventEndTime = input.EventEndTime;
+            events.EventStartDateTime = input.EventStartDateTime;
+            events.EventEndDateTime = input.EventEndDateTime;
             events.MobileNo = input.MobileNo;
             events.TimeZone = input.TimeZone;
             events.IsActive = input.IsActive;
@@ -125,9 +125,9 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
                                              UniqueId = x.UniqueId,
                                              AccountUniqueId = x.AppAccount.UniqueId,
                                              EventName = x.EventName,
-                                             EventDate = x.EventDate,
-                                             EventStartTime = x.EventStartTime,
-                                             EventEndTime = x.EventEndTime,
+                                             //EventDate = x.EventDate,
+                                             EventStartDateTime = x.EventStartDateTime,
+                                             EventEndDateTime = x.EventEndDateTime,
                                              EventUrl = x.EventUrl,
                                              TimeZone = x.TimeZone
                                          });

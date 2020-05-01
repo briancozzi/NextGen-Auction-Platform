@@ -1760,10 +1760,7 @@ namespace NextGen.BiddingPlatform.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("EventDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("EventEndTime")
+                    b.Property<DateTime>("EventEndDateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("EventName")
@@ -1771,7 +1768,7 @@ namespace NextGen.BiddingPlatform.Migrations
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
-                    b.Property<DateTime>("EventStartTime")
+                    b.Property<DateTime>("EventStartDateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("EventUrl")
