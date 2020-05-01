@@ -33,19 +33,19 @@
                                 <label for="eventStartTime">{{"EventStartTime" | localize}} *</label>
                                 <input id="eventStartTime" type="text" #eventStartTimeUtc name="eventStartTime"
                                     class="form-control" bsDatepicker datePickerMomentModifier
-                                    [(date)]="event.eventStartTime">
+                                    [(date)]="event.eventStartDateTime">
                             </div>
                             <div class="col-xl-3">
-                                <timepicker [(ngModel)]="startTime"></timepicker>
+                                <timepicker [(ngModel)]="startTime"  name="startTime"></timepicker>
                             </div>
                             <div class="col-xl-3">
                                 <label for="eventEndTime">{{"EventEndTime" | localize}} *</label>
                                 <input id="eventEndTime" type="text" #eventEndTimeUtc name="eventEndTime"
                                     class="form-control" bsDatepicker datePickerMomentModifier
-                                    [(date)]="event.eventEndTime">
+                                    [(date)]="event.eventEndDateTime">
                             </div>
                             <div class="col-xl-3">
-                                <timepicker [(ngModel)]="endTime" ></timepicker>
+                                <timepicker [(ngModel)]="endTime"  name="endTime"></timepicker>
                             </div>
                         </div>
                     </div>

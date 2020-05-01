@@ -11,6 +11,7 @@ import {
     AccountEventServiceProxy
 } from '@shared/service-proxies/service-proxies';
 import {forkJoin} from "rxjs";
+import * as moment from 'moment';
 
 @Component({
     selector: 'createEventsModal',
@@ -72,8 +73,13 @@ export class CreateEventsModalComponent extends AppComponentBase {
     save(): void {
         debugger;
         this.saving = true;
-        var stime = this.startTime;
-        var etime = this.endTime;
+        var stime = moment(this.startTime).format("HH:mm a");
+        var etime = moment(this.endTime).format("HH:mm a");
+        var eventEndDate = this.event.eventEndDateTime.format().split("T")[0];
+        var eventStartDate = this.event.eventStartDateTime.format().split("T")[0]; 
+
+        this.event.eventEndDateTime = moment(eventEndDate + ' ' + stime);
+        this.event.eventStartDateTime = moment(eventStartDate +''+ etime);
         this._eventService.create(this.event)
         .pipe(finalize(() => this.saving = false))
         .subscribe(() => {
