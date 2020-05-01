@@ -47,7 +47,7 @@
                 <button type="button" [disabled]="saving" class="btn btn-secondary"
                     (click)="close()">{{l("Cancel")}}</button>
                 <button type="submit" [buttonBusy]="saving" [busyText]="l('SavingWithThreeDot')"
-                    class="btn btn-primary"><i
+                    class="btn btn-primary" [disabled]="!stateCreateForm.form.valid"><i
                         class="fa fa-save"></i> <span>{{l("Save")}}</span></button>
             </div>
         </form>
