@@ -44,11 +44,6 @@ export class AccountEventsComponent extends AppComponentBase {
     .subscribe(result => {
       this.primengTableHelper.totalRecordsCount = result[0].totalCount;
       this.primengTableHelper.records = result[0].items;
-      this.primengTableHelper.records.forEach(element => {
-          element.eventStartDateTime = moment.tz(element.eventStartDateTime, abp.timing.timeZoneInfo.iana.timeZoneId).format('MMMM Do YYYY, h:mm:ss a');
-          element.eventEndDateTime =   moment.tz(element.eventEndDateTime, abp.timing.timeZoneInfo.iana.timeZoneId).format('MMMM Do YYYY, h:mm:ss a');
-      });
-     
       this.primengTableHelper.hideLoadingIndicator();
     });
       

@@ -23,12 +23,12 @@
     <text name="Address2">Address2</text>
     <text name="ZipCode">Zip Code</text>
 
-    <text name="eventName">Event Name</text>
-    <text name="eventStartTime">Event Start Time</text>
-    
-
-
-
+    <text name="EventName">Event Name</text>
+    <text name="EventStartTime">Event Start Time</text>
+    <text name="EventEndTime">Event End Time</text>
+    <text name="EventUrl">Event Url</text>
+    <text name="CreateEvent">Create New Event</text>
+    <text name="EditEvent">Edit Event</text>
 
 
     <!-- Custom Changes end here-->
