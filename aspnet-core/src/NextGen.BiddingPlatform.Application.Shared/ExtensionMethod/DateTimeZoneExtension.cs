@@ -15,7 +15,8 @@ namespace NextGen.BiddingPlatform.ExtensionMethod
         public static DateTime ConverUserTimeZoneToUtcTime(this DateTime dateTime, string timeZOneId)
         {
             TimeZoneInfo info = TimeZoneInfo.FindSystemTimeZoneById(timeZOneId);
-            return TimeZoneInfo.ConvertTimeToUtc(dateTime, info);
+            var currentDateTime = new DateTime(dateTime.Ticks, DateTimeKind.Unspecified);
+            return TimeZoneInfo.ConvertTimeToUtc(currentDateTime, info);
         }
     }
 }

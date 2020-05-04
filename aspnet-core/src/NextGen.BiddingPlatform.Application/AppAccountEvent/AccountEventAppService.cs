@@ -117,13 +117,10 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
 
             await _eventRepository.DeleteAsync(events);
         }
-        public async Task<string> Test()
-        {
-            return await SettingManager.GetSettingValueAsync(TimingSettingNames.TimeZone);
 
-        }
         public async Task<ListResultDto<AccountEventListDto>> GetAllAccountEvents()
         {
+            //get current user timezone which is added through MySettings
             var currentUserTimeZone = await SettingManager.GetSettingValueAsync(TimingSettingNames.TimeZone);
             var eventsData = await _eventRepository.GetAllIncluding(x => x.AppAccount)
                                                     .Select(x => new AccountEventListDto
@@ -143,6 +140,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
 
         public async Task<PagedResultDto<AccountEventListDto>> GetAccountEventsWithFilter(AccountEventFilter input)
         {
+            //for get current user timezzone from MySetting
             var currentUserTimeZone = await SettingManager.GetSettingValueAsync(TimingSettingNames.TimeZone);
             var query = _eventRepository.GetAllIncluding(x => x.AppAccount)
                                          .WhereIf(!input.Search.IsNullOrWhiteSpace(), x => x.EventName.ToLower().IndexOf(input.Search.ToLower()) > -1)
