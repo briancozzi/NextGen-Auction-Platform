@@ -23,6 +23,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent.Dto
         public string Email { get; set; }
         public string MobileNo { get; set; }
         public string EventUrl { get; set; }
+        [Required]
         public string TimeZone { get; set; }// may be we have timezone table for this field
         public bool IsActive { get; set; }
         [Required]

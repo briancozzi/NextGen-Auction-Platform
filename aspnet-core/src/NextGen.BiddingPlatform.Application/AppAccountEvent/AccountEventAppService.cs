@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using System.Linq.Dynamic.Core;
 using Abp.Linq.Extensions;
 using Abp.Timing;
+using NextGen.BiddingPlatform.ExtensionMethod;
 
 namespace NextGen.BiddingPlatform.AppAccountEvent
 {
@@ -55,6 +56,9 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
                 throw new Exception("Account not found for given id");
             if (!_abpSession.TenantId.HasValue)
                 throw new Exception("You are not Authorized user.");
+            //convert dates to Utc time
+            input.EventEndDateTime = input.EventEndDateTime.ConverUserTimeZoneToUtcTime(input.TimeZone);
+            input.EventStartDateTime = input.EventStartDateTime.ConverUserTimeZoneToUtcTime(input.TimeZone);
 
             var events = ObjectMapper.Map<Event>(input);
             //events.EventDate = input.EventDate.Date;
@@ -63,6 +67,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             events.AppAccountId = account.Id;
             events.Address.CountryId = country.Id;
             events.Address.StateId = state.Id;
+
             account.TenantId = _abpSession.TenantId.Value;
             await _eventRepository.InsertAsync(events);
             return input;
@@ -86,8 +91,8 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             events.EventName = input.EventName;
             //events.EventDate = input.EventDate;
             events.EventUrl = input.EventUrl;
-            events.EventStartDateTime = input.EventStartDateTime;
-            events.EventEndDateTime = input.EventEndDateTime;
+            events.EventStartDateTime = input.EventStartDateTime.ConverUserTimeZoneToUtcTime(input.TimeZone);
+            events.EventEndDateTime = input.EventEndDateTime.ConverUserTimeZoneToUtcTime(input.TimeZone); ;
             events.MobileNo = input.MobileNo;
             events.TimeZone = input.TimeZone;
             events.IsActive = input.IsActive;
@@ -113,8 +118,20 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
 
         public async Task<ListResultDto<AccountEventListDto>> GetAllAccountEvents()
         {
-            var eventsData = await _eventRepository.GetAllIncluding(x => x.AppAccount).ToListAsync();
-            return new ListResultDto<AccountEventListDto>(ObjectMapper.Map<List<AccountEventListDto>>(eventsData));
+            var eventsData = await _eventRepository.GetAllIncluding(x => x.AppAccount)
+                                                    .Select(x => new AccountEventListDto
+                                                    {
+                                                        AccountUniqueId = x.AppAccount.UniqueId,
+                                                        EventEndDateTime = x.EventEndDateTime.ConvertTimeFromUtcToUserTimeZone(x.TimeZone),
+                                                        EventStartDateTime = x.EventStartDateTime.ConvertTimeFromUtcToUserTimeZone(x.TimeZone),
+                                                        EventName = x.EventName,
+                                                        EventUrl = x.EventUrl,
+                                                        TimeZone = x.TimeZone,
+                                                        UniqueId = x.UniqueId
+                                                    })
+                                                    .ToListAsync();
+
+            return new ListResultDto<AccountEventListDto>(eventsData);
         }
 
         public async Task<PagedResultDto<AccountEventListDto>> GetAccountEventsWithFilter(AccountEventFilter input)
@@ -123,14 +140,13 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
                                          .WhereIf(!input.Search.IsNullOrWhiteSpace(), x => x.EventName.ToLower().IndexOf(input.Search.ToLower()) > -1)
                                          .Select(x => new AccountEventListDto
                                          {
-                                             UniqueId = x.UniqueId,
                                              AccountUniqueId = x.AppAccount.UniqueId,
+                                             EventEndDateTime = x.EventEndDateTime.ConvertTimeFromUtcToUserTimeZone(x.TimeZone),
+                                             EventStartDateTime = x.EventStartDateTime.ConvertTimeFromUtcToUserTimeZone(x.TimeZone),
                                              EventName = x.EventName,
-                                             //EventDate = x.EventDate,
-                                             EventStartDateTime = x.EventStartDateTime,
-                                             EventEndDateTime = x.EventEndDateTime,
                                              EventUrl = x.EventUrl,
-                                             TimeZone = x.TimeZone
+                                             TimeZone = x.TimeZone,
+                                             UniqueId = x.UniqueId
                                          });
 
             var resultCount = await query.CountAsync();
@@ -154,7 +170,10 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             if (Event == null)
                 throw new Exception("Event not found for given id");
 
-            return ObjectMapper.Map<AccountEventDto>(Event);
+            var mappedEvent = ObjectMapper.Map<AccountEventDto>(Event);
+            mappedEvent.EventEndDateTime = mappedEvent.EventEndDateTime.ConvertTimeFromUtcToUserTimeZone(mappedEvent.TimeZone);
+            mappedEvent.EventStartDateTime = mappedEvent.EventStartDateTime.ConvertTimeFromUtcToUserTimeZone(mappedEvent.TimeZone);
+            return mappedEvent;
         }
     }
 }
