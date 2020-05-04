@@ -20,6 +20,7 @@ using System.Linq.Dynamic.Core;
 using Abp.Linq.Extensions;
 using Abp.Timing;
 using NextGen.BiddingPlatform.ExtensionMethod;
+using NextGen.BiddingPlatform.Timing;
 
 namespace NextGen.BiddingPlatform.AppAccountEvent
 {
@@ -30,6 +31,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
         private readonly IRepository<Core.AppAccounts.AppAccount> _accountRepository;
         private readonly IRepository<Core.State.State> _stateRepository;
         private readonly IRepository<Country.Country> _countryRepository;
+
         public AccountEventAppService(IRepository<Event> eventRepository,
                                       IRepository<Core.AppAccounts.AppAccount> accountRepository,
                                       IAbpSession abpSession,
@@ -115,15 +117,20 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
 
             await _eventRepository.DeleteAsync(events);
         }
+        public async Task<string> Test()
+        {
+            return await SettingManager.GetSettingValueAsync(TimingSettingNames.TimeZone);
 
+        }
         public async Task<ListResultDto<AccountEventListDto>> GetAllAccountEvents()
         {
+            var currentUserTimeZone = await SettingManager.GetSettingValueAsync(TimingSettingNames.TimeZone);
             var eventsData = await _eventRepository.GetAllIncluding(x => x.AppAccount)
                                                     .Select(x => new AccountEventListDto
                                                     {
                                                         AccountUniqueId = x.AppAccount.UniqueId,
-                                                        EventEndDateTime = x.EventEndDateTime.ConvertTimeFromUtcToUserTimeZone(x.TimeZone),
-                                                        EventStartDateTime = x.EventStartDateTime.ConvertTimeFromUtcToUserTimeZone(x.TimeZone),
+                                                        EventEndDateTime = x.EventEndDateTime.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
+                                                        EventStartDateTime = x.EventStartDateTime.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
                                                         EventName = x.EventName,
                                                         EventUrl = x.EventUrl,
                                                         TimeZone = x.TimeZone,
@@ -136,13 +143,14 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
 
         public async Task<PagedResultDto<AccountEventListDto>> GetAccountEventsWithFilter(AccountEventFilter input)
         {
+            var currentUserTimeZone = await SettingManager.GetSettingValueAsync(TimingSettingNames.TimeZone);
             var query = _eventRepository.GetAllIncluding(x => x.AppAccount)
                                          .WhereIf(!input.Search.IsNullOrWhiteSpace(), x => x.EventName.ToLower().IndexOf(input.Search.ToLower()) > -1)
                                          .Select(x => new AccountEventListDto
                                          {
                                              AccountUniqueId = x.AppAccount.UniqueId,
-                                             EventEndDateTime = x.EventEndDateTime.ConvertTimeFromUtcToUserTimeZone(x.TimeZone),
-                                             EventStartDateTime = x.EventStartDateTime.ConvertTimeFromUtcToUserTimeZone(x.TimeZone),
+                                             EventEndDateTime = x.EventEndDateTime.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
+                                             EventStartDateTime = x.EventStartDateTime.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
                                              EventName = x.EventName,
                                              EventUrl = x.EventUrl,
                                              TimeZone = x.TimeZone,
