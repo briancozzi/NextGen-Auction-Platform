@@ -18103,7 +18103,6 @@ export interface ICreateAccountEventDto {
 export class UpdateAccountEventDto implements IUpdateAccountEventDto {
     uniqueId!: string;
     eventName!: string;
-    eventDate!: moment.Moment;
     eventEndDateTime!: moment.Moment;
     eventStartDateTime!: moment.Moment;
     email!: string | undefined;
@@ -18129,7 +18128,6 @@ export class UpdateAccountEventDto implements IUpdateAccountEventDto {
         if (_data) {
             this.uniqueId = _data["uniqueId"];
             this.eventName = _data["eventName"];
-            this.eventDate = _data["eventDate"] ? moment(_data["eventDate"].toString()) : <any>undefined;
             this.eventEndDateTime = _data["eventEndDateTime"] ? moment(_data["eventEndDateTime"].toString()) : <any>undefined;
             this.eventStartDateTime = _data["eventStartDateTime"] ? moment(_data["eventStartDateTime"].toString()) : <any>undefined;
             this.email = _data["email"];
@@ -18152,7 +18150,6 @@ export class UpdateAccountEventDto implements IUpdateAccountEventDto {
         data = typeof data === 'object' ? data : {};
         data["uniqueId"] = this.uniqueId;
         data["eventName"] = this.eventName;
-        data["eventDate"] = this.eventDate ? this.eventDate.toISOString() : <any>undefined;
         data["eventEndDateTime"] = this.eventEndDateTime ? this.eventEndDateTime.toISOString() : <any>undefined;
         data["eventStartDateTime"] = this.eventStartDateTime ? this.eventStartDateTime.toISOString() : <any>undefined;
         data["email"] = this.email;
@@ -18168,7 +18165,6 @@ export class UpdateAccountEventDto implements IUpdateAccountEventDto {
 export interface IUpdateAccountEventDto {
     uniqueId: string;
     eventName: string;
-    eventDate: moment.Moment;
     eventEndDateTime: moment.Moment;
     eventStartDateTime: moment.Moment;
     email: string | undefined;
@@ -18334,9 +18330,8 @@ export interface IPagedResultDtoOfAccountEventListDto {
 export class AccountEventDto implements IAccountEventDto {
     uniqueId!: string;
     eventName!: string | undefined;
-    eventDate!: moment.Moment;
-    eventStartDateTime!: string;
-    eventEndDateTime!: string;
+    eventStartDateTime!: moment.Moment;
+    eventEndDateTime!: moment.Moment;
     email!: string | undefined;
     mobileNo!: string | undefined;
     eventUrl!: string | undefined;
@@ -18358,9 +18353,8 @@ export class AccountEventDto implements IAccountEventDto {
         if (_data) {
             this.uniqueId = _data["uniqueId"];
             this.eventName = _data["eventName"];
-            this.eventDate = _data["eventDate"] ? moment(_data["eventDate"].toString()) : <any>undefined;
-            this.eventStartDateTime = _data["eventStartDateTime"];
-            this.eventEndDateTime = _data["eventEndDateTime"];
+            this.eventStartDateTime = _data["eventStartDateTime"] ? moment(_data["eventStartDateTime"].toString()) : <any>undefined;
+            this.eventEndDateTime = _data["eventEndDateTime"] ? moment(_data["eventEndDateTime"].toString()) : <any>undefined;
             this.email = _data["email"];
             this.mobileNo = _data["mobileNo"];
             this.eventUrl = _data["eventUrl"];
@@ -18382,9 +18376,8 @@ export class AccountEventDto implements IAccountEventDto {
         data = typeof data === 'object' ? data : {};
         data["uniqueId"] = this.uniqueId;
         data["eventName"] = this.eventName;
-        data["eventDate"] = this.eventDate ? this.eventDate.toISOString() : <any>undefined;
-        data["eventStartDateTime"] = this.eventStartDateTime;
-        data["eventEndDateTime"] = this.eventEndDateTime;
+        data["eventStartDateTime"] = this.eventStartDateTime ? this.eventStartDateTime.toISOString() : <any>undefined;
+        data["eventEndDateTime"] = this.eventEndDateTime ? this.eventEndDateTime.toISOString() : <any>undefined;
         data["email"] = this.email;
         data["mobileNo"] = this.mobileNo;
         data["eventUrl"] = this.eventUrl;
@@ -18399,9 +18392,8 @@ export class AccountEventDto implements IAccountEventDto {
 export interface IAccountEventDto {
     uniqueId: string;
     eventName: string | undefined;
-    eventDate: moment.Moment;
-    eventStartDateTime: string;
-    eventEndDateTime: string;
+    eventStartDateTime: moment.Moment;
+    eventEndDateTime: moment.Moment;
     email: string | undefined;
     mobileNo: string | undefined;
     eventUrl: string | undefined;

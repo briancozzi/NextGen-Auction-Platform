@@ -1,120 +1,90 @@
-import{ Component, Injector, ViewChild,Output,EventEmitter,ElementRef } from '@angular/core';
+import { Component, Injector, ViewChild, Output, EventEmitter, ElementRef } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import * as _ from 'lodash';
 import { ModalDirective } from 'ngx-bootstrap';
 import { finalize } from 'rxjs/operators';
-import { AppAccountServiceProxy,CountryServiceProxy,AppAccountDto,AddressDto, UpdateAppAccountDto } from '@shared/service-proxies/service-proxies';
-import {forkJoin} from "rxjs";
+import {
+    AddressDto,
+    AccountEventServiceProxy,
+    UpdateAccountEventDto,
+    CountryServiceProxy,
+    AppAccountServiceProxy,
+    AccountEventDto,
+    SettingScopes,
+    NameValueDto,
+    TimingServiceProxy
+} from '@shared/service-proxies/service-proxies';
+import { forkJoin } from "rxjs";
 import { AppConsts } from '@shared/AppConsts';
-import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
-import { IAjaxResponse, TokenService } from 'abp-ng2-module';
+import * as moment from 'moment';
 @Component({
     selector: 'editEventsModal',
     templateUrl: './edit-events-modal.component.html'
 })
-export class EditEventsModalComponent extends AppComponentBase{
-    @ViewChild('editModal', {static : true}) modal: ModalDirective;
-    @Output () modalSave: EventEmitter<any> = new EventEmitter<any>();
+export class EditEventsModalComponent extends AppComponentBase {
+    @ViewChild('editModal', { static: true }) modal: ModalDirective;
+    @Output() modalSave: EventEmitter<any> = new EventEmitter<any>();
     @ViewChild('inputFile') inputFile: ElementRef;
 
-    logoUploader: FileUploader;
     webHostUrl = AppConsts.remoteServiceBaseUrl;
-    account: UpdateAppAccountDto = new UpdateAppAccountDto();
+    event: UpdateAccountEventDto = new UpdateAccountEventDto();
     saving = false;
-    active= false;
-    stateList =[]; 
+    active = false;
+    stateList = [];
     countryList = [];
-    countryUniqueId:string;
-    stateUniqueId:string;
-    isLogo = false;
+    accountList = [];
+    countryUniqueId: string;
+    stateUniqueId: string;
+    timeZones: NameValueDto[] = [];
+    startTime: any;
+    endTime: any;
+
     constructor(
         injector: Injector,
-        private _accountService: AppAccountServiceProxy,
+        private _eventService: AccountEventServiceProxy,
         private _countryService: CountryServiceProxy,
-        private _tokenService: TokenService
+        private _accountService: AppAccountServiceProxy,
+        private _timingService: TimingServiceProxy
     ) {
         super(injector);
     }
-    ngOnInit(): void {
-        this.initUploaders();
-    }
-    createUploader(url: string, success?: (result: any) => void): FileUploader {
-        const uploader = new FileUploader({ url: AppConsts.remoteServiceBaseUrl + url });
 
-        uploader.onAfterAddingFile = (file) => {
-            file.withCredentials = false;
-        };
-
-        uploader.onSuccessItem = (item, response, status) => {
-            const ajaxResponse = <IAjaxResponse>JSON.parse(response);
-            if (ajaxResponse.success) {
-                if (success) {
-                    success(ajaxResponse.result);
-                }
-            } else {
-                this.message.error(ajaxResponse.error.message);
-            }
-        };
-
-        const uploaderOptions: FileUploaderOptions = {};
-        uploaderOptions.authToken = 'Bearer ' + this._tokenService.getToken();
-        uploaderOptions.removeAfterUpload = true;
-        uploader.setOptions(uploaderOptions);
-        return uploader;
-    }
-    initUploaders(): void {
-        this.logoUploader = this.createUploader(
-            '/AppAccounts/UploadLogo',
-            result => {
-                this.account.logo = result.path;
-                this.updateAccount();
-            }
-        );
-    }
-    show(AccountId?: string):void{
-        debugger;
+    show(EventId?: string): void {
         this.active = true;
-        this.account = new AppAccountDto();
-        this.account.address = new AddressDto();
+        this.event = new UpdateAccountEventDto();
+        this.event.address = new AddressDto();
         forkJoin([
             this._countryService.getCountriesWithState(),
-            this._accountService.getAccountById(AccountId)
-          ]).subscribe(allResults =>{
+            this._eventService.getAccountEventById(EventId),
+            this._accountService.getAllAccount(),
+            this._timingService.getTimezones(SettingScopes.Application)
+        ]).subscribe(allResults => {
+            debugger;
             this.countryList = allResults[0];
-            this.account = allResults[1];
-            this.account.address = allResults[1].address;
-            this.stateList = this.countryList.find(x=>x.countryUniqueId === this.account.address.countryUniqueId);
-            if(this.account.logo != '' && this.account.logo !=null){
-                this.isLogo = true;
-            }
+            this.event = allResults[1];
+            this.event.address = allResults[1].address;
+            this.stateList = this.countryList.find(x => x.countryUniqueId === this.event.address.countryUniqueId);
+            this.accountList = allResults[2].items;
+            this.timeZones = allResults[3].items;
+            this.startTime = this.event.eventStartDateTime.toDate();
+            this.endTime = this.event.eventEndDateTime.toDate();
             this.modal.show();
         });
-          
+
     }
-    clearLogo():void{
-        this.isLogo = false;
-        this.account.logo = "";
-    }
-    
+
     close(): void {
         this.active = false;
         this.modal.hide();
     }
     save(): void {
-        if(!this.isLogo){
-            if(this.inputFile.nativeElement.value !=""){
-                this.logoUploader.uploadAll();
-            }
-            else{
-                this.updateAccount();
-            }
-        }
-        else{
-            this.updateAccount();
-        }
-    }
-    updateAccount():void{
-        this._accountService.update(this.account)
+        var stime = moment(this.startTime).format("HH:mm");
+        var etime = moment(this.endTime).format("HH:mm");
+        var eventEndDate =   this.event.eventEndDateTime.local().format().split("T")[0];
+        var eventStartDate =  this.event.eventStartDateTime.local().format().split("T")[0]; 
+        this.event.eventEndDateTime = moment(eventEndDate + ' ' + etime);
+        this.event.eventStartDateTime = moment(eventStartDate + ' ' + stime);
+        this._eventService.update(this.event)
             .pipe(finalize(() => this.saving = false))
             .subscribe(() => {
                 this.notify.info(this.l('SavedSuccessfully'));
@@ -122,4 +92,5 @@ export class EditEventsModalComponent extends AppComponentBase{
                 this.modalSave.emit(null);
             });
     }
+
 }

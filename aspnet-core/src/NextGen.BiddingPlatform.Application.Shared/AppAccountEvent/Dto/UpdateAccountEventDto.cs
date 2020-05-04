@@ -15,8 +15,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent.Dto
         [Required]
         [MaxLength(AbpUserBase.MaxUserNameLength)]
         public string EventName { get; set; }
-        [Required]
-        public DateTime EventDate { get; set; }
+
         [Required]
         public DateTime EventEndDateTime { get; set; }
         [Required]

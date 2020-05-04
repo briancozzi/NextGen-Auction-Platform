@@ -8,10 +8,14 @@ import {
     AddressDto,
     AppAccountServiceProxy,
     CreateAccountEventDto,
-    AccountEventServiceProxy
+    AccountEventServiceProxy,
+    TimingServiceProxy,
+    SettingScopes, 
+    NameValueDto
 } from '@shared/service-proxies/service-proxies';
 import {forkJoin} from "rxjs";
 import * as moment from 'moment';
+import { settings } from 'cluster';
 
 @Component({
     selector: 'createEventsModal',
@@ -19,7 +23,7 @@ import * as moment from 'moment';
     
 })
 export class CreateEventsModalComponent extends AppComponentBase {
-
+    @Input() defaultTimezoneScope: SettingScopes;
     @ViewChild('createModal', { static: true }) modal: ModalDirective;
     @Output() modalSave: EventEmitter<any> = new EventEmitter<any>();
 
@@ -33,12 +37,15 @@ export class CreateEventsModalComponent extends AppComponentBase {
     logo: string;
     startTime: Date = new Date();
     endTime: Date = new Date();
+    timeZones: NameValueDto[] = [];
+    
 
     constructor(
         injector: Injector,
         private _countryService: CountryServiceProxy,
         private _accountService: AppAccountServiceProxy,
-        private _eventService: AccountEventServiceProxy
+        private _eventService: AccountEventServiceProxy,
+        private _timingService: TimingServiceProxy
     ) {
         super(injector);
     }
@@ -53,16 +60,21 @@ export class CreateEventsModalComponent extends AppComponentBase {
     }
 
     init(): void {
+        debugger;
         this.event = new CreateAccountEventDto();
         this.event.address = new AddressDto();
         forkJoin([
             this._countryService.getCountriesWithState(),
             this._accountService.getAllAccount(),
+            this._timingService.getTimezones(SettingScopes.Application)
           ]).subscribe(allResults =>{
             this.countryList = allResults[0];
             this.event.address.countryUniqueId = allResults[0][0].countryUniqueId;
             this.loadStateList(this.event.address.countryUniqueId);
             this.accountList = allResults[1].items;
+            this.event.eventStartDateTime = moment(new Date());
+            this.event.eventEndDateTime = moment(new Date());
+            this.timeZones = allResults[2].items;
         });
     }
     loadStateList(countryId):void{
@@ -77,7 +89,6 @@ export class CreateEventsModalComponent extends AppComponentBase {
         var etime = moment(this.endTime).format("HH:mm");
         var eventEndDate =   this.event.eventEndDateTime.local().format().split("T")[0];
         var eventStartDate =  this.event.eventStartDateTime.local().format().split("T")[0]; 
-
         this.event.eventEndDateTime = moment(eventEndDate + ' ' + etime);
         this.event.eventStartDateTime = moment(eventStartDate + ' ' + stime);
 

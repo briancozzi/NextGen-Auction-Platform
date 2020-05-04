@@ -82,7 +82,7 @@
                                                 </li>
                                                 <li>
                                                     <a href="javascript:;"
-                                                        (click)="deleteEvents(record)">{{'Delete' | localize}}</a>
+                                                        (click)="deleteEvent(record)">{{'Delete' | localize}}</a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -93,11 +93,11 @@
                                     </td>
                                     <td>
                                         <span class="ui-column-title">{{"EventStartTime" | localize}}</span>
-                                        {{record.eventStartDateTime | date : "MMM d, y h:mm:ss a"}}
+                                        {{record.eventStartDateTime}}
                                     </td>
                                     <td>
                                         <span class="ui-column-title">{{"EventEndTime" | localize}}</span>
-                                        {{record.eventEndDateTime | date: "MMM d, y h:mm:ss a"}}
+                                        {{record.eventEndDateTime}}
                                     </td>
                                     <td>
                                         <span class="ui-column-title">{{"EventUrl" | localize}}</span>
