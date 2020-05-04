@@ -78,8 +78,9 @@ export class EditEventsModalComponent extends AppComponentBase {
         this.modal.hide();
     }
     save(): void {
-        var stime = moment(this.startTime).format("HH:mm");
-        var etime = moment(this.endTime).format("HH:mm");
+        this.saving  = true;
+        var stime = moment(this.startTime).local().format("HH:mm");
+        var etime = moment(this.endTime).local().format("HH:mm");
         var eventEndDate =   this.event.eventEndDateTime.local().format().split("T")[0];
         var eventStartDate =  this.event.eventStartDateTime.local().format().split("T")[0]; 
         this.event.eventEndDateTime = moment(eventEndDate + ' ' + etime);
