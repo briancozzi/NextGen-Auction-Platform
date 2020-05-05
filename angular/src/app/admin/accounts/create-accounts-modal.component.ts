@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Injector, Output, ViewChild,OnInit,ElementRef } from '@angular/core';
+import { Component, EventEmitter, Injector, Output, ViewChild, OnInit, ElementRef } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import * as _ from 'lodash';
 import { ModalDirective } from 'ngx-bootstrap';
@@ -31,14 +31,14 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
     saving = false;
     account: CreateAppAccountDto = new CreateAppAccountDto();
     countryList = [];
-    stateList =[];
+    stateList = [];
     stateDropdown = true;
     uploadedFiles: any[] = [];
     logo: string;
 
     constructor(
         injector: Injector,
-        private _accountsService:AppAccountServiceProxy,
+        private _accountsService: AppAccountServiceProxy,
         private _countryService: CountryServiceProxy,
         private _tokenService: TokenService
     ) {
@@ -47,13 +47,19 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
     ngOnInit(): void {
         this.initUploaders();
     }
-    createUploader(url: string, success?: (result: any) => void): FileUploader {
-        const uploader = new FileUploader({ url: AppConsts.remoteServiceBaseUrl + url });
+    createUploader(url: string ,success?: (result: any) => void): FileUploader {
+        
+        debugger;
+        const uploader = new FileUploader({ url: AppConsts.remoteServiceBaseUrl + url,
+
+           });
 
         uploader.onAfterAddingFile = (file) => {
             file.withCredentials = false;
         };
-
+        uploader.onBuildItemForm = (fileItem: any, form: any) => {
+            form.append('createAppAccountDto', JSON.stringify(this.account)); //note comma separating key and value
+        };
         uploader.onSuccessItem = (item, response, status) => {
             const ajaxResponse = <IAjaxResponse>JSON.parse(response);
             if (ajaxResponse.success) {
@@ -76,9 +82,11 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
         this.logoUploader = this.createUploader(
             '/AppAccounts/UploadLogo',
             result => {
-                this.account.logo = result.path;
-                this.saveAccount();
-                
+                if (result.status) {
+                    this.notify.info(this.l('SavedSuccessfully'));
+                    this.close();
+                    this.modalSave.emit(null);
+                }
             }
         );
     }
@@ -90,7 +98,7 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
 
     onShown(): void {
     }
-    clearLogo():void{
+    clearLogo(): void {
         this.inputFile.nativeElement.value = '';
     }
     init(): void {
@@ -102,13 +110,14 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
             this.loadStateList(this.account.address.countryUniqueId);
         });
     }
-    loadStateList(countryId):void{
+    loadStateList(countryId): void {
         this.stateDropdown = false;
-        this.stateList = this.countryList.find(x=> x.countryUniqueId === countryId);
+        this.stateList = this.countryList.find(x => x.countryUniqueId === countryId);
     }
 
     save(): void {
         this.saving = true;
+        this.logoUploader.uploadAll();
         if(this.inputFile.nativeElement.value !=""){
             this.logoUploader.uploadAll();
         }
@@ -116,18 +125,17 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
             this.saveAccount();
         }
     }
-    saveAccount():void{
+    saveAccount(): void {
         this._accountsService.create(this.account)
-        .pipe(finalize(() => this.saving = false))
-        .subscribe(() => {
-            this.notify.info(this.l('SavedSuccessfully'));
-            this.close();
-            this.modalSave.emit(null);
-        });
+            .pipe(finalize(() => this.saving = false))
+            .subscribe(() => {
+                this.notify.info(this.l('SavedSuccessfully'));
+                this.close();
+                this.modalSave.emit(null);
+            });
     }
     close(): void {
         this.active = false;
         this.modal.hide();
     }
-   
 }

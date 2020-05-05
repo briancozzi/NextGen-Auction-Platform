@@ -13,6 +13,7 @@ using CHI.UI.Web.Helper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NextGen.BiddingPlatform.AppAccount;
 using NextGen.BiddingPlatform.AppAccount.Dto;
 using NextGen.BiddingPlatform.Authorization.Users.Profile.Dto;
@@ -27,28 +28,37 @@ namespace NextGen.BiddingPlatform.Web.Controllers
 
         private const int MaxProfilePictureSize = 5242880; //5MB
         private readonly IWebHostEnvironment _env;
-        public AppAccountsControllerBase(IWebHostEnvironment env)
+        private readonly IAppAccountAppService _appAccountAppService;
+        public AppAccountsControllerBase(IWebHostEnvironment env, IAppAccountAppService appAccountAppService)
         {
             _env = env;
+            _appAccountAppService = appAccountAppService;
         }
         public async Task<JsonResult> UploadLogo()
         {
             try
             {
                 var logoFile = Request.Form.Files.First();
-                if(logoFile != null)
+                var createAppAccountDto = new CreateAppAccountDto();
+                var str = Request.Form["createAppAccountDto"];
+                createAppAccountDto = JsonConvert.DeserializeObject<CreateAppAccountDto>(str);
+
+                if (logoFile != null)
                 {
                     var fileName = DateTime.Now.Ticks + "_" + logoFile.FileName;
                     var pathLocation = _env.WebRootPath + "/Uploads/AppAccountLogo";
                     
                     CommonFileUpload commonFileUpload = new CommonFileUpload();
                     var fullpath = await commonFileUpload.UploadFileRelativePath(logoFile, pathLocation, fileName);
-                    return Json(new AjaxResponse(new { Path = "/Uploads/AppAccountLogo/" + fileName, Status = true }));
+                    createAppAccountDto.Logo = "/Uploads/AppAccountLogo/" + fileName;
                 }
                 else
                 {
-                    return Json(new AjaxResponse(new { Status = true, Path="" }));
+                    createAppAccountDto.Logo = "";
                 }
+                await _appAccountAppService.Create(createAppAccountDto);
+                return Json(new AjaxResponse(new { Status = true }));
+
             }
             catch (UserFriendlyException ex)
             {
