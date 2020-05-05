@@ -3,33 +3,18 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace NextGen.BiddingPlatform.Migrations
 {
-    public partial class Event_Entity_Update : Migration
+    public partial class update_event_account_entities : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            //migrationBuilder.DropColumn(
-            //    name: "EventDate",
-            //    table: "AppAccountEvents");
-
             migrationBuilder.DropColumn(
-                name: "EventEndTime",
+                name: "EventDate",
                 table: "AppAccountEvents");
 
-            migrationBuilder.DropColumn(
-                name: "EventStartTime",
-                table: "AppAccountEvents");
-
-            migrationBuilder.AddColumn<DateTime>(
-                name: "EventEndDateTime",
-                table: "AppAccountEvents",
-                nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
-
-            migrationBuilder.AddColumn<DateTime>(
-                name: "EventStartDateTime",
-                table: "AppAccountEvents",
-                nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+            migrationBuilder.AddColumn<string>(
+                name: "ThumbnailImage",
+                table: "AppAccounts",
+                nullable: true);
 
             migrationBuilder.AlterColumn<string>(
                 name: "ZipCode",
@@ -39,6 +24,31 @@ namespace NextGen.BiddingPlatform.Migrations
                 oldType: "nvarchar(5)",
                 oldMaxLength: 5);
 
+            migrationBuilder.CreateIndex(
+                name: "IX_AuctionHistory_AuctionItemId",
+                table: "AuctionHistory",
+                column: "AuctionItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuctionBidders_AuctionId",
+                table: "AuctionBidders",
+                column: "AuctionId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AuctionBidders_Auctions_AuctionId",
+                table: "AuctionBidders",
+                column: "AuctionId",
+                principalTable: "Auctions",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AuctionHistory_AuctionItems_AuctionItemId",
+                table: "AuctionHistory",
+                column: "AuctionItemId",
+                principalTable: "AuctionItems",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.NoAction);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -60,29 +70,11 @@ namespace NextGen.BiddingPlatform.Migrations
                 table: "AuctionBidders");
 
             migrationBuilder.DropColumn(
-                name: "EventEndDateTimee",
-                table: "AppAccountEvents");
-
-            migrationBuilder.DropColumn(
-                name: "EventStartDateTimee",
-                table: "AppAccountEvents");
+                name: "ThumbnailImage",
+                table: "AppAccounts");
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "EventDate",
-                table: "AppAccountEvents",
-                type: "datetime2",
-                nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
-
-            migrationBuilder.AddColumn<DateTime>(
-                name: "EventEndDateTime",
-                table: "AppAccountEvents",
-                type: "datetime2",
-                nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
-
-            migrationBuilder.AddColumn<DateTime>(
-                name: "EventStartDateTime",
                 table: "AppAccountEvents",
                 type: "datetime2",
                 nullable: false,

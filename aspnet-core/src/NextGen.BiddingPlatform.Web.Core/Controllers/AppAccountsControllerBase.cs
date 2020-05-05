@@ -27,6 +27,8 @@ namespace NextGen.BiddingPlatform.Web.Controllers
     {
 
         private const int MaxProfilePictureSize = 5242880; //5MB
+        private const int MaxThumbnailHeight = 100;
+        private const int MaxThumbnailWidth = 100;
         private readonly IWebHostEnvironment _env;
         private readonly IAppAccountAppService _appAccountAppService;
         public AppAccountsControllerBase(IWebHostEnvironment env, IAppAccountAppService appAccountAppService)
@@ -42,14 +44,27 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                 var createAppAccountDto = new CreateAppAccountDto();
                 var str = Request.Form["createAppAccountDto"];
                 createAppAccountDto = JsonConvert.DeserializeObject<CreateAppAccountDto>(str);
-
+                
                 if (logoFile != null)
                 {
+                    byte[] fileBytes;
+                    using (var stream = logoFile.OpenReadStream())
+                    {
+                        fileBytes = stream.GetAllBytes();
+                    }
+
+                    var imageFormat = ImageFormatHelper.GetRawImageFormat(fileBytes);
+                    if (!imageFormat.IsIn(ImageFormat.Jpeg, ImageFormat.Png, ImageFormat.Gif))
+                    {
+                        throw new UserFriendlyException(L("File_Invalid_Type_Error"));
+                    }
+
                     var fileName = DateTime.Now.Ticks + "_" + logoFile.FileName;
                     var pathLocation = _env.WebRootPath + "/Uploads/AppAccountLogo";
-                    
+
                     CommonFileUpload commonFileUpload = new CommonFileUpload();
                     var fullpath = await commonFileUpload.UploadFileRelativePath(logoFile, pathLocation, fileName);
+                    var thumbnailImageName = await commonFileUpload.UploadThumbnail(logoFile, pathLocation, fileName, MaxThumbnailHeight, MaxThumbnailWidth);
                     createAppAccountDto.Logo = "/Uploads/AppAccountLogo/" + fileName;
                 }
                 else
@@ -65,7 +80,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                 return Json(new AjaxResponse(new { Status = false }));
             }
         }
-      
-       
+
+
     }
 }

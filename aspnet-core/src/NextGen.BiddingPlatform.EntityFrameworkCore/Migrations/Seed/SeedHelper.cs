@@ -28,6 +28,9 @@ namespace NextGen.BiddingPlatform.Migrations.Seed
             //Default tenant seed (in host database).
             new DefaultTenantBuilder(context).Create();
             new TenantRoleAndUserBuilder(context, 1).Create();
+
+            //Default country and state
+            new DefaultCountryAndStateBuilder(context).Create();
         }
 
         private static void WithDbContext<TDbContext>(IIocResolver iocResolver, Action<TDbContext> contextAction)
