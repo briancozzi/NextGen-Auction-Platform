@@ -88,11 +88,8 @@ export class CreateEventsModalComponent extends AppComponentBase {
         var etime = moment(this.endTime).local().format("HH:mm");
         var eventEndDate =   this.event.eventEndDateTime.local().format().split("T")[0];
         var eventStartDate =  this.event.eventStartDateTime.local().format().split("T")[0]; 
-        this.event.eventEndDateTime = moment(eventEndDate + ' ' + etime);
-        this.event.eventStartDateTime = moment(eventStartDate + ' ' + stime);
-
-        this.event.eventEndDateTime = this.event.eventEndDateTime.utc(false);
-        this.event.eventStartDateTime = this.event.eventStartDateTime.utc(false);
+        this.event.eventEndDateTime = moment(eventEndDate + ' ' + etime).utc(false);
+        this.event.eventStartDateTime = moment(eventStartDate + ' ' + stime).utc(false);
 
         this._eventService.create(this.event)
         .pipe(finalize(() => this.saving = false))
