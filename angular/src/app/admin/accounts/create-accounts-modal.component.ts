@@ -35,6 +35,7 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
     stateDropdown = true;
     uploadedFiles: any[] = [];
     logo: string;
+    isSelected = true;
 
     constructor(
         injector: Injector,
@@ -49,7 +50,6 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
     }
     createUploader(url: string ,success?: (result: any) => void): FileUploader {
         
-        debugger;
         const uploader = new FileUploader({ url: AppConsts.remoteServiceBaseUrl + url,
 
            });
@@ -58,7 +58,8 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
             file.withCredentials = false;
         };
         uploader.onBuildItemForm = (fileItem: any, form: any) => {
-            form.append('createAppAccountDto', JSON.stringify(this.account)); //note comma separating key and value
+            form.append('createAppAccountDto', JSON.stringify(this.account)); 
+            form.append('isCreated', true);
         };
         uploader.onSuccessItem = (item, response, status) => {
             const ajaxResponse = <IAjaxResponse>JSON.parse(response);

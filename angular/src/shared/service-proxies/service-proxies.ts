@@ -18410,6 +18410,7 @@ export class AppAccountListDto implements IAppAccountListDto {
     lastName!: string | undefined;
     phoneNo!: string | undefined;
     logo!: string | undefined;
+    thumbnailImage!: string | undefined;
 
     constructor(data?: IAppAccountListDto) {
         if (data) {
@@ -18428,6 +18429,7 @@ export class AppAccountListDto implements IAppAccountListDto {
             this.lastName = _data["lastName"];
             this.phoneNo = _data["phoneNo"];
             this.logo = _data["logo"];
+            this.thumbnailImage = _data["thumbnailImage"];
         }
     }
 
@@ -18446,6 +18448,7 @@ export class AppAccountListDto implements IAppAccountListDto {
         data["lastName"] = this.lastName;
         data["phoneNo"] = this.phoneNo;
         data["logo"] = this.logo;
+        data["thumbnailImage"] = this.thumbnailImage;
         return data; 
     }
 }
@@ -18457,6 +18460,7 @@ export interface IAppAccountListDto {
     lastName: string | undefined;
     phoneNo: string | undefined;
     logo: string | undefined;
+    thumbnailImage: string | undefined;
 }
 
 export class PagedResultDtoOfAppAccountListDto implements IPagedResultDtoOfAppAccountListDto {
@@ -18514,6 +18518,7 @@ export class CreateAppAccountDto implements ICreateAppAccountDto {
     phoneNo!: string;
     logo!: string | undefined;
     address!: AddressDto;
+    thumbnailImage!: string | undefined;
 
     constructor(data?: ICreateAppAccountDto) {
         if (data) {
@@ -18532,6 +18537,7 @@ export class CreateAppAccountDto implements ICreateAppAccountDto {
             this.phoneNo = _data["phoneNo"];
             this.logo = _data["logo"];
             this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
+            this.thumbnailImage = _data["thumbnailImage"];
         }
     }
 
@@ -18550,6 +18556,7 @@ export class CreateAppAccountDto implements ICreateAppAccountDto {
         data["phoneNo"] = this.phoneNo;
         data["logo"] = this.logo;
         data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        data["thumbnailImage"] = this.thumbnailImage;
         return data; 
     }
 }
@@ -18561,6 +18568,7 @@ export interface ICreateAppAccountDto {
     phoneNo: string;
     logo: string | undefined;
     address: AddressDto;
+    thumbnailImage: string | undefined;
 }
 
 export class UpdateAppAccountDto implements IUpdateAppAccountDto {
@@ -18572,6 +18580,7 @@ export class UpdateAppAccountDto implements IUpdateAppAccountDto {
     logo!: string | undefined;
     isActive!: boolean;
     address!: AddressDto;
+    thumbnailImage!: string | undefined;
 
     constructor(data?: IUpdateAppAccountDto) {
         if (data) {
@@ -18592,6 +18601,7 @@ export class UpdateAppAccountDto implements IUpdateAppAccountDto {
             this.logo = _data["logo"];
             this.isActive = _data["isActive"];
             this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
+            this.thumbnailImage = _data["thumbnailImage"];
         }
     }
 
@@ -18612,6 +18622,7 @@ export class UpdateAppAccountDto implements IUpdateAppAccountDto {
         data["logo"] = this.logo;
         data["isActive"] = this.isActive;
         data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        data["thumbnailImage"] = this.thumbnailImage;
         return data; 
     }
 }
@@ -18625,6 +18636,7 @@ export interface IUpdateAppAccountDto {
     logo: string | undefined;
     isActive: boolean;
     address: AddressDto;
+    thumbnailImage: string | undefined;
 }
 
 export class ListResultDtoOfAppAccountListDto implements IListResultDtoOfAppAccountListDto {
@@ -18680,6 +18692,7 @@ export class AppAccountDto implements IAppAccountDto {
     logo!: string | undefined;
     isActive!: boolean;
     address!: AddressDto;
+    thumbnailImage!: string | undefined;
     sorting!: string | undefined;
     maxResultCount!: number;
     skipCount!: number;
@@ -18703,6 +18716,7 @@ export class AppAccountDto implements IAppAccountDto {
             this.logo = _data["logo"];
             this.isActive = _data["isActive"];
             this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
+            this.thumbnailImage = _data["thumbnailImage"];
             this.sorting = _data["sorting"];
             this.maxResultCount = _data["maxResultCount"];
             this.skipCount = _data["skipCount"];
@@ -18726,6 +18740,7 @@ export class AppAccountDto implements IAppAccountDto {
         data["logo"] = this.logo;
         data["isActive"] = this.isActive;
         data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        data["thumbnailImage"] = this.thumbnailImage;
         data["sorting"] = this.sorting;
         data["maxResultCount"] = this.maxResultCount;
         data["skipCount"] = this.skipCount;
@@ -18742,6 +18757,7 @@ export interface IAppAccountDto {
     logo: string | undefined;
     isActive: boolean;
     address: AddressDto;
+    thumbnailImage: string | undefined;
     sorting: string | undefined;
     maxResultCount: number;
     skipCount: number;

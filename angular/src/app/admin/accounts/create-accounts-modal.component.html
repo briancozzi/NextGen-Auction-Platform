@@ -77,7 +77,7 @@
                                 <select #CountryCombobox name="countryName" class="form-control bs-select"
                                     [(ngModel)]="account.address.countryUniqueId"
                                     (change)="loadStateList($event.target.value)" required>
-                                    <option value="">--Select Country--</option>
+                                    <option value="" [selected]="isSelected">--Select Country--</option>
                                     <option *ngFor="let country of countryList" [value]="country.countryUniqueId">
                                         {{country.countryName}}</option>
                                 </select>
@@ -87,7 +87,7 @@
                                 <label for="StateCombobox">{{"StateName" | localize}} *</label>
                                 <select #StateCombobox name="stateName" [disabled]="stateDropdown"
                                     class="form-control bs-select" [(ngModel)]="account.address.stateUniqueId" required>
-                                    <option value="">--Select State--</option>
+                                    <option value="" [selected]="isSelected">--Select State--</option>
                                     <option *ngFor="let state of stateList.states" [value]="state.stateUniqueId">
                                         {{state.stateName}}
                                     </option>

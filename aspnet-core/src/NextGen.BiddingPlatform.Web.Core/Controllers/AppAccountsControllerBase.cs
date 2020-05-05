@@ -31,6 +31,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
         private const int MaxThumbnailWidth = 100;
         private readonly IWebHostEnvironment _env;
         private readonly IAppAccountAppService _appAccountAppService;
+        private const string LogoImagePath = "/Uploads/AppAccountLogo/";
         public AppAccountsControllerBase(IWebHostEnvironment env, IAppAccountAppService appAccountAppService)
         {
             _env = env;
@@ -60,18 +61,19 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                     }
 
                     var fileName = DateTime.Now.Ticks + "_" + logoFile.FileName;
-                    var pathLocation = _env.WebRootPath + "/Uploads/AppAccountLogo";
+                    var pathLocation = _env.WebRootPath + LogoImagePath;
 
                     CommonFileUpload commonFileUpload = new CommonFileUpload();
                     var fullpath = await commonFileUpload.UploadFileRelativePath(logoFile, pathLocation, fileName);
                     var thumbnailImageName = await commonFileUpload.UploadThumbnail(logoFile, pathLocation, fileName, MaxThumbnailHeight, MaxThumbnailWidth);
 
-                    createAppAccountDto.Logo = "/Uploads/AppAccountLogo/" + fileName;
-                    
+                    createAppAccountDto.Logo = LogoImagePath + fileName;
+                    createAppAccountDto.ThumbnailImage = LogoImagePath + thumbnailImageName;
                 }
                 else
                 {
                     createAppAccountDto.Logo = "";
+                    createAppAccountDto.ThumbnailImage = "";
                 }
                 await _appAccountAppService.Create(createAppAccountDto);
                 return Json(new AjaxResponse(new { Status = true }));

@@ -46,9 +46,10 @@ export class EditAccountsModalComponent extends AppComponentBase{
         };
 
         uploader.onBuildItemForm = (fileItem: any, form: any) => {
-            form.append('createAppAccountDto', JSON.stringify(this.account)); //note comma separating key and value
+            form.append('updateAppAccountDto', JSON.stringify(this.account)); //note comma separating key and value
+            form.append('isCreated', false);
         };
-        
+
         uploader.onSuccessItem = (item, response, status) => {
             const ajaxResponse = <IAjaxResponse>JSON.parse(response);
             if (ajaxResponse.success) {

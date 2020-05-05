@@ -29,6 +29,7 @@
     <text name="EventUrl">Event Url</text>
     <text name="CreateEvent">Create New Event</text>
     <text name="EditEvent">Edit Event</text>
+    <text name="SearchEvents">Search Eventst</text>
 
 
     <!-- Custom Changes end here-->

@@ -25,7 +25,7 @@
                                 <validation-messages [formCtrl]="eventNameInput"></validation-messages>
                             </div>
                             <div class="col-xl-6">
-                                <label for="timeZone">{{"TimeZone" | localize}} *</label>
+                                <label for="timeZone">{{"Timezone" | localize}} *</label>
                                 <select class="form-control" [(ngModel)]="event.timeZone" id="timeZone" name="timeZone">
                                     <option *ngFor="let timeZone of timeZones" [value]="timeZone.value">{{timeZone.name}}</option>
                                 </select>
@@ -61,6 +61,7 @@
                                 <label for="appAccountUniqueId">{{"AccountName" | localize}} *</label>
                                 <select #AppAccountUniqueId name="appAccountUniqueId" class="form-control bs-select"
                                     [(ngModel)]="event.appAccountUniqueId">
+                                    <option value="" [selected]="isSelected">--Select Account--</option>
                                     <option *ngFor="let account of accountList" [value]="account.uniqueId">
                                         {{account.firstName }}
                                     </option>
@@ -118,6 +119,7 @@
                                 <select #CountryCombobox name="countryName" class="form-control bs-select"
                                     [(ngModel)]="event.address.countryUniqueId"
                                     (change)="loadStateList($event.target.value)" required>
+                                    <option value="" [selected]="isSelected">--Select Country--</option>
                                     <option *ngFor="let country of countryList" [value]="country.countryUniqueId">
                                         {{country.countryName}}</option>
                                 </select>
@@ -127,6 +129,7 @@
                                 <label for="StateCombobox">{{"StateName" | localize}} *</label>
                                 <select #StateCombobox name="stateName" [disabled]="stateDropdown"
                                     class="form-control bs-select" [(ngModel)]="event.address.stateUniqueId">
+                                    <option value="" [selected]="isSelected">--Select State--</option>
                                     <option *ngFor="let state of stateList.states" [value]="state.stateUniqueId">
                                         {{state.stateName}}
                                     </option>
