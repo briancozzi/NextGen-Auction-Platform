@@ -7,7 +7,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
 {
     public class AppAccountsController : AppAccountsControllerBase
     {
-        public AppAccountsController(IWebHostEnvironment webHostEnvironment):base(webHostEnvironment)
+        public AppAccountsController(IWebHostEnvironment webHostEnvironment, IAppAccountAppService appAccountAppService):base(webHostEnvironment, appAccountAppService)
         {
         }
     }
