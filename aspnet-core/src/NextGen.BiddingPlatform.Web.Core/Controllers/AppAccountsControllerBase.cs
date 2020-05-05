@@ -41,50 +41,83 @@ namespace NextGen.BiddingPlatform.Web.Controllers
         {
             try
             {
-                var logoFile = Request.Form.Files.First();
-                var createAppAccountDto = new CreateAppAccountDto();
-                var str = Request.Form["createAppAccountDto"];
-                createAppAccountDto = JsonConvert.DeserializeObject<CreateAppAccountDto>(str);
-                
-                if (logoFile != null)
-                {
-                    byte[] fileBytes;
-                    using (var stream = logoFile.OpenReadStream())
-                    {
-                        fileBytes = stream.GetAllBytes();
-                    }
-
-                    var imageFormat = ImageFormatHelper.GetRawImageFormat(fileBytes);
-                    if (!imageFormat.IsIn(ImageFormat.Jpeg, ImageFormat.Png, ImageFormat.Gif))
-                    {
-                        throw new UserFriendlyException(L("File_Invalid_Type_Error"));
-                    }
-
-                    var fileName = DateTime.Now.Ticks + "_" + logoFile.FileName;
-                    var pathLocation = _env.WebRootPath + LogoImagePath;
-
-                    CommonFileUpload commonFileUpload = new CommonFileUpload();
-                    var fullpath = await commonFileUpload.UploadFileRelativePath(logoFile, pathLocation, fileName);
-                    var thumbnailImageName = await commonFileUpload.UploadThumbnail(logoFile, pathLocation, fileName, MaxThumbnailHeight, MaxThumbnailWidth);
-
-                    createAppAccountDto.Logo = LogoImagePath + fileName;
-                    createAppAccountDto.ThumbnailImage = LogoImagePath + thumbnailImageName;
-                }
+                    var isCreated = Convert.ToBoolean(Request.Form["isCreated"]);
+                if (isCreated)
+                    await CreateAccount();
                 else
-                {
-                    createAppAccountDto.Logo = "";
-                    createAppAccountDto.ThumbnailImage = "";
-                }
-                await _appAccountAppService.Create(createAppAccountDto);
-                return Json(new AjaxResponse(new { Status = true }));
+                    await UpdateAccount();
 
+                return Json(new AjaxResponse(new { Status = true }));
             }
             catch (UserFriendlyException ex)
             {
                 return Json(new AjaxResponse(new { Status = false }));
             }
         }
+        public async Task CreateAccount()
+        {
+            var uploadedImages = await UploadImages();
+            var formData = Request.Form["createAppAccountDto"];
 
+            CreateAppAccountDto createAccountDto = JsonConvert.DeserializeObject<CreateAppAccountDto>(formData);
+            if (createAccountDto == null)
+                throw new Exception("Posted data is null. Please try again.");
 
+            createAccountDto.Logo = uploadedImages.Logo;
+            createAccountDto.ThumbnailImage = uploadedImages.ThumbnailImage;
+
+            await _appAccountAppService.Create(createAccountDto);
+        }
+        public async Task UpdateAccount()
+        {
+            var uploadedImages = await UploadImages();
+            var formData = Request.Form["updateAppAccountDto"];
+
+            UpdateAppAccountDto updateAccountDto = JsonConvert.DeserializeObject<UpdateAppAccountDto>(formData);
+
+            if (updateAccountDto == null)
+                throw new Exception("Posted data is null. Please try again.");
+
+            updateAccountDto.Logo = uploadedImages.Logo;
+            updateAccountDto.ThumbnailImage = uploadedImages.ThumbnailImage;
+
+            await _appAccountAppService.Update(updateAccountDto);
+        }
+        public async Task<Logos> UploadImages()
+        {
+            Logos logos = new Logos();
+
+            var logoFile = Request.Form.Files.First();
+            if (logoFile != null)
+            {
+                byte[] fileBytes;
+                using (var stream = logoFile.OpenReadStream())
+                {
+                    fileBytes = stream.GetAllBytes();
+                }
+
+                var imageFormat = ImageFormatHelper.GetRawImageFormat(fileBytes);
+                if (!imageFormat.IsIn(ImageFormat.Jpeg, ImageFormat.Png, ImageFormat.Gif))
+                {
+                    throw new UserFriendlyException(L("File_Invalid_Type_Error"));
+                }
+
+                var fileName = DateTime.Now.Ticks + "_" + logoFile.FileName;
+                var pathLocation = _env.WebRootPath + LogoImagePath;
+
+                CommonFileUpload commonFileUpload = new CommonFileUpload();
+                await commonFileUpload.UploadFileRelativePath(logoFile, pathLocation, fileName);
+                var thumbnailImageName = await commonFileUpload.UploadThumbnail(logoFile, pathLocation, fileName, MaxThumbnailHeight, MaxThumbnailWidth);
+
+                logos.Logo = LogoImagePath + fileName;
+                logos.ThumbnailImage = LogoImagePath + thumbnailImageName;
+            }
+            return logos;
+        }
+    }
+    public class Logos
+    {
+        public string Logo { get; set; }
+        public string ThumbnailImage { get; set; }
     }
 }
