@@ -1760,7 +1760,7 @@ namespace NextGen.BiddingPlatform.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("EventEndDateTimee")
+                    b.Property<DateTime>("EventEndDateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("EventName")
@@ -1768,7 +1768,7 @@ namespace NextGen.BiddingPlatform.Migrations
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
-                    b.Property<DateTime>("EventStartDateTimee")
+                    b.Property<DateTime>("EventStartDateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("EventUrl")
@@ -1871,6 +1871,9 @@ namespace NextGen.BiddingPlatform.Migrations
 
                     b.Property<int>("TenantId")
                         .HasColumnType("int");
+
+                    b.Property<string>("ThumbnailImage")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("UniqueId")
                         .HasColumnType("uniqueidentifier");

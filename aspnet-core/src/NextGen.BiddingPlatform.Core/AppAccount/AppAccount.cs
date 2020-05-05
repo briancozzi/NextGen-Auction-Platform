@@ -39,6 +39,8 @@ namespace NextGen.BiddingPlatform.Core.AppAccounts
 
         public string Logo { get; set; } // Account/Company logo
 
+        public string ThumbnailImage { get; set; }
+
         public bool IsActive { get; set; }
 
         [ForeignKey("Address")]
