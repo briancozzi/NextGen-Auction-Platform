@@ -65,7 +65,9 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                     CommonFileUpload commonFileUpload = new CommonFileUpload();
                     var fullpath = await commonFileUpload.UploadFileRelativePath(logoFile, pathLocation, fileName);
                     var thumbnailImageName = await commonFileUpload.UploadThumbnail(logoFile, pathLocation, fileName, MaxThumbnailHeight, MaxThumbnailWidth);
+
                     createAppAccountDto.Logo = "/Uploads/AppAccountLogo/" + fileName;
+                    
                 }
                 else
                 {

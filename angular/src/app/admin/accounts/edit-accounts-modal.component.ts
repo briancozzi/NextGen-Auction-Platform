@@ -45,6 +45,10 @@ export class EditAccountsModalComponent extends AppComponentBase{
             file.withCredentials = false;
         };
 
+        uploader.onBuildItemForm = (fileItem: any, form: any) => {
+            form.append('createAppAccountDto', JSON.stringify(this.account)); //note comma separating key and value
+        };
+        
         uploader.onSuccessItem = (item, response, status) => {
             const ajaxResponse = <IAjaxResponse>JSON.parse(response);
             if (ajaxResponse.success) {
@@ -66,8 +70,9 @@ export class EditAccountsModalComponent extends AppComponentBase{
         this.logoUploader = this.createUploader(
             '/AppAccounts/UploadLogo',
             result => {
-                this.account.logo = result.path;
-                this.updateAccount();
+                this.notify.info(this.l('SavedSuccessfully'));
+                    this.close();
+                    this.modalSave.emit(null);
             }
         );
     }
