@@ -28,6 +28,6 @@ namespace NextGen.BiddingPlatform.AppAccount.Dto
 
         public AddressDto Address { get; set; }
 
-
+        public string ThumbnailImage { get; set; }
     }
 }
