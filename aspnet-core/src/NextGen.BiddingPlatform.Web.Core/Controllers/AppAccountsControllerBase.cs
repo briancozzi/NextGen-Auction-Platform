@@ -26,6 +26,8 @@ namespace NextGen.BiddingPlatform.Web.Controllers
     {
 
         private const int MaxProfilePictureSize = 5242880; //5MB
+        private const int MaxThumbnailHeight = 100;
+        private const int MaxThumbnailWidth = 100;
         private readonly IWebHostEnvironment _env;
         public AppAccountsControllerBase(IWebHostEnvironment env)
         {
@@ -36,18 +38,31 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             try
             {
                 var logoFile = Request.Form.Files.First();
-                if(logoFile != null)
+                if (logoFile != null)
                 {
+                    byte[] fileBytes;
+                    using (var stream = logoFile.OpenReadStream())
+                    {
+                        fileBytes = stream.GetAllBytes();
+                    }
+
+                    var imageFormat = ImageFormatHelper.GetRawImageFormat(fileBytes);
+                    if (!imageFormat.IsIn(ImageFormat.Jpeg, ImageFormat.Png, ImageFormat.Gif))
+                    {
+                        throw new UserFriendlyException(L("File_Invalid_Type_Error"));
+                    }
+
                     var fileName = DateTime.Now.Ticks + "_" + logoFile.FileName;
                     var pathLocation = _env.WebRootPath + "/Uploads/AppAccountLogo";
-                    
+
                     CommonFileUpload commonFileUpload = new CommonFileUpload();
                     var fullpath = await commonFileUpload.UploadFileRelativePath(logoFile, pathLocation, fileName);
+                    var thumbnailImageName = await commonFileUpload.UploadThumbnail(logoFile, pathLocation, fileName, MaxThumbnailHeight, MaxThumbnailWidth);
                     return Json(new AjaxResponse(new { Path = "/Uploads/AppAccountLogo/" + fileName, Status = true }));
                 }
                 else
                 {
-                    return Json(new AjaxResponse(new { Status = true, Path="" }));
+                    return Json(new AjaxResponse(new { Status = true, Path = "" }));
                 }
             }
             catch (UserFriendlyException ex)
@@ -55,7 +70,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                 return Json(new AjaxResponse(new { Status = false }));
             }
         }
-      
-       
+
+
     }
 }

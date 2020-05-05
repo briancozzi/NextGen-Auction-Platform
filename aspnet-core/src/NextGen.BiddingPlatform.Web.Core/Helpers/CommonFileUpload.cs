@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Abp.IO.Extensions;
+using Microsoft.AspNetCore.Http;
+using NextGen.BiddingPlatform.Web.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -44,7 +46,8 @@ namespace CHI.UI.Web.Helper
             pathString = pathString.Replace('\\', '/');
 
             var fileWithOutExt = Path.GetFileNameWithoutExtension(fileName);
-            var thumbFileName = fileWithOutExt + "_thmb" + ImageFormat.Jpeg.ToString();
+            var fileExt = Path.GetExtension(fileName);
+            var thumbFileName = fileWithOutExt + "_thmb" + fileExt;
 
             fullPath = Path.Combine(uploadLocation, thumbFileName);
 
@@ -52,7 +55,7 @@ namespace CHI.UI.Web.Helper
 
             SaveThumbnailFile(fileBase, height, width);
 
-            return fullPath;
+            return thumbFileName;
         }
 
         public bool FileExists(string filePath)
@@ -97,9 +100,16 @@ namespace CHI.UI.Web.Helper
 
                 using (var fileStream = new FileStream(fullPath, FileMode.Create))
                 {
-                    Image image = Image.FromStream(fileBase.OpenReadStream());
+                    byte[] fileBytes;
+                    Image image;
+                    using (var stream = fileBase.OpenReadStream())
+                    {
+                        fileBytes = stream.GetAllBytes();
+                        image = Image.FromStream(stream);
+                    }
+                    var imageFormat = ImageFormatHelper.GetRawImageFormat(fileBytes);
                     var thumbImage = image.GetThumbnailImage(width, height, () => false, IntPtr.Zero);
-                    thumbImage.Save(fileStream, ImageFormat.Jpeg);
+                    thumbImage.Save(fileStream, imageFormat);
                 }
             }
             catch (Exception)
