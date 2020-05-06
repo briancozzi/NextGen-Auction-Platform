@@ -93,11 +93,11 @@
                                     </td>
                                     <td>
                                         <span class="ui-column-title">{{"EventStartTime" | localize}}</span>
-                                        {{record.eventStartDateTime | date :"MMM d, y hh:mm a"}}
+                                        {{record.eventStartDateTime | momentFormat :"MMM DD, YYYY hh:mm a"}}
                                     </td>
                                     <td>
                                         <span class="ui-column-title">{{"EventEndTime" | localize}}</span>
-                                        {{record.eventEndDateTime | date :"MMM d, y hh:mm a"}}
+                                        {{record.eventEndDateTime | momentFormat :"MMM DD, YYYY hh:mm a"}}
                                     </td>
                                     <td>
                                         <span class="ui-column-title">{{"EventUrl" | localize}}</span>

@@ -31,7 +31,6 @@ export class AccountEventsComponent extends AppComponentBase {
   } = <any>{};
   
   getEvents(event?: LazyLoadEvent): void {
-    debugger;
     this.primengTableHelper.showLoadingIndicator();
     forkJoin([
       this._eventService.getAccountEventsWithFilter(
@@ -41,7 +40,8 @@ export class AccountEventsComponent extends AppComponentBase {
         this.primengTableHelper.getSkipCount(this.paginator, event)
       )
     ]).pipe(finalize(() => this.primengTableHelper.hideLoadingIndicator()))
-    .subscribe(result => {
+        .subscribe(result => {
+            debugger;
       this.primengTableHelper.totalRecordsCount = result[0].totalCount;
       this.primengTableHelper.records = result[0].items;
       this.primengTableHelper.hideLoadingIndicator();

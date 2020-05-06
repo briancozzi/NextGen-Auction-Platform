@@ -72,8 +72,8 @@ export class CreateEventsModalComponent extends AppComponentBase {
             this.event.address.countryUniqueId = allResults[0][0].countryUniqueId;
             this.loadStateList(this.event.address.countryUniqueId);
             this.accountList = allResults[1].items;
-            this.event.eventStartDateTime = moment(new Date());
-            this.event.eventEndDateTime = moment(new Date());
+            this.event.eventStartDateTime = moment();
+            this.event.eventEndDateTime = moment();
             this.timeZones = allResults[2].items;
         });
     }
@@ -82,14 +82,20 @@ export class CreateEventsModalComponent extends AppComponentBase {
         this.stateList = this.countryList.find(x=> x.countryUniqueId === countryId);
     }
 
+    getTimePart(dateTimeVal): string {
+        var timePart = this.startTime.toTimeString().split(":");
+        return timePart[0] + ":" + timePart[1];
+    }
+
     save(): void {
         this.saving = true;
-        var stime = moment(this.startTime).local().format("HH:mm");
-        var etime = moment(this.endTime).local().format("HH:mm");
-        var eventEndDate =   this.event.eventEndDateTime.local().format().split("T")[0];
-        var eventStartDate =  this.event.eventStartDateTime.local().format().split("T")[0]; 
-        this.event.eventEndDateTime = moment(eventEndDate + ' ' + etime).utc(false);
-        this.event.eventStartDateTime = moment(eventStartDate + ' ' + stime).utc(false);
+        var stime = this.getTimePart(this.startTime);
+        var etime = this.getTimePart(this.endTime);
+        var eventEndDate =   this.event.eventEndDateTime.format().split("T")[0];
+        var eventStartDate = this.event.eventStartDateTime.format().split("T")[0];
+
+        this.event.eventEndDateTime = moment(eventEndDate + ' ' + etime);//.tz(abp.timing.timeZoneInfo.iana.timeZoneId).utc();
+        this.event.eventStartDateTime = moment(eventStartDate + ' ' + stime);//.tz(abp.timing.timeZoneInfo.iana.timeZoneId).utc();
 
         this._eventService.create(this.event)
         .pipe(finalize(() => this.saving = false))
