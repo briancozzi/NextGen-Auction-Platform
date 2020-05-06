@@ -25,8 +25,9 @@ import { DynamicParameterDetailComponent } from './dynamic-entity-parameters/dyn
 import { EntityDynamicParameterComponent } from './dynamic-entity-parameters/entity-dynamic-parameter/entity-dynamic-parameter.component';
 import { EntityDynamicParameterValueComponent } from './dynamic-entity-parameters/entity-dynamic-parameter/entity-dynamic-parameter-value/entity-dynamic-parameter-value.component';
 import { StatesComponent } from './parameter/states/states.component';
-import {AccountsComponent} from "./accounts/accounts.component";
+import { AccountsComponent } from "./accounts/accounts.component";
 import { AccountEventsComponent } from './account-events/account-events.component';
+import { AuctionsComponent } from './auctions/auctions.component';
 
 
 @NgModule({
@@ -59,9 +60,10 @@ import { AccountEventsComponent } from './account-events/account-events.componen
                     { path: 'dynamic-parameter-detail', component: DynamicParameterDetailComponent, data: { permission: 'Pages.Administration.DynamicParameters' } },
                     { path: 'entity-dynamic-parameter', component: EntityDynamicParameterComponent, data: { permission: 'Pages.Administration.EntityDynamicParameters' } },
                     { path: 'entity-dynamic-parameter-value/manage-all/:entityFullName/:rowId', component: EntityDynamicParameterValueComponent, data: { permission: 'Pages.Administration.EntityDynamicParameters' } },
-                    { path: 'states',component: StatesComponent},
-                    {path:'accounts',component:AccountsComponent},
-                    {path:'events',component:AccountEventsComponent},
+                    { path: 'states', component: StatesComponent },
+                    { path: 'accounts', component: AccountsComponent },
+                    { path: 'events', component: AccountEventsComponent },
+                    { path: 'auctions', component: AuctionsComponent },
                     { path: '', redirectTo: 'hostDashboard', pathMatch: 'full' },
                     { path: '**', redirectTo: 'hostDashboard' }
                 ]

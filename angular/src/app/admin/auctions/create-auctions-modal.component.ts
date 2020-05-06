@@ -9,35 +9,32 @@ import {
     AppAccountServiceProxy,
     CreateAccountEventDto,
     AccountEventServiceProxy,
-    TimingServiceProxy,
-    SettingScopes, 
-    NameValueDto
+    CreateAuctionDto,
+    AuctionServiceProxy
 } from '@shared/service-proxies/service-proxies';
 import {forkJoin} from "rxjs";
 import * as moment from 'moment';
-import { settings } from 'cluster';
 
 @Component({
-    selector: 'createEventsModal',
-    templateUrl: './create-events-modal.component.html',
+    selector: 'createAuctionsModal',
+    templateUrl: './create-auctions-modal.component.html',
     
 })
-export class CreateEventsModalComponent extends AppComponentBase {
-    @Input() defaultTimezoneScope: SettingScopes;
+export class CreateAuctionsModalComponent extends AppComponentBase {
     @ViewChild('createModal', { static: true }) modal: ModalDirective;
     @Output() modalSave: EventEmitter<any> = new EventEmitter<any>();
 
     active = false;
     saving = false;
-    event: CreateAccountEventDto = new CreateAccountEventDto();
+    auction: CreateAuctionDto = new CreateAuctionDto();
     countryList = [];
     stateList =[];
     accountList = [];
+    eventList = [];
     stateDropdown = true;
     logo: string;
     startTime: Date = new Date();
     endTime: Date = new Date();
-    timeZones: NameValueDto[] = [];
     isSelected = true;
     
 
@@ -46,7 +43,7 @@ export class CreateEventsModalComponent extends AppComponentBase {
         private _countryService: CountryServiceProxy,
         private _accountService: AppAccountServiceProxy,
         private _eventService: AccountEventServiceProxy,
-        private _timingService: TimingServiceProxy
+        private _auctionService: AuctionServiceProxy
     ) {
         super(injector);
     }
@@ -61,21 +58,20 @@ export class CreateEventsModalComponent extends AppComponentBase {
     }
 
     init(): void {
-        debugger;
-        this.event = new CreateAccountEventDto();
-        this.event.address = new AddressDto();
+        this.auction = new CreateAuctionDto();
+        this.auction.address = new AddressDto();
         forkJoin([
             this._countryService.getCountriesWithState(),
             this._accountService.getAllAccount(),
-            this._timingService.getTimezones(SettingScopes.Application)
+            this._eventService.getAllAccountEvents()
           ]).subscribe(allResults =>{
             this.countryList = allResults[0];
-            this.event.address.countryUniqueId = allResults[0][0].countryUniqueId;
-            this.loadStateList(this.event.address.countryUniqueId);
+            this.auction.address.countryUniqueId = allResults[0][0].countryUniqueId;
+            this.loadStateList(this.auction.address.countryUniqueId);
             this.accountList = allResults[1].items;
-            this.event.eventStartDateTime = moment(new Date());
-            this.event.eventEndDateTime = moment(new Date());
-            this.timeZones = allResults[2].items;
+            this.eventList = allResults[2].items;
+            this.auction.auctionStartDateTime = moment(new Date());
+            this.auction.auctionEndDateTime = moment(new Date());
         });
     }
     loadStateList(countryId):void{
@@ -85,20 +81,7 @@ export class CreateEventsModalComponent extends AppComponentBase {
 
     save(): void {
         this.saving = true;
-        var stime = moment(this.startTime).local().format("HH:mm");
-        var etime = moment(this.endTime).local().format("HH:mm");
-        var eventEndDate =   this.event.eventEndDateTime.local().format().split("T")[0];
-        var eventStartDate =  this.event.eventStartDateTime.local().format().split("T")[0]; 
-        this.event.eventEndDateTime = moment(eventEndDate + ' ' + etime).utc(false);
-        this.event.eventStartDateTime = moment(eventStartDate + ' ' + stime).utc(false);
-
-        this._eventService.create(this.event)
-        .pipe(finalize(() => this.saving = false))
-        .subscribe(() => {
-            this.notify.info(this.l('SavedSuccessfully'));
-            this.close();
-            this.modalSave.emit(null);
-        });
+        
     
     }
 
