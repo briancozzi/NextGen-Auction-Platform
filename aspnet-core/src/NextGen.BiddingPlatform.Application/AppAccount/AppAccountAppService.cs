@@ -48,7 +48,8 @@ namespace NextGen.BiddingPlatform.AppAccount
                                                         FirstName = x.FirstName,
                                                         LastName = x.LastName,
                                                         PhoneNo = x.PhoneNo,
-                                                        Logo = x.Logo
+                                                        Logo = x.Logo,
+                                                        ThumbnailImage = x.ThumbnailImage
                                                     });
 
             var resultCount = await query.CountAsync();
@@ -99,7 +100,10 @@ namespace NextGen.BiddingPlatform.AppAccount
             account.LastName = input.LastName;
             account.Email = input.Email;
             account.PhoneNo = input.PhoneNo;
-            account.Logo = input.Logo;
+            if (!string.IsNullOrEmpty(input.Logo))
+                account.Logo = input.Logo;
+            if (!string.IsNullOrEmpty(input.ThumbnailImage))
+                account.ThumbnailImage = input.ThumbnailImage;
             account.IsActive = input.IsActive;
             //Address Properties
             account.Address.Address1 = input.Address.Address1;

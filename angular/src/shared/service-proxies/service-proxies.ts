@@ -805,57 +805,6 @@ export class AccountEventServiceProxy {
     /**
      * @return Success
      */
-    test(): Observable<string> {
-        let url_ = this.baseUrl + "/api/services/app/AccountEvent/Test";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",			
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processTest(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processTest(<any>response_);
-                } catch (e) {
-                    return <Observable<string>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<string>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processTest(response: HttpResponseBase): Observable<string> {
-        const status = response.status;
-        const responseBlob = 
-            response instanceof HttpResponse ? response.body : 
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 !== undefined ? resultData200 : <any>null;
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<string>(<any>null);
-    }
-
-    /**
-     * @return Success
-     */
     getAllAccountEvents(): Observable<ListResultDtoOfAccountEventListDto> {
         let url_ = this.baseUrl + "/api/services/app/AccountEvent/GetAllAccountEvents";
         url_ = url_.replace(/[?&]$/, "");
@@ -18461,6 +18410,7 @@ export class AppAccountListDto implements IAppAccountListDto {
     lastName!: string | undefined;
     phoneNo!: string | undefined;
     logo!: string | undefined;
+    thumbnailImage!: string | undefined;
 
     constructor(data?: IAppAccountListDto) {
         if (data) {
@@ -18479,6 +18429,7 @@ export class AppAccountListDto implements IAppAccountListDto {
             this.lastName = _data["lastName"];
             this.phoneNo = _data["phoneNo"];
             this.logo = _data["logo"];
+            this.thumbnailImage = _data["thumbnailImage"];
         }
     }
 
@@ -18497,6 +18448,7 @@ export class AppAccountListDto implements IAppAccountListDto {
         data["lastName"] = this.lastName;
         data["phoneNo"] = this.phoneNo;
         data["logo"] = this.logo;
+        data["thumbnailImage"] = this.thumbnailImage;
         return data; 
     }
 }
@@ -18508,6 +18460,7 @@ export interface IAppAccountListDto {
     lastName: string | undefined;
     phoneNo: string | undefined;
     logo: string | undefined;
+    thumbnailImage: string | undefined;
 }
 
 export class PagedResultDtoOfAppAccountListDto implements IPagedResultDtoOfAppAccountListDto {
@@ -18565,6 +18518,7 @@ export class CreateAppAccountDto implements ICreateAppAccountDto {
     phoneNo!: string;
     logo!: string | undefined;
     address!: AddressDto;
+    thumbnailImage!: string | undefined;
 
     constructor(data?: ICreateAppAccountDto) {
         if (data) {
@@ -18583,6 +18537,7 @@ export class CreateAppAccountDto implements ICreateAppAccountDto {
             this.phoneNo = _data["phoneNo"];
             this.logo = _data["logo"];
             this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
+            this.thumbnailImage = _data["thumbnailImage"];
         }
     }
 
@@ -18601,6 +18556,7 @@ export class CreateAppAccountDto implements ICreateAppAccountDto {
         data["phoneNo"] = this.phoneNo;
         data["logo"] = this.logo;
         data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        data["thumbnailImage"] = this.thumbnailImage;
         return data; 
     }
 }
@@ -18612,6 +18568,7 @@ export interface ICreateAppAccountDto {
     phoneNo: string;
     logo: string | undefined;
     address: AddressDto;
+    thumbnailImage: string | undefined;
 }
 
 export class UpdateAppAccountDto implements IUpdateAppAccountDto {
@@ -18623,6 +18580,7 @@ export class UpdateAppAccountDto implements IUpdateAppAccountDto {
     logo!: string | undefined;
     isActive!: boolean;
     address!: AddressDto;
+    thumbnailImage!: string | undefined;
 
     constructor(data?: IUpdateAppAccountDto) {
         if (data) {
@@ -18643,6 +18601,7 @@ export class UpdateAppAccountDto implements IUpdateAppAccountDto {
             this.logo = _data["logo"];
             this.isActive = _data["isActive"];
             this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
+            this.thumbnailImage = _data["thumbnailImage"];
         }
     }
 
@@ -18663,6 +18622,7 @@ export class UpdateAppAccountDto implements IUpdateAppAccountDto {
         data["logo"] = this.logo;
         data["isActive"] = this.isActive;
         data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        data["thumbnailImage"] = this.thumbnailImage;
         return data; 
     }
 }
@@ -18676,6 +18636,7 @@ export interface IUpdateAppAccountDto {
     logo: string | undefined;
     isActive: boolean;
     address: AddressDto;
+    thumbnailImage: string | undefined;
 }
 
 export class ListResultDtoOfAppAccountListDto implements IListResultDtoOfAppAccountListDto {
@@ -18731,6 +18692,7 @@ export class AppAccountDto implements IAppAccountDto {
     logo!: string | undefined;
     isActive!: boolean;
     address!: AddressDto;
+    thumbnailImage!: string | undefined;
     sorting!: string | undefined;
     maxResultCount!: number;
     skipCount!: number;
@@ -18754,6 +18716,7 @@ export class AppAccountDto implements IAppAccountDto {
             this.logo = _data["logo"];
             this.isActive = _data["isActive"];
             this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
+            this.thumbnailImage = _data["thumbnailImage"];
             this.sorting = _data["sorting"];
             this.maxResultCount = _data["maxResultCount"];
             this.skipCount = _data["skipCount"];
@@ -18777,6 +18740,7 @@ export class AppAccountDto implements IAppAccountDto {
         data["logo"] = this.logo;
         data["isActive"] = this.isActive;
         data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        data["thumbnailImage"] = this.thumbnailImage;
         data["sorting"] = this.sorting;
         data["maxResultCount"] = this.maxResultCount;
         data["skipCount"] = this.skipCount;
@@ -18793,6 +18757,7 @@ export interface IAppAccountDto {
     logo: string | undefined;
     isActive: boolean;
     address: AddressDto;
+    thumbnailImage: string | undefined;
     sorting: string | undefined;
     maxResultCount: number;
     skipCount: number;

@@ -38,6 +38,7 @@ export class CreateEventsModalComponent extends AppComponentBase {
     startTime: Date = new Date();
     endTime: Date = new Date();
     timeZones: NameValueDto[] = [];
+    isSelected = true;
     
 
     constructor(
