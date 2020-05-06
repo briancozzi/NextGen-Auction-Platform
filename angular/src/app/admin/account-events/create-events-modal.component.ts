@@ -3,6 +3,8 @@ import { AppComponentBase } from '@shared/common/app-component-base';
 import * as _ from 'lodash';
 import { ModalDirective } from 'ngx-bootstrap';
 import { finalize } from 'rxjs/operators';
+import { findOneIana } from "windows-iana";
+
 import {
     CountryServiceProxy,
     AddressDto,
@@ -64,6 +66,7 @@ export class CreateEventsModalComponent extends AppComponentBase {
         debugger;
         this.event = new CreateAccountEventDto();
         this.event.address = new AddressDto();
+
         forkJoin([
             this._countryService.getCountriesWithState(),
             this._accountService.getAllAccount(),
@@ -92,11 +95,13 @@ export class CreateEventsModalComponent extends AppComponentBase {
         this.saving = true;
         var stime = this.getTimePart(this.startTime);
         var etime = this.getTimePart(this.endTime);
-        var eventEndDate =   this.event.eventEndDateTime.format().split("T")[0];
-        var eventStartDate = this.event.eventStartDateTime.format().split("T")[0];
+        var eventEndDate =   this.event.eventEndDateTime.local().format("YYYY-MM-DD");
+        var eventStartDate = this.event.eventStartDateTime.local().format("YYYY-MM-DD");
 
-        this.event.eventEndDateTime = moment(eventEndDate + ' ' + etime);//.tz(abp.timing.timeZoneInfo.iana.timeZoneId).utc();
-        this.event.eventStartDateTime = moment(eventStartDate + ' ' + stime);//.tz(abp.timing.timeZoneInfo.iana.timeZoneId).utc();
+        var selectedtimezoneId = findOneIana(this.event.timeZone);
+
+        this.event.eventStartDateTime = moment.tz(eventStartDate + ' ' + stime, selectedtimezoneId);
+        this.event.eventEndDateTime = moment.tz(eventEndDate + ' ' + etime, selectedtimezoneId);
 
         this._eventService.create(this.event)
         .pipe(finalize(() => this.saving = false))

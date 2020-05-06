@@ -38,19 +38,14 @@
               "node_modules/primeicons/primeicons.css",
               "node_modules/sweetalert2/dist/sweetalert2.css",
               "node_modules/cookieconsent/build/cookieconsent.min.css",
-
               "src/assets/primeng/file-upload/css/primeng.file-upload.css",
               "src/assets/primeng/autocomplete/css/primeng.autocomplete.css",
               "src/assets/primeng/tree/css/primeng.tree.css",
               "src/assets/primeng/context-menu/css/primeng.context-menu.css",
-
               "src/assets/fonts/fonts-poppins.css",
               "src/assets/fonts/fonts-roboto.css",
-
               "src/assets/ngx-bootstrap/bs-datepicker.css",
-
               "src/assets/metronic/vendors/global/vendors.bundle.css",
-              
               "src/app/shared/core.less",
               "src/app/shared/layout/layout.less",
               "src/styles.css"
@@ -64,13 +59,11 @@
               "node_modules/quill/dist/quill.js",
               "node_modules/sweetalert2/dist/sweetalert2.js",
               "node_modules/cookieconsent/build/cookieconsent.min.js",
-
               "src/assets/abp-web-resources/abp.js",
               "src/assets/abp-web-resources/abp.sweet-alert.js",
               "src/assets/abp-web-resources/abp.notify.js",
               "src/assets/canvas-toBlob/canvas-toBlob.js",
               "node_modules/abp-web-resources/Abp/Framework/scripts/libs/abp.moment.js",
-
               "src/assets/metronic/vendors/global/vendors.bundle.js",
               "src/assets/metronic/common/js/scripts.bundle.js"
             ]
@@ -152,19 +145,14 @@
               "node_modules/primeicons/primeicons.css",
               "node_modules/sweetalert2/dist/sweetalert2.css",
               "node_modules/cookieconsent/build/cookieconsent.min.css",
-
               "src/assets/primeng/file-upload/css/primeng.file-upload.css",
               "src/assets/primeng/autocomplete/css/primeng.autocomplete.css",
               "src/assets/primeng/tree/css/primeng.tree.css",
               "src/assets/primeng/context-menu/css/primeng.context-menu.css",
-
               "src/assets/fonts/fonts-poppins.css",
               "src/assets/fonts/fonts-roboto.css",
-
               "src/assets/ngx-bootstrap/bs-datepicker.css",
-
               "src/assets/metronic/vendors/global/vendors.bundle.css",
-              
               "src/app/shared/core.less",
               "src/app/shared/layout/layout.less",
               "src/styles.css"
@@ -178,13 +166,11 @@
               "node_modules/quill/dist/quill.js",
               "node_modules/sweetalert2/dist/sweetalert2.js",
               "node_modules/cookieconsent/build/cookieconsent.min.js",
-
               "src/assets/abp-web-resources/abp.js",
               "src/assets/abp-web-resources/abp.sweet-alert.js",
               "src/assets/abp-web-resources/abp.notify.js",
               "src/assets/canvas-toBlob/canvas-toBlob.js",
               "node_modules/abp-web-resources/Abp/Framework/scripts/libs/abp.moment.js",
-
               "src/assets/metronic/vendors/global/vendors.bundle.js",
               "src/assets/metronic/common/js/scripts.bundle.js"
             ],
@@ -244,5 +230,8 @@
     "@schematics/angular:directive": {
       "prefix": "app"
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

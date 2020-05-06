@@ -3,6 +3,8 @@ import { AppComponentBase } from '@shared/common/app-component-base';
 import * as _ from 'lodash';
 import { ModalDirective } from 'ngx-bootstrap';
 import { finalize } from 'rxjs/operators';
+import { findOneIana } from "windows-iana";
+
 import {
     AddressDto,
     AccountEventServiceProxy,
@@ -66,16 +68,19 @@ export class EditEventsModalComponent extends AppComponentBase {
             this.accountList = allResults[2].items;
             this.timeZones = allResults[3].items;
 
-            var startTimeDt = this.event.eventStartDateTime.toDate();
-            startTimeDt.setHours(this.event.eventStartDateTime.hours());
-            startTimeDt.setMinutes(this.event.eventStartDateTime.minutes());
+            var selectedtimezoneId = findOneIana(this.event.timeZone);
 
+            this.event.eventStartDateTime = this.event.eventStartDateTime.clone().tz(selectedtimezoneId);
+            this.event.eventEndDateTime = this.event.eventEndDateTime.clone().tz(selectedtimezoneId);
+
+            var startTimeDt = this.event.eventStartDateTime.clone().toDate();
+            startTimeDt.setHours(parseInt(this.event.eventStartDateTime.format("HH")));
+            startTimeDt.setMinutes(parseInt(this.event.eventStartDateTime.format("mm")));
             this.startTime = startTimeDt;
 
-            var endTimeDt = this.event.eventEndDateTime.toDate();
-            endTimeDt.setHours(this.event.eventEndDateTime.hours());
-            endTimeDt.setMinutes(this.event.eventEndDateTime.minutes());
-
+            var endTimeDt = this.event.eventEndDateTime.clone().toDate();
+            endTimeDt.setHours(parseInt(this.event.eventEndDateTime.format("HH")));
+            endTimeDt.setMinutes(parseInt(this.event.eventEndDateTime.format("mm")));
             this.endTime = endTimeDt;
 
             this.modal.show();
@@ -95,11 +100,14 @@ export class EditEventsModalComponent extends AppComponentBase {
         this.saving  = true;
         var stime = this.getTimePart(this.startTime);
         var etime = this.getTimePart(this.endTime);
-        var eventEndDate =   this.event.eventEndDateTime.format().split("T")[0];
-        var eventStartDate = this.event.eventStartDateTime.format().split("T")[0];
 
-        this.event.eventEndDateTime = moment(eventEndDate + ' ' + etime);//.tz(abp.timing.timeZoneInfo.iana.timeZoneId).utc();
-        this.event.eventStartDateTime = moment(eventStartDate + ' ' + stime);//.tz(abp.timing.timeZoneInfo.iana.timeZoneId).utc();
+        var eventEndDate = this.event.eventEndDateTime.local().format("YYYY-MM-DD");
+        var eventStartDate = this.event.eventStartDateTime.local().format("YYYY-MM-DD");
+
+        var selectedtimezoneId = findOneIana(this.event.timeZone);
+
+        this.event.eventStartDateTime = moment.tz(eventStartDate + ' ' + stime, selectedtimezoneId);
+        this.event.eventEndDateTime = moment.tz(eventEndDate + ' ' + etime, selectedtimezoneId);
 
         this._eventService.update(this.event)
             .pipe(finalize(() => this.saving = false))
