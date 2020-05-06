@@ -84,7 +84,7 @@ export class CreateEventsModalComponent extends AppComponentBase {
     }
 
     getTimePart(dateTimeVal): string {
-        var timePart = this.startTime.toTimeString().split(":");
+        var timePart = dateTimeVal.toTimeString().split(":");
         return timePart[0] + ":" + timePart[1];
     }
 

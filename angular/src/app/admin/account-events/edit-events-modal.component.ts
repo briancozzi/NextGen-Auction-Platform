@@ -87,15 +87,20 @@ export class EditEventsModalComponent extends AppComponentBase {
         this.active = false;
         this.modal.hide();
     }
+    getTimePart(dateTimeVal): string {
+        var timePart = dateTimeVal.toTimeString().split(":");
+        return timePart[0] + ":" + timePart[1];
+    }
     save(): void {
         this.saving  = true;
-        var stime = moment(this.startTime).format("HH:mm");
-        var etime = moment(this.endTime).format("HH:mm");
+        var stime = this.getTimePart(this.startTime);
+        var etime = this.getTimePart(this.endTime);
         var eventEndDate =   this.event.eventEndDateTime.format().split("T")[0];
-        var eventStartDate =  this.event.eventStartDateTime.format().split("T")[0]; 
-        this.event.eventEndDateTime = moment(eventEndDate + ' ' + etime);
-        this.event.eventStartDateTime = moment(eventStartDate + ' ' + stime);
-        
+        var eventStartDate = this.event.eventStartDateTime.format().split("T")[0];
+
+        this.event.eventEndDateTime = moment(eventEndDate + ' ' + etime);//.tz(abp.timing.timeZoneInfo.iana.timeZoneId).utc();
+        this.event.eventStartDateTime = moment(eventStartDate + ' ' + stime);//.tz(abp.timing.timeZoneInfo.iana.timeZoneId).utc();
+
         this._eventService.update(this.event)
             .pipe(finalize(() => this.saving = false))
             .subscribe(() => {
