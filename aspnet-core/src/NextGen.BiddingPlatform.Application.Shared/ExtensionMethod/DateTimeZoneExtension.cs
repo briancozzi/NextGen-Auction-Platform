@@ -12,9 +12,9 @@ namespace NextGen.BiddingPlatform.ExtensionMethod
             return TimeZoneInfo.ConvertTimeFromUtc(dateTime, info);
         }
 
-        public static DateTime ConverUserTimeZoneToUtcTime(this DateTime dateTime, string timeZOneId)
+        public static DateTime ConverUserTimeZoneToUtcTime(this DateTime dateTime, string timeZoneId)
         {
-            TimeZoneInfo info = TimeZoneInfo.FindSystemTimeZoneById(timeZOneId);
+            TimeZoneInfo info = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
             var currentDateTime = new DateTime(dateTime.Ticks, DateTimeKind.Unspecified);
             return TimeZoneInfo.ConvertTimeToUtc(currentDateTime, info);
         }

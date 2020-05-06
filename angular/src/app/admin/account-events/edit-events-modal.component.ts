@@ -36,8 +36,8 @@ export class EditEventsModalComponent extends AppComponentBase {
     countryUniqueId: string;
     stateUniqueId: string;
     timeZones: NameValueDto[] = [];
-    startTime: any;
-    endTime: any;
+    startTime: Date = new Date();
+    endTime: Date = new Date();
 
     constructor(
         injector: Injector,
@@ -59,15 +59,25 @@ export class EditEventsModalComponent extends AppComponentBase {
             this._accountService.getAllAccount(),
             this._timingService.getTimezones(SettingScopes.Application)
         ]).subscribe(allResults => {
-            debugger;
             this.countryList = allResults[0];
             this.event = allResults[1];
             this.event.address = allResults[1].address;
             this.stateList = this.countryList.find(x => x.countryUniqueId === this.event.address.countryUniqueId);
             this.accountList = allResults[2].items;
             this.timeZones = allResults[3].items;
-            this.startTime = this.event.eventStartDateTime.toDate();
-            this.endTime = this.event.eventEndDateTime.toDate();
+
+            var startTimeDt = this.event.eventStartDateTime.toDate();
+            startTimeDt.setHours(this.event.eventStartDateTime.hours());
+            startTimeDt.setMinutes(this.event.eventStartDateTime.minutes());
+
+            this.startTime = startTimeDt;
+
+            var endTimeDt = this.event.eventEndDateTime.toDate();
+            endTimeDt.setHours(this.event.eventEndDateTime.hours());
+            endTimeDt.setMinutes(this.event.eventEndDateTime.minutes());
+
+            this.endTime = endTimeDt;
+
             this.modal.show();
         });
 
@@ -79,12 +89,13 @@ export class EditEventsModalComponent extends AppComponentBase {
     }
     save(): void {
         this.saving  = true;
-        var stime = moment(this.startTime).local().format("HH:mm");
-        var etime = moment(this.endTime).local().format("HH:mm");
-        var eventEndDate =   this.event.eventEndDateTime.local().format().split("T")[0];
-        var eventStartDate =  this.event.eventStartDateTime.local().format().split("T")[0]; 
+        var stime = moment(this.startTime).format("HH:mm");
+        var etime = moment(this.endTime).format("HH:mm");
+        var eventEndDate =   this.event.eventEndDateTime.format().split("T")[0];
+        var eventStartDate =  this.event.eventStartDateTime.format().split("T")[0]; 
         this.event.eventEndDateTime = moment(eventEndDate + ' ' + etime);
         this.event.eventStartDateTime = moment(eventStartDate + ' ' + stime);
+        
         this._eventService.update(this.event)
             .pipe(finalize(() => this.saving = false))
             .subscribe(() => {
