@@ -11,7 +11,8 @@ namespace NextGen.BiddingPlatform.AppAccountEvent.Dto
     public class UpdateAccountEventDto
     {
         public Guid UniqueId { get; set; }
-
+        [Required]
+        public Guid AppAccountUniqueId { get; set; }
         [Required]
         [MaxLength(AbpUserBase.MaxUserNameLength)]
         public string EventName { get; set; }

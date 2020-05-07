@@ -78,6 +78,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
         public async Task<UpdateAccountEventDto> Update(UpdateAccountEventDto input)
         {
             var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.CountryUniqueId);
+
             if (country == null)
                 throw new Exception("Country not found for given id");
             var state = await _stateRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.StateUniqueId);
@@ -88,9 +89,15 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             if (events == null)
                 throw new Exception("Event not found for given id");
 
+            var account = await _accountRepository.FirstOrDefaultAsync(x => x.UniqueId == input.AppAccountUniqueId);
+            if(account == null)
+                throw new Exception("Account not found for given id");
+
+
             //Event Properties
             events.Email = input.Email;
             events.EventName = input.EventName;
+
             //events.EventDate = input.EventDate;
             events.EventUrl = input.EventUrl;
             events.EventStartDateTime = input.EventStartDateTime;
@@ -105,6 +112,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             events.Address.ZipCode = input.Address.ZipCode;
             events.Address.StateId = state.Id;
             events.Address.CountryId = country.Id;
+            events.AppAccountId = account.Id;
             await _eventRepository.UpdateAsync(events);
             return input;
         }
@@ -125,7 +133,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             var eventsData = await _eventRepository.GetAllIncluding(x => x.AppAccount)
                                                     .Select(x => new AccountEventListDto
                                                     {
-                                                        AccountUniqueId = x.AppAccount.UniqueId,
+                                                        AppAccountUniqueId = x.AppAccount.UniqueId,
                                                         EventEndDateTime = x.EventEndDateTime,//.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
                                                         EventStartDateTime = x.EventStartDateTime,//.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
                                                         EventName = x.EventName,
@@ -146,7 +154,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
                                          .WhereIf(!input.Search.IsNullOrWhiteSpace(), x => x.EventName.ToLower().IndexOf(input.Search.ToLower()) > -1)
                                          .Select(x => new AccountEventListDto
                                          {
-                                             AccountUniqueId = x.AppAccount.UniqueId,
+                                             AppAccountUniqueId = x.AppAccount.UniqueId,
                                              EventEndDateTime = x.EventEndDateTime,//.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
                                              EventStartDateTime = x.EventStartDateTime,//.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
                                              EventName = x.EventName,

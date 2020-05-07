@@ -9,7 +9,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent.Dto
     public class AccountEventListDto
     {
         public Guid UniqueId { get; set; }
-        public Guid AccountUniqueId { get; set; }
+        public Guid AppAccountUniqueId { get; set; }
         public string EventName { get; set; }
         //public DateTime EventDate { get; set; }
         public DateTime EventStartDateTime { get; set; }

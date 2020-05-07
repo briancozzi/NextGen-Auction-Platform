@@ -204,9 +204,9 @@ namespace NextGen.BiddingPlatform
             configuration.CreateMap<CreateAccountEventDto, Core.AppAccountEvents.Event>().ReverseMap();
             configuration.CreateMap<UpdateAccountEventDto, Core.AppAccountEvents.Event>().ReverseMap();
             configuration.CreateMap<Core.AppAccountEvents.Event, AccountEventDto>()
-                .ForMember(x => x.AccountUniqueId, option => option.MapFrom(a => a.AppAccount.UniqueId));
+                .ForMember(x => x.AppAccountUniqueId, option => option.MapFrom(a => a.AppAccount.UniqueId));
             configuration.CreateMap<Core.AppAccountEvents.Event, AccountEventListDto>()
-                .ForMember(x => x.AccountUniqueId, option => option.MapFrom(a => a.AppAccount.UniqueId));
+                .ForMember(x => x.AppAccountUniqueId, option => option.MapFrom(a => a.AppAccount.UniqueId));
 
             //Auction
             configuration.CreateMap<Core.Auctions.Auction, AuctionListDto>()
