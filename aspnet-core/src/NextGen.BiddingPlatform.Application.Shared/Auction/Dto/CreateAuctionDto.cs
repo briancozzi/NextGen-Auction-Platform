@@ -9,7 +9,7 @@ namespace NextGen.BiddingPlatform.Auction.Dto
     public class CreateAuctionDto
     {
         [Required]
-        public Guid AccountId { get; set; }
+        public Guid AccountUniqueId { get; set; }
         [Required]
         public Guid EventUniqueId { get; set; }
         [Required]

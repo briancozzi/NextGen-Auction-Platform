@@ -20,7 +20,7 @@
                             <div class="col-xl-12">
                                 <label for="auctionType">{{"AuctionType" | localize}} *</label>
                                 <input id="auctionType" #auctionType="ngModel" class="form-control" type="text"
-                                    [ngClass]="{'edited':auction.auctionType}" name="auctionType" [(ngModel)]="event.auctionType"
+                                    [ngClass]="{'edited':auction.auctionType}" name="auctionType" [(ngModel)]="auction.auctionType"
                                     #email="ngModel" required maxlength="256" >
                                 <validation-messages [formCtrl]="auctionType"></validation-messages>
                             </div>
@@ -31,7 +31,7 @@
                             <div class="col-xl-6">
                                 <label for="accountId">{{"AccountName" | localize}} *</label>
                                 <select #accountId name="accountId" class="form-control bs-select"
-                                    [(ngModel)]="auction.accountId">
+                                    [(ngModel)]="auction.accountUniqueId">
                                     <option value="" [selected]="isSelected">--Select Account--</option>
                                     <option *ngFor="let account of accountList" [value]="account.uniqueId">
                                         {{account.firstName }}
@@ -78,16 +78,16 @@
                             <div class="col-xl-6">
                                 <label for="address1">{{"Address1" | localize}} *</label>
                                 <input id="address1" #address1Input="ngModel" class="form-control" type="text"
-                                    [ngClass]="{'edited':event.address.address1}" name="event.address1"
-                                    [(ngModel)]="event.address.address1" #address.address1="ngModel" required
+                                    [ngClass]="{'edited':auction.address.address1}" name="address1"
+                                    [(ngModel)]="auction.address.address1" #address.address1="ngModel" required
                                     maxlength="64">
                                 <validation-messages [formCtrl]="address1Input"></validation-messages>
                             </div>
                             <div class="col-xl-6">
                                 <label for="address2">{{"Address2" | localize}}</label>
                                 <input id="address2" #address2Input="ngModel" class="form-control" type="text"
-                                    [ngClass]="{'edited':event.address.address2}" name="address2"
-                                    [(ngModel)]="event.address.address2" #address1="ngModel" maxlength="64">
+                                    [ngClass]="{'edited':auction.address.address2}" name="address2"
+                                    [(ngModel)]="auction.address.address2" #address1="ngModel" maxlength="64">
                                 <validation-messages [formCtrl]="address2Input"></validation-messages>
                             </div>
                         </div>

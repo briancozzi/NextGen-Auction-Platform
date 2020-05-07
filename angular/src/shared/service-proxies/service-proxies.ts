@@ -1460,7 +1460,7 @@ export class AuctionServiceProxy {
      * @param id (optional) 
      * @return Success
      */
-    getAuctionById(id: string | undefined): Observable<AuctionDto> {
+    getAuctionById(id: string | undefined): Observable<UpdateAuctionDto> {
         let url_ = this.baseUrl + "/api/services/app/Auction/GetAuctionById?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -1483,14 +1483,14 @@ export class AuctionServiceProxy {
                 try {
                     return this.processGetAuctionById(<any>response_);
                 } catch (e) {
-                    return <Observable<AuctionDto>><any>_observableThrow(e);
+                    return <Observable<UpdateAuctionDto>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<AuctionDto>><any>_observableThrow(response_);
+                return <Observable<UpdateAuctionDto>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetAuctionById(response: HttpResponseBase): Observable<AuctionDto> {
+    protected processGetAuctionById(response: HttpResponseBase): Observable<UpdateAuctionDto> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -1501,7 +1501,7 @@ export class AuctionServiceProxy {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = AuctionDto.fromJS(resultData200);
+            result200 = UpdateAuctionDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1509,7 +1509,7 @@ export class AuctionServiceProxy {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<AuctionDto>(<any>null);
+        return _observableOf<UpdateAuctionDto>(<any>null);
     }
 
     /**
@@ -18915,124 +18915,10 @@ export interface IListResultDtoOfAuctionListDto {
     items: AuctionListDto[] | undefined;
 }
 
-export class AuctionDto implements IAuctionDto {
-    uniqueId!: string;
-    eventUniqueId!: string;
-    appAccountUniqueId!: string;
-    auctionType!: string | undefined;
-    auctionStartDateTime!: moment.Moment;
-    auctionEndDateTime!: moment.Moment;
-    address!: AddressDto;
-
-    constructor(data?: IAuctionDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.uniqueId = _data["uniqueId"];
-            this.eventUniqueId = _data["eventUniqueId"];
-            this.appAccountUniqueId = _data["appAccountUniqueId"];
-            this.auctionType = _data["auctionType"];
-            this.auctionStartDateTime = _data["auctionStartDateTime"] ? moment(_data["auctionStartDateTime"].toString()) : <any>undefined;
-            this.auctionEndDateTime = _data["auctionEndDateTime"] ? moment(_data["auctionEndDateTime"].toString()) : <any>undefined;
-            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): AuctionDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new AuctionDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["uniqueId"] = this.uniqueId;
-        data["eventUniqueId"] = this.eventUniqueId;
-        data["appAccountUniqueId"] = this.appAccountUniqueId;
-        data["auctionType"] = this.auctionType;
-        data["auctionStartDateTime"] = this.auctionStartDateTime ? this.auctionStartDateTime.toISOString() : <any>undefined;
-        data["auctionEndDateTime"] = this.auctionEndDateTime ? this.auctionEndDateTime.toISOString() : <any>undefined;
-        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
-        return data; 
-    }
-}
-
-export interface IAuctionDto {
-    uniqueId: string;
-    eventUniqueId: string;
-    appAccountUniqueId: string;
-    auctionType: string | undefined;
-    auctionStartDateTime: moment.Moment;
-    auctionEndDateTime: moment.Moment;
-    address: AddressDto;
-}
-
-export class CreateAuctionDto implements ICreateAuctionDto {
-    accountId!: string;
-    eventUniqueId!: string;
-    auctionType!: string;
-    auctionStartDateTime!: moment.Moment;
-    auctionEndDateTime!: moment.Moment;
-    address!: AddressDto;
-
-    constructor(data?: ICreateAuctionDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.accountId = _data["accountId"];
-            this.eventUniqueId = _data["eventUniqueId"];
-            this.auctionType = _data["auctionType"];
-            this.auctionStartDateTime = _data["auctionStartDateTime"] ? moment(_data["auctionStartDateTime"].toString()) : <any>undefined;
-            this.auctionEndDateTime = _data["auctionEndDateTime"] ? moment(_data["auctionEndDateTime"].toString()) : <any>undefined;
-            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): CreateAuctionDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new CreateAuctionDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["accountId"] = this.accountId;
-        data["eventUniqueId"] = this.eventUniqueId;
-        data["auctionType"] = this.auctionType;
-        data["auctionStartDateTime"] = this.auctionStartDateTime ? this.auctionStartDateTime.toISOString() : <any>undefined;
-        data["auctionEndDateTime"] = this.auctionEndDateTime ? this.auctionEndDateTime.toISOString() : <any>undefined;
-        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
-        return data; 
-    }
-}
-
-export interface ICreateAuctionDto {
-    accountId: string;
-    eventUniqueId: string;
-    auctionType: string;
-    auctionStartDateTime: moment.Moment;
-    auctionEndDateTime: moment.Moment;
-    address: AddressDto;
-}
-
 export class UpdateAuctionDto implements IUpdateAuctionDto {
     id!: string;
+    accountUniqueId!: string;
+    eventUniqueId!: string;
     auctionType!: string;
     auctionStartDateTime!: moment.Moment;
     auctionEndDateTime!: moment.Moment;
@@ -19050,6 +18936,8 @@ export class UpdateAuctionDto implements IUpdateAuctionDto {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
+            this.accountUniqueId = _data["accountUniqueId"];
+            this.eventUniqueId = _data["eventUniqueId"];
             this.auctionType = _data["auctionType"];
             this.auctionStartDateTime = _data["auctionStartDateTime"] ? moment(_data["auctionStartDateTime"].toString()) : <any>undefined;
             this.auctionEndDateTime = _data["auctionEndDateTime"] ? moment(_data["auctionEndDateTime"].toString()) : <any>undefined;
@@ -19067,6 +18955,8 @@ export class UpdateAuctionDto implements IUpdateAuctionDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
+        data["accountUniqueId"] = this.accountUniqueId;
+        data["eventUniqueId"] = this.eventUniqueId;
         data["auctionType"] = this.auctionType;
         data["auctionStartDateTime"] = this.auctionStartDateTime ? this.auctionStartDateTime.toISOString() : <any>undefined;
         data["auctionEndDateTime"] = this.auctionEndDateTime ? this.auctionEndDateTime.toISOString() : <any>undefined;
@@ -19077,6 +18967,64 @@ export class UpdateAuctionDto implements IUpdateAuctionDto {
 
 export interface IUpdateAuctionDto {
     id: string;
+    accountUniqueId: string;
+    eventUniqueId: string;
+    auctionType: string;
+    auctionStartDateTime: moment.Moment;
+    auctionEndDateTime: moment.Moment;
+    address: AddressDto;
+}
+
+export class CreateAuctionDto implements ICreateAuctionDto {
+    accountUniqueId!: string;
+    eventUniqueId!: string;
+    auctionType!: string;
+    auctionStartDateTime!: moment.Moment;
+    auctionEndDateTime!: moment.Moment;
+    address!: AddressDto;
+
+    constructor(data?: ICreateAuctionDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.accountUniqueId = _data["accountUniqueId"];
+            this.eventUniqueId = _data["eventUniqueId"];
+            this.auctionType = _data["auctionType"];
+            this.auctionStartDateTime = _data["auctionStartDateTime"] ? moment(_data["auctionStartDateTime"].toString()) : <any>undefined;
+            this.auctionEndDateTime = _data["auctionEndDateTime"] ? moment(_data["auctionEndDateTime"].toString()) : <any>undefined;
+            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): CreateAuctionDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateAuctionDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["accountUniqueId"] = this.accountUniqueId;
+        data["eventUniqueId"] = this.eventUniqueId;
+        data["auctionType"] = this.auctionType;
+        data["auctionStartDateTime"] = this.auctionStartDateTime ? this.auctionStartDateTime.toISOString() : <any>undefined;
+        data["auctionEndDateTime"] = this.auctionEndDateTime ? this.auctionEndDateTime.toISOString() : <any>undefined;
+        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface ICreateAuctionDto {
+    accountUniqueId: string;
+    eventUniqueId: string;
     auctionType: string;
     auctionStartDateTime: moment.Moment;
     auctionEndDateTime: moment.Moment;

@@ -49,27 +49,17 @@
                             <ng-template pTemplate="header">
                                 <tr>
                                     <th style="width:130px">{{'Actions' | localize}}</th>
-                                    <th pSortableColumn="eventName">
-                                        {{"AccountName" | localize}}
-                                        <p-sortIcon field="accountName"></p-sortIcon>
-                                    </th>
-                                    <th pSortableColumn="eventName">
-                                        {{"EventName" | localize}}
-                                        <p-sortIcon field="eventName"></p-sortIcon>
-                                    </th>
-                                    <th pSortableColumn="eventStartTime">
-                                        {{"AuctionStartTime" | localize}}
-                                        <p-sortIcon field="auctionStartDateTime"></p-sortIcon>
-                                    </th>
-                                    <th pSortableColumn="AuctionEndTime">
-                                        {{"AuctionEndTime" | localize}}
-                                        <p-sortIcon field="auctionEndDateTime"></p-sortIcon>
-                                    </th>
                                     <th pSortableColumn="auctionType">
                                         {{"AuctionType" | localize}}
                                         <p-sortIcon field="auctionType"></p-sortIcon>
                                     </th>
                                    
+                                    <th>
+                                        {{"AuctionStartTime" | localize}}
+                                    </th>
+                                    <th>
+                                        {{"AuctionEndTime" | localize}}
+                                    </th>
                                 </tr>
                             </ng-template>
                             <ng-template pTemplate="body" let-record="$implicit">
@@ -93,12 +83,8 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="ui-column-title">{{"AccountName" | localize}}</span>
-                                        {{record.account.accountName}}
-                                    </td>
-                                    <td>
-                                        <span class="ui-column-title">{{"EventName" | localize}}</span>
-                                        {{record.event.eventName}}
+                                        <span class="ui-column-title">{{"AuctionType" | localize}}</span>
+                                        {{record.auctionType}}
                                     </td>
                                     <td>
                                         <span class="ui-column-title">{{"AuctionStartTime" | localize}}</span>
@@ -108,10 +94,7 @@
                                         <span class="ui-column-title">{{"EventEndTime" | localize}}</span>
                                         {{record.auctionEndDateTime | date :"MMM d, y hh:mm a"}}
                                     </td>
-                                    <td>
-                                        <span class="ui-column-title">{{"AuctionType" | localize}}</span>
-                                        {{record.auctionType}}
-                                    </td>
+                                   
                                 </tr>
                             </ng-template>
                         </p-table>

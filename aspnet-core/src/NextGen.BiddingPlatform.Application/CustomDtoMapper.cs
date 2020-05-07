@@ -216,6 +216,12 @@ namespace NextGen.BiddingPlatform
             configuration.CreateMap<Core.Auctions.Auction, AuctionDto>()
                 .ForMember(x => x.AppAccountUniqueId, option => option.MapFrom(ap => ap.AppAccount.UniqueId))
                 .ForMember(x => x.EventUniqueId, option => option.MapFrom(e => e.Event.UniqueId));
+
+            configuration.CreateMap<Core.Auctions.Auction, UpdateAuctionDto>()
+               .ForMember(x => x.AccountUniqueId, option => option.MapFrom(ap => ap.AppAccount.UniqueId))
+               .ForMember(x => x.EventUniqueId, option => option.MapFrom(e => e.Event.UniqueId));
+              
+
             configuration.CreateMap<CreateAuctionDto, Core.Auctions.Auction>().ReverseMap();
 
             //Category

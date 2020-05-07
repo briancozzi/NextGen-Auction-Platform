@@ -7,7 +7,6 @@ import {
     CountryServiceProxy,
     AddressDto,
     AppAccountServiceProxy,
-    CreateAccountEventDto,
     AccountEventServiceProxy,
     CreateAuctionDto,
     AuctionServiceProxy
@@ -58,20 +57,21 @@ export class CreateAuctionsModalComponent extends AppComponentBase {
     }
 
     init(): void {
+        debugger;
         this.auction = new CreateAuctionDto();
         this.auction.address = new AddressDto();
         forkJoin([
             this._countryService.getCountriesWithState(),
             this._accountService.getAllAccount(),
-            this._eventService.getAllAccountEvents()
+            this._eventService.getAllAccountEvents(),
           ]).subscribe(allResults =>{
             this.countryList = allResults[0];
             this.auction.address.countryUniqueId = allResults[0][0].countryUniqueId;
             this.loadStateList(this.auction.address.countryUniqueId);
             this.accountList = allResults[1].items;
             this.eventList = allResults[2].items;
-            this.auction.auctionStartDateTime = moment(new Date());
-            this.auction.auctionEndDateTime = moment(new Date());
+            this.auction.auctionStartDateTime = moment();
+            this.auction.auctionEndDateTime = moment();
         });
     }
     loadStateList(countryId):void{
@@ -79,10 +79,26 @@ export class CreateAuctionsModalComponent extends AppComponentBase {
         this.stateList = this.countryList.find(x=> x.countryUniqueId === countryId);
     }
 
+    getTimePart(dateTimeVal): string {
+        var timePart = dateTimeVal.toTimeString().split(":");
+        return timePart[0] + ":" + timePart[1];
+    }
+
     save(): void {
         this.saving = true;
-        
-    
+        var stime = this.getTimePart(this.startTime);
+        var etime = this.getTimePart(this.endTime);
+        var EndDate =   this.auction.auctionEndDateTime.local().format("YYYY-MM-DD");
+        var StartDate = this.auction.auctionStartDateTime.local().format("YYYY-MM-DD");
+        this.auction.auctionStartDateTime = moment(StartDate + ' ' + stime);
+        this.auction.auctionEndDateTime = moment(EndDate + ' ' + etime);
+        this._auctionService.createAuction(this.auction)
+        .pipe(finalize(() => this.saving = false))
+        .subscribe(() => {
+            this.notify.info(this.l('SavedSuccessfully'));
+            this.close();
+            this.modalSave.emit(null);
+        });
     }
 
   

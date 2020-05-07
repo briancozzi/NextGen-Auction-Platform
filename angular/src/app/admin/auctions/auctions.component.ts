@@ -40,8 +40,8 @@ export class AuctionsComponent extends AppComponentBase {
         this.primengTableHelper.getSkipCount(this.paginator, event)
       ).pipe(finalize(() => this.primengTableHelper.hideLoadingIndicator()))
     .subscribe(result => {
-      this.primengTableHelper.totalRecordsCount = result[0].totalCount;
-      this.primengTableHelper.records = result[0].items;
+      this.primengTableHelper.totalRecordsCount = result.totalCount;
+      this.primengTableHelper.records = result.items;
       this.primengTableHelper.hideLoadingIndicator();
     });
       
@@ -51,7 +51,7 @@ export class AuctionsComponent extends AppComponentBase {
   }
   deleteAuction(auction: AuctionListDto): void {
     this.message.confirm(
-        this.l('DeleteAuctionEvent', auction.auctionType),
+        this.l('DeleteAuction', auction.auctionType),
         this.l('AreYouSure'),
         isConfirmed => {
             if (isConfirmed) {

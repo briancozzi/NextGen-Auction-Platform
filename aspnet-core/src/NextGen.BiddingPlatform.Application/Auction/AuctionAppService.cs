@@ -25,6 +25,7 @@ namespace NextGen.BiddingPlatform.Auction
         private readonly IRepository<Country.Country> _countryRepository;
         private readonly IRepository<Core.State.State> _stateRepository;
         private readonly IRepository<Event> _eventRepository;
+
         private new readonly IAbpSession AbpSession;
         public AuctionAppService(IRepository<Core.Auctions.Auction> auctionRepository,
                                   IAbpSession abpSession,
@@ -71,7 +72,7 @@ namespace NextGen.BiddingPlatform.Auction
             return new ListResultDto<AuctionListDto>(ObjectMapper.Map<IReadOnlyList<AuctionListDto>>(auctions));
         }
 
-        public async Task<AuctionDto> GetAuctionById(Guid Id)
+        public async Task<UpdateAuctionDto> GetAuctionById(Guid Id)
         {
             var existingAuction = await _auctionRepository.GetAllIncluding(x => x.Address,
                                                                            x => x.Event,
@@ -82,12 +83,12 @@ namespace NextGen.BiddingPlatform.Auction
             if (existingAuction == null)
                 throw new Exception("Auction data not found for given id");
 
-            return ObjectMapper.Map<AuctionDto>(existingAuction);
+            return ObjectMapper.Map<UpdateAuctionDto>(existingAuction);
         }
 
         public async Task<CreateAuctionDto> CreateAuction(CreateAuctionDto input)
         {
-            var account = await _appAccountRepository.FirstOrDefaultAsync(x => x.UniqueId == input.AccountId);
+            var account = await _appAccountRepository.FirstOrDefaultAsync(x => x.UniqueId == input.AccountUniqueId);
             if (account == null)
                 throw new Exception("AppAccount not found for given id");
             var existingEvent = await _eventRepository.FirstOrDefaultAsync(x => x.UniqueId == input.EventUniqueId);
@@ -111,6 +112,8 @@ namespace NextGen.BiddingPlatform.Auction
             auction.Address.UniqueId = Guid.NewGuid();
             auction.Address.StateId = state.Id;
             auction.Address.CountryId = country.Id;
+            auction.EventId = existingEvent.Id;
+            auction.AppAccountId = account.Id;
             await _auctionRepository.InsertAsync(auction);
             return input;
         }
@@ -123,6 +126,8 @@ namespace NextGen.BiddingPlatform.Auction
             var state = await _stateRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.StateUniqueId);
             if (state == null)
                 throw new Exception("State not found for given id");
+
+           
 
             var exisingAuction = await _auctionRepository
                                           .GetAllIncluding(x => x.Address, x => x.Address.State, x => x.Address.Country)
