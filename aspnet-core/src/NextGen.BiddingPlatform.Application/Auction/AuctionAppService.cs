@@ -120,18 +120,25 @@ namespace NextGen.BiddingPlatform.Auction
 
         public async Task<UpdateAuctionDto> UpdateAuction(UpdateAuctionDto input)
         {
+            var existingEvent = await _eventRepository.FirstOrDefaultAsync(x => x.UniqueId == input.EventUniqueId);
+            if(existingEvent == null)
+                throw new Exception("Event not found for given id");
+
+            var existingAccount = await _appAccountRepository.FirstOrDefaultAsync(x => x.UniqueId == input.AccountUniqueId);
+            if (existingAccount == null)
+                throw new Exception("Account not found for given id");
+
             var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.CountryUniqueId);
             if (country == null)
                 throw new Exception("Country not found for given id");
+
             var state = await _stateRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.StateUniqueId);
             if (state == null)
                 throw new Exception("State not found for given id");
 
-           
-
             var exisingAuction = await _auctionRepository
                                           .GetAllIncluding(x => x.Address, x => x.Address.State, x => x.Address.Country)
-                                          .FirstOrDefaultAsync(x => x.UniqueId == input.Id);
+                                          .FirstOrDefaultAsync(x => x.UniqueId == input.UniqueId);
 
             if (exisingAuction == null)
                 throw new Exception("Auction not found for given Id");
@@ -146,6 +153,8 @@ namespace NextGen.BiddingPlatform.Auction
             exisingAuction.Address.ZipCode = input.Address.ZipCode;
             exisingAuction.Address.CountryId = country.Id;
             exisingAuction.Address.StateId = state.Id;
+            exisingAuction.EventId = existingEvent.Id;
+            exisingAuction.AppAccountId = existingAccount.Id;
             await _auctionRepository.UpdateAsync(exisingAuction);
             return input;
         }

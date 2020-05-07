@@ -48,6 +48,7 @@ export class EditAuctionsModalComponent extends AppComponentBase {
     }
 
     show(AuctionId?: string): void {
+        debugger;
         this.active = true;
         this.auction = new UpdateAuctionDto();
         this.auction.address = new AddressDto();
@@ -63,7 +64,7 @@ export class EditAuctionsModalComponent extends AppComponentBase {
             this.stateList = this.countryList.find(x => x.countryUniqueId === this.auction.address.countryUniqueId);
             this.eventList = allResults[2].items;
             this.accountList = allResults[3].items;
-
+            
             var startTimeDt = this.auction.auctionStartDateTime.clone().toDate();
             startTimeDt.setHours(parseInt(this.auction.auctionStartDateTime.format("HH")));
             startTimeDt.setMinutes(parseInt(this.auction.auctionStartDateTime.format("mm")));

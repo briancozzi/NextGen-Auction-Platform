@@ -18916,7 +18916,7 @@ export interface IListResultDtoOfAuctionListDto {
 }
 
 export class UpdateAuctionDto implements IUpdateAuctionDto {
-    id!: string;
+    uniqueId!: string;
     accountUniqueId!: string;
     eventUniqueId!: string;
     auctionType!: string;
@@ -18935,7 +18935,7 @@ export class UpdateAuctionDto implements IUpdateAuctionDto {
 
     init(_data?: any) {
         if (_data) {
-            this.id = _data["id"];
+            this.uniqueId = _data["uniqueId"];
             this.accountUniqueId = _data["accountUniqueId"];
             this.eventUniqueId = _data["eventUniqueId"];
             this.auctionType = _data["auctionType"];
@@ -18954,7 +18954,7 @@ export class UpdateAuctionDto implements IUpdateAuctionDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
+        data["uniqueId"] = this.uniqueId;
         data["accountUniqueId"] = this.accountUniqueId;
         data["eventUniqueId"] = this.eventUniqueId;
         data["auctionType"] = this.auctionType;
@@ -18966,7 +18966,7 @@ export class UpdateAuctionDto implements IUpdateAuctionDto {
 }
 
 export interface IUpdateAuctionDto {
-    id: string;
+    uniqueId: string;
     accountUniqueId: string;
     eventUniqueId: string;
     auctionType: string;

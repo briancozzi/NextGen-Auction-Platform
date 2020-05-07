@@ -31,7 +31,7 @@
                             <div class="col-xl-6">
                                 <label for="accountId">{{"AccountName" | localize}} *</label>
                                 <select #accountId name="accountId" class="form-control bs-select"
-                                    [(ngModel)]="auction.accountId">
+                                    [(ngModel)]="auction.accountUniqueId">
                                     <option value="" [selected]="isSelected">--Select Account--</option>
                                     <option *ngFor="let account of accountList" [value]="account.uniqueId">
                                         {{account.firstName }}
@@ -55,7 +55,7 @@
                         <div class="row">
                             <div class="col-xl-3">
                                 <label for="auctionStartTime">{{"AuctionStartTime" | localize}} *</label>
-                                <input id="auctionStartTime" type="text" #auctionStartTimeUtc name="auctionStartTime"
+                                <input id="auctionStartTime" type="text" #auctionStartTime name="auctionStartTime"
                                     class="form-control" bsDatepicker datePickerMomentModifier
                                     [(date)]="auction.auctionStartDateTime">
                             </div>
@@ -64,7 +64,7 @@
                             </div>
                             <div class="col-xl-3">
                                 <label for="auctionEndTime">{{"AuctionEndTime" | localize}} *</label>
-                                <input id="auctionEndTime" type="text" #auctionEndTimeUtc name="auctionEndTime"
+                                <input id="auctionEndTime" type="text" #auctionEndTime name="auctionEndTime"
                                     class="form-control" bsDatepicker datePickerMomentModifier
                                     [(date)]="auction.auctionEndDateTime">
                             </div>
