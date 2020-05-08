@@ -2,6 +2,7 @@
 using Abp.Organizations;
 using Abp.Zero.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using NextGen.BiddingPlatform.AppAccount.AppAccountPermission;
 using NextGen.BiddingPlatform.Authorization.Delegation;
 using NextGen.BiddingPlatform.Authorization.Roles;
 using NextGen.BiddingPlatform.Authorization.Users;
@@ -53,7 +54,7 @@ namespace NextGen.BiddingPlatform.EntityFrameworkCore
         public virtual DbSet<UserDelegation> UserDelegations { get; set; }
         public  virtual DbSet<Country.Country> Countries { get; set; }
         public virtual DbSet<State> States { get; set; }
-        public virtual DbSet<AppAccount> AppAccounts { get; set; }
+        public virtual DbSet<Core.AppAccounts.AppAccount> AppAccounts { get; set; }
         public virtual DbSet<Event> AppAccountEvents { get; set; }
         public virtual DbSet<Auction> Auctions { get; set; }
         public virtual DbSet<AuctionItem> AuctionItems { get; set; }
@@ -68,6 +69,7 @@ namespace NextGen.BiddingPlatform.EntityFrameworkCore
         public virtual DbSet<PaymentTransaction> PaymentTransactions { get; set; }
         public virtual DbSet<Types> Types { get; set; }
         public virtual DbSet<ItemCategory.ItemCategory> ItemCategories { get; set; }
+        public virtual DbSet<AppAccountPermission> AppAccountPermissions { get; set; }
 
         public BiddingPlatformDbContext(DbContextOptions<BiddingPlatformDbContext> options)
             : base(options)

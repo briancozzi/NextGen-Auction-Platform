@@ -27,7 +27,7 @@ namespace NextGen.BiddingPlatform.Core.Auctions
 
         [ForeignKey("AppAccount")]
         public int AppAccountId { get; set; }
-        public AppAccount AppAccount { get; set; }
+        public AppAccounts.AppAccount AppAccount { get; set; }
 
         [ForeignKey("Event")]
         public int EventId { get; set; }

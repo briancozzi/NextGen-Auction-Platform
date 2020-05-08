@@ -100,6 +100,8 @@ namespace NextGen.BiddingPlatform.Authorization
 
             //Change Added by ALPESH
             var appAccountPermisson = administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AppAccount, L("AppAccounts"), multiTenancySides: MultiTenancySides.Tenant);
+            appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AppAccount_All, L("AllAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
+            appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AppAccount_Assign, L("AssignAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
             appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AppAccount_Create, L("CreateAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
             appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AppAccount_Edit, L("EditAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
             appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AppAccount_Delete, L("DeleteAppAccount"), multiTenancySides: MultiTenancySides.Tenant);

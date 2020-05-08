@@ -92,6 +92,8 @@
 
         //Account Permission
         public const string Pages_Administration_Tenant_AppAccount = "Pages.Tenant.AppAccount";
+        public const string Pages_Administration_Tenant_AppAccount_All = "Pages.Tenant.AppAccount.All";
+        public const string Pages_Administration_Tenant_AppAccount_Assign = "Pages.Tenant.AppAccount.Assign";
         public const string Pages_Administration_Tenant_AppAccount_Create = "Pages.Tenant.AppAccount.Create";
         public const string Pages_Administration_Tenant_AppAccount_Edit = "Pages.Tenant.AppAccount.Edit";
         public const string Pages_Administration_Tenant_AppAccount_Delete = "Pages.Tenant.AppAccount.Delete";

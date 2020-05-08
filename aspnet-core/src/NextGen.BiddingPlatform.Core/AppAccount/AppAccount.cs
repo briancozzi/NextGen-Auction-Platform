@@ -1,6 +1,7 @@
 ﻿using Abp.Authorization.Users;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
+using NextGen.BiddingPlatform.AppAccount.AppAccountPermission;
 using NextGen.BiddingPlatform.Core.Addresses;
 using NextGen.BiddingPlatform.Core.AppAccountEvents;
 using NextGen.BiddingPlatform.CustomInterface;
@@ -49,10 +50,12 @@ namespace NextGen.BiddingPlatform.Core.AppAccounts
 
         public ICollection<Event> AppAccountEvents { get; set; }
         public int CountryId { get; set; }
+        public ICollection<AppAccountPermission> AccountPermissions { get; set; }
 
         public AppAccount()
         {
             AppAccountEvents = new Collection<Event>();
+            AccountPermissions = new Collection<AppAccountPermission>();
             Address = new Address();
         }
 

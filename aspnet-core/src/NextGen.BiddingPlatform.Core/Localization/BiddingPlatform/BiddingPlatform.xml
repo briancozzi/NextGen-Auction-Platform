@@ -14,6 +14,8 @@
     <text name="DeleteState">Delete State</text>
 
     <text name="AppAccounts">Accounts</text>
+    <text name="AllAppAccount">All Accounts</text>
+    <text name="AssignAppAccount">Assign Accounts</text>
     <text name="CreateAppAccount">Create New Account</text>
     <text name="EditAppAccount">Edit Account</text>
     <text name="DeleteAppAccount">Delete Account</text>
