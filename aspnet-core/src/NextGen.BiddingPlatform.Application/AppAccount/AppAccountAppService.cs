@@ -19,6 +19,7 @@ using NextGen.BiddingPlatform.Authorization;
 using NextGen.BiddingPlatform.Authorization.Users;
 using NextGen.BiddingPlatform.CustomAuthorization;
 using NextGen.BiddingPlatform.Common;
+using static NextGen.BiddingPlatform.CustomAuthorization.CustomEnum;
 
 namespace NextGen.BiddingPlatform.AppAccount
 {
@@ -48,16 +49,10 @@ namespace NextGen.BiddingPlatform.AppAccount
 
         public async Task<PagedResultDto<AppAccountListDto>> GetAllAccountFilter(AppAccountFilter input)
         {
-            List<int> accountIds = new List<int>();
-            var permission = await _commonPermissionService.GetUserPermissions();
-
             var query = _accountRepository.GetAll();
-
-            if (!permission.Contains(AppPermissions.Pages_Administration_Tenant_AppAccount_All) && permission.Contains(AppPermissions.Pages_Administration_Tenant_AppAccount_Assign))
-            {
-                accountIds = await GetAssignedAccounts(AbpSession.UserId.Value);
+            var accountIds = await GetAccessibleIds(AccessType.List, null);
+            if (accountIds != null)
                 query = query.Where(x => accountIds.Contains(x.Id));
-            }
 
             var resultquery = query.WhereIf(!input.SearchName.IsNullOrWhiteSpace(), x => x.FirstName.ToLower().IndexOf(input.SearchName.ToLower()) > -1 || x.LastName.ToLower().IndexOf(input.SearchName.ToLower()) > -1)
                          .Select(x => new AppAccountListDto
@@ -105,14 +100,20 @@ namespace NextGen.BiddingPlatform.AppAccount
         [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_AppAccount_Edit)]
         public async Task<UpdateAppAccountDto> Update(UpdateAppAccountDto input)
         {
+            var account = await _accountRepository.GetAllIncluding(x => x.Address).FirstOrDefaultAsync(x => x.UniqueId == input.UniqueId);
+            if (account == null)
+                throw new Exception("AppAccount not found for given Id");
+
+            var accessIds = await GetAccessibleIds(AccessType.Edit, account.Id);
+            if (accessIds.Count == 0)
+                throw new Exception("You do not have permission for access the record");
+
             var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.CountryUniqueId);
             var state = await _stateRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.StateUniqueId);
             if (country == null || state == null)
                 throw new Exception("Country or State not found");
 
-            var account = await _accountRepository.GetAllIncluding(x => x.Address).FirstOrDefaultAsync(x => x.UniqueId == input.UniqueId);
-            if (account == null)
-                throw new Exception("AppAccount not found for given Id");
+
 
             //AppAccount Properties
             account.FirstName = input.FirstName;
@@ -140,13 +141,25 @@ namespace NextGen.BiddingPlatform.AppAccount
             if (appAccount == null)
                 throw new Exception("AppAccount not found for given Id");
 
+            var accessIds = await GetAccessibleIds(AccessType.Delete, appAccount.Id);
+            if (accessIds.Count == 0)
+                throw new Exception("You do not have permission for access the record");
+
             await _accountRepository.DeleteAsync(appAccount);
         }
 
         public async Task<ListResultDto<AppAccountListDto>> GetAllAccount()
         {
-            var accountsData = await _accountRepository.GetAll().ToListAsync();
-            return new ListResultDto<AppAccountListDto>(ObjectMapper.Map<List<AppAccountListDto>>(accountsData));
+            var accountIds = await GetAccessibleIds(AccessType.List, null);
+
+            var query = _accountRepository.GetAll();
+
+            if (accountIds != null)
+                query = query.Where(x => accountIds.Contains(x.Id));
+
+            var result = await query.ToListAsync();
+
+            return new ListResultDto<AppAccountListDto>(ObjectMapper.Map<List<AppAccountListDto>>(result));
         }
 
         public async Task<AppAccountDto> GetAccountById(Guid Id)
@@ -154,6 +167,11 @@ namespace NextGen.BiddingPlatform.AppAccount
             var account = await _accountRepository.GetAllIncluding(x => x.Address, x => x.Address.State, x => x.Address.Country).FirstOrDefaultAsync(x => x.UniqueId == Id);
             if (account == null)
                 throw new Exception("AppAccount not found for given Id");
+
+            var accessIds = await GetAccessibleIds(AccessType.Get, account.Id);
+            if (accessIds.Count == 0)
+                throw new Exception("You do not have permission for access the record");
+
 
             return ObjectMapper.Map<AppAccountDto>(account);
         }
@@ -175,5 +193,47 @@ namespace NextGen.BiddingPlatform.AppAccount
 
             return selfAccountIds.ToList();
         }
+
+        private async Task<List<int>> GetAccessibleIds(AccessType accessType, int? accountId)
+        {
+            List<int> accountIds = null;
+            var userPermissions = await _commonPermissionService.GetUserPermissions();
+
+            if (userPermissions.Contains(AppPermissions.Pages_Administration_Tenant_AppAccount_All))
+            {
+                if (accessType == AccessType.List)
+                    return null;
+
+                accountIds = new List<int>();
+                accountIds.Add(accountId ?? 0);
+                return accountIds;
+            }
+
+            accountIds = new List<int>();
+            if (userPermissions.Contains(AppPermissions.Pages_Administration_Tenant_AppAccount_Assign))
+            {
+                if (accessType == AccessType.List)
+                    accountIds = await GetAssignedAccounts(AbpSession.UserId.Value);
+                else if (accessType == AccessType.Get || accessType == AccessType.Edit || accessType == AccessType.Delete)
+                {
+                    var hasAccess = await IsAccountAccessible(AbpSession.UserId.Value, accountId.Value);
+                    if (hasAccess)
+                        accountIds.Add(accountId.Value);
+                }
+                return accountIds;
+            }
+
+            return accountIds;
+        }
+
+        private async Task<bool> IsAccountAccessible(long userId, int accountId)
+        {
+            var selfAccounts = await _accountRepository.FirstOrDefaultAsync(x => x.CreatorUserId == userId && x.Id == accountId);
+
+            var filterAccount = await _accounPermissionRepository.FirstOrDefaultAsync(x => x.UserId == userId && x.Id == accountId);
+
+            return selfAccounts != null || selfAccounts != null;
+        }
+
     }
 }

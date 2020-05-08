@@ -15,5 +15,10 @@ namespace NextGen.BiddingPlatform.CustomAuthorization
         {
             Full, Create, Edit, Delete
         }
+
+        public enum AccessType
+        {
+            List, Get, Delete, Edit
+        }
     }
 }
