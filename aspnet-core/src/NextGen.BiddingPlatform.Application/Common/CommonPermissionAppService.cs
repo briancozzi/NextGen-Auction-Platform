@@ -1,10 +1,13 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
+using NextGen.BiddingPlatform.Authorization.Permissions.Dto;
 using NextGen.BiddingPlatform.Authorization.Users;
+using NextGen.BiddingPlatform.Authorization.Users.Dto;
 using NextGen.BiddingPlatform.Common.Dto;
 using NextGen.BiddingPlatform.CustomAuthorization;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,13 +21,14 @@ namespace NextGen.BiddingPlatform.Common
         {
             _userService = userService;
         }
-
         
         public async Task<List<string>> GetUserPermissions()
         {
             var userId = AbpSession.UserId.Value;
-            var permissions = await _userService.GetUserPermissionsForEdit(new EntityDto<long>(userId));
-            return permissions.GrantedPermissionNames;
+            var user = await UserManager.GetUserByIdAsync(userId);
+            var grantedPermissions = await UserManager.GetGrantedPermissionsAsync(user);
+
+            return grantedPermissions.Select(p=>p.Name).ToList();
         }
 
         public async Task<PermissionDto> HasPermission(string assignPermission, string allPermission)

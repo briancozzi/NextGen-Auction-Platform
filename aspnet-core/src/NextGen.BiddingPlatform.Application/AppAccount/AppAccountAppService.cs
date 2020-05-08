@@ -20,6 +20,7 @@ using NextGen.BiddingPlatform.Authorization.Users;
 using NextGen.BiddingPlatform.CustomAuthorization;
 using NextGen.BiddingPlatform.Common;
 using static NextGen.BiddingPlatform.CustomAuthorization.CustomEnum;
+using Abp.UI;
 
 namespace NextGen.BiddingPlatform.AppAccount
 {
@@ -143,7 +144,7 @@ namespace NextGen.BiddingPlatform.AppAccount
 
             var accessIds = await GetAccessibleIds(AccessType.Delete, appAccount.Id);
             if (accessIds.Count == 0)
-                throw new Exception("You do not have permission for access the record");
+                throw new UserFriendlyException("You do not have permission for access the record");
 
             await _accountRepository.DeleteAsync(appAccount);
         }
@@ -170,7 +171,7 @@ namespace NextGen.BiddingPlatform.AppAccount
 
             var accessIds = await GetAccessibleIds(AccessType.Get, account.Id);
             if (accessIds.Count == 0)
-                throw new Exception("You do not have permission for access the record");
+                throw new UserFriendlyException("You do not have permission for access the record");
 
 
             return ObjectMapper.Map<AppAccountDto>(account);
@@ -230,9 +231,9 @@ namespace NextGen.BiddingPlatform.AppAccount
         {
             var selfAccounts = await _accountRepository.FirstOrDefaultAsync(x => x.CreatorUserId == userId && x.Id == accountId);
 
-            var filterAccount = await _accounPermissionRepository.FirstOrDefaultAsync(x => x.UserId == userId && x.Id == accountId);
+            var filterAccount = await _accounPermissionRepository.FirstOrDefaultAsync(x => x.UserId == userId && x.AppAccountId == accountId);
 
-            return selfAccounts != null || selfAccounts != null;
+            return selfAccounts != null || filterAccount != null;
         }
 
     }
