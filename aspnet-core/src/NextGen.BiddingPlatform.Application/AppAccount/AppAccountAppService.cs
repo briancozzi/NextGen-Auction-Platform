@@ -176,24 +176,6 @@ namespace NextGen.BiddingPlatform.AppAccount
             return ObjectMapper.Map<AppAccountDto>(account);
         }
 
-        private async Task<List<int>> GetAssignedAccounts(long userId)
-        {
-            var user = await UserManager.GetUserByIdAsync(userId);
-            if (user == null)
-                throw new Exception("User not found for given id");
-
-            var selfAccounts = await _accountRepository.GetAllListAsync(x => x.CreatorUserId == userId);
-
-            var filterAccount = await _accounPermissionRepository.GetAllListAsync(x => x.UserId == userId);
-
-            var selfAccountIds = selfAccounts.Select(x => x.Id);
-            var filterIds = filterAccount.Select(x => x.AppAccountId);
-
-            selfAccountIds = selfAccountIds.Union(filterIds);
-
-            return selfAccountIds.ToList();
-        }
-
         private async Task<List<int>> GetAccessibleIds(AccessType accessType, int? accountId)
         {
             List<int> accountIds = null;
@@ -224,6 +206,24 @@ namespace NextGen.BiddingPlatform.AppAccount
             }
 
             return accountIds;
+        }
+
+        private async Task<List<int>> GetAssignedAccounts(long userId)
+        {
+            var user = await UserManager.GetUserByIdAsync(userId);
+            if (user == null)
+                throw new Exception("User not found for given id");
+
+            var selfAccounts = await _accountRepository.GetAllListAsync(x => x.CreatorUserId == userId);
+
+            var filterAccount = await _accounPermissionRepository.GetAllListAsync(x => x.UserId == userId);
+
+            var selfAccountIds = selfAccounts.Select(x => x.Id);
+            var filterIds = filterAccount.Select(x => x.AppAccountId);
+
+            selfAccountIds = selfAccountIds.Union(filterIds);
+
+            return selfAccountIds.ToList();
         }
 
         private async Task<bool> IsAccountAccessible(long userId, int accountId)
