@@ -108,7 +108,7 @@ namespace NextGen.BiddingPlatform.AppAccount
         [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_AppAccount_Edit)]
         public async Task<UpdateAppAccountDto> Update(UpdateAppAccountDto input)
         {
-            var account = await _accountRepository.GetAllIncluding(x => x.Address).FirstOrDefaultAsync(x => x.UniqueId == input.UniqueId);
+            var account = await _accountRepository.GetAllIncluding(x => x.Address, x=>x.AccountPermissions).FirstOrDefaultAsync(x => x.UniqueId == input.UniqueId);
             if (account == null)
                 throw new Exception("AppAccount not found for given Id");
 

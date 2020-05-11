@@ -39,7 +39,8 @@
                                 <label for="email">{{"Email" | localize}} *</label>
                                 <input id="email" #emailInput="ngModel" class="form-control" type="text"
                                     [ngClass]="{'edited':account.email}" name="email" [(ngModel)]="account.email"
-                                    #email="ngModel" required maxlength="256" pattern="^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$">
+                                    #email="ngModel" required maxlength="256"
+                                    pattern="^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$">
                                 <validation-messages [formCtrl]="emailInput"></validation-messages>
                             </div>
                             <div class="col-xl-6">
@@ -48,6 +49,20 @@
                                     [ngClass]="{'edited':account.phoneNo}" name="phoneNo" [(ngModel)]="account.phoneNo"
                                     #phoneNo="ngModel" required maxlength="10" pattern="^[0-9]\d*$">
                                 <validation-messages [formCtrl]="phoneNoInput"></validation-messages>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xl-12">
+                                <label for="userlist">{{"User" | localize}} *</label>
+                                <select #userlist  name="userlist" multiple [(ngModel)]="account.users" class="form-control bs-select"
+                                     required>
+                                    <option value="" [selected]="isSelected">--Select User--</option>
+                                    <option *ngFor="let user of userList" [value]="user.id">
+                                        {{user.name}}</option>
+                                </select>
+                                <validation-messages [formCtrl]="userlist"></validation-messages>
                             </div>
                         </div>
                     </div>
@@ -109,14 +124,16 @@
                                 <label for="zipCode">{{"ZipCode" | localize}} *</label>
                                 <input id="zipCode" #zipCodeInput="ngModel" class="form-control" type="text"
                                     [ngClass]="{'edited':account.address.zipCode}" name="zipCode"
-                                    [(ngModel)]="account.address.zipCode" #address1="ngModel" required maxlength="10" pattern="^[0-9]\d*$">
+                                    [(ngModel)]="account.address.zipCode" #address1="ngModel" required maxlength="10"
+                                    pattern="^[0-9]\d*$">
                                 <validation-messages [formCtrl]="zipCodeInput"></validation-messages>
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="logo">{{"Logo" | localize}}</label>
-                        <input id="logo" #inputFile type="file" ng2FileSelect [uploader]="logoUploader" class="col-lg-12"/>
+                        <input id="logo" #inputFile type="file" ng2FileSelect [uploader]="logoUploader"
+                            class="col-lg-12" />
                         <span class="form-text text-muted col-lg-12">{{"UploadLogo_Info" | localize}}</span>
                     </div>
                     <button class="btn btn-default" type="button" (click)="clearLogo()">{{"Clear" | localize}}</button>
@@ -124,8 +141,9 @@
                 <div class="modal-footer">
                     <button type="button" [disabled]="saving" class="btn btn-secondary"
                         (click)="close()">{{l("Cancel")}}</button>
-                    <button [disabled]="!accountCreateForm.form.valid" type="submit" [buttonBusy]="saving" [busyText]="l('SavingWithThreeDot')"
-                        class="btn btn-primary"><i class="fa fa-save"></i> <span>{{l("Save")}}</span></button>
+                    <button [disabled]="!accountCreateForm.form.valid" type="submit" [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')" class="btn btn-primary"><i class="fa fa-save"></i>
+                        <span>{{l("Save")}}</span></button>
                 </div>
             </form>
         </div>

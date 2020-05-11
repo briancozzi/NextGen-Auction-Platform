@@ -9,11 +9,13 @@ import {
     CreateAppAccountDto,
     CountryServiceProxy,
     AddressDto,
-    CountryStateDto
+    CountryStateDto,
+    UserServiceProxy,
 } from '@shared/service-proxies/service-proxies';
 import { AppConsts } from '@shared/AppConsts';
 import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
 import { IAjaxResponse, TokenService } from 'abp-ng2-module';
+import {forkJoin} from "rxjs";
 
 @Component({
     selector: 'createAccountsModal',
@@ -32,6 +34,7 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
     account: CreateAppAccountDto = new CreateAppAccountDto();
     countryList = [];
     stateList = [];
+    userList = [];
     stateDropdown = true;
     uploadedFiles: any[] = [];
     logo: string;
@@ -41,7 +44,8 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
         injector: Injector,
         private _accountsService: AppAccountServiceProxy,
         private _countryService: CountryServiceProxy,
-        private _tokenService: TokenService
+        private _tokenService: TokenService,
+        private _userService: UserServiceProxy
     ) {
         super(injector);
     }
@@ -105,10 +109,15 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
     init(): void {
         this.account = new CreateAppAccountDto();
         this.account.address = new AddressDto();
-        this._countryService.getCountriesWithState().subscribe(result => {
-            this.countryList = result;
-            this.account.address.countryUniqueId = result[0].countryUniqueId;
+        forkJoin([
+            this._countryService.getCountriesWithState(),
+            this._userService.getUsers(undefined,undefined,undefined,undefined,undefined,undefined,undefined)
+            // this._userService.getUsers(null,null,2,false,null,1000,0),
+        ]).subscribe(result => {
+            this.countryList = result[0];
+            this.account.address.countryUniqueId = result[0][0].countryUniqueId;
             this.loadStateList(this.account.address.countryUniqueId);
+            this.userList = result[1].items;
         });
     }
     loadStateList(countryId): void {
@@ -139,4 +148,4 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
         this.active = false;
         this.modal.hide();
     }
-}
+   }

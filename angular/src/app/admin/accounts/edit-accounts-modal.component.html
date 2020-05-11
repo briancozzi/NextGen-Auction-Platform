@@ -53,6 +53,20 @@
                     </div>
                     <div class="form-group">
                         <div class="row">
+                            <div class="col-xl-12">
+                                <label for="userlist">{{"User" | localize}} *</label>
+                                <select #userlist  name="userlist" multiple [(ngModel)]="account.users" class="form-control bs-select"
+                                     required>
+                                    <option value="" [selected]="isSelected">--Select User--</option>
+                                    <option *ngFor="let user of userList" [value]="user.id">
+                                        {{user.name}}</option>
+                                </select>
+                                <validation-messages [formCtrl]="userlist"></validation-messages>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
                             <div class="col-xl-6">
                                 <label for="address.address1">{{"Address1" | localize}} *</label>
                                 <input id="address.address1" #address1Input="ngModel" class="form-control" type="text"
