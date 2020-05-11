@@ -10,6 +10,10 @@ namespace NextGen.BiddingPlatform.AppAccountEvent.Dto
 {
     public class UpdateAccountEventDto
     {
+        public UpdateAccountEventDto()
+        {
+            Users = new List<long>();
+        }
         public Guid UniqueId { get; set; }
         [Required]
         public Guid AppAccountUniqueId { get; set; }
@@ -29,5 +33,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent.Dto
         public bool IsActive { get; set; }
         [Required]
         public AddressDto Address { get; set; }
+
+        public List<long> Users { get; set; }
     }
 }

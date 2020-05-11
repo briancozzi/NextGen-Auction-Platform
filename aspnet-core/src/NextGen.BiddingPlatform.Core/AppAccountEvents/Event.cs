@@ -1,6 +1,7 @@
 ﻿using Abp.Authorization.Users;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
+using NextGen.BiddingPlatform.AppAccountEvents.EventPermission;
 using NextGen.BiddingPlatform.Core.Addresses;
 using NextGen.BiddingPlatform.Core.AppAccounts;
 using NextGen.BiddingPlatform.Core.Auctions;
@@ -48,9 +49,11 @@ namespace NextGen.BiddingPlatform.Core.AppAccountEvents
         public string TimeZone { get; set; }// may be we have timezone table for this field
         public bool IsActive { get; set; }
         public ICollection<Auction> EventAuctions { get; set; }
+        public ICollection<EventPermission> EventPermissions { get; set; }
         public Event()
         {
             EventAuctions = new Collection<Auction>();
+            EventPermissions = new Collection<EventPermission>();
             Address = new Address();
         }
     }

@@ -94,6 +94,13 @@ namespace NextGen.BiddingPlatform.AppAccount
             account.Address.StateId = state.Id;
             account.Address.CountryId = country.Id;
             account.TenantId = AbpSession.TenantId.Value;
+            foreach (var item in input.Users)
+            {
+                account.AccountPermissions.Add(new AppAccountPermission.AppAccountPermission
+                {
+                    UserId = item
+                });
+            }
             await _accountRepository.InsertAsync(account);
             return input;
         }
@@ -114,8 +121,6 @@ namespace NextGen.BiddingPlatform.AppAccount
             if (country == null || state == null)
                 throw new Exception("Country or State not found");
 
-
-
             //AppAccount Properties
             account.FirstName = input.FirstName;
             account.LastName = input.LastName;
@@ -131,6 +136,19 @@ namespace NextGen.BiddingPlatform.AppAccount
             account.Address.ZipCode = input.Address.ZipCode;
             account.Address.StateId = state.Id;
             account.Address.CountryId = country.Id;
+
+            //remove records
+            if (account.AccountPermissions.Count > 0)
+                await _accounPermissionRepository.DeleteAsync(x => x.AppAccountId == account.Id);
+            //add new records
+            foreach (var item in input.Users)
+            {
+                account.AccountPermissions.Add(new AppAccountPermission.AppAccountPermission
+                {
+                    UserId = item
+                });
+            }
+
             await _accountRepository.UpdateAsync(account);
             return input;
         }
@@ -165,7 +183,7 @@ namespace NextGen.BiddingPlatform.AppAccount
 
         public async Task<AppAccountDto> GetAccountById(Guid Id)
         {
-            var account = await _accountRepository.GetAllIncluding(x => x.Address, x => x.Address.State, x => x.Address.Country).FirstOrDefaultAsync(x => x.UniqueId == Id);
+            var account = await _accountRepository.GetAllIncluding(x => x.Address, x => x.Address.State, x => x.Address.Country, x => x.AccountPermissions).FirstOrDefaultAsync(x => x.UniqueId == Id);
             if (account == null)
                 throw new Exception("AppAccount not found for given Id");
 
@@ -173,8 +191,9 @@ namespace NextGen.BiddingPlatform.AppAccount
             if (accessIds.Count == 0)
                 throw new UserFriendlyException("You do not have permission for access the record");
 
-
-            return ObjectMapper.Map<AppAccountDto>(account);
+            var mappedAccount = ObjectMapper.Map<AppAccountDto>(account);
+            mappedAccount.Users = account.AccountPermissions.Select(x => x.UserId).ToList();
+            return mappedAccount;
         }
 
         private async Task<List<int>> GetAccessibleIds(AccessType accessType, int? accountId)

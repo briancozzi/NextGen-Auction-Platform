@@ -9,6 +9,10 @@ namespace NextGen.BiddingPlatform.AppAccount.Dto
 {
     public class CreateAppAccountDto
     {
+        public CreateAppAccountDto()
+        {
+            Users = new List<long>();
+        }
         [Required]
         [EmailAddress]
         public string Email { get; set; }
@@ -29,5 +33,7 @@ namespace NextGen.BiddingPlatform.AppAccount.Dto
         public AddressDto Address { get; set; }
 
         public string ThumbnailImage { get; set; }
+
+        public List<long> Users { get; set; }
     }
 }

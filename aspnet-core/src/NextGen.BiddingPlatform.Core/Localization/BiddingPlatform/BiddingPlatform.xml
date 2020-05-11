@@ -19,6 +19,14 @@
     <text name="CreateAppAccount">Create New Account</text>
     <text name="EditAppAccount">Edit Account</text>
     <text name="DeleteAppAccount">Delete Account</text>
+
+    <text name="Events">Events</text>
+    <text name="AllEvents">All Accounts</text>
+    <text name="AssignEvents">Assign Events</text>
+    <text name="CreateEvent">Create New Event</text>
+    <text name="EditEvent">Edit Event</text>
+    <text name="DeleteEvent">Delete Event</text>
+
     <text name="FirstName">First Name</text>
     <text name="LastName">Last Name</text>
     <text name="Address1">Address1</text>
@@ -29,8 +37,6 @@
     <text name="EventStartTime">Event Start Time</text>
     <text name="EventEndTime">Event End Time</text>
     <text name="EventUrl">Event Url</text>
-    <text name="CreateEvent">Create New Event</text>
-    <text name="EditEvent">Edit Event</text>
     <text name="SearchEvents">Search Eventst</text>
 
 

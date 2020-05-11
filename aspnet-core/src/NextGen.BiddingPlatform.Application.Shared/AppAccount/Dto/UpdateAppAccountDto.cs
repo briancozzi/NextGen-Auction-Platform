@@ -9,6 +9,10 @@ namespace NextGen.BiddingPlatform.AppAccount.Dto
 {
     public class UpdateAppAccountDto
     {
+        public UpdateAppAccountDto()
+        {
+            Users = new List<long>();
+        }
         public Guid UniqueId { get; set; }
 
         [Required]
@@ -33,6 +37,8 @@ namespace NextGen.BiddingPlatform.AppAccount.Dto
         public AddressDto Address { get; set; }
 
         public string ThumbnailImage { get; set; }
+
+        public List<long> Users { get; set; }
 
     }
 }

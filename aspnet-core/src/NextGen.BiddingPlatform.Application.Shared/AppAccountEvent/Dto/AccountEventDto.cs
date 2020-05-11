@@ -21,5 +21,6 @@ namespace NextGen.BiddingPlatform.AppAccountEvent.Dto
         public bool IsActive { get; set; }
         public AddressDto Address { get; set; }
         public Guid AppAccountUniqueId { get; set; }
+        public List<long> Users { get; set; }
     }
 }

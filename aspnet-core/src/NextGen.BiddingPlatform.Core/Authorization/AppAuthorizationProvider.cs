@@ -99,12 +99,20 @@ namespace NextGen.BiddingPlatform.Authorization
             administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_SubscriptionManagement, L("Subscription"), multiTenancySides: MultiTenancySides.Tenant);
 
             //Change Added by ALPESH
+            //account permissions
             var appAccountPermisson = administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AppAccount, L("AppAccounts"), multiTenancySides: MultiTenancySides.Tenant);
             appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AppAccount_All, L("AllAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
             appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AppAccount_Assign, L("AssignAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
             appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AppAccount_Create, L("CreateAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
             appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AppAccount_Edit, L("EditAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
             appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AppAccount_Delete, L("DeleteAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
+            //event permissions
+            var accountEventPermisson = administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Event, L("Events"), multiTenancySides: MultiTenancySides.Tenant);
+            accountEventPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Event_All, L("AllEvents"), multiTenancySides: MultiTenancySides.Tenant);
+            accountEventPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Event_Assign, L("AssignEvents"), multiTenancySides: MultiTenancySides.Tenant);
+            accountEventPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Event_Create, L("CreateEvent"), multiTenancySides: MultiTenancySides.Tenant);
+            accountEventPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Event_Edit, L("EditEvent"), multiTenancySides: MultiTenancySides.Tenant);
+            accountEventPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Event_Delete, L("DeleteEvent"), multiTenancySides: MultiTenancySides.Tenant);
 
             //HOST-SPECIFIC PERMISSIONS
             var country = administration.CreateChildPermission(AppPermissions.Pages_Administration_Country, L("Country"), multiTenancySides: MultiTenancySides.Host);
