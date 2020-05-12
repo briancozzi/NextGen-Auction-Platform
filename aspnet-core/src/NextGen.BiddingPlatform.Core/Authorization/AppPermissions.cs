@@ -97,13 +97,18 @@
         public const string Pages_Administration_Tenant_AppAccount_Create = "Pages.Tenant.AppAccount.Create";
         public const string Pages_Administration_Tenant_AppAccount_Edit = "Pages.Tenant.AppAccount.Edit";
         public const string Pages_Administration_Tenant_AppAccount_Delete = "Pages.Tenant.AppAccount.Delete";
-
+        //Event Permission
         public const string Pages_Administration_Tenant_Event = "Pages.Tenant.Event";
         public const string Pages_Administration_Tenant_Event_All = "Pages.Tenant.Event.All";
         public const string Pages_Administration_Tenant_Event_Assign = "Pages.Tenant.Event.Assign";
         public const string Pages_Administration_Tenant_Event_Create = "Pages.Tenant.Event.Create";
         public const string Pages_Administration_Tenant_Event_Edit = "Pages.Tenant.Event.Edit";
         public const string Pages_Administration_Tenant_Event_Delete = "Pages.Tenant.Event.Delete";
+        //Auction Permission
+        public const string Pages_Administration_Tenant_Auction = "Pages.Tenant.Auction";
+        public const string Pages_Administration_Tenant_Auction_Create = "Pages.Tenant.Auction.Create";
+        public const string Pages_Administration_Tenant_Auction_Edit = "Pages.Tenant.Auction.Edit";
+        public const string Pages_Administration_Tenant_Auction_Delete = "Pages.Tenant.Auction.Delete";
         //HOST-SPECIFIC PERMISSIONS
 
         public const string Pages_Editions = "Pages.Editions";

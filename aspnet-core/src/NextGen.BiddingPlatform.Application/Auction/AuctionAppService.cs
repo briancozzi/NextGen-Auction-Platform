@@ -15,9 +15,12 @@ using System.Threading.Tasks;
 using Abp.Linq.Extensions;
 using IdentityServer4.Extensions;
 using Abp.Extensions;
+using Abp.Authorization;
+using NextGen.BiddingPlatform.Authorization;
 
 namespace NextGen.BiddingPlatform.Auction
 {
+    [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Auction)]
     public class AuctionAppService : BiddingPlatformAppServiceBase, IAuctionAppService
     {
         private readonly IRepository<Core.Auctions.Auction> _auctionRepository;
@@ -62,8 +65,8 @@ namespace NextGen.BiddingPlatform.Auction
                 query = query.OrderBy(input.Sorting);
 
             query = query.PageBy(input);
-
-            return new PagedResultDto<AuctionListDto>(resultCount, await query.ToListAsync());
+            var resultQuery = query.ToList();
+            return new PagedResultDto<AuctionListDto>(resultCount, resultQuery);
         }
 
         public async Task<ListResultDto<AuctionListDto>> GetAll()
@@ -86,6 +89,7 @@ namespace NextGen.BiddingPlatform.Auction
             return ObjectMapper.Map<UpdateAuctionDto>(existingAuction);
         }
 
+        [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Auction_Create)]
         public async Task<CreateAuctionDto> CreateAuction(CreateAuctionDto input)
         {
             var account = await _appAccountRepository.FirstOrDefaultAsync(x => x.UniqueId == input.AccountUniqueId);
@@ -118,10 +122,11 @@ namespace NextGen.BiddingPlatform.Auction
             return input;
         }
 
+        [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Auction_Edit)]
         public async Task<UpdateAuctionDto> UpdateAuction(UpdateAuctionDto input)
         {
             var existingEvent = await _eventRepository.FirstOrDefaultAsync(x => x.UniqueId == input.EventUniqueId);
-            if(existingEvent == null)
+            if (existingEvent == null)
                 throw new Exception("Event not found for given id");
 
             var existingAccount = await _appAccountRepository.FirstOrDefaultAsync(x => x.UniqueId == input.AccountUniqueId);
@@ -159,6 +164,7 @@ namespace NextGen.BiddingPlatform.Auction
             return input;
         }
 
+        [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Auction_Delete)]
         public async Task Delete(EntityDto<Guid> input)
         {
             var auction = await _auctionRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Id);

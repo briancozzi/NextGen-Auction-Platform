@@ -27,6 +27,11 @@
     <text name="EditEvent">Edit Event</text>
     <text name="DeleteEvent">Delete Event</text>
 
+    <text name="Auctions">Auctions</text>
+    <text name="CreateAuction">Create New Auction</text>
+    <text name="EditAuction">Edit Auction</text>
+    <text name="DeleteAuction">Delete Auction</text>
+
     <text name="FirstName">First Name</text>
     <text name="LastName">Last Name</text>
     <text name="Address1">Address1</text>
