@@ -28,6 +28,8 @@ import { StatesComponent } from './parameter/states/states.component';
 import { AccountsComponent } from "./accounts/accounts.component";
 import { AccountEventsComponent } from './account-events/account-events.component';
 import { AuctionsComponent } from './auctions/auctions.component';
+import { ItemsComponent } from './items/items.component';
+
 
 
 @NgModule({
@@ -64,6 +66,7 @@ import { AuctionsComponent } from './auctions/auctions.component';
                     { path: 'accounts', component: AccountsComponent },
                     { path: 'events', component: AccountEventsComponent },
                     { path: 'auctions', component: AuctionsComponent },
+                    { path: 'items', component: ItemsComponent },
                     { path: '', redirectTo: 'hostDashboard', pathMatch: 'full' },
                     { path: '**', redirectTo: 'hostDashboard' }
                 ]

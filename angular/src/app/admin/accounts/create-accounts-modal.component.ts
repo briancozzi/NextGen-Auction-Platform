@@ -5,11 +5,9 @@ import { ModalDirective } from 'ngx-bootstrap';
 import { finalize } from 'rxjs/operators';
 import {
     AppAccountServiceProxy,
-    StateServiceProxy,
     CreateAppAccountDto,
     CountryServiceProxy,
     AddressDto,
-    CountryStateDto,
     UserServiceProxy,
 } from '@shared/service-proxies/service-proxies';
 import { AppConsts } from '@shared/AppConsts';
