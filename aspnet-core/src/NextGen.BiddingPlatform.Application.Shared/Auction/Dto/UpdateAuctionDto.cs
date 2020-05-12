@@ -8,6 +8,10 @@ namespace NextGen.BiddingPlatform.Auction.Dto
 {
     public class UpdateAuctionDto
     {
+        public UpdateAuctionDto()
+        {
+            Items = new List<int>();
+        }
         public Guid UniqueId { get; set; }
 
         [Required]
@@ -21,5 +25,6 @@ namespace NextGen.BiddingPlatform.Auction.Dto
         [Required]
         public DateTime AuctionEndDateTime { get; set; }
         public AddressDto Address { get; set; }
+        public List<int> Items { get; set; }
     }
 }

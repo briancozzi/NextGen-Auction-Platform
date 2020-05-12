@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Dynamic.Core;
 using Abp.Runtime.Session;
+using NextGen.BiddingPlatform.Enums;
 
 namespace NextGen.BiddingPlatform.Items
 {
@@ -171,7 +172,7 @@ namespace NextGen.BiddingPlatform.Items
                 });
             }
             //update the properties
-            existingItem.ItemType = input.ItemType;
+            //existingItem.ItemType = input.ItemType;
             existingItem.ItemNumber = input.ItemNumber;
             existingItem.ItemName = input.ItemName;
             existingItem.Description = input.Description;
@@ -197,6 +198,17 @@ namespace NextGen.BiddingPlatform.Items
                 throw new Exception("Item not found for give id");
 
             await _itemRepository.DeleteAsync(item);
+        }
+
+        public Dropdowns GetDropdowns()
+        {
+            Dropdowns dropdowns = new Dropdowns
+            {
+                ProcurementStates = Utility.GetProcurementStateList(),
+                ItemStatus = Utility.GetItemStatusList(),
+                Visibilities = Utility.GetItemStatusList()
+            };
+            return dropdowns;
         }
     }
 }

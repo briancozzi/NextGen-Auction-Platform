@@ -220,17 +220,20 @@ namespace NextGen.BiddingPlatform
             configuration.CreateMap<Core.Auctions.Auction, UpdateAuctionDto>()
                .ForMember(x => x.AccountUniqueId, option => option.MapFrom(ap => ap.AppAccount.UniqueId))
                .ForMember(x => x.EventUniqueId, option => option.MapFrom(e => e.Event.UniqueId));
-              
 
-            configuration.CreateMap<CreateAuctionDto, Core.Auctions.Auction>().ReverseMap();
+
+            configuration.CreateMap<CreateAuctionDto, Core.Auctions.Auction>();
+            configuration.CreateMap<Core.Auctions.Auction, AuctionDto>();
 
             //Category
             configuration.CreateMap<Core.Categories.Category, CategoryListDto>();
+            configuration.CreateMap<Core.Categories.Category, GetCategoryDto>();
             configuration.CreateMap<CategoryDto, Core.Categories.Category>().ReverseMap();
 
             //item
             configuration.CreateMap<ItemDto, Item>();
             configuration.CreateMap<UpdateItemDto, Item>();
+            configuration.CreateMap<ItemCategory.ItemCategory, GetCategoryDto>();
             configuration.CreateMap<ItemGalleryDto, ItemGallery>().ReverseMap();
             configuration.CreateMap<GetItemDto, Item>().ReverseMap();
 
@@ -241,10 +244,10 @@ namespace NextGen.BiddingPlatform
 
             //CardDetail
             configuration.CreateMap<CreateCardDetailDto, Core.CardDetails.CardDetail>();
-            configuration.CreateMap<Core.CardDetails.CardDetail,CreateCardDetailDto > ()
+            configuration.CreateMap<Core.CardDetails.CardDetail, CreateCardDetailDto>()
                 .ForMember(x => x.FullName, option => option.MapFrom(x => x.User.FullName));
-            configuration.CreateMap<Core.CardDetails.CardDetail,CardDetailDto>()
-                .ForMember(x=>x.FullName,option => option.MapFrom(x=>x.User.FullName)).ReverseMap();
+            configuration.CreateMap<Core.CardDetails.CardDetail, CardDetailDto>()
+                .ForMember(x => x.FullName, option => option.MapFrom(x => x.User.FullName)).ReverseMap();
         }
     }
 }

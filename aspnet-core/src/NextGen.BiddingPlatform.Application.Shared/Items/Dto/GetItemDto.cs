@@ -8,6 +8,7 @@ namespace NextGen.BiddingPlatform.Items.Dto
 {
     public class GetItemDto
     {
+        public int Id { get; set; }
         public Guid UniqueId { get; set; }
         public int ItemType { get; set; }
         public int ItemNumber { get; set; }

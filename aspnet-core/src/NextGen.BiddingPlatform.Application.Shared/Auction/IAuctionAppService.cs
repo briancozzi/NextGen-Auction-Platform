@@ -11,7 +11,7 @@ namespace NextGen.BiddingPlatform.Auction
     public interface IAuctionAppService : IApplicationService
     {
         Task<ListResultDto<AuctionListDto>> GetAll();
-        Task<UpdateAuctionDto> GetAuctionById(Guid Id);
+        Task<AuctionDto> GetAuctionById(Guid Id);
         Task<CreateAuctionDto> CreateAuction(CreateAuctionDto input);
         Task<UpdateAuctionDto> UpdateAuction(UpdateAuctionDto input);
         Task Delete(EntityDto<Guid> input);

@@ -8,8 +8,8 @@ namespace NextGen.BiddingPlatform.Items.Dto
 {
     public class ItemDto
     {
-        [Required]
-        public int ItemType { get; set; }//may be enum or dropdown
+        //[Required]
+        //public int ItemType { get; set; }//may be enum or dropdown
         [Required]
         public int ItemNumber { get; set; }
         [Required]
@@ -34,6 +34,7 @@ namespace NextGen.BiddingPlatform.Items.Dto
 
         [Required]
         public string MainImageName { get; set; }
+        public string ThumbnailImage { get; set; }
         public string VideoLink { get; set; }
         public bool IsActive { get; set; } = true;
         public ICollection<ItemGalleryDto> ItemImages { get; set; }

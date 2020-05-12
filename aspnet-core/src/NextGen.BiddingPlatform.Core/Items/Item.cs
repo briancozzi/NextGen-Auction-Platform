@@ -18,9 +18,9 @@ namespace NextGen.BiddingPlatform.Core.Items
         [Index("IX_Item_UniqueId", IsClustered = false, IsUnique = true)]
         public Guid UniqueId { get; set; }
 
-        public int ItemType { get; set; }//may be enum or dropdown
+        public int ItemType { get; set; }//leave it for now
         [Required]
-        public int ItemNumber { get; set; }
+        public int ItemNumber { get; set; }//random number generate
         [Required]
         public string ItemName { get; set; }
         [Required]
@@ -40,6 +40,7 @@ namespace NextGen.BiddingPlatform.Core.Items
         public string ItemCertificateNotes { get; set; }
         [Required]
         public string MainImageName { get; set; }
+        public string ThumbnailImage { get; set; }
         public string VideoLink { get; set; }
         public bool IsActive { get; set; }
         public ICollection<ItemGallery> ItemImages { get; set; }
