@@ -211,10 +211,10 @@ namespace NextGen.BiddingPlatform
             //Auction
             configuration.CreateMap<Core.Auctions.Auction, AuctionListDto>()
                 .ForMember(x => x.AuctionType, option => option.MapFrom(au => au.AuctionType))
-                .ForMember(x => x.AppAccountUniqueId, option => option.MapFrom(ap => ap.AppAccount.UniqueId))
+                .ForMember(x => x.AccountUniqueId, option => option.MapFrom(ap => ap.AppAccount.UniqueId))
                 .ForMember(x => x.EventUniqueId, option => option.MapFrom(e => e.Event.UniqueId));
             configuration.CreateMap<Core.Auctions.Auction, AuctionDto>()
-                .ForMember(x => x.AppAccountUniqueId, option => option.MapFrom(ap => ap.AppAccount.UniqueId))
+                .ForMember(x => x.AccountUniqueId, option => option.MapFrom(ap => ap.AppAccount.UniqueId))
                 .ForMember(x => x.EventUniqueId, option => option.MapFrom(e => e.Event.UniqueId));
 
             configuration.CreateMap<Core.Auctions.Auction, UpdateAuctionDto>()

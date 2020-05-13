@@ -56,7 +56,7 @@ namespace NextGen.BiddingPlatform.Auction
                                           .Select(x => new AuctionListDto
                                           {
                                               UniqueId = x.UniqueId,
-                                              AppAccountUniqueId = x.AppAccount.UniqueId,
+                                              AccountUniqueId = x.AppAccount.UniqueId,
                                               EventUniqueId = x.Event.UniqueId,
                                               AuctionEndDateTime = x.AuctionEndDateTime,
                                               AuctionStartDateTime = x.AuctionStartDateTime,

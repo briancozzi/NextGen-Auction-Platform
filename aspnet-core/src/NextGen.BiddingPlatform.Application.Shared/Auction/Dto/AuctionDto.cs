@@ -13,7 +13,7 @@ namespace NextGen.BiddingPlatform.Auction.Dto
     {
         public Guid UniqueId { get; set; }
         public Guid EventUniqueId { get; set; }
-        public Guid AppAccountUniqueId { get; set; }
+        public Guid AccountUniqueId { get; set; }
         public string AuctionType { get; set; }
         public DateTime AuctionStartDateTime { get; set; }
         public DateTime AuctionEndDateTime { get; set; }
