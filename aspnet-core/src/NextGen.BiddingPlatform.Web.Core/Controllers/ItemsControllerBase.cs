@@ -37,16 +37,18 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             try
             {
                 var isCreated = Convert.ToBoolean(Request.Form["isCreated"]);
+
+                var AdditionalImage = Request.Form["AdditionalFile"];
                 if (isCreated)
                     await CreateItem();
                 else
                     await UpdateAccount();
 
-                return Json(new AjaxResponse(new { Status = true, Message = "Successfully added item." }));
+                return Json(new AjaxResponse(new { Status = true}));
             }
             catch (Exception ex)
             {
-                return Json(new AjaxResponse(new { Status = false, Message = ex.Message ?? "Error occured while processing request." }));
+                return Json(new AjaxResponse(new { Status = false}));
             }
         }
         public async Task CreateItem()
@@ -105,17 +107,17 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                 images.MainImageName = image.Logo;
                 images.ThumbnailImage = image.ThumbnailImage;
             }
-            var addtionFiles = Request.Form["AdditionalFile"];
-            List<IFormFile> files = JsonConvert.DeserializeObject<List<IFormFile>>(addtionFiles);
+            //var addtionFiles = Request.Form["AdditionalFile"];
+            //List<IFormFile> files = JsonConvert.DeserializeObject<List<IFormFile>>(addtionFiles);
 
-            foreach (var logoFile in files)
-            {
-                if (logoFile != null)
-                {
-                    var additionalImage = await Upload(logoFile);
-                    images.AdditionImages.Add(additionalImage);
-                }
-            }
+            //foreach (var logoFile in files)
+            //{
+            //    if (logoFile != null)
+            //    {
+            //        var additionalImage = await Upload(logoFile);
+            //        images.AdditionImages.Add(additionalImage);
+            //    }
+            //}
             return images;
         }
         private async Task<Logos> Upload(IFormFile file)

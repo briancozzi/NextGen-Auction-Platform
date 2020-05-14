@@ -79,7 +79,7 @@ namespace NextGen.BiddingPlatform.Auction
             return new ListResultDto<AuctionListDto>(ObjectMapper.Map<IReadOnlyList<AuctionListDto>>(auctions));
         }
 
-        public async Task<AuctionDto> GetAuctionById(Guid Id)
+        public async Task<UpdateAuctionDto> GetAuctionById(Guid Id)
         {
             var existingAuction = await _auctionRepository.GetAllIncluding(x => x.Address,
                                                                            x => x.Event,
@@ -90,13 +90,13 @@ namespace NextGen.BiddingPlatform.Auction
             if (existingAuction == null)
                 throw new Exception("Auction data not found for given id");
 
-            var auctionItems = _auctionItemRepository.GetAllIncluding(x => x.Item, x => x.Item.ItemCategories)
+            var auctionItems = _auctionItemRepository.GetAll()
                                                      .Where(x => x.AuctionId == existingAuction.Id)
-                                                     .Select(x=>x.Item).ToList();
+                                                     .Select(x=>x.ItemId).ToList();
 
-            var mappedData = ObjectMapper.Map<AuctionDto>(existingAuction);
+            var mappedData = ObjectMapper.Map<UpdateAuctionDto>(existingAuction);
             
-            mappedData.Items = ObjectMapper.Map<List<GetItemDto>>(auctionItems);
+            mappedData.Items = auctionItems;
             return mappedData;
         }
 

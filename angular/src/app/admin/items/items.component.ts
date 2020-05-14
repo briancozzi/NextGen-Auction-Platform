@@ -15,8 +15,8 @@ import { AppConsts } from '@shared/AppConsts';
   templateUrl: './items.component.html'
 })
 export class ItemsComponent extends AppComponentBase {
-  @ViewChild('app-create-item-modal',{static: true}) createItemModal: CreateItemModalComponent;
-  @ViewChild('app-edit-item-modal',{static: true}) editItemModal: EditItemModalComponent;
+  @ViewChild('createItemModal',{static: true}) createItemModal: CreateItemModalComponent;
+  @ViewChild('editItemModal',{static: true}) editItemModal: EditItemModalComponent;
 
   @ViewChild('dataTable', {static: true}) dataTable: Table;
   @ViewChild('paginator', {static: true}) paginator: Paginator;
@@ -34,10 +34,10 @@ export class ItemsComponent extends AppComponentBase {
   }
 
   createItem(){
-    
+    this.createItemModal.show();
   }
   getItems(event?: LazyLoadEvent): void {
-
+    debugger;
     this.primengTableHelper.showLoadingIndicator();
     this._itemService.getItemsWithFilter(
     this.filters.filterText,
@@ -52,7 +52,7 @@ export class ItemsComponent extends AppComponentBase {
             this.primengTableHelper.hideLoadingIndicator();
         });
     }
-    deleteAccount(item: ItemListDto): void {
+    deleteItem(item: ItemListDto): void {
       this.message.confirm(
           this.l('DeleteItem', item.itemName),
           this.l('AreYouSure'),

@@ -100,8 +100,8 @@
                                     </td>
                                     <td>
                                         <span class="ui-column-title">{{"MainImage" | localize}}</span>
-                                        <div *ngIf="record.logo!=null && record.logo!=''">
-                                        <img src="{{webHostUrl}}{{record.mainImage}}" alt="logo" />
+                                        <div>
+                                        <img src="{{webHostUrl}}{{record.mainImageName}}" alt="logo" />
                                         </div>
                                     </td>
                                 </tr>
@@ -126,7 +126,7 @@
             </div>
         </div>
     </div>
-    <createAccountsModal #createItemModal (modalSave)=getItems()></createAccountsModal>
-    <editAccountsModal #editItemModal (modalSave)=getItems()></editAccountsModal>
+    <createItemModal #createItemModal (modalSave)=getItems()></createItemModal>
+    <editItemModal #editItemModal (modalSave)=getItems()></editItemModal>
 
 </div>
