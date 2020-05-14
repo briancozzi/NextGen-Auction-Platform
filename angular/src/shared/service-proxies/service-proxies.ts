@@ -8715,7 +8715,7 @@ export class ItemServiceProxy {
      * @param id (optional) 
      * @return Success
      */
-    getItemById(id: string | undefined): Observable<GetItemDto> {
+    getItemById(id: string | undefined): Observable<UpdateItemDto> {
         let url_ = this.baseUrl + "/api/services/app/Item/GetItemById?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -8738,14 +8738,14 @@ export class ItemServiceProxy {
                 try {
                     return this.processGetItemById(<any>response_);
                 } catch (e) {
-                    return <Observable<GetItemDto>><any>_observableThrow(e);
+                    return <Observable<UpdateItemDto>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<GetItemDto>><any>_observableThrow(response_);
+                return <Observable<UpdateItemDto>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetItemById(response: HttpResponseBase): Observable<GetItemDto> {
+    protected processGetItemById(response: HttpResponseBase): Observable<UpdateItemDto> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -8756,7 +8756,7 @@ export class ItemServiceProxy {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GetItemDto.fromJS(resultData200);
+            result200 = UpdateItemDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -8764,7 +8764,7 @@ export class ItemServiceProxy {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<GetItemDto>(<any>null);
+        return _observableOf<UpdateItemDto>(<any>null);
     }
 
     /**
@@ -25231,6 +25231,7 @@ export class ItemListDto implements IItemListDto {
     itemName!: string | undefined;
     description!: string | undefined;
     mainImageName!: string | undefined;
+    thumbnailImage!: string | undefined;
     itemStatus!: number;
 
     constructor(data?: IItemListDto) {
@@ -25250,6 +25251,7 @@ export class ItemListDto implements IItemListDto {
             this.itemName = _data["itemName"];
             this.description = _data["description"];
             this.mainImageName = _data["mainImageName"];
+            this.thumbnailImage = _data["thumbnailImage"];
             this.itemStatus = _data["itemStatus"];
         }
     }
@@ -25269,6 +25271,7 @@ export class ItemListDto implements IItemListDto {
         data["itemName"] = this.itemName;
         data["description"] = this.description;
         data["mainImageName"] = this.mainImageName;
+        data["thumbnailImage"] = this.thumbnailImage;
         data["itemStatus"] = this.itemStatus;
         return data; 
     }
@@ -25281,6 +25284,7 @@ export interface IItemListDto {
     itemName: string | undefined;
     description: string | undefined;
     mainImageName: string | undefined;
+    thumbnailImage: string | undefined;
     itemStatus: number;
 }
 
@@ -25380,53 +25384,11 @@ export interface IItemGalleryDto {
     description: string | undefined;
 }
 
-export class GetCategoryDto implements IGetCategoryDto {
-    id!: number;
-    categoryName!: string | undefined;
-
-    constructor(data?: IGetCategoryDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.categoryName = _data["categoryName"];
-        }
-    }
-
-    static fromJS(data: any): GetCategoryDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new GetCategoryDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["categoryName"] = this.categoryName;
-        return data; 
-    }
-}
-
-export interface IGetCategoryDto {
-    id: number;
-    categoryName: string | undefined;
-}
-
-export class GetItemDto implements IGetItemDto {
-    id!: number;
+export class UpdateItemDto implements IUpdateItemDto {
     uniqueId!: string;
-    itemType!: number;
     itemNumber!: number;
-    itemName!: string | undefined;
-    description!: string | undefined;
+    itemName!: string;
+    description!: string;
     procurementState!: number;
     itemStatus!: number;
     visibility!: number;
@@ -25436,13 +25398,14 @@ export class GetItemDto implements IGetItemDto {
     acquisitionValue!: number;
     buyNowPrice!: number;
     itemCertificateNotes!: string | undefined;
-    mainImageName!: string | undefined;
+    mainImageName!: string;
+    thumbnailImage!: string | undefined;
     videoLink!: string | undefined;
     isActive!: boolean;
     itemImages!: ItemGalleryDto[] | undefined;
-    itemCategories!: GetCategoryDto[] | undefined;
+    categories!: number[] | undefined;
 
-    constructor(data?: IGetItemDto) {
+    constructor(data?: IUpdateItemDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -25453,9 +25416,7 @@ export class GetItemDto implements IGetItemDto {
 
     init(_data?: any) {
         if (_data) {
-            this.id = _data["id"];
             this.uniqueId = _data["uniqueId"];
-            this.itemType = _data["itemType"];
             this.itemNumber = _data["itemNumber"];
             this.itemName = _data["itemName"];
             this.description = _data["description"];
@@ -25469,6 +25430,7 @@ export class GetItemDto implements IGetItemDto {
             this.buyNowPrice = _data["buyNowPrice"];
             this.itemCertificateNotes = _data["itemCertificateNotes"];
             this.mainImageName = _data["mainImageName"];
+            this.thumbnailImage = _data["thumbnailImage"];
             this.videoLink = _data["videoLink"];
             this.isActive = _data["isActive"];
             if (Array.isArray(_data["itemImages"])) {
@@ -25476,26 +25438,24 @@ export class GetItemDto implements IGetItemDto {
                 for (let item of _data["itemImages"])
                     this.itemImages!.push(ItemGalleryDto.fromJS(item));
             }
-            if (Array.isArray(_data["itemCategories"])) {
-                this.itemCategories = [] as any;
-                for (let item of _data["itemCategories"])
-                    this.itemCategories!.push(GetCategoryDto.fromJS(item));
+            if (Array.isArray(_data["categories"])) {
+                this.categories = [] as any;
+                for (let item of _data["categories"])
+                    this.categories!.push(item);
             }
         }
     }
 
-    static fromJS(data: any): GetItemDto {
+    static fromJS(data: any): UpdateItemDto {
         data = typeof data === 'object' ? data : {};
-        let result = new GetItemDto();
+        let result = new UpdateItemDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
         data["uniqueId"] = this.uniqueId;
-        data["itemType"] = this.itemType;
         data["itemNumber"] = this.itemNumber;
         data["itemName"] = this.itemName;
         data["description"] = this.description;
@@ -25509,6 +25469,7 @@ export class GetItemDto implements IGetItemDto {
         data["buyNowPrice"] = this.buyNowPrice;
         data["itemCertificateNotes"] = this.itemCertificateNotes;
         data["mainImageName"] = this.mainImageName;
+        data["thumbnailImage"] = this.thumbnailImage;
         data["videoLink"] = this.videoLink;
         data["isActive"] = this.isActive;
         if (Array.isArray(this.itemImages)) {
@@ -25516,22 +25477,20 @@ export class GetItemDto implements IGetItemDto {
             for (let item of this.itemImages)
                 data["itemImages"].push(item.toJSON());
         }
-        if (Array.isArray(this.itemCategories)) {
-            data["itemCategories"] = [];
-            for (let item of this.itemCategories)
-                data["itemCategories"].push(item.toJSON());
+        if (Array.isArray(this.categories)) {
+            data["categories"] = [];
+            for (let item of this.categories)
+                data["categories"].push(item);
         }
         return data; 
     }
 }
 
-export interface IGetItemDto {
-    id: number;
+export interface IUpdateItemDto {
     uniqueId: string;
-    itemType: number;
     itemNumber: number;
-    itemName: string | undefined;
-    description: string | undefined;
+    itemName: string;
+    description: string;
     procurementState: number;
     itemStatus: number;
     visibility: number;
@@ -25541,11 +25500,12 @@ export interface IGetItemDto {
     acquisitionValue: number;
     buyNowPrice: number;
     itemCertificateNotes: string | undefined;
-    mainImageName: string | undefined;
+    mainImageName: string;
+    thumbnailImage: string | undefined;
     videoLink: string | undefined;
     isActive: boolean;
     itemImages: ItemGalleryDto[] | undefined;
-    itemCategories: GetCategoryDto[] | undefined;
+    categories: number[] | undefined;
 }
 
 export class ItemDto implements IItemDto {
@@ -25666,130 +25626,6 @@ export interface IItemDto {
     isActive: boolean;
     itemImages: ItemGalleryDto[] | undefined;
     categories: number[] | undefined;
-}
-
-export class UpdateItemDto implements IUpdateItemDto {
-    uniqueId!: string;
-    itemNumber!: number;
-    itemName!: string;
-    description!: string;
-    procurementState!: number;
-    itemStatus!: number;
-    visibility!: number;
-    fairMarketValue_FMV!: number;
-    startingBidValue!: number;
-    bidStepIncrementValue!: number;
-    acquisitionValue!: number;
-    buyNowPrice!: number;
-    itemCertificateNotes!: string | undefined;
-    mainImageName!: string;
-    thumbnailImage!: string | undefined;
-    videoLink!: string | undefined;
-    isActive!: boolean;
-    itemImages!: ItemGalleryDto[] | undefined;
-    itemCategories!: number[] | undefined;
-
-    constructor(data?: IUpdateItemDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.uniqueId = _data["uniqueId"];
-            this.itemNumber = _data["itemNumber"];
-            this.itemName = _data["itemName"];
-            this.description = _data["description"];
-            this.procurementState = _data["procurementState"];
-            this.itemStatus = _data["itemStatus"];
-            this.visibility = _data["visibility"];
-            this.fairMarketValue_FMV = _data["fairMarketValue_FMV"];
-            this.startingBidValue = _data["startingBidValue"];
-            this.bidStepIncrementValue = _data["bidStepIncrementValue"];
-            this.acquisitionValue = _data["acquisitionValue"];
-            this.buyNowPrice = _data["buyNowPrice"];
-            this.itemCertificateNotes = _data["itemCertificateNotes"];
-            this.mainImageName = _data["mainImageName"];
-            this.thumbnailImage = _data["thumbnailImage"];
-            this.videoLink = _data["videoLink"];
-            this.isActive = _data["isActive"];
-            if (Array.isArray(_data["itemImages"])) {
-                this.itemImages = [] as any;
-                for (let item of _data["itemImages"])
-                    this.itemImages!.push(ItemGalleryDto.fromJS(item));
-            }
-            if (Array.isArray(_data["itemCategories"])) {
-                this.itemCategories = [] as any;
-                for (let item of _data["itemCategories"])
-                    this.itemCategories!.push(item);
-            }
-        }
-    }
-
-    static fromJS(data: any): UpdateItemDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new UpdateItemDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["uniqueId"] = this.uniqueId;
-        data["itemNumber"] = this.itemNumber;
-        data["itemName"] = this.itemName;
-        data["description"] = this.description;
-        data["procurementState"] = this.procurementState;
-        data["itemStatus"] = this.itemStatus;
-        data["visibility"] = this.visibility;
-        data["fairMarketValue_FMV"] = this.fairMarketValue_FMV;
-        data["startingBidValue"] = this.startingBidValue;
-        data["bidStepIncrementValue"] = this.bidStepIncrementValue;
-        data["acquisitionValue"] = this.acquisitionValue;
-        data["buyNowPrice"] = this.buyNowPrice;
-        data["itemCertificateNotes"] = this.itemCertificateNotes;
-        data["mainImageName"] = this.mainImageName;
-        data["thumbnailImage"] = this.thumbnailImage;
-        data["videoLink"] = this.videoLink;
-        data["isActive"] = this.isActive;
-        if (Array.isArray(this.itemImages)) {
-            data["itemImages"] = [];
-            for (let item of this.itemImages)
-                data["itemImages"].push(item.toJSON());
-        }
-        if (Array.isArray(this.itemCategories)) {
-            data["itemCategories"] = [];
-            for (let item of this.itemCategories)
-                data["itemCategories"].push(item);
-        }
-        return data; 
-    }
-}
-
-export interface IUpdateItemDto {
-    uniqueId: string;
-    itemNumber: number;
-    itemName: string;
-    description: string;
-    procurementState: number;
-    itemStatus: number;
-    visibility: number;
-    fairMarketValue_FMV: number;
-    startingBidValue: number;
-    bidStepIncrementValue: number;
-    acquisitionValue: number;
-    buyNowPrice: number;
-    itemCertificateNotes: string | undefined;
-    mainImageName: string;
-    thumbnailImage: string | undefined;
-    videoLink: string | undefined;
-    isActive: boolean;
-    itemImages: ItemGalleryDto[] | undefined;
-    itemCategories: number[] | undefined;
 }
 
 export class ListDto implements IListDto {

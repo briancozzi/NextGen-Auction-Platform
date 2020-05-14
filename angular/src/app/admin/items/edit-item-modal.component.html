@@ -127,13 +127,13 @@
                     </div>
                     <div class="form-group">
                         <div class="row">
-                            <div class="col-xl-6">
+                            <!-- <div class="col-xl-6">
                                 <label for="buyNowPrice">{{"BuyNowPrice" | localize}} *</label>
                                 <input id="buyNowPrice" #buyNowPriceInput="ngModel" class="form-control" type="text"
                                     [ngClass]="{'edited':item.buyNowPrice}" name="buyNowPrice"
                                     [(ngModel)]="item.buyNowPrice" #buyNowPriceInput="ngModel" required>
                                 <validation-messages [formCtrl]="buyNowPriceInput"></validation-messages>
-                            </div>
+                            </div> -->
                             <div class="col-xl-6">
                                 <label for="itemCertificateNotes">{{"ItemCertificateNotes" | localize}}</label>
                                 <input id="itemCertificateNotes" #itemCertificateNotesInput="ngModel"
@@ -143,10 +143,15 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="form-group">
-                        <label for="logo">{{"MainImage" | localize}}</label>
-                        <input type="file" ng2FileSelect [uploader]="logoUploader" class="col-xl-12" />
+                        <label for="logo">{{"Logo" | localize}}</label>
+                        <div #imageViewSection *ngIf="isLogo">
+                            <img src="{{webHostUrl}}{{item.maginImagename}}" alt="logo" />
+                        </div>
+                        <div *ngIf="!isLogo">
+                            <input id="logo" #inputFile type="file" ng2FileSelect [uploader]="logoUploader"
+                                class="col-lg-12" required />
+                        </div>
                     </div>
                     <button class="btn btn-default" type="button" (click)="clearLogo()">{{"Clear" | localize}}</button>
                     <!-- <div class="form-group">

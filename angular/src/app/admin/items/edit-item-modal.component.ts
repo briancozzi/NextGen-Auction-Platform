@@ -5,7 +5,8 @@ import { ModalDirective } from 'ngx-bootstrap';
 import { finalize } from 'rxjs/operators';
 import {
   ItemServiceProxy, 
-  CategoryServiceProxy
+  CategoryServiceProxy,
+  UpdateItemDto
 
 } from '@shared/service-proxies/service-proxies';
 import { forkJoin } from "rxjs";
@@ -25,20 +26,17 @@ export class EditItemModalComponent extends AppComponentBase {
 
   logoUploader: FileUploader;
   webHostUrl = AppConsts.remoteServiceBaseUrl;
-  account: UpdateAppAccountDto = new UpdateAppAccountDto();
+  item: UpdateItemDto = new UpdateItemDto();
   saving = false;
   active = false;
-  stateList = [];
-  countryList = [];
-  userList = [];
-  countryUniqueId: string;
-  stateUniqueId: string;
-  isLogo = false;
+  dropdowns:any;
+  categoryList = [];
+  
 
   constructor(
     injector: Injector,
-    private _accountService: AppAccountServiceProxy,
-    private _countryService: CountryServiceProxy,
+    private _itemService: ItemServiceProxy,
+    private _categoryService: CategoryServiceProxy,
     private _tokenService: TokenService,
   ) {
     super(injector);
@@ -55,7 +53,7 @@ export class EditItemModalComponent extends AppComponentBase {
     };
 
     uploader.onBuildItemForm = (fileItem: any, form: any) => {
-      form.append('updateAppAccountDto', JSON.stringify(this.account)); //note comma separating key and value
+      form.append('updateItemDto', JSON.stringify(this.item)); //note comma separating key and value
       form.append('isCreated', false);
     };
 
@@ -78,7 +76,7 @@ export class EditItemModalComponent extends AppComponentBase {
   }
   initUploaders(): void {
     this.logoUploader = this.createUploader(
-      '/AppAccounts/UploadLogo',
+      '/Items/UploadLogo',
       result => {
         this.notify.info(this.l('SavedSuccessfully'));
         this.close();
@@ -86,31 +84,23 @@ export class EditItemModalComponent extends AppComponentBase {
       }
     );
   }
-  show(AccountId?: string): void {
+  show(ItemId?: string): void {
     debugger;
     this.active = true;
-    this.account = new AppAccountDto();
-    this.account.address = new AddressDto();
+    this.item = new UpdateItemDto();
     forkJoin([
-      this._countryService.getCountriesWithState(),
-      this._accountService.getAccountById(AccountId),
-      this._userService.getUsers(undefined, undefined, undefined, undefined, undefined, undefined, undefined)
+      this._itemService.getItemById(ItemId),
+      this._categoryService.getAllCategory(),
+      this._itemService.getDropdowns(),
     ]).subscribe(allResults => {
-      this.countryList = allResults[0];
-      this.account = allResults[1];
-      this.account.address = allResults[1].address;
-      this.stateList = this.countryList.find(x => x.countryUniqueId === this.account.address.countryUniqueId);
-      if (this.account.logo != '' && this.account.logo != null) {
-        this.isLogo = true;
-      }
-      this.userList = allResults[2].items;
+      this.item = allResults[0];
+      this.categoryList = allResults[1].items;
+      this.dropdowns = allResults[2];
       this.modal.show();
     });
 
   }
   clearLogo(): void {
-    this.isLogo = false;
-    this.account.logo = "";
   }
 
   close(): void {
@@ -118,25 +108,6 @@ export class EditItemModalComponent extends AppComponentBase {
     this.modal.hide();
   }
   save(): void {
-    if (!this.isLogo) {
-      if (this.inputFile.nativeElement.value != "") {
         this.logoUploader.uploadAll();
-      }
-      else {
-        this.updateAccount();
-      }
-    }
-    else {
-      this.updateAccount();
-    }
-  }
-  updateAccount(): void {
-    this._accountService.update(this.account)
-      .pipe(finalize(() => this.saving = false))
-      .subscribe(() => {
-        this.notify.info(this.l('SavedSuccessfully'));
-        this.close();
-        this.modalSave.emit(null);
-      });
   }
 }
