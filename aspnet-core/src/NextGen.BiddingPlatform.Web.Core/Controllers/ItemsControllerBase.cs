@@ -56,7 +56,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             if (itemDto == null)
                 throw new Exception("Posted data is null. Please try again.");
 
-            var uploadedImages = await UploadImages(itemDto.MainImageName);
+            var uploadedImages = await UploadImages();
 
             itemDto.MainImageName = uploadedImages.MainImageName;
             itemDto.ThumbnailImage = uploadedImages.ThumbnailImage;
@@ -78,7 +78,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             if (updateItemDto == null)
                 throw new Exception("Posted data is null. Please try again.");
 
-            var uploadedImages = await UploadImages(updateItemDto.MainImageName);
+            var uploadedImages = await UploadImages();
 
             updateItemDto.MainImageName = uploadedImages.MainImageName;
             updateItemDto.ThumbnailImage = uploadedImages.ThumbnailImage;
@@ -93,23 +93,22 @@ namespace NextGen.BiddingPlatform.Web.Controllers
 
             await _itemService.UpdateItem(updateItemDto);
         }
-        public async Task<ItemImages> UploadImages(string mainImage)
+        public async Task<ItemImages> UploadImages()
         {
             ItemImages images = new ItemImages();
 
-            var files = Request.Form.Files;
-            IFormFile mainFile = null;
-            if (!string.IsNullOrEmpty(mainImage))
+            IFormFile mainFile = Request.Form.Files.First();
+
+            if (mainFile != null)
             {
-                mainFile = files.FirstOrDefault(x => x.FileName == mainImage);
-                if (mainFile != null)
-                {
-                    var image = await Upload(mainFile);
-                    images.MainImageName = image.Logo;
-                    images.ThumbnailImage = image.ThumbnailImage;
-                }
+                var image = await Upload(mainFile);
+                images.MainImageName = image.Logo;
+                images.ThumbnailImage = image.ThumbnailImage;
             }
-            foreach (var logoFile in files.Where(x => mainFile != null && x != mainFile))
+            var addtionFiles = Request.Form["AdditionalFile"];
+            List<IFormFile> files = JsonConvert.DeserializeObject<List<IFormFile>>(addtionFiles);
+
+            foreach (var logoFile in files)
             {
                 if (logoFile != null)
                 {
