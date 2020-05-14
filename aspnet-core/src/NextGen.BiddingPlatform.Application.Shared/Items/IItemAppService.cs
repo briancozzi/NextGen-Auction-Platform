@@ -12,7 +12,7 @@ namespace NextGen.BiddingPlatform.Items
     {
         Task<List<ItemListDto>> GetAllItems();
         Task<PagedResultDto<ItemListDto>> GetItemsWithFilter(ItemFilter input);
-        Task<GetItemDto> GetItemById(Guid Id);
+        Task<UpdateItemDto> GetItemById(Guid Id);
         Task CreateItem(ItemDto input);
         Task UpdateItem(UpdateItemDto input);
         Task DeleteItem(Guid Id);

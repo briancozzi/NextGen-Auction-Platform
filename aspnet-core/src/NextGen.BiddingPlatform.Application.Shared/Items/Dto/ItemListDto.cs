@@ -12,6 +12,7 @@ namespace NextGen.BiddingPlatform.Items.Dto
         public string ItemName { get; set; }
         public string Description { get; set; }
         public string MainImageName { get; set; }
+        public string ThumbnailImage { get; set; }
         public int ItemStatus { get; set; }
     }
 }

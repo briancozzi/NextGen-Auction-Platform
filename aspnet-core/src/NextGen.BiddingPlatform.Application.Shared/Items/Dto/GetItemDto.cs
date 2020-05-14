@@ -10,7 +10,7 @@ namespace NextGen.BiddingPlatform.Items.Dto
     {
         public int Id { get; set; }
         public Guid UniqueId { get; set; }
-        public int ItemType { get; set; }
+        //public int ItemType { get; set; }
         public int ItemNumber { get; set; }
         public string ItemName { get; set; }
         public string Description { get; set; }
@@ -24,6 +24,7 @@ namespace NextGen.BiddingPlatform.Items.Dto
         public double BuyNowPrice { get; set; } = 0;
         public string ItemCertificateNotes { get; set; }
         public string MainImageName { get; set; }
+        public string ThumbnailImage { get; set; }
         public string VideoLink { get; set; }
         public bool IsActive { get; set; } = true;
         public ICollection<ItemGalleryDto> ItemImages { get; set; }

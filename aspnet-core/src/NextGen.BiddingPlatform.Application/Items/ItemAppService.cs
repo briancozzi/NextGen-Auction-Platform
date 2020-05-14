@@ -45,6 +45,7 @@ namespace NextGen.BiddingPlatform.Items
                                                  ItemNumber = x.ItemNumber,
                                                  ItemType = x.ItemType,
                                                  MainImageName = x.MainImageName,
+                                                 ThumbnailImage = x.ThumbnailImage,
                                                  ItemStatus = x.ItemStatus
                                              }).ToListAsync();
             return items;
@@ -62,6 +63,7 @@ namespace NextGen.BiddingPlatform.Items
                                            ItemNumber = x.ItemNumber,
                                            ItemType = x.ItemType,
                                            MainImageName = x.MainImageName,
+                                           ThumbnailImage = x.ThumbnailImage,
                                            ItemStatus = x.ItemStatus
                                        });
 
@@ -75,23 +77,19 @@ namespace NextGen.BiddingPlatform.Items
             return new PagedResultDto<ItemListDto>(resultCount, await query.ToListAsync());
         }
 
-        public async Task<GetItemDto> GetItemById(Guid Id)
+        public async Task<UpdateItemDto> GetItemById(Guid Id)
         {
             var existingItem = await _itemRepository.GetAllIncluding(x => x.ItemImages).FirstOrDefaultAsync(x => x.UniqueId == Id);
             if (existingItem == null)
                 throw new Exception("Item not available for given id");
 
-            var mappedItem = ObjectMapper.Map<GetItemDto>(existingItem);
+            var mappedItem = ObjectMapper.Map<UpdateItemDto>(existingItem);
             var itemCategories = await _itemCategoryRepository.GetAllIncluding(x => x.Category)
                                                               .Where(x => x.ItemId == existingItem.Id)
-                                                              .Select(s => new GetCategoryDto
-                                                              {
-                                                                  Id = s.Id,
-                                                                  CategoryName = s.Category.CategoryName
-                                                              })
+                                                              .Select(x=>x.CategoryId)
                                                               .ToListAsync();
 
-            mappedItem.ItemCategories = itemCategories;
+            mappedItem.Categories = itemCategories;
             return mappedItem;
         }
 
@@ -137,7 +135,7 @@ namespace NextGen.BiddingPlatform.Items
             if (existingItem == null)
                 throw new Exception("Item not available for given id");
 
-            if (input.ItemCategories.Count() == 0)
+            if (input.Categories.Count() == 0)
                 throw new Exception("Please select at least one category for item");
 
             //first remove gallery
@@ -151,7 +149,7 @@ namespace NextGen.BiddingPlatform.Items
                 await _itemCategoryRepository.DeleteAsync(x => x.ItemId == existingItem.Id);
 
             //add category to ItemCategory Table
-            foreach (var category in input.ItemCategories)
+            foreach (var category in input.Categories)
             {
                 existingItem.ItemCategories.Add(new ItemCategory.ItemCategory
                 {
@@ -206,7 +204,7 @@ namespace NextGen.BiddingPlatform.Items
             {
                 ProcurementStates = Utility.GetProcurementStateList(),
                 ItemStatus = Utility.GetItemStatusList(),
-                Visibilities = Utility.GetItemStatusList()
+                Visibilities = Utility.GetVisibilityList()
             };
             return dropdowns;
         }

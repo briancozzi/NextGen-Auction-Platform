@@ -39,12 +39,12 @@ namespace NextGen.BiddingPlatform.Items.Dto
         public string VideoLink { get; set; }
         public bool IsActive { get; set; } = true;
         public ICollection<ItemGalleryDto> ItemImages { get; set; }
-        public ICollection<int> ItemCategories { get; set; }
+        public ICollection<int> Categories { get; set; }
 
         public UpdateItemDto()
         {
             ItemImages = new Collection<ItemGalleryDto>();
-            ItemCategories = new Collection<int>();
+            Categories = new Collection<int>();
         }
     }
 }
