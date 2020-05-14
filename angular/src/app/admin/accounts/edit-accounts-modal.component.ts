@@ -35,6 +35,7 @@ export class EditAccountsModalComponent extends AppComponentBase {
     countryUniqueId: string;
     stateUniqueId: string;
     isLogo = false;
+    
     constructor(
         injector: Injector,
         private _accountService: AppAccountServiceProxy,

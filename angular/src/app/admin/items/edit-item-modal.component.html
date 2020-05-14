@@ -1,4 +1,4 @@
-<div appBsModal #createModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editModal"
+<div appBsModal #editModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editModal"
     aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -144,9 +144,9 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="logo">{{"Logo" | localize}}</label>
+                        <label for="logo">{{"MainImage" | localize}}</label>
                         <div #imageViewSection *ngIf="isLogo">
-                            <img src="{{webHostUrl}}{{item.maginImagename}}" alt="logo" />
+                            <img src="{{webHostUrl}}{{item.mainImageName}}" alt="logo" />
                         </div>
                         <div *ngIf="!isLogo">
                             <input id="logo" #inputFile type="file" ng2FileSelect [uploader]="logoUploader"

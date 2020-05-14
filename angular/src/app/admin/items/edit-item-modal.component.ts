@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { ModalDirective } from 'ngx-bootstrap';
 import { finalize } from 'rxjs/operators';
 import {
-  ItemServiceProxy, 
+  ItemServiceProxy,
   CategoryServiceProxy,
   UpdateItemDto
 
@@ -29,9 +29,9 @@ export class EditItemModalComponent extends AppComponentBase {
   item: UpdateItemDto = new UpdateItemDto();
   saving = false;
   active = false;
-  dropdowns:any;
+  dropdowns: any;
   categoryList = [];
-  
+  isLogo = false;
 
   constructor(
     injector: Injector,
@@ -96,18 +96,41 @@ export class EditItemModalComponent extends AppComponentBase {
       this.item = allResults[0];
       this.categoryList = allResults[1].items;
       this.dropdowns = allResults[2];
+      this.isLogo = true;
       this.modal.show();
     });
 
   }
   clearLogo(): void {
+    this.isLogo = false;
+    this.item.mainImageName = "";
   }
+
 
   close(): void {
     this.active = false;
     this.modal.hide();
   }
   save(): void {
+    if (!this.isLogo) {
+      if (this.inputFile.nativeElement.value != "") {
         this.logoUploader.uploadAll();
+      }
+      else {
+        this.updateItem();
+      }
+    }
+    else {
+      this.updateItem();
+    }
+  }
+  updateItem(): void {
+    this._itemService.updateItem(this.item)
+      .pipe(finalize(() => this.saving = false))
+      .subscribe(() => {
+        this.notify.info(this.l('SavedSuccessfully'));
+        this.close();
+        this.modalSave.emit(null);
+      });
   }
 }

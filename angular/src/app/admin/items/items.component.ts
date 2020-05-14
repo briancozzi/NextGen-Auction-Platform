@@ -52,7 +52,7 @@ export class ItemsComponent extends AppComponentBase {
             this.primengTableHelper.hideLoadingIndicator();
         });
     }
-    deleteAccount(item: ItemListDto): void {
+    deleteItem(item: ItemListDto): void {
       this.message.confirm(
           this.l('DeleteItem', item.itemName),
           this.l('AreYouSure'),

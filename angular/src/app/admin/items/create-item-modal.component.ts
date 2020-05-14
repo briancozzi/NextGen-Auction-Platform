@@ -48,7 +48,9 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
   ngOnInit(): void {
     this.initUploaders();
   }
-
+  clearLogo(): void {
+    this.inputFile.nativeElement.value = '';
+}
 
   createUploader(url: string, success?: (result: any) => void): FileUploader {
 
@@ -63,7 +65,7 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
     uploader.onBuildItemForm = (fileItem: any, form: any) => {
       form.append('itemDto', JSON.stringify(this.item));
       form.append('isCreated', true);
-     // form.append('AdditionalFile', this.AdditionalFiles);
+      //form.append('AdditionalFile', this.AdditionalFiles);
     };
     uploader.onSuccessItem = (item, response, status) => {
       const ajaxResponse = <IAjaxResponse>JSON.parse(response);

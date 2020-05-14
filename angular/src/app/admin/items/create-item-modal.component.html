@@ -146,7 +146,7 @@
 
                     <div class="form-group">
                         <label for="logo">{{"MainImage" | localize}}</label>
-                        <input type="file" ng2FileSelect [uploader]="logoUploader" class="col-xl-12" />
+                        <input type="file" #inputFile  ng2FileSelect [uploader]="logoUploader" class="col-xl-12" />
                     </div>
                     <button class="btn btn-default" type="button" (click)="clearLogo()">{{"Clear" | localize}}</button>
                     <!-- <div class="form-group">
