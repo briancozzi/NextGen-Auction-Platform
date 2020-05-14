@@ -125,7 +125,6 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
 
     save(): void {
         this.saving = true;
-        this.logoUploader.uploadAll();
         if(this.inputFile.nativeElement.value !=""){
             this.logoUploader.uploadAll();
         }

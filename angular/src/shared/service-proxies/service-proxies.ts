@@ -1460,7 +1460,7 @@ export class AuctionServiceProxy {
      * @param id (optional) 
      * @return Success
      */
-    getAuctionById(id: string | undefined): Observable<AuctionDto> {
+    getAuctionById(id: string | undefined): Observable<UpdateAuctionDto> {
         let url_ = this.baseUrl + "/api/services/app/Auction/GetAuctionById?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -1483,14 +1483,14 @@ export class AuctionServiceProxy {
                 try {
                     return this.processGetAuctionById(<any>response_);
                 } catch (e) {
-                    return <Observable<AuctionDto>><any>_observableThrow(e);
+                    return <Observable<UpdateAuctionDto>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<AuctionDto>><any>_observableThrow(response_);
+                return <Observable<UpdateAuctionDto>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetAuctionById(response: HttpResponseBase): Observable<AuctionDto> {
+    protected processGetAuctionById(response: HttpResponseBase): Observable<UpdateAuctionDto> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -1501,7 +1501,7 @@ export class AuctionServiceProxy {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = AuctionDto.fromJS(resultData200);
+            result200 = UpdateAuctionDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1509,7 +1509,7 @@ export class AuctionServiceProxy {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<AuctionDto>(<any>null);
+        return _observableOf<UpdateAuctionDto>(<any>null);
     }
 
     /**
@@ -19017,7 +19017,7 @@ export interface IAppAccountDto {
 export class AuctionListDto implements IAuctionListDto {
     uniqueId!: string;
     eventUniqueId!: string;
-    appAccountUniqueId!: string;
+    accountUniqueId!: string;
     auctionType!: string | undefined;
     auctionStartDateTime!: moment.Moment;
     auctionEndDateTime!: moment.Moment;
@@ -19035,7 +19035,7 @@ export class AuctionListDto implements IAuctionListDto {
         if (_data) {
             this.uniqueId = _data["uniqueId"];
             this.eventUniqueId = _data["eventUniqueId"];
-            this.appAccountUniqueId = _data["appAccountUniqueId"];
+            this.accountUniqueId = _data["accountUniqueId"];
             this.auctionType = _data["auctionType"];
             this.auctionStartDateTime = _data["auctionStartDateTime"] ? moment(_data["auctionStartDateTime"].toString()) : <any>undefined;
             this.auctionEndDateTime = _data["auctionEndDateTime"] ? moment(_data["auctionEndDateTime"].toString()) : <any>undefined;
@@ -19053,7 +19053,7 @@ export class AuctionListDto implements IAuctionListDto {
         data = typeof data === 'object' ? data : {};
         data["uniqueId"] = this.uniqueId;
         data["eventUniqueId"] = this.eventUniqueId;
-        data["appAccountUniqueId"] = this.appAccountUniqueId;
+        data["accountUniqueId"] = this.accountUniqueId;
         data["auctionType"] = this.auctionType;
         data["auctionStartDateTime"] = this.auctionStartDateTime ? this.auctionStartDateTime.toISOString() : <any>undefined;
         data["auctionEndDateTime"] = this.auctionEndDateTime ? this.auctionEndDateTime.toISOString() : <any>undefined;
@@ -19064,7 +19064,7 @@ export class AuctionListDto implements IAuctionListDto {
 export interface IAuctionListDto {
     uniqueId: string;
     eventUniqueId: string;
-    appAccountUniqueId: string;
+    accountUniqueId: string;
     auctionType: string | undefined;
     auctionStartDateTime: moment.Moment;
     auctionEndDateTime: moment.Moment;
@@ -19162,362 +19162,6 @@ export interface IListResultDtoOfAuctionListDto {
     items: AuctionListDto[] | undefined;
 }
 
-export class ItemGalleryDto implements IItemGalleryDto {
-    imageName!: string;
-    thumbnail!: string | undefined;
-    title!: string | undefined;
-    description!: string | undefined;
-
-    constructor(data?: IItemGalleryDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.imageName = _data["imageName"];
-            this.thumbnail = _data["thumbnail"];
-            this.title = _data["title"];
-            this.description = _data["description"];
-        }
-    }
-
-    static fromJS(data: any): ItemGalleryDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ItemGalleryDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["imageName"] = this.imageName;
-        data["thumbnail"] = this.thumbnail;
-        data["title"] = this.title;
-        data["description"] = this.description;
-        return data; 
-    }
-}
-
-export interface IItemGalleryDto {
-    imageName: string;
-    thumbnail: string | undefined;
-    title: string | undefined;
-    description: string | undefined;
-}
-
-export class GetCategoryDto implements IGetCategoryDto {
-    id!: number;
-    categoryName!: string | undefined;
-
-    constructor(data?: IGetCategoryDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.categoryName = _data["categoryName"];
-        }
-    }
-
-    static fromJS(data: any): GetCategoryDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new GetCategoryDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["categoryName"] = this.categoryName;
-        return data; 
-    }
-}
-
-export interface IGetCategoryDto {
-    id: number;
-    categoryName: string | undefined;
-}
-
-export class GetItemDto implements IGetItemDto {
-    id!: number;
-    uniqueId!: string;
-    itemType!: number;
-    itemNumber!: number;
-    itemName!: string | undefined;
-    description!: string | undefined;
-    procurementState!: number;
-    itemStatus!: number;
-    visibility!: number;
-    fairMarketValue_FMV!: number;
-    startingBidValue!: number;
-    bidStepIncrementValue!: number;
-    acquisitionValue!: number;
-    buyNowPrice!: number;
-    itemCertificateNotes!: string | undefined;
-    mainImageName!: string | undefined;
-    videoLink!: string | undefined;
-    isActive!: boolean;
-    itemImages!: ItemGalleryDto[] | undefined;
-    itemCategories!: GetCategoryDto[] | undefined;
-
-    constructor(data?: IGetItemDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.uniqueId = _data["uniqueId"];
-            this.itemType = _data["itemType"];
-            this.itemNumber = _data["itemNumber"];
-            this.itemName = _data["itemName"];
-            this.description = _data["description"];
-            this.procurementState = _data["procurementState"];
-            this.itemStatus = _data["itemStatus"];
-            this.visibility = _data["visibility"];
-            this.fairMarketValue_FMV = _data["fairMarketValue_FMV"];
-            this.startingBidValue = _data["startingBidValue"];
-            this.bidStepIncrementValue = _data["bidStepIncrementValue"];
-            this.acquisitionValue = _data["acquisitionValue"];
-            this.buyNowPrice = _data["buyNowPrice"];
-            this.itemCertificateNotes = _data["itemCertificateNotes"];
-            this.mainImageName = _data["mainImageName"];
-            this.videoLink = _data["videoLink"];
-            this.isActive = _data["isActive"];
-            if (Array.isArray(_data["itemImages"])) {
-                this.itemImages = [] as any;
-                for (let item of _data["itemImages"])
-                    this.itemImages!.push(ItemGalleryDto.fromJS(item));
-            }
-            if (Array.isArray(_data["itemCategories"])) {
-                this.itemCategories = [] as any;
-                for (let item of _data["itemCategories"])
-                    this.itemCategories!.push(GetCategoryDto.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): GetItemDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new GetItemDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["uniqueId"] = this.uniqueId;
-        data["itemType"] = this.itemType;
-        data["itemNumber"] = this.itemNumber;
-        data["itemName"] = this.itemName;
-        data["description"] = this.description;
-        data["procurementState"] = this.procurementState;
-        data["itemStatus"] = this.itemStatus;
-        data["visibility"] = this.visibility;
-        data["fairMarketValue_FMV"] = this.fairMarketValue_FMV;
-        data["startingBidValue"] = this.startingBidValue;
-        data["bidStepIncrementValue"] = this.bidStepIncrementValue;
-        data["acquisitionValue"] = this.acquisitionValue;
-        data["buyNowPrice"] = this.buyNowPrice;
-        data["itemCertificateNotes"] = this.itemCertificateNotes;
-        data["mainImageName"] = this.mainImageName;
-        data["videoLink"] = this.videoLink;
-        data["isActive"] = this.isActive;
-        if (Array.isArray(this.itemImages)) {
-            data["itemImages"] = [];
-            for (let item of this.itemImages)
-                data["itemImages"].push(item.toJSON());
-        }
-        if (Array.isArray(this.itemCategories)) {
-            data["itemCategories"] = [];
-            for (let item of this.itemCategories)
-                data["itemCategories"].push(item.toJSON());
-        }
-        return data; 
-    }
-}
-
-export interface IGetItemDto {
-    id: number;
-    uniqueId: string;
-    itemType: number;
-    itemNumber: number;
-    itemName: string | undefined;
-    description: string | undefined;
-    procurementState: number;
-    itemStatus: number;
-    visibility: number;
-    fairMarketValue_FMV: number;
-    startingBidValue: number;
-    bidStepIncrementValue: number;
-    acquisitionValue: number;
-    buyNowPrice: number;
-    itemCertificateNotes: string | undefined;
-    mainImageName: string | undefined;
-    videoLink: string | undefined;
-    isActive: boolean;
-    itemImages: ItemGalleryDto[] | undefined;
-    itemCategories: GetCategoryDto[] | undefined;
-}
-
-export class AuctionDto implements IAuctionDto {
-    uniqueId!: string;
-    eventUniqueId!: string;
-    appAccountUniqueId!: string;
-    auctionType!: string | undefined;
-    auctionStartDateTime!: moment.Moment;
-    auctionEndDateTime!: moment.Moment;
-    address!: AddressDto;
-    items!: GetItemDto[] | undefined;
-
-    constructor(data?: IAuctionDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.uniqueId = _data["uniqueId"];
-            this.eventUniqueId = _data["eventUniqueId"];
-            this.appAccountUniqueId = _data["appAccountUniqueId"];
-            this.auctionType = _data["auctionType"];
-            this.auctionStartDateTime = _data["auctionStartDateTime"] ? moment(_data["auctionStartDateTime"].toString()) : <any>undefined;
-            this.auctionEndDateTime = _data["auctionEndDateTime"] ? moment(_data["auctionEndDateTime"].toString()) : <any>undefined;
-            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
-            if (Array.isArray(_data["items"])) {
-                this.items = [] as any;
-                for (let item of _data["items"])
-                    this.items!.push(GetItemDto.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): AuctionDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new AuctionDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["uniqueId"] = this.uniqueId;
-        data["eventUniqueId"] = this.eventUniqueId;
-        data["appAccountUniqueId"] = this.appAccountUniqueId;
-        data["auctionType"] = this.auctionType;
-        data["auctionStartDateTime"] = this.auctionStartDateTime ? this.auctionStartDateTime.toISOString() : <any>undefined;
-        data["auctionEndDateTime"] = this.auctionEndDateTime ? this.auctionEndDateTime.toISOString() : <any>undefined;
-        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
-        if (Array.isArray(this.items)) {
-            data["items"] = [];
-            for (let item of this.items)
-                data["items"].push(item.toJSON());
-        }
-        return data; 
-    }
-}
-
-export interface IAuctionDto {
-    uniqueId: string;
-    eventUniqueId: string;
-    appAccountUniqueId: string;
-    auctionType: string | undefined;
-    auctionStartDateTime: moment.Moment;
-    auctionEndDateTime: moment.Moment;
-    address: AddressDto;
-    items: GetItemDto[] | undefined;
-}
-
-export class CreateAuctionDto implements ICreateAuctionDto {
-    accountUniqueId!: string;
-    eventUniqueId!: string;
-    auctionType!: string;
-    auctionStartDateTime!: moment.Moment;
-    auctionEndDateTime!: moment.Moment;
-    address!: AddressDto;
-    items!: number[] | undefined;
-
-    constructor(data?: ICreateAuctionDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.accountUniqueId = _data["accountUniqueId"];
-            this.eventUniqueId = _data["eventUniqueId"];
-            this.auctionType = _data["auctionType"];
-            this.auctionStartDateTime = _data["auctionStartDateTime"] ? moment(_data["auctionStartDateTime"].toString()) : <any>undefined;
-            this.auctionEndDateTime = _data["auctionEndDateTime"] ? moment(_data["auctionEndDateTime"].toString()) : <any>undefined;
-            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
-            if (Array.isArray(_data["items"])) {
-                this.items = [] as any;
-                for (let item of _data["items"])
-                    this.items!.push(item);
-            }
-        }
-    }
-
-    static fromJS(data: any): CreateAuctionDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new CreateAuctionDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["accountUniqueId"] = this.accountUniqueId;
-        data["eventUniqueId"] = this.eventUniqueId;
-        data["auctionType"] = this.auctionType;
-        data["auctionStartDateTime"] = this.auctionStartDateTime ? this.auctionStartDateTime.toISOString() : <any>undefined;
-        data["auctionEndDateTime"] = this.auctionEndDateTime ? this.auctionEndDateTime.toISOString() : <any>undefined;
-        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
-        if (Array.isArray(this.items)) {
-            data["items"] = [];
-            for (let item of this.items)
-                data["items"].push(item);
-        }
-        return data; 
-    }
-}
-
-export interface ICreateAuctionDto {
-    accountUniqueId: string;
-    eventUniqueId: string;
-    auctionType: string;
-    auctionStartDateTime: moment.Moment;
-    auctionEndDateTime: moment.Moment;
-    address: AddressDto;
-    items: number[] | undefined;
-}
-
 export class UpdateAuctionDto implements IUpdateAuctionDto {
     uniqueId!: string;
     accountUniqueId!: string;
@@ -19581,6 +19225,74 @@ export class UpdateAuctionDto implements IUpdateAuctionDto {
 
 export interface IUpdateAuctionDto {
     uniqueId: string;
+    accountUniqueId: string;
+    eventUniqueId: string;
+    auctionType: string;
+    auctionStartDateTime: moment.Moment;
+    auctionEndDateTime: moment.Moment;
+    address: AddressDto;
+    items: number[] | undefined;
+}
+
+export class CreateAuctionDto implements ICreateAuctionDto {
+    accountUniqueId!: string;
+    eventUniqueId!: string;
+    auctionType!: string;
+    auctionStartDateTime!: moment.Moment;
+    auctionEndDateTime!: moment.Moment;
+    address!: AddressDto;
+    items!: number[] | undefined;
+
+    constructor(data?: ICreateAuctionDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.accountUniqueId = _data["accountUniqueId"];
+            this.eventUniqueId = _data["eventUniqueId"];
+            this.auctionType = _data["auctionType"];
+            this.auctionStartDateTime = _data["auctionStartDateTime"] ? moment(_data["auctionStartDateTime"].toString()) : <any>undefined;
+            this.auctionEndDateTime = _data["auctionEndDateTime"] ? moment(_data["auctionEndDateTime"].toString()) : <any>undefined;
+            this.address = _data["address"] ? AddressDto.fromJS(_data["address"]) : <any>undefined;
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): CreateAuctionDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateAuctionDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["accountUniqueId"] = this.accountUniqueId;
+        data["eventUniqueId"] = this.eventUniqueId;
+        data["auctionType"] = this.auctionType;
+        data["auctionStartDateTime"] = this.auctionStartDateTime ? this.auctionStartDateTime.toISOString() : <any>undefined;
+        data["auctionEndDateTime"] = this.auctionEndDateTime ? this.auctionEndDateTime.toISOString() : <any>undefined;
+        data["address"] = this.address ? this.address.toJSON() : <any>undefined;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item);
+        }
+        return data; 
+    }
+}
+
+export interface ICreateAuctionDto {
     accountUniqueId: string;
     eventUniqueId: string;
     auctionType: string;
@@ -25618,6 +25330,222 @@ export class PagedResultDtoOfItemListDto implements IPagedResultDtoOfItemListDto
 export interface IPagedResultDtoOfItemListDto {
     totalCount: number;
     items: ItemListDto[] | undefined;
+}
+
+export class ItemGalleryDto implements IItemGalleryDto {
+    imageName!: string;
+    thumbnail!: string | undefined;
+    title!: string | undefined;
+    description!: string | undefined;
+
+    constructor(data?: IItemGalleryDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.imageName = _data["imageName"];
+            this.thumbnail = _data["thumbnail"];
+            this.title = _data["title"];
+            this.description = _data["description"];
+        }
+    }
+
+    static fromJS(data: any): ItemGalleryDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ItemGalleryDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["imageName"] = this.imageName;
+        data["thumbnail"] = this.thumbnail;
+        data["title"] = this.title;
+        data["description"] = this.description;
+        return data; 
+    }
+}
+
+export interface IItemGalleryDto {
+    imageName: string;
+    thumbnail: string | undefined;
+    title: string | undefined;
+    description: string | undefined;
+}
+
+export class GetCategoryDto implements IGetCategoryDto {
+    id!: number;
+    categoryName!: string | undefined;
+
+    constructor(data?: IGetCategoryDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.categoryName = _data["categoryName"];
+        }
+    }
+
+    static fromJS(data: any): GetCategoryDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetCategoryDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["categoryName"] = this.categoryName;
+        return data; 
+    }
+}
+
+export interface IGetCategoryDto {
+    id: number;
+    categoryName: string | undefined;
+}
+
+export class GetItemDto implements IGetItemDto {
+    id!: number;
+    uniqueId!: string;
+    itemType!: number;
+    itemNumber!: number;
+    itemName!: string | undefined;
+    description!: string | undefined;
+    procurementState!: number;
+    itemStatus!: number;
+    visibility!: number;
+    fairMarketValue_FMV!: number;
+    startingBidValue!: number;
+    bidStepIncrementValue!: number;
+    acquisitionValue!: number;
+    buyNowPrice!: number;
+    itemCertificateNotes!: string | undefined;
+    mainImageName!: string | undefined;
+    videoLink!: string | undefined;
+    isActive!: boolean;
+    itemImages!: ItemGalleryDto[] | undefined;
+    itemCategories!: GetCategoryDto[] | undefined;
+
+    constructor(data?: IGetItemDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.uniqueId = _data["uniqueId"];
+            this.itemType = _data["itemType"];
+            this.itemNumber = _data["itemNumber"];
+            this.itemName = _data["itemName"];
+            this.description = _data["description"];
+            this.procurementState = _data["procurementState"];
+            this.itemStatus = _data["itemStatus"];
+            this.visibility = _data["visibility"];
+            this.fairMarketValue_FMV = _data["fairMarketValue_FMV"];
+            this.startingBidValue = _data["startingBidValue"];
+            this.bidStepIncrementValue = _data["bidStepIncrementValue"];
+            this.acquisitionValue = _data["acquisitionValue"];
+            this.buyNowPrice = _data["buyNowPrice"];
+            this.itemCertificateNotes = _data["itemCertificateNotes"];
+            this.mainImageName = _data["mainImageName"];
+            this.videoLink = _data["videoLink"];
+            this.isActive = _data["isActive"];
+            if (Array.isArray(_data["itemImages"])) {
+                this.itemImages = [] as any;
+                for (let item of _data["itemImages"])
+                    this.itemImages!.push(ItemGalleryDto.fromJS(item));
+            }
+            if (Array.isArray(_data["itemCategories"])) {
+                this.itemCategories = [] as any;
+                for (let item of _data["itemCategories"])
+                    this.itemCategories!.push(GetCategoryDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): GetItemDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetItemDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["uniqueId"] = this.uniqueId;
+        data["itemType"] = this.itemType;
+        data["itemNumber"] = this.itemNumber;
+        data["itemName"] = this.itemName;
+        data["description"] = this.description;
+        data["procurementState"] = this.procurementState;
+        data["itemStatus"] = this.itemStatus;
+        data["visibility"] = this.visibility;
+        data["fairMarketValue_FMV"] = this.fairMarketValue_FMV;
+        data["startingBidValue"] = this.startingBidValue;
+        data["bidStepIncrementValue"] = this.bidStepIncrementValue;
+        data["acquisitionValue"] = this.acquisitionValue;
+        data["buyNowPrice"] = this.buyNowPrice;
+        data["itemCertificateNotes"] = this.itemCertificateNotes;
+        data["mainImageName"] = this.mainImageName;
+        data["videoLink"] = this.videoLink;
+        data["isActive"] = this.isActive;
+        if (Array.isArray(this.itemImages)) {
+            data["itemImages"] = [];
+            for (let item of this.itemImages)
+                data["itemImages"].push(item.toJSON());
+        }
+        if (Array.isArray(this.itemCategories)) {
+            data["itemCategories"] = [];
+            for (let item of this.itemCategories)
+                data["itemCategories"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IGetItemDto {
+    id: number;
+    uniqueId: string;
+    itemType: number;
+    itemNumber: number;
+    itemName: string | undefined;
+    description: string | undefined;
+    procurementState: number;
+    itemStatus: number;
+    visibility: number;
+    fairMarketValue_FMV: number;
+    startingBidValue: number;
+    bidStepIncrementValue: number;
+    acquisitionValue: number;
+    buyNowPrice: number;
+    itemCertificateNotes: string | undefined;
+    mainImageName: string | undefined;
+    videoLink: string | undefined;
+    isActive: boolean;
+    itemImages: ItemGalleryDto[] | undefined;
+    itemCategories: GetCategoryDto[] | undefined;
 }
 
 export class ItemDto implements IItemDto {

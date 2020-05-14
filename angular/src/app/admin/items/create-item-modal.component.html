@@ -2,7 +2,7 @@
     aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form #accountCreateForm="ngForm" role="form" novalidate class="form-validation" *ngIf="active"
+            <form #itemCreateForm="ngForm" role="form" novalidate class="form-validation" *ngIf="active"
                 (submit)="save()">
                 <div class="modal-header">
                     <h5 class="modal-title">
@@ -18,18 +18,18 @@
                     <div class="form-group">
                         <div class="row">
                             <div class="col-xl-6">
-                                <label for="eventName">{{"EventName" | localize}} *</label>
-                                <input id="eventName" #eventNameInput="ngModel" class="form-control" type="text"
-                                    [ngClass]="{'edited':item.eventName}" name="eventName"
-                                    [(ngModel)]="item.eventName" #eventNameInput="ngModel" required maxlength="64">
-                                <validation-messages [formCtrl]="eventNameInput"></validation-messages>
+                                <label for="itemName">{{"ItemName" | localize}} *</label>
+                                <input id="itemName" #itemNameInput="ngModel" class="form-control" type="text"
+                                    [ngClass]="{'edited':item.itemName}" name="itemName" [(ngModel)]="item.itemName"
+                                    required maxlength="64">
+                                <validation-messages [formCtrl]="itemNameInput"></validation-messages>
                             </div>
                             <div class="col-xl-6">
-                                <label for="eventNumber">{{"EventNumber" | localize}} *</label>
-                                <input id="eventNumber" #eventNumberInput="ngModel" class="form-control" type="text"
-                                    [ngClass]="{'edited':item.eventNumber}" name="eventNumber"
-                                    [(ngModel)]="item.eventNumber" #eventNumberInput="ngModel" required maxlength="64">
-                                <validation-messages [formCtrl]="eventNumberInput"></validation-messages>
+                                <label for="itemNumber">{{"ItemNumber" | localize}} *</label>
+                                <input id="itemNumber" #itemNumberInput="ngModel" class="form-control" type="text"
+                                    [ngClass]="{'edited':item.itemNumber}" name="itemNumber"
+                                    [(ngModel)]="item.itemNumber" required maxlength="64">
+                                <validation-messages [formCtrl]="itemNumberInput"></validation-messages>
                             </div>
                         </div>
                     </div>
@@ -37,25 +37,61 @@
                         <div class="row">
                             <div class="col-xl-12">
                                 <label for="description">{{"Description" | localize}} *</label>
-                                <textarea #descriptionInput="ngModel" name="description" class="form-control" id="description" rows="3" [(ngModel)]="item.description"></textarea>
+                                <textarea #descriptionInput="ngModel" name="description" class="form-control"
+                                    id="description" rows="3" [(ngModel)]="item.description"></textarea>
                                 <validation-messages [formCtrl]="descriptionInput"></validation-messages>
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="row">
+                            <div class="col-xl-4">
+                                <label for="procurementState">{{"ProcurementState" | localize}} *</label>
+                                <select #procurementStateBox name="procurementState" class="form-control bs-select"
+                                    [(ngModel)]="item.procurementState" required>
+                                    <option value="" [selected]="isSelected">--Select Procurement State--</option>
+                                    <option *ngFor="let state of dropdowns.procurementStates" [value]="state.id">
+                                        {{state.name}}</option>
+                                </select>
+                                <validation-messages [formCtrl]="procurementStateBox"></validation-messages>
+                            </div>
+                            <div class="col-xl-4">
+                                <label for="itemStatus">{{"ItemStatus" | localize}} *</label>
+                                <select #itemStatusBox name="itemStatus" class="form-control bs-select"
+                                    [(ngModel)]="item.itemStatus" required>
+                                    <option value="" [selected]="isSelected">--Select Item Status--</option>
+                                    <option *ngFor="let status of dropdowns.itemStatus" [value]="status.id">
+                                        {{status.name}}</option>
+                                </select>
+                                <validation-messages [formCtrl]="itemStatusBox"></validation-messages>
+                            </div>
+                            <div class="col-xl-4">
+                                <label for="visibility">{{"Visibility" | localize}} *</label>
+                                <select #visibilityBox name="visibility" class="form-control bs-select"
+                                    [(ngModel)]="item.visibility" required>
+                                    <option value="" [selected]="isSelected">--Select Visibility--</option>
+                                    <option *ngFor="let visi of dropdowns.visibilities" [value]="visi.id">
+                                        {{visi.name}}</option>
+                                </select>
+                                <validation-messages [formCtrl]="visibilityBox"></validation-messages>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="row">
                             <div class="col-xl-6">
                                 <label for="fairMarketValue_FMV">{{"FairMarketValue_FMV" | localize}} *</label>
-                                <input id="fairMarketValue_FMV" #fairMarketValue_FMVInput="ngModel" class="form-control" type="text"
-                                    [ngClass]="{'edited':item.fairMarketValue_FMV}" name="fairMarketValue_FMV"
-                                    [(ngModel)]="item.fairMarketValue_FMV" #fairMarketValue_FMVInput="ngModel" required>
+                                <input id="fairMarketValue_FMV" #fairMarketValue_FMVInput="ngModel" class="form-control"
+                                    type="text" [ngClass]="{'edited':item.fairMarketValue_FMV}"
+                                    name="fairMarketValue_FMV" [(ngModel)]="item.fairMarketValue_FMV" required>
                                 <validation-messages [formCtrl]="fairMarketValue_FMVInput"></validation-messages>
                             </div>
                             <div class="col-xl-6">
                                 <label for="startingBidValue">{{"StartingBidValue" | localize}} *</label>
-                                <input id="startingBidValue" #startingBidValueInput="ngModel" class="form-control" type="text"
-                                    [ngClass]="{'edited':item.startingBidValue}" name="startingBidValue"
-                                    [(ngModel)]="item.startingBidValue" #startingBidValueInput="ngModel" required>
+                                <input id="startingBidValue" #startingBidValueInput="ngModel" class="form-control"
+                                    type="text" [ngClass]="{'edited':item.startingBidValue}" name="startingBidValue"
+                                    [(ngModel)]="item.startingBidValue" required>
                                 <validation-messages [formCtrl]="startingBidValueInput"></validation-messages>
                             </div>
                         </div>
@@ -64,16 +100,16 @@
                         <div class="row">
                             <div class="col-xl-6">
                                 <label for="bidStepIncrementValue">{{"BidStepIncrementValue" | localize}} *</label>
-                                <input id="bidStepIncrementValue" #bidStepIncrementValueInput="ngModel" class="form-control" type="text"
-                                    [ngClass]="{'edited':item.bidStepIncrementValue}" name="bidStepIncrementValue"
-                                    [(ngModel)]="item.bidStepIncrementValue" #bidStepIncrementValueInput="ngModel" required>
+                                <input id="bidStepIncrementValue" #bidStepIncrementValueInput="ngModel"
+                                    class="form-control" type="text" [ngClass]="{'edited':item.bidStepIncrementValue}"
+                                    name="bidStepIncrementValue" [(ngModel)]="item.bidStepIncrementValue" required>
                                 <validation-messages [formCtrl]="bidStepIncrementValueInput"></validation-messages>
                             </div>
                             <div class="col-xl-6">
                                 <label for="acquisitionValue">{{"AcquisitionValue" | localize}}</label>
-                                <input id="acquisitionValue" #acquisitionValueInput="ngModel" class="form-control" type="text"
-                                    [ngClass]="{'edited':item.acquisitionValue}" name="acquisitionValue"
-                                    [(ngModel)]="item.acquisitionValue" #address1="ngModel" required>
+                                <input id="acquisitionValue" #acquisitionValueInput="ngModel" class="form-control"
+                                    type="text" [ngClass]="{'edited':item.acquisitionValue}" name="acquisitionValue"
+                                    [(ngModel)]="item.acquisitionValue" required>
                                 <validation-messages [formCtrl]="acquisitionValueInput"></validation-messages>
                             </div>
                         </div>
@@ -89,30 +125,29 @@
                             </div>
                             <div class="col-xl-6">
                                 <label for="itemCertificateNotes">{{"ItemCertificateNotes" | localize}}</label>
-                                <input id="itemCertificateNotes" #itemCertificateNotesInput="ngModel" class="form-control" type="text"
-                                    [ngClass]="{'edited':item.itemCertificateNotes}" name="itemCertificateNotes"
-                                    [(ngModel)]="item.itemCertificateNotes" #address1="ngModel">
+                                <input id="itemCertificateNotes" #itemCertificateNotesInput="ngModel"
+                                    class="form-control" type="text" [ngClass]="{'edited':item.itemCertificateNotes}"
+                                    name="itemCertificateNotes" [(ngModel)]="item.itemCertificateNotes"
+                                    #address1="ngModel">
                             </div>
                         </div>
                     </div>
-                
+
                     <div class="form-group">
                         <label for="logo">{{"MainImage" | localize}}</label>
-                        <input id="logo" #inputFile type="file" ng2FileSelect [uploader]="logoUploader"
-                            class="col-lg-12" />
+                        <input type="file" ng2FileSelect [uploader]="logoUploader" class="col-xl-12" />
                     </div>
                     <button class="btn btn-default" type="button" (click)="clearLogo()">{{"Clear" | localize}}</button>
                     <div class="form-group">
-                        <label for="logo">{{"AdditionalImages" | localize}}</label>
-                        <input id="logo" #inputFileMultple multiple type="file" ng2FileSelect [uploader]="logoUploader"
-                            class="col-lg-12" />
+                        <label for="logoMultple">{{"AdditionalImages" | localize}}</label>
+                        <input type="file" multiple  (change)="getFiles($event)" class="col-xl-12" />
                     </div>
                     <button class="btn btn-default" type="button" (click)="clearLogo()">{{"Clear" | localize}}</button>
                 </div>
                 <div class="modal-footer">
                     <button type="button" [disabled]="saving" class="btn btn-secondary"
                         (click)="close()">{{l("Cancel")}}</button>
-                    <button [disabled]="!accountCreateForm.form.valid" type="submit" [buttonBusy]="saving"
+                    <button [disabled]="!itemCreateForm.form.valid" type="submit" [buttonBusy]="saving"
                         [busyText]="l('SavingWithThreeDot')" class="btn btn-primary"><i class="fa fa-save"></i>
                         <span>{{l("Save")}}</span></button>
                 </div>

@@ -15,8 +15,8 @@ import { AppConsts } from '@shared/AppConsts';
   templateUrl: './items.component.html'
 })
 export class ItemsComponent extends AppComponentBase {
-  @ViewChild('app-create-item-modal',{static: true}) createItemModal: CreateItemModalComponent;
-  @ViewChild('app-edit-item-modal',{static: true}) editItemModal: EditItemModalComponent;
+  @ViewChild('createItemModal',{static: true}) createItemModal: CreateItemModalComponent;
+  @ViewChild('editItemModal',{static: true}) editItemModal: EditItemModalComponent;
 
   @ViewChild('dataTable', {static: true}) dataTable: Table;
   @ViewChild('paginator', {static: true}) paginator: Paginator;
@@ -34,7 +34,7 @@ export class ItemsComponent extends AppComponentBase {
   }
 
   createItem(){
-    
+    this.createItemModal.show();
   }
   getItems(event?: LazyLoadEvent): void {
 

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-edit-item-modal',
+  selector: 'editItemModal',
   templateUrl: './edit-item-modal.component.html'
 })
 export class EditItemModalComponent implements OnInit {

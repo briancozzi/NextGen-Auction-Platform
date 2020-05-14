@@ -37,6 +37,8 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             try
             {
                 var isCreated = Convert.ToBoolean(Request.Form["isCreated"]);
+
+                var AdditionalImage = Request.Form["AdditionalFile"];
                 if (isCreated)
                     await CreateItem();
                 else
