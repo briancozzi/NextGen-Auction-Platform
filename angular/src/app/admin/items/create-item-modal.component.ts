@@ -4,10 +4,10 @@ import * as _ from 'lodash';
 import { ModalDirective } from 'ngx-bootstrap';
 import { finalize } from 'rxjs/operators';
 import {
-  ItemServiceProxy, ItemDto
+  ItemServiceProxy, ItemDto, CategoryServiceProxy
 } from '@shared/service-proxies/service-proxies';
 import { AppConsts } from '@shared/AppConsts';
-import { FileUploader, FileUploaderOptions,FileLikeObject  } from 'ng2-file-upload';
+import { FileUploader, FileUploaderOptions, FileLikeObject } from 'ng2-file-upload';
 import { IAjaxResponse, TokenService } from 'abp-ng2-module';
 import { forkJoin } from "rxjs";
 
@@ -30,15 +30,17 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
   logo: string;
   isSelected = true;
   dropdowns: any;
-  AdditionalFiles: any[] = [];
-  fileList: FileList; 
+  AdditionalFiles: string;
+  fileList: FileList;
+  categoryList = [];
 
-  
+
 
   constructor(
     injector: Injector,
     private _itemService: ItemServiceProxy,
-    private _tokenService: TokenService
+    private _tokenService: TokenService,
+    private _categoryService: CategoryServiceProxy
   ) {
     super(injector);
   }
@@ -46,7 +48,7 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
   ngOnInit(): void {
     this.initUploaders();
   }
-  
+
 
   createUploader(url: string, success?: (result: any) => void): FileUploader {
 
@@ -61,7 +63,7 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
     uploader.onBuildItemForm = (fileItem: any, form: any) => {
       form.append('itemDto', JSON.stringify(this.item));
       form.append('isCreated', true);
-      form.append('AdditionalFile', JSON.stringify(this.AdditionalFiles));
+     // form.append('AdditionalFile', this.AdditionalFiles);
     };
     uploader.onSuccessItem = (item, response, status) => {
       const ajaxResponse = <IAjaxResponse>JSON.parse(response);
@@ -101,9 +103,11 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
   init(): void {
     debugger;
     forkJoin([
-      this._itemService.getDropdowns()
+      this._itemService.getDropdowns(),
+      this._categoryService.getAllCategory()
     ]).subscribe(result => {
       this.dropdowns = result[0];
+      this.categoryList = result[1].items;
     });
   }
   close(): void {
@@ -114,10 +118,22 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
     this.saving = true;
     this.logoUploader.uploadAll();
   }
-  getFiles(event):void {
-    this.fileList = event.target.files;
-   this.AdditionalFiles = Array.from(this.fileList);
-    console.log(this.AdditionalFiles);
-    console.log(JSON.stringify(this.AdditionalFiles));
+  getFiles(event): void {
+    var files = event.target.files;
+    var myArray = [];
+    var file = {};
+
+    for (var i = 0; i < files.length; i++) {
+      file = {
+        'lastMod': files[i].lastModified,
+        'lastModDate': files[i].lastModifiedDate,
+        'name': files[i].name,
+        'size': files[i].size,
+        'type': files[i].type,
+      }
+
+      myArray.push(file)
+    }
+    this.AdditionalFiles = JSON.stringify(myArray);
   }
 }

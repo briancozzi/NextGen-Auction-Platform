@@ -35,14 +35,25 @@
                     </div>
                     <div class="form-group">
                         <div class="row">
-                            <div class="col-xl-12">
+                            <div class="col-xl-6">
                                 <label for="description">{{"Description" | localize}} *</label>
                                 <textarea #descriptionInput="ngModel" name="description" class="form-control"
                                     id="description" rows="3" [(ngModel)]="item.description"></textarea>
                                 <validation-messages [formCtrl]="descriptionInput"></validation-messages>
                             </div>
+                            <div class="col-xl-6">
+                                <label for="categories">{{"Category" | localize}} *</label>
+                                <select #categoryBox name="categories" multiple class="form-control bs-select"
+                                    [(ngModel)]="item.categories" required>
+                                    <option value="" [selected]="isSelected">--Select Category--</option>
+                                    <option *ngFor="let category of categoryList" [value]="category.id">
+                                        {{category.categoryName}}</option>
+                                </select>
+                                <validation-messages [formCtrl]="procurementStateBox"></validation-messages>
+                            </div>
                         </div>
                     </div>
+                    
                     <div class="form-group">
                         <div class="row">
                             <div class="col-xl-4">
@@ -50,8 +61,8 @@
                                 <select #procurementStateBox name="procurementState" class="form-control bs-select"
                                     [(ngModel)]="item.procurementState" required>
                                     <option value="" [selected]="isSelected">--Select Procurement State--</option>
-                                    <option *ngFor="let state of dropdowns.procurementStates" [value]="state.id">
-                                        {{state.name}}</option>
+                                    <option *ngFor="let pro of dropdowns.procurementStates" [value]="pro.id">
+                                        {{pro.name}}</option>
                                 </select>
                                 <validation-messages [formCtrl]="procurementStateBox"></validation-messages>
                             </div>
@@ -138,11 +149,11 @@
                         <input type="file" ng2FileSelect [uploader]="logoUploader" class="col-xl-12" />
                     </div>
                     <button class="btn btn-default" type="button" (click)="clearLogo()">{{"Clear" | localize}}</button>
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="logoMultple">{{"AdditionalImages" | localize}}</label>
                         <input type="file" multiple  (change)="getFiles($event)" class="col-xl-12" />
                     </div>
-                    <button class="btn btn-default" type="button" (click)="clearLogo()">{{"Clear" | localize}}</button>
+                    <button class="btn btn-default" type="button" (click)="clearLogo()">{{"Clear" | localize}}</button> -->
                 </div>
                 <div class="modal-footer">
                     <button type="button" [disabled]="saving" class="btn btn-secondary"
