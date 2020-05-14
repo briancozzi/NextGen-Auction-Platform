@@ -232,7 +232,7 @@ namespace NextGen.BiddingPlatform
 
             //item
             configuration.CreateMap<ItemDto, Item>();
-            configuration.CreateMap<UpdateItemDto, Item>();
+            configuration.CreateMap<UpdateItemDto, Item>().ReverseMap();
             configuration.CreateMap<ItemCategory.ItemCategory, GetCategoryDto>();
             configuration.CreateMap<ItemGalleryDto, ItemGallery>().ReverseMap();
             configuration.CreateMap<GetItemDto, Item>().ReverseMap();
