@@ -184,8 +184,8 @@ namespace NextGen.BiddingPlatform.Items
             existingItem.BuyNowPrice = input.BuyNowPrice;
             existingItem.ItemCertificateNotes = input.ItemCertificateNotes;
             existingItem.MainImageName = input.MainImageName;
+            existingItem.ThumbnailImage = input.ThumbnailImage;
             existingItem.VideoLink = input.VideoLink;
-
             await _itemRepository.UpdateAsync(existingItem);
         }
 

@@ -57,6 +57,7 @@
     <text name="ProcurementState">Procurement State</text>
     <text name="Visibility">Visibility</text>
     <text name="VideoLink">Video Link</text>
+    <text name="DeleteItem">Delete Item {0}</text>
     <!-- Custom Changes end here-->
 
     <text name="HomePage">Home page</text>
