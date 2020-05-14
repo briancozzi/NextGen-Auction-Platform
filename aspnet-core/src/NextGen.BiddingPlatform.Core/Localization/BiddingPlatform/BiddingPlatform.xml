@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <localizationDictionary culture="en">
   <texts>
+
     <!--Custom Changes start from here -->
     <text name="Country">Country</text>
     <text name="CreateNewCountry">Create New Country</text>
@@ -8,44 +9,56 @@
     <text name="DeletingCountry">Delete Country</text>
     <text name="CountryName">Country Name</text>
     <text name="Countries">Countries</text>
-
     <text name="CreateState">Create New State</text>
     <text name="EditState">Edit State</text>
     <text name="DeleteState">Delete State</text>
-
     <text name="AppAccounts">Accounts</text>
     <text name="AllAppAccount">All Accounts</text>
     <text name="AssignAppAccount">Assign Accounts</text>
     <text name="CreateAppAccount">Create New Account</text>
     <text name="EditAppAccount">Edit Account</text>
     <text name="DeleteAppAccount">Delete Account</text>
-
     <text name="Events">Events</text>
     <text name="AllEvents">All Accounts</text>
     <text name="AssignEvents">Assign Events</text>
     <text name="CreateEvent">Create New Event</text>
     <text name="EditEvent">Edit Event</text>
     <text name="DeleteEvent">Delete Event</text>
-
     <text name="Auctions">Auctions</text>
     <text name="CreateAuction">Create New Auction</text>
     <text name="EditAuction">Edit Auction</text>
     <text name="DeleteAuction">Delete Auction</text>
-
     <text name="FirstName">First Name</text>
     <text name="LastName">Last Name</text>
     <text name="Address1">Address1</text>
     <text name="Address2">Address2</text>
     <text name="ZipCode">Zip Code</text>
-
     <text name="EventName">Event Name</text>
     <text name="EventStartTime">Event Start Time</text>
     <text name="EventEndTime">Event End Time</text>
     <text name="EventUrl">Event Url</text>
-    <text name="SearchEvents">Search Eventst</text>
-
-
+    <text name="SearchEvents">Search Events</text>
+    <text name="CreateItem">Create Item</text>
+    <text name="EditItem">Edit Item</text>
+    <text name="Description">Description</text>
+    <text name="FairMarketValue_FMV">Fair Market Value</text>
+    <text name="StartingBidValue">Starting Bid Value</text>
+    <text name="BidStepIncrementValue">Bid Step Increment Value</text>
+    <text name="AcquisitionValue">Acquisition Value</text>
+    <text name="BuyNowPrice">Buy Now Price</text>
+    <text name="ItemCertificateNotes">Certificate Notes</text>
+    <text name="MainImage">Main Image</text>
+    <text name="AdditionalImages">Additional Images</text>
+    <text name="ItemNumber">Item Number</text>
+    <text name="Items">Items</text>
+    <text name="SearchItems">Search Items</text>
+    <text name="ItemName">Item Name</text>
+    <text name="ItemStatus">Item Status</text>
+    <text name="ProcurementState">Procurement State</text>
+    <text name="Visibility">Visibility</text>
+    <text name="VideoLink">Video Link</text>
     <!-- Custom Changes end here-->
+
     <text name="HomePage">Home page</text>
     <text name="AboutUs">About us</text>
     <text name="Administration">Administration</text>
