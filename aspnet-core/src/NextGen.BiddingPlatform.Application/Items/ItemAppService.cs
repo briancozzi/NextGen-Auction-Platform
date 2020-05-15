@@ -23,37 +23,41 @@ namespace NextGen.BiddingPlatform.Items
         private readonly IRepository<Item> _itemRepository;
         private readonly IRepository<ItemGallery> _itemGalleryRepository;
         private readonly IRepository<ItemCategory.ItemCategory> _itemCategoryRepository;
+        private readonly IRepository<Core.AppAccounts.AppAccount> _appAccountRepository;
         private readonly IAbpSession _abpSession;
         public ItemAppService(IRepository<Item> itemRepository,
                            IRepository<ItemGallery> itemGalleryRepository,
                            IRepository<ItemCategory.ItemCategory> itemCategoryRepository,
+                           IRepository<Core.AppAccounts.AppAccount> appAccountRepository,
                            IAbpSession abpSession)
         {
             _itemRepository = itemRepository;
             _itemGalleryRepository = itemGalleryRepository;
             _itemCategoryRepository = itemCategoryRepository;
+            _appAccountRepository = appAccountRepository;
             _abpSession = abpSession;
         }
         public async Task<List<ItemListDto>> GetAllItems()
         {
-            var items = await _itemRepository.GetAll()
+            var items = await _itemRepository.GetAllIncluding(x => x.AppAccount)
                                              .Select(x => new ItemListDto
                                              {
                                                  UniqueId = x.UniqueId,
                                                  Description = x.Description,
                                                  ItemName = x.ItemName,
                                                  ItemNumber = x.ItemNumber,
-                                                 ItemType = x.ItemType,
                                                  MainImageName = x.MainImageName,
                                                  ThumbnailImage = x.ThumbnailImage,
-                                                 ItemStatus = x.ItemStatus
+                                                 ItemStatus = x.ItemStatus,
+                                                 ItemStatusName = GetItemStatus(x.ItemStatus),
+                                                 AppAccountName = x.AppAccount.FirstName + " " + x.AppAccount.LastName
                                              }).ToListAsync();
             return items;
         }
 
         public async Task<PagedResultDto<ItemListDto>> GetItemsWithFilter(ItemFilter input)
         {
-            var query = _itemRepository.GetAll()
+            var query = _itemRepository.GetAllIncluding(x => x.AppAccount)
                                        .WhereIf(!input.Search.IsNullOrWhiteSpace(), x => x.ItemName.ToLower().IndexOf(input.Search.ToLower()) > -1)
                                        .Select(x => new ItemListDto
                                        {
@@ -61,10 +65,11 @@ namespace NextGen.BiddingPlatform.Items
                                            Description = x.Description,
                                            ItemName = x.ItemName,
                                            ItemNumber = x.ItemNumber,
-                                           ItemType = x.ItemType,
                                            MainImageName = x.MainImageName,
                                            ThumbnailImage = x.ThumbnailImage,
-                                           ItemStatus = x.ItemStatus
+                                           ItemStatus = x.ItemStatus,
+                                           ItemStatusName = GetItemStatus(x.ItemStatus),
+                                           AppAccountName = x.AppAccount.FirstName + " " + x.AppAccount.LastName
                                        });
 
             var resultCount = await query.CountAsync();
@@ -79,22 +84,26 @@ namespace NextGen.BiddingPlatform.Items
 
         public async Task<UpdateItemDto> GetItemById(Guid Id)
         {
-            var existingItem = await _itemRepository.GetAllIncluding(x => x.ItemImages).FirstOrDefaultAsync(x => x.UniqueId == Id);
+            var existingItem = await _itemRepository.GetAllIncluding(x => x.ItemImages, x => x.AppAccount).FirstOrDefaultAsync(x => x.UniqueId == Id);
             if (existingItem == null)
                 throw new Exception("Item not available for given id");
 
             var mappedItem = ObjectMapper.Map<UpdateItemDto>(existingItem);
             var itemCategories = await _itemCategoryRepository.GetAllIncluding(x => x.Category)
                                                               .Where(x => x.ItemId == existingItem.Id)
-                                                              .Select(x=>x.CategoryId)
+                                                              .Select(x => x.CategoryId)
                                                               .ToListAsync();
 
             mappedItem.Categories = itemCategories;
+            mappedItem.AppAccountUniqueId = existingItem.AppAccount.UniqueId;
             return mappedItem;
         }
 
         public async Task CreateItem(ItemDto input)
         {
+            var account = await _appAccountRepository.FirstOrDefaultAsync(x => x.UniqueId == input.AppAccountUniqueId);
+            if (account == null)
+                throw new Exception("AppAccount not found for given id");
             if (input.Categories.Count() == 0)
                 throw new Exception("Please select at least one category for item");
 
@@ -102,6 +111,7 @@ namespace NextGen.BiddingPlatform.Items
                 throw new Exception("You are not authorized user");
 
             var mappedItem = ObjectMapper.Map<Item>(input);
+            mappedItem.AppAccountId = account.Id;
             mappedItem.UniqueId = Guid.NewGuid();
             mappedItem.TenantId = _abpSession.TenantId.Value;
             //add category to ItemCategory Table
@@ -134,6 +144,10 @@ namespace NextGen.BiddingPlatform.Items
             var existingItem = await _itemRepository.FirstOrDefaultAsync(x => x.UniqueId == input.UniqueId);
             if (existingItem == null)
                 throw new Exception("Item not available for given id");
+
+            var account = await _appAccountRepository.FirstOrDefaultAsync(x => x.UniqueId == input.AppAccountUniqueId);
+            if (account == null)
+                throw new Exception("AppAccount not found for given id");
 
             if (input.Categories.Count() == 0)
                 throw new Exception("Please select at least one category for item");
@@ -171,6 +185,7 @@ namespace NextGen.BiddingPlatform.Items
             }
             //update the properties
             //existingItem.ItemType = input.ItemType;
+            existingItem.AppAccountId = account.Id;
             existingItem.ItemNumber = input.ItemNumber;
             existingItem.ItemName = input.ItemName;
             existingItem.Description = input.Description;
@@ -207,6 +222,25 @@ namespace NextGen.BiddingPlatform.Items
                 Visibilities = Utility.GetVisibilityList()
             };
             return dropdowns;
+        }
+
+        private string GetItemStatus(int id)
+        {
+            var itemStatuses = Utility.GetItemStatusList();
+            var itemStatus = itemStatuses.FirstOrDefault(x => x.Id == id);
+            return itemStatus?.Name;
+        }
+        private string GetProcurementState(int id)
+        {
+            var procurementStates = Utility.GetProcurementStateList();
+            var precurementState = procurementStates.FirstOrDefault(x => x.Id == id);
+            return precurementState?.Name;
+        }
+        private string GetVisibility(int id)
+        {
+            var visibilities = Utility.GetVisibilityList();
+            var visibility = visibilities.FirstOrDefault(x => x.Id == id);
+            return visibility?.Name;
         }
     }
 }

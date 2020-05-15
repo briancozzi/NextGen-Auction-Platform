@@ -43,9 +43,14 @@ namespace NextGen.BiddingPlatform.Core.Items
         public string ThumbnailImage { get; set; }
         public string VideoLink { get; set; }
         public bool IsActive { get; set; }
+
+        [ForeignKey("AppAccount")]
+        public int AppAccountId { get; set; }
+        public Core.AppAccounts.AppAccount AppAccount { get; set; }
+
         public ICollection<ItemGallery> ItemImages { get; set; }
         public ICollection<ItemCategory.ItemCategory> ItemCategories { get; set; }
-        
+
         public Item()
         {
             ItemImages = new Collection<ItemGallery>();

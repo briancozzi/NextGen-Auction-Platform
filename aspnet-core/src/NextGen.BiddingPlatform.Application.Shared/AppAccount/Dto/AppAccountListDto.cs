@@ -9,6 +9,7 @@ namespace NextGen.BiddingPlatform.AppAccount.Dto
 {
     public class AppAccountListDto
     {
+        public int Id { get; set; }
         public Guid UniqueId { get; set; }
         public string Email { get; set; }
         public string FirstName { get; set; }
