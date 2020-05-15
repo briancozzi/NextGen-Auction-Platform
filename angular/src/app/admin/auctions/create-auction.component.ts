@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Injector, Output, ViewChild,Input } from '@angular/core';
+import { Component, EventEmitter, Injector, Output, ViewChild,Input, OnInit, AfterViewInit } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import * as _ from 'lodash';
 import { ModalDirective } from 'ngx-bootstrap';
@@ -13,16 +13,16 @@ import {
 } from '@shared/service-proxies/service-proxies';
 import {forkJoin} from "rxjs";
 import * as moment from 'moment';
+import { appModuleAnimation } from '@shared/animations/routerTransition';
+import { Router } from '@angular/router';
 
 @Component({
-    selector: 'createAuctionsModal',
-    templateUrl: './create-auctions-modal.component.html',
-    
+   // selector: 'createAuction',
+    templateUrl: './create-auction.component.html',
+    animations: [appModuleAnimation()]
 })
-export class CreateAuctionsModalComponent extends AppComponentBase {
-    @ViewChild('createModal', { static: true }) modal: ModalDirective;
-    @Output() modalSave: EventEmitter<any> = new EventEmitter<any>();
-
+export class CreateAuctionComponent extends AppComponentBase implements OnInit, AfterViewInit {
+  
     active = false;
     saving = false;
     auction: CreateAuctionDto = new CreateAuctionDto();
@@ -42,24 +42,28 @@ export class CreateAuctionsModalComponent extends AppComponentBase {
         private _countryService: CountryServiceProxy,
         private _accountService: AppAccountServiceProxy,
         private _eventService: AccountEventServiceProxy,
-        private _auctionService: AuctionServiceProxy
+        private _auctionService: AuctionServiceProxy,
+        private _router: Router
     ) {
         super(injector);
     }
   
-    show() {
+    ngOnInit() {
         this.active = true;
         this.init();
-        this.modal.show();
+       
     }
 
-    onShown(): void {
+    ngAfterViewInit(): void {
     }
 
     init(): void {
         debugger;
         this.auction = new CreateAuctionDto();
         this.auction.address = new AddressDto();
+        this.auction.accountUniqueId = "";
+        this.auction.eventUniqueId = "";
+        this.auction.address.stateUniqueId = "";
         forkJoin([
             this._countryService.getCountriesWithState(),
             this._accountService.getAllAccount(),
@@ -97,14 +101,13 @@ export class CreateAuctionsModalComponent extends AppComponentBase {
         .subscribe(() => {
             this.notify.info(this.l('SavedSuccessfully'));
             this.close();
-            this.modalSave.emit(null);
+           
         });
     }
-
   
     close(): void {
         this.active = false;
-        this.modal.hide();
+        this._router.navigate(['app/admin/auctions']);
     }
    
 }

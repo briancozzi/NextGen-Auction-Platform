@@ -112,8 +112,8 @@ import { AccountEventsComponent } from './account-events/account-events.componen
 import{CreateEventsModalComponent} from './account-events/create-events-modal.component';
 import{EditEventsModalComponent} from './account-events/edit-events-modal.component';
 import { AuctionsComponent } from './auctions/auctions.component';
-import{CreateAuctionsModalComponent} from './auctions/create-auctions-modal.component';
-import{EditAuctionsModalComponent} from './auctions/edit-auctions-modal.component';
+import{ CreateAuctionComponent} from './auctions/create-auction.component';
+import{EditAuctionComponent} from './auctions/edit-auction.component';
 import { ItemsComponent } from './items/items.component';
 import { CreateItemModalComponent } from './items/create-item-modal.component';
 import { EditItemModalComponent } from './items/edit-item-modal.component';
@@ -239,8 +239,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         CreateEventsModalComponent,
         EditEventsModalComponent,
         AuctionsComponent,
-        CreateAuctionsModalComponent,
-        EditAuctionsModalComponent,
+        CreateAuctionComponent,
+        EditAuctionComponent,
         ItemsComponent,
         CreateItemModalComponent,
         EditItemModalComponent,

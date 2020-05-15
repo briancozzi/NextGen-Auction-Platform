@@ -73,7 +73,7 @@
                                             <ul class="dropdown-menu" *dropdownMenu>
                                                 <li>
                                                     <a href="javascript:;"
-                                                        (click)="editAuctionsModal.show(record.uniqueId)">{{'Edit' | localize}}</a>
+                                                        (click)="editAuction(record.uniqueId)">{{'Edit' | localize}}</a>
                                                 </li>
                                                 <li>
                                                     <a href="javascript:;"
@@ -117,7 +117,5 @@
             </div>
         </div>
     </div>
-    <createAuctionsModal #createAuctionsModal (modalSave)=getAuctions()></createAuctionsModal>
-    <editAuctionsModal #editAuctionsModal (modalSave)=getAuctions()></editAuctionsModal>
 
 </div>

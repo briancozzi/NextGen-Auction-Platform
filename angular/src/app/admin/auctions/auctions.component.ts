@@ -5,22 +5,21 @@ import { Table } from 'primeng/table';
 import { Paginator } from 'primeng/paginator';
 import { finalize } from 'rxjs/operators';
 import { LazyLoadEvent } from 'primeng/public_api';
-import { CreateAuctionsModalComponent } from './create-auctions-modal.component';
-import { EditAuctionsModalComponent } from './edit-auctions-modal.component';
 import {forkJoin} from "rxjs";
 import * as moment from 'moment';
+import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-auctions',
   templateUrl: './auctions.component.html',
 })
 export class AuctionsComponent extends AppComponentBase {
-  @ViewChild('createAuctionsModal', { static: true }) createAuctionsModal: CreateAuctionsModalComponent;
-  @ViewChild('editAuctionsModal', { static: true }) editAuctionsModal: EditAuctionsModalComponent;
+ 
   @ViewChild('dataTable', { static: true }) dataTable: Table;
   @ViewChild('paginator', { static: true }) paginator: Paginator;
 
   constructor(injector: Injector,
     private _auctionService: AuctionServiceProxy,
+    private _router : Router
   ) {
     super(injector)
   }
@@ -47,8 +46,11 @@ export class AuctionsComponent extends AppComponentBase {
       
   }
   createAuction(): void {
-    this.createAuctionsModal.show();
+    this._router.navigate(['app/admin/auctions/create-auction']);
   }
+  editAuction(auctionId): void {
+    this._router.navigate(['app/admin/auctions/edit-auction'], { queryParams: { auctionId: auctionId } });
+}
   deleteAuction(auction: AuctionListDto): void {
     this.message.confirm(
         this.l('DeleteAuction', auction.auctionType),

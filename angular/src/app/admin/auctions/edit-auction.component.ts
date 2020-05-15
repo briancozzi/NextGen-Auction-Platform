@@ -1,8 +1,11 @@
-import { Component, Injector, ViewChild, Output, EventEmitter, ElementRef } from '@angular/core';
+import { Component, Injector, ViewChild, Output, EventEmitter, ElementRef, OnInit, AfterViewInit } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import * as _ from 'lodash';
 import { ModalDirective } from 'ngx-bootstrap';
 import { finalize } from 'rxjs/operators';
+import { appModuleAnimation } from '@shared/animations/routerTransition';
+import { ActivatedRoute, Router } from '@angular/router';
+
 import {
     AddressDto,
     AccountEventServiceProxy,
@@ -18,12 +21,10 @@ import { forkJoin } from "rxjs";
 import { AppConsts } from '@shared/AppConsts';
 import * as moment from 'moment';
 @Component({
-    selector: 'editAuctionsModal',
-    templateUrl: './edit-auctions-modal.component.html'
+    templateUrl: './edit-auction.component.html',
+    animations: [appModuleAnimation()]
 })
-export class EditAuctionsModalComponent extends AppComponentBase {
-    @ViewChild('editModal', { static: true }) modal: ModalDirective;
-    @Output() modalSave: EventEmitter<any> = new EventEmitter<any>();
+export class EditAuctionComponent extends AppComponentBase implements OnInit {
     
     auction: UpdateAuctionDto = new UpdateAuctionDto();
     saving = false;
@@ -42,13 +43,16 @@ export class EditAuctionsModalComponent extends AppComponentBase {
         private _eventService: AccountEventServiceProxy,
         private _countryService: CountryServiceProxy,
         private _accountService: AppAccountServiceProxy,
-        private _auctionService: AuctionServiceProxy
+        private _auctionService: AuctionServiceProxy,
+        private _activatedRoute: ActivatedRoute,
+        private _router: Router 
     ) {
         super(injector);
     }
 
-    show(AuctionId?: string): void {
+    ngOnInit (): void {
         debugger;
+        var AuctionId = this._activatedRoute.snapshot.queryParams['auctionId'];
         this.active = true;
         this.auction = new UpdateAuctionDto();
         this.auction.address = new AddressDto();
@@ -75,14 +79,13 @@ export class EditAuctionsModalComponent extends AppComponentBase {
             endTimeDt.setMinutes(parseInt(this.auction.auctionEndDateTime.format("mm")));
             this.endTime = endTimeDt;
 
-            this.modal.show();
 
         });
     }
 
     close(): void {
         this.active = false;
-        this.modal.hide();
+        this._router.navigate(['app/admin/auctions']);
     }
     getTimePart(dateTimeVal): string {
         var timePart = dateTimeVal.toTimeString().split(":");
@@ -101,7 +104,6 @@ export class EditAuctionsModalComponent extends AppComponentBase {
         .subscribe(() => {
             this.notify.info(this.l('SavedSuccessfully'));
             this.close();
-            this.modalSave.emit(null);
         });
     }
 

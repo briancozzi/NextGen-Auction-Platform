@@ -29,6 +29,9 @@ import { AccountsComponent } from "./accounts/accounts.component";
 import { AccountEventsComponent } from './account-events/account-events.component';
 import { AuctionsComponent } from './auctions/auctions.component';
 import { ItemsComponent } from './items/items.component';
+import { CreateAuctionComponent } from './auctions/create-auction.component';
+import { EditAuctionComponent } from './auctions/edit-auction.component';
+
 
 
 
@@ -66,6 +69,9 @@ import { ItemsComponent } from './items/items.component';
                     { path: 'accounts', component: AccountsComponent },
                     { path: 'events', component: AccountEventsComponent },
                     { path: 'auctions', component: AuctionsComponent },
+                    { path: 'auctions/edit-auction', component: EditAuctionComponent},
+                    { path: 'auctions/create-auction', component: CreateAuctionComponent},
+
                     { path: 'items', component: ItemsComponent },
                     { path: '', redirectTo: 'hostDashboard', pathMatch: 'full' },
                     { path: '**', redirectTo: 'hostDashboard' }
