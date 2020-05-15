@@ -246,6 +246,24 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             return mappedEvent;
         }
 
+        public async Task<AccountEventListDto> GetEventDateTimeByEventId(Guid Id)
+        {
+            var existingEvent = await _eventRepository.FirstOrDefaultAsync(x => x.UniqueId == Id);
+            if (existingEvent == null)
+                throw new UserFriendlyException("Event not found for given id");
+
+            var @event = new AccountEventListDto
+            {
+                EventEndDateTime = existingEvent.EventEndDateTime,
+                EventStartDateTime = existingEvent.EventStartDateTime,
+                TimeZone = existingEvent.TimeZone,
+                EventName = existingEvent.EventName,
+                EventUrl = existingEvent.EventUrl,
+                UniqueId = existingEvent.UniqueId
+            };
+
+            return @event;
+        }
 
         private async Task<List<int>> GetAccessibleIds(AccessType accessType, int? eventId)
         {
