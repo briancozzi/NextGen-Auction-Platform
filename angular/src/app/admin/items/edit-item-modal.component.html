@@ -49,11 +49,31 @@
                                     <option *ngFor="let category of categoryList" [value]="category.id">
                                         {{category.categoryName}}</option>
                                 </select>
-                                <validation-messages [formCtrl]="procurementStateBox"></validation-messages>
+                                <validation-messages [formCtrl]="categoryBox"></validation-messages>
                             </div>
                         </div>
                     </div>
-                    
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xl-6">
+                                <label for="account">{{"Account" | localize}} *</label>
+                                <select #accountBox name="account" multiple class="form-control bs-select"
+                                    [(ngModel)]="item.appAccountUniqueId" required>
+                                    <option value="" [selected]="isSelected">--Select Account--</option>
+                                    <option *ngFor="let account of accountList" [value]="account.uniqueId">
+                                        {{account.firstName}}</option>
+                                </select>
+                                <validation-messages [formCtrl]="accountBox"></validation-messages>
+                            </div>
+                            <div class="col-xl-6">
+                                <label for="itemCertificateNotes">{{"ItemCertificateNotes" | localize}}</label>
+                                <input id="itemCertificateNotes" #itemCertificateNotesInput="ngModel"
+                                    class="form-control" type="text" [ngClass]="{'edited':item.itemCertificateNotes}"
+                                    name="itemCertificateNotes" [(ngModel)]="item.itemCertificateNotes"
+                                    #address1="ngModel">
+                            </div>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <div class="row">
                             <div class="col-xl-4">
@@ -125,24 +145,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <div class="row">
-                            <!-- <div class="col-xl-6">
-                                <label for="buyNowPrice">{{"BuyNowPrice" | localize}} *</label>
-                                <input id="buyNowPrice" #buyNowPriceInput="ngModel" class="form-control" type="text"
-                                    [ngClass]="{'edited':item.buyNowPrice}" name="buyNowPrice"
-                                    [(ngModel)]="item.buyNowPrice" #buyNowPriceInput="ngModel" required>
-                                <validation-messages [formCtrl]="buyNowPriceInput"></validation-messages>
-                            </div> -->
-                            <div class="col-xl-6">
-                                <label for="itemCertificateNotes">{{"ItemCertificateNotes" | localize}}</label>
-                                <input id="itemCertificateNotes" #itemCertificateNotesInput="ngModel"
-                                    class="form-control" type="text" [ngClass]="{'edited':item.itemCertificateNotes}"
-                                    name="itemCertificateNotes" [(ngModel)]="item.itemCertificateNotes"
-                                    #address1="ngModel">
-                            </div>
-                        </div>
-                    </div>
+                 
                     <div class="form-group">
                         <label for="logo">{{"MainImage" | localize}}</label>
                         <div #imageViewSection *ngIf="isLogo">

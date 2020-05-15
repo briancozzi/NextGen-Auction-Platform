@@ -18619,6 +18619,7 @@ export interface IAccountEventDto {
 }
 
 export class AppAccountListDto implements IAppAccountListDto {
+    id!: number;
     uniqueId!: string;
     email!: string | undefined;
     firstName!: string | undefined;
@@ -18638,6 +18639,7 @@ export class AppAccountListDto implements IAppAccountListDto {
 
     init(_data?: any) {
         if (_data) {
+            this.id = _data["id"];
             this.uniqueId = _data["uniqueId"];
             this.email = _data["email"];
             this.firstName = _data["firstName"];
@@ -18657,6 +18659,7 @@ export class AppAccountListDto implements IAppAccountListDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
         data["uniqueId"] = this.uniqueId;
         data["email"] = this.email;
         data["firstName"] = this.firstName;
@@ -18669,6 +18672,7 @@ export class AppAccountListDto implements IAppAccountListDto {
 }
 
 export interface IAppAccountListDto {
+    id: number;
     uniqueId: string;
     email: string | undefined;
     firstName: string | undefined;
@@ -25226,13 +25230,14 @@ export interface ICreateInvoiceDto {
 
 export class ItemListDto implements IItemListDto {
     uniqueId!: string;
-    itemType!: number;
     itemNumber!: number;
     itemName!: string | undefined;
     description!: string | undefined;
     mainImageName!: string | undefined;
     thumbnailImage!: string | undefined;
     itemStatus!: number;
+    itemStatusName!: string | undefined;
+    appAccountName!: string | undefined;
 
     constructor(data?: IItemListDto) {
         if (data) {
@@ -25246,13 +25251,14 @@ export class ItemListDto implements IItemListDto {
     init(_data?: any) {
         if (_data) {
             this.uniqueId = _data["uniqueId"];
-            this.itemType = _data["itemType"];
             this.itemNumber = _data["itemNumber"];
             this.itemName = _data["itemName"];
             this.description = _data["description"];
             this.mainImageName = _data["mainImageName"];
             this.thumbnailImage = _data["thumbnailImage"];
             this.itemStatus = _data["itemStatus"];
+            this.itemStatusName = _data["itemStatusName"];
+            this.appAccountName = _data["appAccountName"];
         }
     }
 
@@ -25266,26 +25272,28 @@ export class ItemListDto implements IItemListDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["uniqueId"] = this.uniqueId;
-        data["itemType"] = this.itemType;
         data["itemNumber"] = this.itemNumber;
         data["itemName"] = this.itemName;
         data["description"] = this.description;
         data["mainImageName"] = this.mainImageName;
         data["thumbnailImage"] = this.thumbnailImage;
         data["itemStatus"] = this.itemStatus;
+        data["itemStatusName"] = this.itemStatusName;
+        data["appAccountName"] = this.appAccountName;
         return data; 
     }
 }
 
 export interface IItemListDto {
     uniqueId: string;
-    itemType: number;
     itemNumber: number;
     itemName: string | undefined;
     description: string | undefined;
     mainImageName: string | undefined;
     thumbnailImage: string | undefined;
     itemStatus: number;
+    itemStatusName: string | undefined;
+    appAccountName: string | undefined;
 }
 
 export class PagedResultDtoOfItemListDto implements IPagedResultDtoOfItemListDto {
@@ -25386,6 +25394,7 @@ export interface IItemGalleryDto {
 
 export class UpdateItemDto implements IUpdateItemDto {
     uniqueId!: string;
+    appAccountUniqueId!: string;
     itemNumber!: number;
     itemName!: string;
     description!: string;
@@ -25417,6 +25426,7 @@ export class UpdateItemDto implements IUpdateItemDto {
     init(_data?: any) {
         if (_data) {
             this.uniqueId = _data["uniqueId"];
+            this.appAccountUniqueId = _data["appAccountUniqueId"];
             this.itemNumber = _data["itemNumber"];
             this.itemName = _data["itemName"];
             this.description = _data["description"];
@@ -25456,6 +25466,7 @@ export class UpdateItemDto implements IUpdateItemDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["uniqueId"] = this.uniqueId;
+        data["appAccountUniqueId"] = this.appAccountUniqueId;
         data["itemNumber"] = this.itemNumber;
         data["itemName"] = this.itemName;
         data["description"] = this.description;
@@ -25488,6 +25499,7 @@ export class UpdateItemDto implements IUpdateItemDto {
 
 export interface IUpdateItemDto {
     uniqueId: string;
+    appAccountUniqueId: string;
     itemNumber: number;
     itemName: string;
     description: string;
@@ -25509,6 +25521,7 @@ export interface IUpdateItemDto {
 }
 
 export class ItemDto implements IItemDto {
+    appAccountUniqueId!: string;
     itemNumber!: number;
     itemName!: string;
     description!: string;
@@ -25539,6 +25552,7 @@ export class ItemDto implements IItemDto {
 
     init(_data?: any) {
         if (_data) {
+            this.appAccountUniqueId = _data["appAccountUniqueId"];
             this.itemNumber = _data["itemNumber"];
             this.itemName = _data["itemName"];
             this.description = _data["description"];
@@ -25577,6 +25591,7 @@ export class ItemDto implements IItemDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["appAccountUniqueId"] = this.appAccountUniqueId;
         data["itemNumber"] = this.itemNumber;
         data["itemName"] = this.itemName;
         data["description"] = this.description;
@@ -25608,6 +25623,7 @@ export class ItemDto implements IItemDto {
 }
 
 export interface IItemDto {
+    appAccountUniqueId: string;
     itemNumber: number;
     itemName: string;
     description: string;

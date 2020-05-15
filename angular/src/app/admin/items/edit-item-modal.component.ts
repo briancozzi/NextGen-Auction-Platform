@@ -6,7 +6,8 @@ import { finalize } from 'rxjs/operators';
 import {
   ItemServiceProxy,
   CategoryServiceProxy,
-  UpdateItemDto
+  UpdateItemDto,
+  AppAccountServiceProxy
 
 } from '@shared/service-proxies/service-proxies';
 import { forkJoin } from "rxjs";
@@ -31,6 +32,7 @@ export class EditItemModalComponent extends AppComponentBase {
   active = false;
   dropdowns: any;
   categoryList = [];
+  accountList = [];
   isLogo = false;
 
   constructor(
@@ -38,6 +40,7 @@ export class EditItemModalComponent extends AppComponentBase {
     private _itemService: ItemServiceProxy,
     private _categoryService: CategoryServiceProxy,
     private _tokenService: TokenService,
+    private _accountService: AppAccountServiceProxy
   ) {
     super(injector);
   }
@@ -92,10 +95,12 @@ export class EditItemModalComponent extends AppComponentBase {
       this._itemService.getItemById(ItemId),
       this._categoryService.getAllCategory(),
       this._itemService.getDropdowns(),
+      this._accountService.getAllAccount()
     ]).subscribe(allResults => {
       this.item = allResults[0];
       this.categoryList = allResults[1].items;
       this.dropdowns = allResults[2];
+      this.accountList = allResults[3].items;
       this.isLogo = true;
       this.modal.show();
     });

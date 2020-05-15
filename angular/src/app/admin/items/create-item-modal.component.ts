@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { ModalDirective } from 'ngx-bootstrap';
 import { finalize } from 'rxjs/operators';
 import {
-  ItemServiceProxy, ItemDto, CategoryServiceProxy
+  ItemServiceProxy, ItemDto, CategoryServiceProxy,AppAccountServiceProxy
 } from '@shared/service-proxies/service-proxies';
 import { AppConsts } from '@shared/AppConsts';
 import { FileUploader, FileUploaderOptions, FileLikeObject } from 'ng2-file-upload';
@@ -33,6 +33,7 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
   AdditionalFiles: string;
   fileList: FileList;
   categoryList = [];
+  accountList = [];
 
 
 
@@ -40,7 +41,8 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
     injector: Injector,
     private _itemService: ItemServiceProxy,
     private _tokenService: TokenService,
-    private _categoryService: CategoryServiceProxy
+    private _categoryService: CategoryServiceProxy,
+    private _accountService: AppAccountServiceProxy
   ) {
     super(injector);
   }
@@ -106,10 +108,12 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
     debugger;
     forkJoin([
       this._itemService.getDropdowns(),
-      this._categoryService.getAllCategory()
+      this._categoryService.getAllCategory(),
+      this._accountService.getAllAccount()
     ]).subscribe(result => {
       this.dropdowns = result[0];
       this.categoryList = result[1].items;
+      this.accountList = result[2].items;
     });
   }
   close(): void {
