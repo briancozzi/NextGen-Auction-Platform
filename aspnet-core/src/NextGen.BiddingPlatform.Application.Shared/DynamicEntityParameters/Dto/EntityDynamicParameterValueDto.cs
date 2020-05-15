@@ -9,7 +9,5 @@ namespace NextGen.BiddingPlatform.DynamicEntityParameters.Dto
         public string EntityId { get; set; }
 
         public int EntityDynamicParameterId { get; set; }
-
-        public int? TenantId { get; set; }
     }
 }

@@ -138,7 +138,7 @@
                     <div class="form-group">
                         <label for="edition">{{"Edition" | localize}}</label>
                         <select id="edition" name="edition" class="form-control" [(ngModel)]="tenant.editionId"
-                            (change)="onEditionChange($event)">
+                            (change)="onEditionChange()">
                             <option *ngFor="let edition of editions" [value]="edition.value">{{edition.displayText}}
                             </option>
                         </select>

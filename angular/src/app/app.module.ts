@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
@@ -15,8 +15,12 @@ import { SmsVerificationModalComponent } from '@app/shared/layout/profile/sms-ve
 import { ServiceProxyModule } from '@shared/service-proxies/service-proxy.module';
 import { UtilsModule } from '@shared/utils/utils.module';
 import { FileUploadModule } from 'ng2-file-upload';
-import { ModalModule, TabsModule, TooltipModule, BsDropdownModule, PopoverModule } from 'ngx-bootstrap';
-import {BsDatepickerModule} from 'ngx-bootstrap/datepicker';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { TabsModule } from 'ngx-bootstrap/tabs';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { PopoverModule } from 'ngx-bootstrap/popover';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { FileUploadModule as PrimeNgFileUploadModule } from 'primeng/fileupload';
 import { PaginatorModule } from 'primeng/paginator';
 import { ProgressBarModule } from 'primeng/progressbar';

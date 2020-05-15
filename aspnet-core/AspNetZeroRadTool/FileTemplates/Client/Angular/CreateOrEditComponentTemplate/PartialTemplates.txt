@@ -2,7 +2,18 @@
 "propertyTemplates":[
 		{
 			"placeholder" : "{{Property_Datetime_Init_Looped_Template_Here}}",
-			"condition" : "{{Project_Version_Here}} >= 060000 && {{Property_CreateOrEdit_Here}} == true && {{Property_Is_Nullable_Here}} == false",
+			"condition" : "{{Project_Version_Here}} >= 060000 && {{Project_Version_Here}} < 070200 && {{Property_CreateOrEdit_Here}} == true && {{Property_Is_Nullable_Here}} == false",
+			"templates" : [
+					{
+					"type" : "DateTime",
+					"content" : "
+            this.{{entity_Name_Here}}.{{property_Name_Here}} = moment().startOf('day');"
+					}
+				]
+		},
+		{
+			"placeholder" : "{{Property_Datetime_Init_Looped_Template_Here_After_070200}}",
+			"condition" : "{{Project_Version_Here}} >= 070200 && {{Property_CreateOrEdit_Here}} == true",
 			"templates" : [
 					{
 					"type" : "DateTime",
@@ -13,7 +24,7 @@
 		},
 		{
 			"placeholder" : "{{Property_Nullable_Datetime_SetNull_Looped_Template_Here}}",
-			"condition" : "{{Project_Version_Here}} >= 060000 && {{Property_CreateOrEdit_Here}} == true && {{Property_Is_Nullable_Here}} == true",
+			"condition" : "{{Project_Version_Here}} >= 060000 && {{Project_Version_Here}} < 070200 && {{Property_CreateOrEdit_Here}} == true && {{Property_Is_Nullable_Here}} == true",
 			"templates" : [
 					{
 					"type" : "DateTime",
@@ -24,7 +35,7 @@
 		},
 		{
 			"placeholder" : "{{Property_Nullable_Datetime_Dec_Looped_Template_Here}}",
-			"condition" : "{{Project_Version_Here}} >= 060000 && {{Property_CreateOrEdit_Here}} == true && {{Property_Is_Nullable_Here}} == true",
+			"condition" : "{{Project_Version_Here}} >= 060000 && {{Project_Version_Here}} < 070200 && {{Property_CreateOrEdit_Here}} == true && {{Property_Is_Nullable_Here}} == true",
 			"templates" : [
 					{
 					"type" : "DateTime",
@@ -35,7 +46,7 @@
 		},
 		{
 			"placeholder" : "{{Property_Nullable_Datetime_Init_Looped_Template_Here}}",
-			"condition" : "{{Project_Version_Here}} >= 060000 && {{Property_CreateOrEdit_Here}} == true && {{Property_Is_Nullable_Here}} == true",
+			"condition" : "{{Project_Version_Here}} >= 060000 && {{Project_Version_Here}} < 070200 && {{Property_CreateOrEdit_Here}} == true && {{Property_Is_Nullable_Here}} == true",
 			"templates" : [
 					{
 					"type" : "DateTime",
@@ -48,7 +59,7 @@
 		},
 		{
 			"placeholder" : "{{Property_Nullable_Datetime_GetValue_Looped_Template_Here}}",
-			"condition" : "{{Project_Version_Here}} >= 060000 && {{Property_CreateOrEdit_Here}} == true && {{Property_Is_Nullable_Here}} == true",
+			"condition" : "{{Project_Version_Here}} >= 060000 && {{Project_Version_Here}} < 070200 && {{Property_CreateOrEdit_Here}} == true && {{Property_Is_Nullable_Here}} == true",
 			"templates" : [
 					{
 					"type" : "DateTime",

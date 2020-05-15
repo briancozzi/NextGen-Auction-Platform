@@ -250,11 +250,6 @@ namespace NextGen.BiddingPlatform.MultiTenancy
 
         private bool UseCaptchaOnRegistration()
         {
-            if (DebugHelper.IsDebug)
-            {
-                return false;
-            }
-
             return SettingManager.GetSettingValueForApplication<bool>(AppSettings.TenantManagement.UseCaptchaOnRegistration);
         }
 

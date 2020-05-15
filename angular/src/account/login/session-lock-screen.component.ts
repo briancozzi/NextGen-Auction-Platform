@@ -3,7 +3,7 @@ import { AppComponentBase } from '@shared/common/app-component-base';
 import { ProfileServiceProxy } from '@shared/service-proxies/service-proxies';
 import { accountModuleAnimation } from '@shared/animations/routerTransition';
 import { LoginService } from './login.service';
-import { ReCaptcha2Component } from 'ngx-captcha';
+import { ReCaptchaV3Service } from 'ngx-captcha';
 import { AppConsts } from '@shared/AppConsts';
 
 @Component({
@@ -12,17 +12,15 @@ import { AppConsts } from '@shared/AppConsts';
   animations: [accountModuleAnimation()]
 })
 export class SessionLockScreenComponent extends AppComponentBase {
-  @ViewChild('recaptchaRef') recaptchaRef: ReCaptcha2Component;
-
   recaptchaSiteKey: string = AppConsts.recaptchaSiteKey;
 
   userInfo: any;
-  captchaResponse?: string;
   submitting = false;
 
   constructor(
     injector: Injector,
     private _profileService: ProfileServiceProxy,
+    private _reCaptchaV3Service: ReCaptchaV3Service,
     public loginService: LoginService) {
     super(injector);
     this.getLastUserInfo();
@@ -64,26 +62,28 @@ export class SessionLockScreenComponent extends AppComponentBase {
   }
 
   login(): void {
-    if (this.useCaptcha && !this.captchaResponse) {
-      this.message.warn(this.l('CaptchaCanNotBeEmpty'));
-      return;
+    let recaptchaCallback = (token: string) => {
+      this.showMainSpinner();
+
+      this.submitting = true;
+      this.loginService.authenticate(
+        () => {
+          this.submitting = false;
+          this.hideMainSpinner();
+        },
+        null,
+        token
+      );
+
+    };
+
+    if (this.useCaptcha) {
+      this._reCaptchaV3Service.execute(this.recaptchaSiteKey, 'login', (token) => {
+        recaptchaCallback(token);
+      });
+    } else {
+      recaptchaCallback(null);
     }
-
-    this.showMainSpinner();
-
-    this.submitting = true;
-    this.loginService.authenticate(
-      () => {
-        this.submitting = false;
-        this.hideMainSpinner();
-
-        if (this.recaptchaRef) {
-          this.recaptchaRef.resetCaptcha();
-        }
-      },
-      null,
-      this.captchaResponse
-    );
   }
 
   get useCaptcha(): boolean {

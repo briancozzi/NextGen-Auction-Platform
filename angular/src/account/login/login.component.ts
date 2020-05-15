@@ -6,7 +6,7 @@ import { AppComponentBase } from '@shared/common/app-component-base';
 import { SessionServiceProxy, UpdateUserSignInTokenOutput } from '@shared/service-proxies/service-proxies';
 import { UrlHelper } from 'shared/helpers/UrlHelper';
 import { ExternalLoginProvider, LoginService } from './login.service';
-import { ReCaptcha2Component } from 'ngx-captcha';
+import { ReCaptchaV3Service } from 'ngx-captcha';
 import { AppConsts } from '@shared/AppConsts';
 
 @Component({
@@ -15,19 +15,17 @@ import { AppConsts } from '@shared/AppConsts';
     styleUrls: ['./login.component.less']
 })
 export class LoginComponent extends AppComponentBase implements OnInit {
-    @ViewChild('recaptchaRef') recaptchaRef: ReCaptcha2Component;
-
     submitting = false;
     isMultiTenancyEnabled: boolean = this.multiTenancy.isEnabled;
     recaptchaSiteKey: string = AppConsts.recaptchaSiteKey;
-    captchaResponse?: string;
 
     constructor(
         injector: Injector,
         public loginService: LoginService,
         private _router: Router,
         private _sessionService: AbpSessionService,
-        private _sessionAppService: SessionServiceProxy
+        private _sessionAppService: SessionServiceProxy,
+        private _reCaptchaV3Service: ReCaptchaV3Service
     ) {
         super(injector);
     }
@@ -69,26 +67,27 @@ export class LoginComponent extends AppComponentBase implements OnInit {
     }
 
     login(): void {
-        if (this.useCaptcha && !this.captchaResponse) {
-            this.message.warn(this.l('CaptchaCanNotBeEmpty'));
-            return;
+        let recaptchaCallback = (token: string) => {
+            this.showMainSpinner();
+
+            this.submitting = true;
+            this.loginService.authenticate(
+                () => {
+                    this.submitting = false;
+                    this.hideMainSpinner();
+                },
+                null,
+                token
+            );
+        };
+
+        if (this.useCaptcha) {
+            this._reCaptchaV3Service.execute(this.recaptchaSiteKey, 'login', (token) => {
+                recaptchaCallback(token);
+            });
+        } else {
+            recaptchaCallback(null);
         }
-
-        this.showMainSpinner();
-
-        this.submitting = true;
-        this.loginService.authenticate(
-            () => {
-                this.submitting = false;
-                this.hideMainSpinner();
-
-                if (this.recaptchaRef) {
-                    this.recaptchaRef.resetCaptcha();
-                }
-            },
-            null,
-            this.captchaResponse
-        );
     }
 
     externalLogin(provider: ExternalLoginProvider) {

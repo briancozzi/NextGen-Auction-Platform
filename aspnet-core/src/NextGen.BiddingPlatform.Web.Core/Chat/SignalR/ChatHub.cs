@@ -19,6 +19,7 @@ namespace NextGen.BiddingPlatform.Web.Chat.SignalR
         private readonly ILocalizationManager _localizationManager;
         private readonly IWindsorContainer _windsorContainer;
         private bool _isCallByRelease;
+        private IAbpSession ChatAbpSession { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatHub"/> class.
@@ -35,18 +36,21 @@ namespace NextGen.BiddingPlatform.Web.Chat.SignalR
             _windsorContainer = windsorContainer;
 
             Logger = NullLogger.Instance;
-            AbpSession = NullAbpSession.Instance;
+            ChatAbpSession = NullAbpSession.Instance;
         }
 
         public async Task<string> SendMessage(SendChatMessageInput input)
         {
-            var sender = AbpSession.ToUserIdentifier();
+            var sender = Context.ToUserIdentifier();
             var receiver = new UserIdentifier(input.TenantId, input.UserId);
 
             try
             {
-                await _chatMessageManager.SendMessageAsync(sender, receiver, input.Message, input.TenancyName, input.UserName, input.ProfilePictureId);
-                return string.Empty;
+                using (ChatAbpSession.Use(Context.GetTenantId(), Context.GetUserId()))
+                {
+                    await _chatMessageManager.SendMessageAsync(sender, receiver, input.Message, input.TenancyName, input.UserName, input.ProfilePictureId);
+                    return string.Empty;
+                }
             }
             catch (UserFriendlyException ex)
             {

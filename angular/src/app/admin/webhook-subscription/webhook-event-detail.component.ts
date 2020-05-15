@@ -3,7 +3,7 @@ import { AppComponentBase } from '@shared/common/app-component-base';
 import { WebhookSendAttemptServiceProxy, WebhookSubscription, WebhookEventServiceProxy, WebhookEvent } from '@shared/service-proxies/service-proxies';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 
 @Component({
     templateUrl: './webhook-event-detail.component.html',

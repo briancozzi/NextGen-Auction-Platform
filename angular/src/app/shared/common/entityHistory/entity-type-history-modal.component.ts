@@ -2,7 +2,7 @@ import { Component, Injector, ViewChild } from '@angular/core';
 import { EntityChangeDetailModalComponent } from './entity-change-detail-modal.component';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { AuditLogServiceProxy, EntityChangeListDto } from '@shared/service-proxies/service-proxies';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { LazyLoadEvent } from 'primeng/public_api';
 import { Paginator } from 'primeng/paginator';
 import { Table } from 'primeng/table';

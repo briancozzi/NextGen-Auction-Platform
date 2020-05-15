@@ -5,8 +5,10 @@ import { AppLocalizationService } from '@app/shared/common/localization/app-loca
 import { AppNavigationService } from '@app/shared/layout/nav/app-navigation.service';
 import { BiddingPlatformCommonModule } from '@shared/common/common.module';
 import { UtilsModule } from '@shared/utils/utils.module';
-import { ModalModule, TabsModule, BsDropdownModule, BsDatepickerConfig, BsDaterangepickerConfig } from 'ngx-bootstrap';
-import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { TabsModule } from 'ngx-bootstrap/tabs';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { BsDatepickerModule, BsDatepickerConfig, BsDaterangepickerConfig } from 'ngx-bootstrap/datepicker';
 import { PaginatorModule } from 'primeng/paginator';
 import { TableModule } from 'primeng/table';
 import { AppAuthService } from './auth/app-auth.service';

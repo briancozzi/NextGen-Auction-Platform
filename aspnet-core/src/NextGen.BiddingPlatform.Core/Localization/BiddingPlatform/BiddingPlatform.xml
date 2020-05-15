@@ -1068,5 +1068,7 @@
     <text name="Parameter">Parameter</text>
     <text name="Entity">Entity</text>
     <text name="Definitions">Definitions</text>
+    <text name="EntityId">Entity Id</text>
+    <text name="SelfUserDelegationErrorMessage">You can't delegate authorization to yourself !</text>
   </texts>
 </localizationDictionary>

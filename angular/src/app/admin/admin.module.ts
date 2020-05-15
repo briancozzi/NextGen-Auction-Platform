@@ -6,9 +6,13 @@ import { UtilsModule } from '@shared/utils/utils.module';
 import { AddMemberModalComponent } from 'app/admin/organization-units/add-member-modal.component';
 import { AddRoleModalComponent } from 'app/admin/organization-units/add-role-modal.component';
 import { FileUploadModule } from 'ng2-file-upload';
-import { ModalModule, PopoverModule, TabsModule, TooltipModule, BsDropdownModule } from 'ngx-bootstrap';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { PopoverModule } from 'ngx-bootstrap/popover';
+import { TabsModule } from 'ngx-bootstrap/tabs';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { BsDatepickerConfig, BsDaterangepickerConfig, BsLocaleService } from 'ngx-bootstrap/datepicker';
-import {BsDatepickerModule} from 'ngx-bootstrap/datepicker';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { EditorModule } from 'primeng/editor';
 import { FileUploadModule as PrimeNgFileUploadModule } from 'primeng/fileupload';
@@ -101,6 +105,7 @@ import { EntityDynamicParameterComponent } from './dynamic-entity-parameters/ent
 import { CreateEntityDynamicParameterModalComponent } from './dynamic-entity-parameters/entity-dynamic-parameter/create-entity-dynamic-parameter-modal.component';
 import { EntityDynamicParameterValueComponent } from './dynamic-entity-parameters/entity-dynamic-parameter/entity-dynamic-parameter-value/entity-dynamic-parameter-value.component';
 import { ManageEntityDynamicParameterValuesModalComponent } from './dynamic-entity-parameters/entity-dynamic-parameter/entity-dynamic-parameter-value/manage-entity-dynamic-parameter-values-modal.component';
+import { EntityDynamicParameterValueManagerComponent } from './dynamic-entity-parameters/entity-dynamic-parameter/entity-dynamic-parameter-value/entity-dynamic-parameter-value-manager/entity-dynamic-parameter-value-manager.component';
 
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
@@ -212,7 +217,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         EntityDynamicParameterComponent,
         CreateEntityDynamicParameterModalComponent,
         EntityDynamicParameterValueComponent,
-        ManageEntityDynamicParameterValuesModalComponent
+        ManageEntityDynamicParameterValuesModalComponent,
+        EntityDynamicParameterValueManagerComponent
     ],
     exports: [
         AddMemberModalComponent,

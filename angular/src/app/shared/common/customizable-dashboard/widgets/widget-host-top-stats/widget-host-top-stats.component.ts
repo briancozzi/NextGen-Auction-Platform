@@ -10,6 +10,11 @@ import { WidgetComponentBase } from '../widget-component-base';
 })
 export class WidgetHostTopStatsComponent extends WidgetComponentBase implements OnInit, OnDestroy {
 
+  public countoNewSubscriptionAmount = 0;
+  public countoNewTenantsCount = 0;
+  public countoDashboardPlaceholder1 = 0;
+  public countoDashboardPlaceholder2 = 0;
+
   selectedDateRange: moment.Moment[] = [moment().add(-7, 'days').startOf('day'), moment().endOf('day')];
   loading = true;
   topStatsData: TopStatsData;

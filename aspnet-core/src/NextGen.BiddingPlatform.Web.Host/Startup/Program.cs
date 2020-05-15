@@ -15,7 +15,11 @@ namespace NextGen.BiddingPlatform.Web.Startup
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
             return new WebHostBuilder()
-                .UseKestrel(opt => opt.AddServerHeader = false)
+                .UseKestrel(opt =>
+                {
+                    opt.AddServerHeader = false;
+                    opt.Limits.MaxRequestLineSize = 16 * 1024;
+                })
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIIS()
                 .UseIISIntegration()

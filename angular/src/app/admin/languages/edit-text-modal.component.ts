@@ -2,7 +2,7 @@ import { Component, ElementRef, EventEmitter, Injector, Output, ViewChild } from
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { LanguageServiceProxy, UpdateLanguageTextInput } from '@shared/service-proxies/service-proxies';
 import * as _ from 'lodash';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { finalize } from 'rxjs/operators';
 
 @Component({

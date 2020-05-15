@@ -165,8 +165,13 @@ import { View{{Entity_Name_Here}}ModalComponent } from './view-{{entity_Name_Her
 		},
 		{
 			"placeholder": "{{TurboTable_Import_Here}}",
-			"condition": "{{Project_Version_Here}} >= 050400",
+			"condition": "{{Project_Version_Here}} >= 050400 && {{Project_Version_Here}} < 080500",
 			"content": "import { Table } from 'primeng/components/table/table'"
+		},
+		{
+			"placeholder": "{{TurboTable_Import_Here}}",
+			"condition": "{{Project_Version_Here}} >= 080500",
+			"content": "import { Table } from 'primeng/table'"
 		},
 		{
 			"placeholder": "{{DataTable_Import_Here}}",
@@ -201,6 +206,28 @@ import { View{{Entity_Name_Here}}ModalComponent } from './view-{{entity_Name_Her
             this._fileDownloadService.downloadTempFile(result);
          });
     }"
-		}
+		},
+		{
+			"placeholder": "{{PrimeNG_Imports_Here}}",
+			"condition": "{{Project_Version_Here}} < 080500",
+			"content": "import { Paginator } from 'primeng/components/paginator/paginator';
+import { LazyLoadEvent } from 'primeng/components/common/lazyloadevent';"
+		},
+		{
+			"placeholder": "{{PrimeNG_Imports_Here}}",
+			"condition": "{{Project_Version_Here}} >= 080500",
+			"content": "import { Paginator } from 'primeng/paginator';
+import { LazyLoadEvent } from 'primeng/public_api';"
+		},
+		{
+			"placeholder": "{{Notify_Service_Here}}",
+			"condition": "{{Project_Version_Here}} < 080500",
+			"content": "import { NotifyService } from '@abp/notify/notify.service';"
+		},
+		{
+			"placeholder": "{{Notify_Service_Here}}",
+			"condition": "{{Project_Version_Here}} >= 080500",
+			"content": "import { NotifyService } from 'abp-ng2-module';"
+		},
 	]
 }

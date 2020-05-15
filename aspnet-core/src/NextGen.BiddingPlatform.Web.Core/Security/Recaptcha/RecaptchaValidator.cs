@@ -2,10 +2,12 @@
 using System.Threading.Tasks;
 using Abp.Dependency;
 using Abp.Extensions;
+using Abp.Json;
 using Abp.UI;
 using Microsoft.AspNetCore.Http;
 using NextGen.BiddingPlatform.Security.Recaptcha;
-using PaulMiami.AspNetCore.Mvc.Recaptcha;
+using Owl.reCAPTCHA;
+using Owl.reCAPTCHA.v3;
 
 namespace NextGen.BiddingPlatform.Web.Security.Recaptcha
 {
@@ -13,12 +15,12 @@ namespace NextGen.BiddingPlatform.Web.Security.Recaptcha
     {
         public const string RecaptchaResponseKey = "g-recaptcha-response";
 
-        private readonly IRecaptchaValidationService _recaptchaValidationService;
+        private readonly IreCAPTCHASiteVerifyV3 _reCAPTCHASiteVerifyV3;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public RecaptchaValidator(IRecaptchaValidationService recaptchaValidationService, IHttpContextAccessor httpContextAccessor)
+        public RecaptchaValidator(IreCAPTCHASiteVerifyV3 reCAPTCHASiteVerifyV3, IHttpContextAccessor httpContextAccessor)
         {
-            _recaptchaValidationService = recaptchaValidationService;
+            _reCAPTCHASiteVerifyV3 = reCAPTCHASiteVerifyV3;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -35,15 +37,15 @@ namespace NextGen.BiddingPlatform.Web.Security.Recaptcha
                 throw new UserFriendlyException(L("CaptchaCanNotBeEmpty"));
             }
 
-            try
+            var response = await _reCAPTCHASiteVerifyV3.Verify(new reCAPTCHASiteVerifyRequest
             {
-                await _recaptchaValidationService.ValidateResponseAsync(
-                    captchaResponse,
-                    _httpContextAccessor.HttpContext.Connection?.RemoteIpAddress?.ToString()
-                );
-            }
-            catch (RecaptchaValidationException)
+                Response = captchaResponse,
+                RemoteIp = _httpContextAccessor.HttpContext.Connection?.RemoteIpAddress?.ToString()
+            });
+
+            if (!response.Success || response.Score < 0.5)
             {
+                Logger.Warn(response.ToJsonString());
                 throw new UserFriendlyException(L("IncorrectCaptchaAnswer"));
             }
         }

@@ -253,11 +253,6 @@ namespace NextGen.BiddingPlatform.Web.Controllers
 
         private bool UseCaptchaOnLogin()
         {
-            if (DebugHelper.IsDebug)
-            {
-                return false;
-            }
-
             return SettingManager.GetSettingValue<bool>(AppSettings.UserManagement.UseCaptchaOnLogin);
         }
 

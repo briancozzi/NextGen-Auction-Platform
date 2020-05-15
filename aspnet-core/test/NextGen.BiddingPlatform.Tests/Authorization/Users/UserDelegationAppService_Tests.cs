@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Abp.Application.Services.Dto;
 using Abp.Runtime.Session;
 using Abp.Timing;
+using Abp.UI;
 using NextGen.BiddingPlatform.Authorization.Delegation;
 using NextGen.BiddingPlatform.Authorization.Users;
 using NextGen.BiddingPlatform.Authorization.Users.Delegation;
@@ -84,7 +85,7 @@ namespace NextGen.BiddingPlatform.Tests.Authorization.Users
             
             LoginAsDefaultTenantAdmin();
 
-            var exception = await Assert.ThrowsAsync<Exception>(async () => await _userDelegationAppService.DelegateNewUser(new CreateUserDelegationDto
+            var exception = await Assert.ThrowsAsync<UserFriendlyException>(async () => await _userDelegationAppService.DelegateNewUser(new CreateUserDelegationDto
             {
                 TargetUserId = AbpSession.GetUserId(),
                 StartTime = Clock.Now,

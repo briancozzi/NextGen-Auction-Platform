@@ -4,8 +4,9 @@ import { AppConsts } from '@shared/AppConsts';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { ProfileServiceProxy, UpdateProfilePictureInput } from '@shared/service-proxies/service-proxies';
 import { FileUploader, FileUploaderOptions, FileItem } from 'ng2-file-upload';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { finalize } from 'rxjs/operators';
+import { ImageCroppedEvent, base64ToFile } from 'ngx-image-cropper';
 
 @Component({
     selector: 'changeProfilePictureModal',
@@ -19,9 +20,8 @@ export class ChangeProfilePictureModalComponent extends AppComponentBase {
     public uploader: FileUploader;
     public temporaryPictureUrl: string;
     public saving = false;
+    public  maxProfilPictureBytesUserFriendlyValue = 5;
 
-    private maxProfilPictureBytesUserFriendlyValue = 5;
-    private temporaryPictureFileName: string;
     private _uploaderOptions: FileUploaderOptions = {};
 
     imageChangedEvent: any = '';
@@ -37,7 +37,6 @@ export class ChangeProfilePictureModalComponent extends AppComponentBase {
     initializeModal(): void {
         this.active = true;
         this.temporaryPictureUrl = '';
-        this.temporaryPictureFileName = '';
         this.initFileUploader();
     }
 
@@ -62,10 +61,9 @@ export class ChangeProfilePictureModalComponent extends AppComponentBase {
         this.imageChangedEvent = event;
     }
 
-    imageCroppedFile(file: File) {
-        let files: File[] = [file];
+    imageCroppedFile(event: ImageCroppedEvent) {
         this.uploader.clearQueue();
-        this.uploader.addToQueue(files);
+        this.uploader.addToQueue([<File>base64ToFile(event.base64)]);
     }
 
     initFileUploader(): void {

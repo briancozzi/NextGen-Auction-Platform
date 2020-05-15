@@ -2,7 +2,7 @@ import { Component, Injector, ViewChild, EventEmitter, Output, OnInit, Input } f
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { TreeNode } from 'primeng/api';
 import * as _ from 'lodash';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { PermissionTreeComponent } from './permission-tree.component';
 import { PermissionServiceProxy, FlatPermissionDto } from '@shared/service-proxies/service-proxies';
 

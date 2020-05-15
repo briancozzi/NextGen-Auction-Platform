@@ -73,6 +73,11 @@ export class HostSettingsComponent extends AppComponentBase implements OnInit {
 
     saveAll(): void {
         const self = this;
+
+        if (self.hostSettings.tenantManagement.defaultEditionId.toString() === 'null') {
+            self.hostSettings.tenantManagement.defaultEditionId = null;
+        }
+
         self._hostSettingService.updateAllSettings(self.hostSettings).subscribe(result => {
             self.notify.info(self.l('SavedSuccessfully'));
 

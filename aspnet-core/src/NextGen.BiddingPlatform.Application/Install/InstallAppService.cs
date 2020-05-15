@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,6 +12,7 @@ using Abp.Runtime.Security;
 using Abp.UI;
 using Abp.Zero.EntityFrameworkCore;
 using Castle.Core.Internal;
+using Microsoft.Extensions.Configuration;
 using NextGen.BiddingPlatform.Authorization;
 using NextGen.BiddingPlatform.Authorization.Users;
 using NextGen.BiddingPlatform.Configuration;
@@ -35,16 +36,22 @@ namespace NextGen.BiddingPlatform.Install
         private readonly LogInManager _logInManager;
         private readonly SignInManager _signInManager;
         private readonly DatabaseCheckHelper _databaseCheckHelper;
+        private readonly IConfigurationRoot _appConfiguration;
+        private readonly IAppConfigurationWriter _appConfigurationWriter;
 
         public InstallAppService(AbpZeroDbMigrator migrator,
             LogInManager logInManager,
-            SignInManager signInManager, 
-            DatabaseCheckHelper databaseCheckHelper)
+            SignInManager signInManager,
+            DatabaseCheckHelper databaseCheckHelper,
+            IAppConfigurationAccessor appConfigurationAccessor,
+            IAppConfigurationWriter appConfigurationWriter)
         {
             _migrator = migrator;
             _logInManager = logInManager;
             _signInManager = signInManager;
             _databaseCheckHelper = databaseCheckHelper;
+            _appConfiguration = appConfigurationAccessor.Configuration;
+            _appConfigurationWriter = appConfigurationWriter;
         }
 
         public async Task Setup(InstallDto input)
@@ -75,20 +82,22 @@ namespace NextGen.BiddingPlatform.Install
         [UnitOfWork(IsDisabled = true)]
         public AppSettingsJsonDto GetAppSettingsJson()
         {
-            var appsettingsjson = JObject.Parse(File.ReadAllText("appsettings.json"));
-            var appUrl = (JObject)appsettingsjson["App"];
+            var appUrl = _appConfiguration.GetSection("App");
 
-            if (appUrl.Property("WebSiteRootAddress").IsNullOrEmpty())
+            if (appUrl["WebSiteRootAddress"].IsNullOrEmpty())
+            {
                 return new AppSettingsJsonDto
                 {
-                    WebSiteUrl = appUrl.Property("ClientRootAddress").Value.ToString(),
-                    ServerSiteUrl = appUrl.Property("ServerRootAddress").Value.ToString(),
-                    Languages = DefaultLanguagesCreator.InitialLanguages.Select(l => new NameValue(l.DisplayName, l.Name)).ToList()
+                    WebSiteUrl = appUrl["ClientRootAddress"],
+                    ServerSiteUrl = appUrl["ServerRootAddress"],
+                    Languages = DefaultLanguagesCreator.InitialLanguages
+                        .Select(l => new NameValue(l.DisplayName, l.Name)).ToList()
                 };
+            }
 
             return new AppSettingsJsonDto
             {
-                WebSiteUrl = appUrl.Property("WebSiteRootAddress").Value.ToString()
+                WebSiteUrl = appUrl["WebSiteRootAddress"]
             };
         }
 
@@ -102,7 +111,7 @@ namespace NextGen.BiddingPlatform.Install
 
         private bool CheckDatabaseInternal()
         {
-            var connectionString = GetConnectionString();
+            var connectionString = _appConfiguration[$"ConnectionStrings:{BiddingPlatformConsts.ConnectionStringName}"];
 
             if (string.IsNullOrEmpty(connectionString))
             {
@@ -112,16 +121,9 @@ namespace NextGen.BiddingPlatform.Install
             return _databaseCheckHelper.Exist(connectionString);
         }
 
-        private string GetConnectionString()
-        {
-            var appsettingsjson = JObject.Parse(File.ReadAllText("appsettings.json"));
-            var connectionStrings = (JObject)appsettingsjson["ConnectionStrings"];
-            return connectionStrings.Property(BiddingPlatformConsts.ConnectionStringName).Value.ToString();
-        }
-
         private void SetConnectionString(string constring)
         {
-            EditAppSettingsjson("Default", constring, "ConnectionStrings");
+            EditAppSettingsjson($"ConnectionStrings:{BiddingPlatformConsts.ConnectionStringName}", constring);
         }
 
         private async Task SetAdminPassword(string adminPassword)
@@ -144,12 +146,12 @@ namespace NextGen.BiddingPlatform.Install
         {
             if (!serverUrl.IsNullOrEmpty())
             {
-                EditAppSettingsjson("ClientRootAddress", webSitRUrl, "App");
-                EditAppSettingsjson("ServerRootAddress", serverUrl, "App");
+                EditAppSettingsjson("App:ClientRootAddress", webSitRUrl);
+                EditAppSettingsjson("App:ServerRootAddress", serverUrl);
             }
             else
             {
-                EditAppSettingsjson("WebSiteRootAddress", webSitRUrl, "App");
+                EditAppSettingsjson("App:WebSiteRootAddress", webSitRUrl);
             }
         }
 
@@ -177,25 +179,9 @@ namespace NextGen.BiddingPlatform.Install
             await SettingManager.ChangeSettingForApplicationAsync(AppSettings.HostManagement.BillingAddress, input.Address);
         }
 
-        private void EditAppSettingsjson(string name, string value, params string[] objectNames)
+        private void EditAppSettingsjson(string key, string value)
         {
-            var appsettingsjson = JObject.Parse(File.ReadAllText("appsettings.json"));
-
-            var jobj = appsettingsjson;
-
-            foreach (var objectName in objectNames)
-            {
-                jobj = (JObject)jobj[objectName];
-            }
-
-            jobj.Property(name).Value.Replace(value);
-
-            using (var file = File.CreateText("appsettings.json"))
-            using (var writer = new JsonTextWriter(file))
-            {
-                writer.Formatting = Formatting.Indented;
-                appsettingsjson.WriteTo(writer);
-            }
+            _appConfigurationWriter.Write(key, value);
         }
     }
 }

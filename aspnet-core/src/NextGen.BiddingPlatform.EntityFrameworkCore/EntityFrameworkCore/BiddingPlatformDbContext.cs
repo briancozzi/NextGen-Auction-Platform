@@ -93,9 +93,6 @@ namespace NextGen.BiddingPlatform.EntityFrameworkCore
                 b.HasIndex(e => new { e.TenantId, e.TargetUserId });
             });
 
-            // Remove when https://github.com/aspnetboilerplate/aspnetboilerplate/issues/5457 is fixed
-            modelBuilder.Entity<OrganizationUnit>().HasIndex(e => new { e.TenantId, e.Code }).IsUnique(false);
-
             modelBuilder.ConfigurePersistedGrantEntity();
         }
     }

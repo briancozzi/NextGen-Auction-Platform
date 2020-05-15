@@ -15257,6 +15257,7 @@ export interface IListResultDtoOfSubscribableEditionComboboxItemDto {
 
 export class FindUsersInput implements IFindUsersInput {
     tenantId!: number | undefined;
+    excludeCurrentUser!: boolean;
     maxResultCount!: number;
     skipCount!: number;
     filter!: string | undefined;
@@ -15273,6 +15274,7 @@ export class FindUsersInput implements IFindUsersInput {
     init(_data?: any) {
         if (_data) {
             this.tenantId = _data["tenantId"];
+            this.excludeCurrentUser = _data["excludeCurrentUser"];
             this.maxResultCount = _data["maxResultCount"];
             this.skipCount = _data["skipCount"];
             this.filter = _data["filter"];
@@ -15289,6 +15291,7 @@ export class FindUsersInput implements IFindUsersInput {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["tenantId"] = this.tenantId;
+        data["excludeCurrentUser"] = this.excludeCurrentUser;
         data["maxResultCount"] = this.maxResultCount;
         data["skipCount"] = this.skipCount;
         data["filter"] = this.filter;
@@ -15298,6 +15301,7 @@ export class FindUsersInput implements IFindUsersInput {
 
 export interface IFindUsersInput {
     tenantId: number | undefined;
+    excludeCurrentUser: boolean;
     maxResultCount: number;
     skipCount: number;
     filter: string | undefined;

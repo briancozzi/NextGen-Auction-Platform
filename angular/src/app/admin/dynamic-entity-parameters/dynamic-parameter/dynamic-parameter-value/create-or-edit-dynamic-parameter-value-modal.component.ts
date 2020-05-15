@@ -1,5 +1,5 @@
 import { Component, OnInit, EventEmitter, Output, ViewChild, Injector } from '@angular/core';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { DynamicParameterValueDto, DynamicParameterValueServiceProxy } from '@shared/service-proxies/service-proxies';
 import { Observable } from 'rxjs';
@@ -45,7 +45,7 @@ export class CreateOrEditDynamicParameterValueModalComponent extends AppComponen
       );
   }
 
-  private save(): void {
+  save(): void {
     this.saving = true;
     this.showMainSpinner();
     let observable: Observable<void>;

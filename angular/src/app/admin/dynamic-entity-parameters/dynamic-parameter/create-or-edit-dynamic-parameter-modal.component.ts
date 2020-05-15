@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output, ViewChild, Injector, OnInit } from '@angular/core';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { DynamicParameterServiceProxy, DynamicParameterDto, DynamicEntityParameterDefinitionServiceProxy } from '@shared/service-proxies/service-proxies';
 import { Observable } from 'rxjs';
@@ -51,7 +51,7 @@ export class CreateOrEditDynamicParameterModalComponent extends AppComponentBase
       });
   }
 
-  private save(): void {
+  save(): void {
     this.saving = true;
     let observable: Observable<void>;
     if (!this.dynamicParameter.id) {

@@ -11,7 +11,7 @@ import { RouterModule } from '@angular/router';
 import { RootModule } from 'root.module';
 import { PermissionTreeModalComponent } from '../shared/permission-tree-modal.component';
 import { ServiceProxyModule } from '@shared/service-proxies/service-proxy.module';
-import { ModalModule } from 'ngx-bootstrap';
+import { ModalModule } from 'ngx-bootstrap/modal';
 import { AppBsModalModule } from '@shared/common/appBsModal/app-bs-modal.module';
 
 describe('RolesComponent', () => {
