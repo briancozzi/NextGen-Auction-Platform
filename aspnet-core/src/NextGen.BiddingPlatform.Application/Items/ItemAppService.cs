@@ -37,6 +37,7 @@ namespace NextGen.BiddingPlatform.Items
             _appAccountRepository = appAccountRepository;
             _abpSession = abpSession;
         }
+
         public async Task<List<ItemListDto>> GetAllItems()
         {
             var items = await _itemRepository.GetAllIncluding(x => x.AppAccount)
@@ -49,9 +50,13 @@ namespace NextGen.BiddingPlatform.Items
                                                  MainImageName = x.MainImageName,
                                                  ThumbnailImage = x.ThumbnailImage,
                                                  ItemStatus = x.ItemStatus,
-                                                 ItemStatusName = GetItemStatus(x.ItemStatus),
                                                  AppAccountName = x.AppAccount.FirstName + " " + x.AppAccount.LastName
                                              }).ToListAsync();
+
+            foreach (var item in items)
+            {
+                item.ItemStatusName = GetItemStatus(item.ItemStatus);
+            }
             return items;
         }
 
@@ -68,7 +73,6 @@ namespace NextGen.BiddingPlatform.Items
                                            MainImageName = x.MainImageName,
                                            ThumbnailImage = x.ThumbnailImage,
                                            ItemStatus = x.ItemStatus,
-                                           ItemStatusName = GetItemStatus(x.ItemStatus),
                                            AppAccountName = x.AppAccount.FirstName + " " + x.AppAccount.LastName
                                        });
 
@@ -77,9 +81,14 @@ namespace NextGen.BiddingPlatform.Items
             if (!string.IsNullOrWhiteSpace(input.Sorting))
                 query = query.OrderBy(input.Sorting);
 
-            query = query.PageBy(input);
+            var resultQuery = query.PageBy(input).ToList();
 
-            return new PagedResultDto<ItemListDto>(resultCount, await query.ToListAsync());
+            foreach (var item in resultQuery)
+            {
+                item.ItemStatusName = GetItemStatus(item.ItemStatus);
+            }
+
+            return new PagedResultDto<ItemListDto>(resultCount, resultQuery);
         }
 
         public async Task<UpdateItemDto> GetItemById(Guid Id)
@@ -230,12 +239,14 @@ namespace NextGen.BiddingPlatform.Items
             var itemStatus = itemStatuses.FirstOrDefault(x => x.Id == id);
             return itemStatus?.Name;
         }
+
         private string GetProcurementState(int id)
         {
             var procurementStates = Utility.GetProcurementStateList();
             var precurementState = procurementStates.FirstOrDefault(x => x.Id == id);
             return precurementState?.Name;
         }
+
         private string GetVisibility(int id)
         {
             var visibilities = Utility.GetVisibilityList();
