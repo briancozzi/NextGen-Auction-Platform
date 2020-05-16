@@ -22,7 +22,7 @@ using NextGen.BiddingPlatform.EntityFrameworkCore;
 using NextGen.BiddingPlatform.Identity;
 using NextGen.BiddingPlatform.Web.Chat.SignalR;
 using NextGen.BiddingPlatform.Web.Common;
-using PaulMiami.AspNetCore.Mvc.Recaptcha;
+using Swashbuckle.AspNetCore.Swagger;
 using NextGen.BiddingPlatform.Web.IdentityServer;
 using NextGen.BiddingPlatform.Web.Swagger;
 using Stripe;
@@ -37,6 +37,8 @@ using Microsoft.OpenApi.Models;
 using NextGen.BiddingPlatform.Configure;
 using NextGen.BiddingPlatform.Schemas;
 using NextGen.BiddingPlatform.Web.HealthCheck;
+using Newtonsoft.Json.Serialization;
+using Owl.reCAPTCHA;
 using HealthChecksUISettings = HealthChecks.UI.Configuration.Settings;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Abp.Timing;
@@ -128,10 +130,10 @@ namespace NextGen.BiddingPlatform.Web.Startup
             }
 
             //Recaptcha
-            services.AddRecaptcha(new RecaptchaOptions
+            services.AddreCAPTCHAV3(x =>
             {
-                SiteKey = _appConfiguration["Recaptcha:SiteKey"],
-                SecretKey = _appConfiguration["Recaptcha:SecretKey"]
+                x.SiteKey = _appConfiguration["Recaptcha:SiteKey"];
+                x.SiteSecret = _appConfiguration["Recaptcha:SecretKey"];
             });
 
             if (WebConsts.HangfireDashboardEnabled)

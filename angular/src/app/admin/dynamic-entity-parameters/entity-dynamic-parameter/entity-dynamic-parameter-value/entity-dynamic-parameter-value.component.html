@@ -17,45 +17,14 @@
                             {{entityFullName}}
                         </div>
                         <div class="float-right"><span class="font-weight-bold ">{{'EntityRowId' | localize}}:</span>
-                            {{rowId}}
+                            {{entityId}}
                         </div>
                     </div>
                 </div>
                 <div class="kt-portlet__body">
-                    <div class="row align-items-center">
-                        <!--<Primeng-TurboTable-Start>-->
-                        <div class="col primeng-datatable-container" [busyIf]="primengTableHelper.isLoading">
-                            <p-table #dataTable [value]="items" [paginator]="false">
-                                <ng-template pTemplate="header">
-                                    <tr>
-                                        <th>{{ 'ParameterName' | localize}}</th>
-                                        <th> {{'Values' | localize}} </th>
-                                        <th style="width: 100px;"> {{'Actions' | localize}} </th>
-                                    </tr>
-                                </ng-template>
-                                <ng-template pTemplate="body" let-record>
-                                    <tr>
-                                        <td>
-                                            {{record.data.parameterName}}
-                                        </td>
-                                        <td>
-                                            <ng-container
-                                                *ngComponentOutlet="record.definition.component;injector: record.injector">
-                                            </ng-container>
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-danger bt-sm"
-                                                (click)="deleteAllValuesOfEntityDynamicParameterId(record)">{{'Delete' | localize}}</button>
-                                        </td>
-                                    </tr>
-                                </ng-template>
-                            </p-table>
-                            <div class="primeng-no-data" *ngIf="items.length == 0">
-                                {{'NoData' | localize}}
-                            </div>
-                        </div>
-                        <!--<Primeng-TurboTable-End>-->
-                    </div>
+                    <entity-dynamic-parameter-value-manager #entityDynamicParameterValueManager
+                        [entityFullName]="entityFullName" [entityId]="entityId">
+                    </entity-dynamic-parameter-value-manager>
                 </div>
                 <div class="kt-portlet__foot">
                     <div class="row">

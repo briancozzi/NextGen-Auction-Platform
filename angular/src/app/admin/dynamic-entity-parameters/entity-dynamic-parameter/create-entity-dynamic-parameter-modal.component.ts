@@ -1,13 +1,12 @@
 import { Component, Injector, EventEmitter, Output, ViewChild } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { EntityDynamicParameterDto, EntityDynamicParameterServiceProxy, DynamicParameterServiceProxy, DynamicEntityParameterDefinitionServiceProxy, DynamicParameterDto } from '@shared/service-proxies/service-proxies';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'create-entity-dynamic-parameter-modal',
-  templateUrl: './create-entity-dynamic-parameter-modal.component.html',
-  styleUrls: ['./create-entity-dynamic-parameter-modal.component.css']
+  templateUrl: './create-entity-dynamic-parameter-modal.component.html'
 })
 export class CreateEntityDynamicParameterModalComponent extends AppComponentBase {
   @Output() modalSave: EventEmitter<any> = new EventEmitter<any>();
@@ -60,7 +59,7 @@ export class CreateEntityDynamicParameterModalComponent extends AppComponentBase
   }
 
 
-  private save(): void {
+  save(): void {
     this.saving = true;
     this.showMainSpinner();
 

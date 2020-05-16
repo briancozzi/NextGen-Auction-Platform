@@ -6,7 +6,11 @@ import { UtilsModule } from '@shared/utils/utils.module';
 import { AddMemberModalComponent } from 'app/admin/organization-units/add-member-modal.component';
 import { AddRoleModalComponent } from 'app/admin/organization-units/add-role-modal.component';
 import { FileUploadModule } from 'ng2-file-upload';
-import { ModalModule, PopoverModule, TabsModule, TooltipModule, BsDropdownModule } from 'ngx-bootstrap';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { PopoverModule } from 'ngx-bootstrap/popover';
+import { TabsModule } from 'ngx-bootstrap/tabs';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { BsDatepickerConfig, BsDaterangepickerConfig, BsLocaleService } from 'ngx-bootstrap/datepicker';
 import {BsDatepickerModule} from 'ngx-bootstrap/datepicker';
 import { TimepickerConfig,TimepickerModule } from 'ngx-bootstrap/timepicker';
@@ -102,6 +106,7 @@ import { EntityDynamicParameterComponent } from './dynamic-entity-parameters/ent
 import { CreateEntityDynamicParameterModalComponent } from './dynamic-entity-parameters/entity-dynamic-parameter/create-entity-dynamic-parameter-modal.component';
 import { EntityDynamicParameterValueComponent } from './dynamic-entity-parameters/entity-dynamic-parameter/entity-dynamic-parameter-value/entity-dynamic-parameter-value.component';
 import { ManageEntityDynamicParameterValuesModalComponent } from './dynamic-entity-parameters/entity-dynamic-parameter/entity-dynamic-parameter-value/manage-entity-dynamic-parameter-values-modal.component';
+import { EntityDynamicParameterValueManagerComponent } from './dynamic-entity-parameters/entity-dynamic-parameter/entity-dynamic-parameter-value/entity-dynamic-parameter-value-manager/entity-dynamic-parameter-value-manager.component';
 import { StatesComponent } from './parameter/states/states.component';
 import {CreateStateModalComponent} from './parameter/states/create-states-modal.component';
 import{EditStateModalComponent} from './parameter/states/edit-states-modal.component';
@@ -229,6 +234,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         CreateEntityDynamicParameterModalComponent,
         EntityDynamicParameterValueComponent,
         ManageEntityDynamicParameterValuesModalComponent,
+        EntityDynamicParameterValueManagerComponent,
+        ManageEntityDynamicParameterValuesModalComponent,
         StatesComponent,
         CreateStateModalComponent,
         EditStateModalComponent,
@@ -243,7 +250,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         EditAuctionComponent,
         ItemsComponent,
         CreateItemModalComponent,
-        EditItemModalComponent,
+        EditItemModalComponent
 
     ],
     exports: [

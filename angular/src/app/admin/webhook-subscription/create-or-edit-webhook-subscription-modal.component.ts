@@ -2,7 +2,7 @@ import { Component, Injector, Output, EventEmitter, ViewChild, ElementRef } from
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { WebhookSubscriptionServiceProxy, WebhookSubscription, NameValueOfString } from '@shared/service-proxies/service-proxies';
 import { Observable } from 'rxjs';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 
 @Component({
     selector: 'create-or-edit-webhook-subscription',
@@ -61,7 +61,7 @@ export class CreateOrEditWebhookSubscriptionModalComponent extends AppComponentB
             });
     }
 
-    private save(): void {
+    save(): void {
         this.webhookSubscription.webhooks = this.webhooks.map(wh => wh.name);
 
         let observable: Observable<void>;

@@ -155,7 +155,7 @@ export class UpgradeEditionComponent extends AppComponentBase implements OnInit 
             {
                 queryParams: {
                     tenantId: this.appSession.tenant.id,
-                    editionPaymentType: this.editionPaymentType,
+                    editionPaymentType: EditionPaymentType.BuyNow,
                     editionId: this.upgradeEditionId,
                     subscriptionStartType: this.subscriptionStartType.Paid
                 }

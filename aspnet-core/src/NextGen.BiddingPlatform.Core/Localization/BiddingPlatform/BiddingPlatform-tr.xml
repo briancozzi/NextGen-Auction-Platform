@@ -1056,5 +1056,7 @@
     <text name="Parameter">Parametre</text>
     <text name="Entity">Varlık</text>
     <text name="Definitions">Tanımlamalar</text>
+    <text name="EntityId">Kayıt Numarası</text>
+    <text name="SelfUserDelegationErrorMessage">Kendi kendinize yetki devri yapamazsınız !</text>
   </texts>
 </localizationDictionary>

@@ -230,11 +230,6 @@ namespace NextGen.BiddingPlatform.Authorization.Accounts
 
         private bool UseCaptchaOnRegistration()
         {
-            if (DebugHelper.IsDebug)
-            {
-                return false;
-            }
-
             return SettingManager.GetSettingValue<bool>(AppSettings.UserManagement.UseCaptchaOnRegistration);
         }
 

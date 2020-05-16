@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Injector, Output, ViewChild } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { CreateUserDelegationDto, NameValueDto, FindUsersInput, CommonLookupServiceProxy, UserDelegationServiceProxy } from '@shared/service-proxies/service-proxies';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { CommonLookupModalComponent } from '@app/shared/common/lookup/common-lookup-modal.component';
 import { finalize } from 'rxjs/operators';
+import * as moment from 'moment';
 
 @Component({
     selector: 'createNewUserDelegation',
@@ -38,6 +39,7 @@ export class CreateNewUserDelegationModalComponent extends AppComponentBase {
             dataSource: (skipCount: number, maxResultCount: number, filter: string, tenantId?: number) => {
                 let input = new FindUsersInput();
                 input.filter = filter;
+                input.excludeCurrentUser = true;
                 input.maxResultCount = maxResultCount;
                 input.skipCount = skipCount;
                 input.tenantId = tenantId;
@@ -59,8 +61,13 @@ export class CreateNewUserDelegationModalComponent extends AppComponentBase {
 
     save(): void {
         this.saving = true;
-        this._userDelegationService.delegateNewUser(this.userDelegation)
-            .pipe(finalize(() => { this.saving = false; }))
+
+        let input = new CreateUserDelegationDto();
+        input.targetUserId = this.userDelegation.targetUserId;
+        input.startTime = moment(this.userDelegation.startTime).startOf('day');
+        input.endTime = moment(this.userDelegation.endTime).endOf('day');
+
+        this._userDelegationService.delegateNewUser(input).pipe(finalize(() => { this.saving = false; }))
             .subscribe(() => {
                 this.notify.info(this.l('SavedSuccessfully'));
                 this.close();
@@ -70,6 +77,7 @@ export class CreateNewUserDelegationModalComponent extends AppComponentBase {
 
     close(): void {
         this.active = false;
+        this.selectedUsername = '';
         this.modal.hide();
     }
 }

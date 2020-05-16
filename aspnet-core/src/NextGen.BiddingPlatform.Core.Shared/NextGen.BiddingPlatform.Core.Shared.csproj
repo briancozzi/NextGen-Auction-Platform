@@ -5,7 +5,7 @@
     <RootNamespace>NextGen.BiddingPlatform</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Abp" Version="5.5.0" />
-    <PackageReference Include="Abp.Zero.Common" Version="5.5.0" />
+    <PackageReference Include="Abp" Version="5.7.0" />
+    <PackageReference Include="Abp.Zero.Common" Version="5.7.0" />
   </ItemGroup>
 </Project>

@@ -23,7 +23,7 @@
         </a>
     </div>
     <!-- Make this component ! -->
-    <active-delegated-users-combo></active-delegated-users-combo>
+    <active-delegated-users-combo *ngIf="!installationMode"></active-delegated-users-combo>
     <!-- -->
     <div *ngIf="isQuickThemeSelectEnabled" id="kt_theme_selection_panel_toggle" class="kt-header__topbar-item dropdown">
         <div class="kt-header__topbar-wrapper">

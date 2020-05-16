@@ -15,6 +15,7 @@ import { HttpClient } from '@angular/common/http';
 import { FileUpload } from 'primeng/fileupload';
 import { finalize } from 'rxjs/operators';
 import { PermissionTreeModalComponent } from '../shared/permission-tree-modal.component';
+import { ManageEntityDynamicParameterValuesModalComponent } from '@app/admin/dynamic-entity-parameters/entity-dynamic-parameter/entity-dynamic-parameter-value/manage-entity-dynamic-parameter-values-modal.component';
 
 @Component({
     templateUrl: './users.component.html',
@@ -30,6 +31,7 @@ export class UsersComponent extends AppComponentBase implements AfterViewInit {
     @ViewChild('paginator', { static: true }) paginator: Paginator;
     @ViewChild('ExcelFileUpload', { static: false }) excelFileUpload: FileUpload;
     @ViewChild('permissionFilterTreeModal', { static: true }) permissionFilterTreeModal: PermissionTreeModalComponent;
+    @ViewChild('dynamicParametersModal', { static: true }) dynamicParametersModal: ManageEntityDynamicParameterValuesModalComponent;
     uploadUrl: string;
 
     //Filters
@@ -159,5 +161,9 @@ export class UsersComponent extends AppComponentBase implements AfterViewInit {
                 }
             }
         );
+    }
+
+    showDynamicParameters(user: UserListDto): void {
+        this.dynamicParametersModal.show('NextGen.BiddingPlatform.Authorization.Users.User', user.id.toString());
     }
 }

@@ -16,6 +16,7 @@ export class TenantSettingsComponent extends AppComponentBase implements OnInit 
     usingDefaultTimeZone = false;
     initialTimeZone: string = null;
     testEmailAddress: string = undefined;
+    setRandomPassword: boolean;
 
     isMultiTenancyEnabled: boolean = this.multiTenancy.isEnabled;
     showTimezoneSelection: boolean = abp.clock.provider.supportsMultipleTimezone;

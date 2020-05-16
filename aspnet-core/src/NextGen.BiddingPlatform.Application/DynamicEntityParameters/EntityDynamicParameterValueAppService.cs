@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Abp.Application.Services.Dto;
 using Abp.Collections.Extensions;
+using Abp.Domain.Entities;
 using Abp.DynamicEntityParameters;
 using Microsoft.AspNetCore.Authorization;
 using NextGen.BiddingPlatform.Authorization;
@@ -48,15 +49,25 @@ namespace NextGen.BiddingPlatform.DynamicEntityParameters
         [Authorize(AppPermissions.Pages_Administration_EntityDynamicParameterValue_Create)]
         public async Task Add(EntityDynamicParameterValueDto input)
         {
-            input.TenantId = AbpSession.TenantId;
-            await _entityDynamicParameterValueManager.AddAsync(ObjectMapper.Map<EntityDynamicParameterValue>(input));
+            var entity = ObjectMapper.Map<EntityDynamicParameterValue>(input);
+            entity.TenantId = AbpSession.TenantId;
+            await _entityDynamicParameterValueManager.AddAsync(entity);
         }
 
         [Authorize(AppPermissions.Pages_Administration_EntityDynamicParameterValue_Edit)]
         public async Task Update(EntityDynamicParameterValueDto input)
         {
-            input.TenantId = AbpSession.TenantId;
-            await _entityDynamicParameterValueManager.UpdateAsync(ObjectMapper.Map<EntityDynamicParameterValue>(input));
+            var entity = await _entityDynamicParameterValueManager.GetAsync(input.Id);
+            if (entity == null || entity.TenantId != AbpSession.TenantId)
+            {
+                throw new EntityNotFoundException(typeof(EntityDynamicParameterValue), input.Id);
+            }
+
+            entity.Value = input.Value;
+            entity.EntityDynamicParameterId = input.EntityDynamicParameterId;
+            entity.EntityId = input.EntityId;
+
+            await _entityDynamicParameterValueManager.UpdateAsync(entity);
         }
 
         [Authorize(AppPermissions.Pages_Administration_EntityDynamicParameterValue_Delete)]
@@ -67,28 +78,26 @@ namespace NextGen.BiddingPlatform.DynamicEntityParameters
 
         public async Task<GetAllEntityDynamicParameterValuesOutput> GetAllEntityDynamicParameterValues(GetAllEntityDynamicParameterValuesInput input)
         {
-            var localCacheOfGetAllValuesOfDynamicParameter = new Dictionary<int, List<string>>();
+            var localCacheOfDynamicParameterValues = new Dictionary<int, List<string>>();
 
-            List<string> GetAllValuesInputTypeHas(int dynamicParameterId)
+            async Task<List<string>> LocalGetAllValuesOfDynamicParameter(int dynamicParameterId)
             {
-                if (!localCacheOfGetAllValuesOfDynamicParameter.ContainsKey(dynamicParameterId))
+                if (!localCacheOfDynamicParameterValues.ContainsKey(dynamicParameterId))
                 {
-                    localCacheOfGetAllValuesOfDynamicParameter[dynamicParameterId] = _dynamicParameterValueManager
-                        .GetAllValuesOfDynamicParameter(dynamicParameterId)
+                    localCacheOfDynamicParameterValues[dynamicParameterId] = (await _dynamicParameterValueManager
+                        .GetAllValuesOfDynamicParameterAsync(dynamicParameterId))
                         .Select(x => x.Value).ToList();
                 }
 
-                return localCacheOfGetAllValuesOfDynamicParameter[dynamicParameterId];
+                return localCacheOfDynamicParameterValues[dynamicParameterId];
             }
 
             var output = new GetAllEntityDynamicParameterValuesOutput();
-
             var entityDynamicParameters = await _entityDynamicParameterManager.GetAllAsync(input.EntityFullName);
 
-            var entityDynamicParameterIdAndValuesDictionary = (await _entityDynamicParameterValueManager.GetValuesAsync(input.EntityFullName, input.EntityId))
+            var entityDynamicParameterSelectedValues = (await _entityDynamicParameterValueManager.GetValuesAsync(input.EntityFullName, input.EntityId))
                 .GroupBy(value => value.EntityDynamicParameterId)
-                .ToDictionary(group => group.Key, items => items.ToList());
-
+                .ToDictionary(group => group.Key, items => items.ToList().Select(value => value.Value).ToList());
 
             foreach (var entityDynamicParameter in entityDynamicParameters)
             {
@@ -97,9 +106,9 @@ namespace NextGen.BiddingPlatform.DynamicEntityParameters
                     EntityDynamicParameterId = entityDynamicParameter.Id,
                     InputType = _dynamicEntityParameterDefinitionManager.GetOrNullAllowedInputType(entityDynamicParameter.DynamicParameter.InputType),
                     ParameterName = entityDynamicParameter.DynamicParameter.ParameterName,
-                    AllValuesInputTypeHas = GetAllValuesInputTypeHas(entityDynamicParameter.DynamicParameter.Id),
-                    SelectedValues = entityDynamicParameterIdAndValuesDictionary.ContainsKey(entityDynamicParameter.Id)
-                        ? entityDynamicParameterIdAndValuesDictionary[entityDynamicParameter.Id].Select(value => value.Value).ToList()
+                    AllValuesInputTypeHas = await LocalGetAllValuesOfDynamicParameter(entityDynamicParameter.DynamicParameter.Id),
+                    SelectedValues = entityDynamicParameterSelectedValues.ContainsKey(entityDynamicParameter.Id)
+                        ? entityDynamicParameterSelectedValues[entityDynamicParameter.Id]
                         : new List<string>()
                 };
 
@@ -124,7 +133,7 @@ namespace NextGen.BiddingPlatform.DynamicEntityParameters
 
                 foreach (var newValue in item.Values)
                 {
-                    await Add(new EntityDynamicParameterValueDto
+                    await _entityDynamicParameterValueManager.AddAsync(new EntityDynamicParameterValue
                     {
                         EntityDynamicParameterId = item.EntityDynamicParameterId,
                         EntityId = item.EntityId,

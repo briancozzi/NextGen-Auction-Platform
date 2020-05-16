@@ -7,7 +7,6 @@ import { appModuleAnimation } from '@shared/animations/routerTransition';
 @Component({
   selector: 'app-entity-dynamic-parameter',
   templateUrl: './entity-dynamic-parameter.component.html',
-  styleUrls: ['./entity-dynamic-parameter.component.css'],
   animations: [appModuleAnimation()]
 })
 export class EntityDynamicParameterComponent extends AppComponentBase {

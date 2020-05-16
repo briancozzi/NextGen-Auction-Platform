@@ -7,15 +7,13 @@ import { AccountServiceProxy, PasswordComplexitySetting, ProfileServiceProxy, Re
 import { LoginService } from '../login/login.service';
 import { RegisterModel } from './register.model';
 import { finalize, catchError } from 'rxjs/operators';
-import { ReCaptcha2Component } from 'ngx-captcha';
+import { ReCaptchaV3Service } from 'ngx-captcha';
 
 @Component({
     templateUrl: './register.component.html',
     animations: [accountModuleAnimation()]
 })
 export class RegisterComponent extends AppComponentBase implements OnInit {
-    @ViewChild('recaptchaRef') recaptchaRef: ReCaptcha2Component;
-
     model: RegisterModel = new RegisterModel();
     passwordComplexitySetting: PasswordComplexitySetting = new PasswordComplexitySetting();
     recaptchaSiteKey: string = AppConsts.recaptchaSiteKey;
@@ -27,7 +25,8 @@ export class RegisterComponent extends AppComponentBase implements OnInit {
         private _accountService: AccountServiceProxy,
         private _router: Router,
         private readonly _loginService: LoginService,
-        private _profileService: ProfileServiceProxy
+        private _profileService: ProfileServiceProxy,
+        private _reCaptchaV3Service: ReCaptchaV3Service
     ) {
         super(injector);
     }
@@ -49,29 +48,32 @@ export class RegisterComponent extends AppComponentBase implements OnInit {
     }
 
     save(): void {
-        if (this.useCaptcha && !this.model.captchaResponse) {
-            this.message.warn(this.l('CaptchaCanNotBeEmpty'));
-            return;
-        }
+        let recaptchaCallback = (token: string) => {
+            this.saving = true;
+            this.model.captchaResponse = token;
+            this._accountService.register(this.model)
+                .pipe(finalize(() => { this.saving = false; }))
+                .subscribe((result: RegisterOutput) => {
+                    if (!result.canLogin) {
+                        this.notify.success(this.l('SuccessfullyRegistered'));
+                        this._router.navigate(['account/login']);
+                        return;
+                    }
 
-        this.saving = true;
-        this._accountService.register(this.model)
-            .pipe(finalize(() => { this.saving = false; }))
-            .pipe(catchError((err, caught): any => {
-                this.recaptchaRef.resetCaptcha();
-            }))
-            .subscribe((result: RegisterOutput) => {
-                if (!result.canLogin) {
-                    this.notify.success(this.l('SuccessfullyRegistered'));
-                    this._router.navigate(['account/login']);
-                    return;
-                }
+                    //Autheticate
+                    this.saving = true;
+                    this._loginService.authenticateModel.userNameOrEmailAddress = this.model.userName;
+                    this._loginService.authenticateModel.password = this.model.password;
+                    this._loginService.authenticate(() => { this.saving = false; });
+                });
+        };
 
-                //Autheticate
-                this.saving = true;
-                this._loginService.authenticateModel.userNameOrEmailAddress = this.model.userName;
-                this._loginService.authenticateModel.password = this.model.password;
-                this._loginService.authenticate(() => { this.saving = false; });
+        if (this.useCaptcha) {
+            this._reCaptchaV3Service.execute(this.recaptchaSiteKey, 'register', (token) => {
+                recaptchaCallback(token);
             });
+        } else {
+            recaptchaCallback(null);
+        }
     }
 }

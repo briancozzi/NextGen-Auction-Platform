@@ -8,7 +8,7 @@ import {
     UpdateGoogleAuthenticatorKeyOutput,
     SendVerificationSmsInputDto
 } from '@shared/service-proxies/service-proxies';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { SmsVerificationModalComponent } from './sms-verification-modal.component';
 import { finalize } from 'rxjs/operators';
 

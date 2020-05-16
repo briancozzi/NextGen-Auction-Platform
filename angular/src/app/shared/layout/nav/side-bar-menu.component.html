@@ -21,7 +21,7 @@
 <ng-template #menuListTemplate>
     <ng-container *ngFor="let child of menu.items">
         <ng-container *ngIf="showMenuItem(child)" [ngTemplateOutlet]="mMenuItem"
-            [ngTemplateOutletContext]="{ item: child, parentItem: item }"></ng-container>
+            [ngTemplateOutletContext]="{ item: child, parentItem: null }"></ng-container>
     </ng-container>
 </ng-template>
 

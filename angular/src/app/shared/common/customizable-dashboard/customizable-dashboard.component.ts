@@ -7,11 +7,12 @@ import {
   DashboardCustomizationServiceProxy, DashboardOutput, AddNewPageInput,
   AddNewPageOutput, AddWidgetInput, RenamePageInput, SavePageInput, Page, Widget, WidgetFilterOutput, WidgetOutput
 } from '@shared/service-proxies/service-proxies';
-import { TabsetComponent, BsDropdownDirective } from 'ngx-bootstrap';
+import { TabsetComponent } from 'ngx-bootstrap/tabs';
+import { BsDropdownDirective } from 'ngx-bootstrap/dropdown';
 import { WidgetViewDefinition, WidgetFilterViewDefinition } from './definitions';
 import { AddWidgetModalComponent } from './add-widget-modal/add-widget-modal.component';
 import { DashboardCustomizationConst } from './DashboardCustomizationConsts';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import * as rtlDetect from 'rtl-detect';
 
 @Component({

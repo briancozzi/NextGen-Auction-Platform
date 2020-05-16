@@ -157,12 +157,12 @@
     <text name="TenantInformations">租户信息</text>
     <text name="PersonalInformations">个人信息</text>
     <text name="AccountSettings">账号设置</text>
-    <text name="Captha_Hint">输入图片中的验证码:</text>
+    <text name="Captha_Hint">请证明您不是机器人:</text>
     <text name="Back">返回</text>
     <text name="Submit">提交</text>
     <text name="SignUp">登录</text>
-    <text name="CaptchaCanNotBeEmpty">验证码不能为空.</text>
-    <text name="IncorrectCaptchaAnswer">验证码无效.</text>
+    <text name="CaptchaCanNotBeEmpty">您必须证明自己不是机器人.</text>
+    <text name="IncorrectCaptchaAnswer">无法确定您不是机器人.</text>
     <text name="FormIsNotValidMessage">部分输入信息不符合要求，请检查并改正..</text>
     <text name="CanNotChangeAdminUserName">管理用户，不能修改用户名.</text>
     <text name="Error">错误!</text>

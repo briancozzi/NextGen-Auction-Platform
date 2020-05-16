@@ -45,7 +45,7 @@
             <ng-template #tooltipTemplate let-model="model">
                 <span>{{model.name}}</span>
                 <br />
-                <span>{{'IncomeWithAmount' | localize}} {{model.value + ' ' + _sessionService.application.currencySign}}</span>
+                <span>{{'IncomeWithAmount' | localize}} {{model.value + ' ' + appSession.application.currencySign}}</span>
             </ng-template>
         </ngx-charts-area-chart>
         <div class="note note-info text-center chart" [hidden]="incomeStatisticsHasData">

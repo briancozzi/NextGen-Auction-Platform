@@ -23,7 +23,7 @@ export class DatePickerMomentModifierDirective implements OnDestroy, OnChanges {
                     this.dateChange.emit(null);
                 } else if ((date instanceof Date && !compare(this.lastDate, date) && date.toString() !== 'Invalid Date')) {
                     this.lastDate = date;
-                    this.dateChange.emit(moment(date));
+                    this.dateChange.emit(date);
                 }
             });
     }
@@ -34,7 +34,9 @@ export class DatePickerMomentModifierDirective implements OnDestroy, OnChanges {
 
     ngOnChanges({ date }: SimpleChanges) {
         if (date && date.currentValue && !compare(date.currentValue, date.previousValue)) {
-            setTimeout(() => this.bsDatepicker.bsValue = new Date(date.currentValue), 0);
+            setTimeout(() => {
+                this.bsDatepicker.bsValue = moment(date.currentValue).toDate();
+            }, 0);
         }
     }
 }

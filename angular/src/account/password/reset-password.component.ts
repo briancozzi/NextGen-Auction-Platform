@@ -7,12 +7,15 @@ import { AccountServiceProxy, PasswordComplexitySetting, ProfileServiceProxy, Re
 import { LoginService } from '../login/login.service';
 import { ResetPasswordModel } from './reset-password.model';
 import { finalize } from 'rxjs/operators';
+import { AppConsts } from '@shared/AppConsts';
+import { ReCaptchaV3Service } from 'ngx-captcha';
 
 @Component({
     templateUrl: './reset-password.component.html',
     animations: [accountModuleAnimation()]
 })
 export class ResetPasswordComponent extends AppComponentBase implements OnInit {
+    recaptchaSiteKey: string = AppConsts.recaptchaSiteKey;
 
     model: ResetPasswordModel = new ResetPasswordModel();
     passwordComplexitySetting: PasswordComplexitySetting = new PasswordComplexitySetting();
@@ -24,6 +27,7 @@ export class ResetPasswordComponent extends AppComponentBase implements OnInit {
         private _router: Router,
         private _activatedRoute: ActivatedRoute,
         private _loginService: LoginService,
+        private _reCaptchaV3Service: ReCaptchaV3Service,
         private _appUrlService: AppUrlService,
         private _profileService: ProfileServiceProxy
     ) {
@@ -55,6 +59,10 @@ export class ResetPasswordComponent extends AppComponentBase implements OnInit {
         }
     }
 
+    get useCaptcha(): boolean {
+        return this.setting.getBoolean('App.UserManagement.UseCaptchaOnLogin');
+    }
+
     save(): void {
         this.saving = true;
         this._accountService.resetPassword(this.model)
@@ -65,13 +73,23 @@ export class ResetPasswordComponent extends AppComponentBase implements OnInit {
                     return;
                 }
 
-                // Autheticate
-                this.saving = true;
-                this._loginService.authenticateModel.userNameOrEmailAddress = result.userName;
-                this._loginService.authenticateModel.password = this.model.password;
-                this._loginService.authenticate(() => {
-                    this.saving = false;
-                });
+                let recaptchaCallback = (token: string) => {
+                    // Autheticate
+                    this.saving = true;
+                    this._loginService.authenticateModel.userNameOrEmailAddress = result.userName;
+                    this._loginService.authenticateModel.password = this.model.password;
+                    this._loginService.authenticate(() => {
+                        this.saving = false;
+                    }, null, token);
+                };
+
+                if (this.useCaptcha) {
+                    this._reCaptchaV3Service.execute(this.recaptchaSiteKey, 'login', (token) => {
+                        recaptchaCallback(token);
+                    });
+                } else {
+                    recaptchaCallback(null);
+                }
             });
     }
 

@@ -33,7 +33,7 @@ export class CreateOrEdit{{Entity_Name_Here}}ModalComponent extends AppComponent
 {{Property_Nullable_Datetime_SetNull_Looped_Template_Here}}
         if (!{{entity_Name_Here}}Id) {
             this.{{entity_Name_Here}} = new CreateOrEdit{{Entity_Name_Here}}Dto();
-            this.{{entity_Name_Here}}.id = {{entity_Name_Here}}Id;{{Property_Datetime_Init_Looped_Template_Here}}
+            this.{{entity_Name_Here}}.id = {{entity_Name_Here}}Id;{{Property_Datetime_Init_Looped_Template_Here}}{{Property_Datetime_Init_Looped_Template_Here_After_070200}}
 {{NP_Looped_Display_Init_Here}}
             this.active = true;
             this.modal.show();
