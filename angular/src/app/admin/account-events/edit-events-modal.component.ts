@@ -1,7 +1,7 @@
 import { Component, Injector, ViewChild, Output, EventEmitter, ElementRef } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import * as _ from 'lodash';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { finalize } from 'rxjs/operators';
 import { findOneIana } from "windows-iana";
 
@@ -14,7 +14,8 @@ import {
     AccountEventDto,
     SettingScopes,
     NameValueDto,
-    TimingServiceProxy
+    TimingServiceProxy,
+    CountryStateDto
 } from '@shared/service-proxies/service-proxies';
 import { forkJoin } from "rxjs";
 import { AppConsts } from '@shared/AppConsts';
@@ -32,7 +33,7 @@ export class EditEventsModalComponent extends AppComponentBase {
     event: UpdateAccountEventDto = new UpdateAccountEventDto();
     saving = false;
     active = false;
-    stateList = [];
+    stateList: CountryStateDto = new CountryStateDto();
     countryList = [];
     accountList = [];
     countryUniqueId: string;
@@ -40,6 +41,8 @@ export class EditEventsModalComponent extends AppComponentBase {
     timeZones: NameValueDto[] = [];
     startTime: Date = new Date();
     endTime: Date = new Date();
+    stateDropdown = true;
+    isSelected = true;
 
     constructor(
         injector: Injector,
@@ -87,7 +90,10 @@ export class EditEventsModalComponent extends AppComponentBase {
         });
 
     }
-
+    loadStateList(countryId): void {
+        this.stateDropdown = false;
+        this.stateList = this.countryList.find(x => x.countryUniqueId === countryId);
+    }
     close(): void {
         this.active = false;
         this.modal.hide();
@@ -101,8 +107,8 @@ export class EditEventsModalComponent extends AppComponentBase {
         var stime = this.getTimePart(this.startTime);
         var etime = this.getTimePart(this.endTime);
 
-        var eventEndDate = this.event.eventEndDateTime.local().format("YYYY-MM-DD");
-        var eventStartDate = this.event.eventStartDateTime.local().format("YYYY-MM-DD");
+        var eventEndDate = moment(this.event.eventEndDateTime).local().format("YYYY-MM-DD");
+        var eventStartDate = moment(this.event.eventStartDateTime).local().format("YYYY-MM-DD");
 
         var selectedtimezoneId = findOneIana(this.event.timeZone);
 

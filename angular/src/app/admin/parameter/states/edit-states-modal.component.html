@@ -14,7 +14,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label
-                            for="CountryCombobox">{{CountryName | localize}}</label>
+                            for="CountryCombobox">{{"CountryName" | localize}}</label>
                         <select #CountryCombobox name="countryName"
                             class="form-control bs-select" [(ngModel)]="state.countryUniqueId" [ngClass] = "state.countryUniqueId" required>
                             <option *ngFor="let country of countryList" [value]="country.uniqueId"
@@ -22,12 +22,12 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="stateCode">{{"StateCode | localize"}} *</label>
+                        <label for="stateCode">{{"StateCode" | localize}} *</label>
                         <input id="stateCode" #stateCodeInput="ngModel" class="form-control" type="text" name="stateCode" [ngClass]="state.stateCode" [(ngModel)]="state.stateCode" required maxlength="64">
                         <validation-messages [formCtrl]="stateCodeInput"></validation-messages>
                     </div>
                     <div class="form-group">
-                        <label for="stateName">{{"StateName | localize"}} *</label>
+                        <label for="stateName">{{"StateName" | localize}} *</label>
                         <input id="stateName" #stateNameInput="ngModel" class="form-control" type="text" name="stateName" [ngClass]="state.stateName" [(ngModel)]="state.stateName" required maxlength="64">
                         <validation-messages [formCtrl]="stateNameInput"></validation-messages>
                     </div>

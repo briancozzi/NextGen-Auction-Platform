@@ -1,7 +1,7 @@
 import { Component, Injector, ViewChild, Output, EventEmitter, ElementRef } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import * as _ from 'lodash';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { finalize } from 'rxjs/operators';
 import {
     AppAccountServiceProxy,
@@ -9,7 +9,8 @@ import {
     AppAccountDto,
     AddressDto,
     UpdateAppAccountDto,
-    UserServiceProxy
+    UserServiceProxy,
+    CountryStateDto
 } from '@shared/service-proxies/service-proxies';
 import { forkJoin } from "rxjs";
 import { AppConsts } from '@shared/AppConsts';
@@ -29,13 +30,15 @@ export class EditAccountsModalComponent extends AppComponentBase {
     account: UpdateAppAccountDto = new UpdateAppAccountDto();
     saving = false;
     active = false;
-    stateList = [];
+    stateList: CountryStateDto = new CountryStateDto();
+    stateDropdown = true;
     countryList = [];
     userList = [];
     countryUniqueId: string;
     stateUniqueId: string;
     isLogo = false;
-    
+    isSelected = true;
+
     constructor(
         injector: Injector,
         private _accountService: AppAccountServiceProxy,
@@ -110,6 +113,12 @@ export class EditAccountsModalComponent extends AppComponentBase {
         });
 
     }
+
+    loadStateList(countryId): void {
+        this.stateDropdown = false;
+        this.stateList = this.countryList.find(x => x.countryUniqueId === countryId);
+    }
+
     clearLogo(): void {
         this.isLogo = false;
         this.account.logo = "";

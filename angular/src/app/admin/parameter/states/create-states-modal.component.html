@@ -27,8 +27,8 @@
                 <div class="form-group">
                     <label for="stateCode">{{"StateCode" | localize}} *</label>
                     <input id="stateCode" #StateCodeInput="ngModel" class="form-control" type="text"
-                        [ngClass]="{'edited':state.stateCode}" name="StateCode"
-                        [(ngModel)]="state.stateCode" #countryCode="ngModel" required maxlength="64"
+                        [ngClass]="{'edited':state.stateCode}" name="StateCode" 
+                        [(ngModel)]="state.stateCode" #stateCodeInput="ngModel" required maxlength="64"
                         pattern="^[a-zA-Z][a-zA-Z0-9_-]{1,}$">
                     <validation-messages [formCtrl]="stateCodeInput"></validation-messages>
                 </div>

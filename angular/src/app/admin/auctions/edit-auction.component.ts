@@ -1,7 +1,7 @@
 import { Component, Injector, ViewChild, Output, EventEmitter, ElementRef, OnInit, AfterViewInit } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import * as _ from 'lodash';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { finalize } from 'rxjs/operators';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -15,7 +15,8 @@ import {
     AccountEventDto,
     SettingScopes,
     UpdateAuctionDto,
-    AuctionServiceProxy
+    AuctionServiceProxy,
+    CountryStateDto
 } from '@shared/service-proxies/service-proxies';
 import { forkJoin } from "rxjs";
 import { AppConsts } from '@shared/AppConsts';
@@ -29,7 +30,7 @@ export class EditAuctionComponent extends AppComponentBase implements OnInit {
     auction: UpdateAuctionDto = new UpdateAuctionDto();
     saving = false;
     active = false;
-    stateList = [];
+    stateList: CountryStateDto = new CountryStateDto();
     countryList = [];
     accountList = [];
     eventList = [];
@@ -37,6 +38,8 @@ export class EditAuctionComponent extends AppComponentBase implements OnInit {
     stateUniqueId: string;
     startTime: Date = new Date();
     endTime: Date = new Date();
+    stateDropdown = true;
+    isSelected = true;
 
     constructor(
         injector: Injector,
@@ -81,6 +84,11 @@ export class EditAuctionComponent extends AppComponentBase implements OnInit {
 
 
         });
+    }
+
+    loadStateList(countryId): void {
+        this.stateDropdown = false;
+        this.stateList = this.countryList.find(x => x.countryUniqueId === countryId);
     }
 
     close(): void {

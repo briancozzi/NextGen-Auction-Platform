@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Injector, Output, ViewChild,Input } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import * as _ from 'lodash';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { finalize } from 'rxjs/operators';
 import { findOneIana } from "windows-iana";
 
@@ -13,7 +13,8 @@ import {
     AccountEventServiceProxy,
     TimingServiceProxy,
     SettingScopes, 
-    NameValueDto
+    NameValueDto,
+    CountryStateDto
 } from '@shared/service-proxies/service-proxies';
 import {forkJoin} from "rxjs";
 import * as moment from 'moment';
@@ -33,7 +34,7 @@ export class CreateEventsModalComponent extends AppComponentBase {
     saving = false;
     event: CreateAccountEventDto = new CreateAccountEventDto();
     countryList = [];
-    stateList =[];
+    stateList: CountryStateDto = new CountryStateDto();
     accountList = [];
     stateDropdown = true;
     logo: string;
@@ -95,8 +96,8 @@ export class CreateEventsModalComponent extends AppComponentBase {
         this.saving = true;
         var stime = this.getTimePart(this.startTime);
         var etime = this.getTimePart(this.endTime);
-        var eventEndDate =   this.event.eventEndDateTime.local().format("YYYY-MM-DD");
-        var eventStartDate = this.event.eventStartDateTime.local().format("YYYY-MM-DD");
+        var eventEndDate =   moment(this.event.eventEndDateTime).local().format("YYYY-MM-DD");
+        var eventStartDate = moment(this.event.eventStartDateTime).local().format("YYYY-MM-DD");
 
         var selectedtimezoneId = findOneIana(this.event.timeZone);
 

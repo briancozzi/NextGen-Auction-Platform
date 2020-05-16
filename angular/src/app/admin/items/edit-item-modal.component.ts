@@ -1,7 +1,7 @@
 import { Component, Injector, ViewChild, Output, EventEmitter, ElementRef } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import * as _ from 'lodash';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { finalize } from 'rxjs/operators';
 import {
   ItemServiceProxy,
@@ -33,7 +33,8 @@ export class EditItemModalComponent extends AppComponentBase {
   dropdowns: any;
   categoryList = [];
   accountList = [];
-  isLogo = false;
+    isLogo = false;
+    isSelected = true;
 
   constructor(
     injector: Injector,

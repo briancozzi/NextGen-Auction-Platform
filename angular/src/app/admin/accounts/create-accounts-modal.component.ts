@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Injector, Output, ViewChild, OnInit, ElementRef } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import * as _ from 'lodash';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { finalize } from 'rxjs/operators';
 import {
     AppAccountServiceProxy,
@@ -9,6 +9,7 @@ import {
     CountryServiceProxy,
     AddressDto,
     UserServiceProxy,
+    CountryStateDto,
 } from '@shared/service-proxies/service-proxies';
 import { AppConsts } from '@shared/AppConsts';
 import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
@@ -31,7 +32,7 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
     saving = false;
     account: CreateAppAccountDto = new CreateAppAccountDto();
     countryList = [];
-    stateList = [];
+    stateList : CountryStateDto = new CountryStateDto();
     userList = [];
     stateDropdown = true;
     uploadedFiles: any[] = [];

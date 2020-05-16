@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Injector, Output, ViewChild,Input, OnInit, AfterViewInit } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import * as _ from 'lodash';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { finalize } from 'rxjs/operators';
 import {
     CountryServiceProxy,
@@ -9,7 +9,8 @@ import {
     AppAccountServiceProxy,
     AccountEventServiceProxy,
     CreateAuctionDto,
-    AuctionServiceProxy
+    AuctionServiceProxy,
+    CountryStateDto
 } from '@shared/service-proxies/service-proxies';
 import {forkJoin} from "rxjs";
 import * as moment from 'moment';
@@ -27,7 +28,7 @@ export class CreateAuctionComponent extends AppComponentBase implements OnInit, 
     saving = false;
     auction: CreateAuctionDto = new CreateAuctionDto();
     countryList = [];
-    stateList =[];
+    stateList : CountryStateDto = new CountryStateDto();
     accountList = [];
     eventList = [];
     stateDropdown = true;
