@@ -18,14 +18,22 @@
                     <div class="form-group">
                         <div class="row">
                             <div class="col-xl-6">
-                                <label for="categories">{{"AuctionTypes" | localize}} *</label>
-                                <select #categoryBox name="auctionTypes" multiple class="form-control bs-select"
-                                    [(ngModel)]="item.auctionTypes" required>
-                                    <option value="" [selected]="isSelected">--Select Category--</option>
-                                    <option *ngFor="let auctionType of auctionTypesList" [value]="auctionType.id">
-                                        {{auctionType.categoryName}}</option>
+                                <label for="auctionTypes">{{"AuctionTypes" | localize}} *</label>
+                                <select  name="auctionTypes" class="form-control bs-select"
+                                    [(ngModel)]="item.auctionId" required>
+                                    <option value="" [selected]="isSelected">--Select Auction Type--</option>
+                                    <option *ngFor="let auctionType of auctionTypeList" [value]="auctionType.uniqueId">
+                                        {{auctionType.auctionType}}</option>
                                 </select>
-                                <validation-messages [formCtrl]="categoryBox"></validation-messages>
+                            </div>
+                            <div class="col-xl-6">
+                                <label for="itemName">{{"ItemName" | localize}} *</label>
+                                <select  name="auctionTypes" class="form-control bs-select"
+                                    [(ngModel)]="item.itemId" required>
+                                    <option value="" [selected]="isSelected">--Select Item--</option>
+                                    <option *ngFor="let item of itemList" [value]="item.uniqueId">
+                                        {{item.itemName}}</option>
+                                </select>
                             </div>
                         </div>
                     </div>

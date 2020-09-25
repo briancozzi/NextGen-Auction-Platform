@@ -4,6 +4,8 @@ using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.Linq.Extensions;
 using Abp.Runtime.Session;
+using Abp.Timing;
+using Abp.UI;
 using Microsoft.EntityFrameworkCore;
 using NextGen.BiddingPlatform.AuctionItem.Dto;
 using NextGen.BiddingPlatform.DashboardCustomization.Dto;
@@ -19,7 +21,6 @@ namespace NextGen.BiddingPlatform.AuctionItem
 {
     public class AuctionItemAppService : BiddingPlatformAppServiceBase, IAuctionItemAppService
     {
-
         private readonly IRepository<Core.AuctionItems.AuctionItem> _auctionitemRepository;
         private readonly IRepository<Core.Auctions.Auction> _auctionRepository;
         private readonly IRepository<Core.Items.Item> _itemRepository;
@@ -54,10 +55,9 @@ namespace NextGen.BiddingPlatform.AuctionItem
 
             return new ListResultDto<AuctionItemListDto>(auctionItems);
         }
-
         public async Task<PagedResultDto<AuctionItemListDto>> GetAuctionItemsWithFilter(AuctionItemFilter input)
         {
-            var query =   _auctionitemRepository.GetAllIncluding(x => x.Auction, x => x.Item).AsNoTracking()
+            var query = _auctionitemRepository.GetAllIncluding(x => x.Auction, x => x.Item).AsNoTracking()
                                        .WhereIf(!input.Search.IsNullOrWhiteSpace(), x => x.Auction.AuctionType.ToLower().IndexOf(input.Search.ToLower()) > -1)
                                        .Select(s => new AuctionItemListDto
                                        {
@@ -81,7 +81,6 @@ namespace NextGen.BiddingPlatform.AuctionItem
 
             return new PagedResultDto<AuctionItemListDto>(resultCount, resultQuery);
         }
-
         public async Task<ListResultDto<AuctionItemListDto>> GetAuctionItemsByAuctionId(Guid auctionId)
         {
             var auction = await _auctionRepository.FirstOrDefaultAsync(x => x.UniqueId == auctionId);
@@ -105,36 +104,28 @@ namespace NextGen.BiddingPlatform.AuctionItem
 
             return new ListResultDto<AuctionItemListDto>(auctionItems);
         }
-
-        public async Task<AuctionItemDto> GetAuctionItemById(Guid Id)
+        public async Task<CreateAuctionItemDto> GetAuctionItemById(Guid Id)
         {
             var output = await _auctionitemRepository.GetAllIncluding(x => x.Item, x => x.Auction).FirstOrDefaultAsync(x => x.UniqueId == Id);
             if (output == null)
-                throw new Exception("Auction Item not found for given id");
+                throw new UserFriendlyException("Auction Item not found for given id");
 
-            return ObjectMapper.Map<AuctionItemDto>(output);
+            return ObjectMapper.Map<CreateAuctionItemDto>(output);
         }
-
         public async Task<AuctionItemDto> Create(CreateAuctionItemDto input)
         {
-            var item = await _itemRepository.FirstOrDefaultAsync(x => x.UniqueId == input.ItemId);
-            if (item == null)
-                throw new Exception("Item not found by given id");
-
-            var auction = await _auctionRepository.FirstOrDefaultAsync(x => x.UniqueId == input.AuctionId);
-            if (auction == null)
-                throw new Exception("Auction not found by given Id");
+            var item = await ValidateItemAndGet(input);
+            var auction = await ValidateAuctionAndGet(input);
 
             var existAuctionItem = await _auctionitemRepository.FirstOrDefaultAsync(x => x.AuctionId == auction.Id && x.ItemId == item.Id);
             if (existAuctionItem != null)
-                throw new Exception("Auction item already exist");
-
+                throw new UserFriendlyException("Auction item already exist");
             var auctionItem = await _auctionitemRepository.InsertAsync(new Core.AuctionItems.AuctionItem
             {
                 UniqueId = Guid.NewGuid(),
                 TenantId = _abpSession.TenantId.Value,
-                AuctionId = item.Id,
-                ItemId = auction.Id,
+                AuctionId = auction.Id,
+                ItemId = item.Id,
                 IsActive = input.IsActive
             });
 
@@ -145,7 +136,46 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 ItemId = input.ItemId,
             };
         }
+        private async Task<Core.Auctions.Auction> ValidateAuctionAndGet(CreateAuctionItemDto input)
+        {
+            var auction = await _auctionRepository.FirstOrDefaultAsync(x => x.UniqueId == input.AuctionId);
+            if (auction == null)
+                throw new UserFriendlyException("Auction not found by given Id");
+            else
+                return auction;
+        }
+        private async Task<Core.Items.Item> ValidateItemAndGet(CreateAuctionItemDto input)
+        {
+            var item = await _itemRepository.FirstOrDefaultAsync(x => x.UniqueId == input.ItemId);
+            if (item == null)
+                throw new UserFriendlyException("Item not found by given id");
+            else
+                return item;
+        }
+        public async Task<AuctionItemDto> Update(CreateAuctionItemDto input)
+        {
+            if (input.UniqueId == Guid.Empty)
+                throw new UserFriendlyException("Invalid id!!.");
 
+            var auctionItem = await _auctionitemRepository.FirstOrDefaultAsync(x => x.UniqueId == input.UniqueId);
+            if (auctionItem == null)
+                throw new UserFriendlyException("Auction item not found!!.");
+
+            var item = await ValidateItemAndGet(input);
+            var auction = await ValidateAuctionAndGet(input);
+
+            auctionItem.AuctionId = auction.Id;
+            auctionItem.ItemId = item.Id;
+            auctionItem.LastModificationTime = Clock.Now.ToUniversalTime();
+            auctionItem.LastModifierUserId = _abpSession.UserId;
+            await _auctionitemRepository.UpdateAsync(auctionItem);
+            return new AuctionItemDto
+            {
+                UniqueId = auctionItem.UniqueId,
+                AuctionId = input.AuctionId,
+                ItemId = input.ItemId,
+            };
+        }
         public async Task CreateAuctionItems(List<CreateAuctionItemDto> auctionItems)
         {
             var items = _itemRepository.GetAll();
@@ -171,7 +201,6 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 });
             }
         }
-
         public async Task Delete(Guid Id)
         {
             var auctionItem = await _auctionitemRepository.FirstOrDefaultAsync(x => x.UniqueId == Id);

@@ -17,5 +17,6 @@ namespace NextGen.BiddingPlatform.Items
         Task UpdateItem(UpdateItemDto input);
         Task DeleteItem(Guid Id);
         Dropdowns GetDropdowns();
+        Task<List<ItemSelectDto>> GetItems();
     }
 }
