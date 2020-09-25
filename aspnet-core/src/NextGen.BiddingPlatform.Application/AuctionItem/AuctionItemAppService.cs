@@ -1,5 +1,8 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
+using Abp.Extensions;
+using Abp.Linq.Extensions;
 using Abp.Runtime.Session;
 using Microsoft.EntityFrameworkCore;
 using NextGen.BiddingPlatform.AuctionItem.Dto;
@@ -50,6 +53,33 @@ namespace NextGen.BiddingPlatform.AuctionItem
                                                             .ToListAsync();
 
             return new ListResultDto<AuctionItemListDto>(auctionItems);
+        }
+
+        public async Task<PagedResultDto<AuctionItemListDto>> GetAuctionItemsWithFilter(AuctionItemFilter input)
+        {
+            var query =   _auctionitemRepository.GetAllIncluding(x => x.Auction, x => x.Item).AsNoTracking()
+                                       .WhereIf(!input.Search.IsNullOrWhiteSpace(), x => x.Auction.AuctionType.ToLower().IndexOf(input.Search.ToLower()) > -1)
+                                       .Select(s => new AuctionItemListDto
+                                       {
+                                           AuctionItemId = s.UniqueId,
+                                           AuctionId = s.Auction.UniqueId,
+                                           AuctionEndDateTime = s.Auction.AuctionEndDateTime,
+                                           AuctionStartDateTime = s.Auction.AuctionStartDateTime,
+                                           AuctionType = s.Auction.AuctionType,
+                                           ItemId = s.Item.UniqueId,
+                                           ItemName = s.Item.ItemName,
+                                           ItemNumber = s.Item.ItemNumber,
+                                           ItemType = s.Item.ItemType
+                                       }).AsQueryable();
+
+            var resultCount = await query.CountAsync();
+
+            if (!string.IsNullOrWhiteSpace(input.Sorting))
+                query = query.OrderBy(input.Sorting);
+
+            var resultQuery = query.PageBy(input).ToList();
+
+            return new PagedResultDto<AuctionItemListDto>(resultCount, resultQuery);
         }
 
         public async Task<ListResultDto<AuctionItemListDto>> GetAuctionItemsByAuctionId(Guid auctionId)
