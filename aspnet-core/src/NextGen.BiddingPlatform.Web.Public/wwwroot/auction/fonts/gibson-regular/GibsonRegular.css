@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'GibsonRegular';
+    src: url('fonts/GibsonRegular.eot');
+    src: url('fonts/GibsonRegular.eot') format('embedded-opentype'),
+         url('fonts/GibsonRegular.woff2') format('woff2'),
+         url('fonts/GibsonRegular.woff') format('woff'),
+         url('fonts/GibsonRegular.ttf') format('truetype'),
+         url('fonts/GibsonRegular.svg#GibsonRegular') format('svg');
+}

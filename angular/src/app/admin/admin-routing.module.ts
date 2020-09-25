@@ -31,6 +31,9 @@ import { AuctionsComponent } from './auctions/auctions.component';
 import { ItemsComponent } from './items/items.component';
 import { CreateAuctionComponent } from './auctions/create-auction.component';
 import { EditAuctionComponent } from './auctions/edit-auction.component';
+import { AuctionItemsComponent } from './auction-items/auction-items.component';
+import { CreateAuctionItemsComponent } from './auction-items/create-auction-items.component';
+import { EditAuctionItemsComponent } from './auction-items/edit-auction-items.component';
 
 
 
@@ -71,6 +74,9 @@ import { EditAuctionComponent } from './auctions/edit-auction.component';
                     { path: 'auctions', component: AuctionsComponent },
                     { path: 'auctions/edit-auction', component: EditAuctionComponent},
                     { path: 'auctions/create-auction', component: CreateAuctionComponent},
+                    { path: 'auction-items', component:AuctionItemsComponent},
+                    { path: 'auction-items/create-auction-items', component:CreateAuctionItemsComponent},
+                    { path: 'auction-items/edit-auction-items', component:EditAuctionItemsComponent},
 
                     { path: 'items', component: ItemsComponent },
                     { path: '', redirectTo: 'hostDashboard', pathMatch: 'full' },
