@@ -11,6 +11,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
     public interface IAuctionItemAppService : IApplicationService
     {
         Task<ListResultDto<AuctionItemListDto>> GetAllAuctionItems();
+        Task<PagedResultDto<AuctionItemListDto>> GetAuctionItemsWithFilter(AuctionItemFilter input);
         Task<ListResultDto<AuctionItemListDto>> GetAuctionItemsByAuctionId(Guid auctionId);
         Task<AuctionItemDto> GetAuctionItemById(Guid Id);
         Task<AuctionItemDto> Create(CreateAuctionItemDto input);
