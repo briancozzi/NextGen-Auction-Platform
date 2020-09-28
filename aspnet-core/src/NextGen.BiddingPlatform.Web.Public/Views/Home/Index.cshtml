@@ -1,3 +1,20 @@
+@using Abp.Application.Services.Dto;
+@using NextGen.BiddingPlatform.AuctionItem.Dto;
+@using NextGen.BiddingPlatform.AuctionItem
+@using Microsoft.AspNetCore.Hosting
+@using NextGen.BiddingPlatform.Configuration
+@using Microsoft.Extensions.Configuration
+@using NextGen.BiddingPlatform.Category
+@inject IWebHostEnvironment env
+@inject IAuctionItemAppService _auctionItemAppService
+@inject ICategoryAppService _categoryService;
+@model PagedResultDto<AuctionItemListDto>
+@{
+    var appConfiguration = env.GetAppConfiguration();
+    var imageServerPath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:ApiWebSiteRootAddress", string.Empty);
+    var data = await _auctionItemAppService.GetAllAuctionItems();
+    var categories = await _categoryService.GetAllCategory();
+}
 <div class="inner-wrapper">
     <div class="search-bar">
         <div class="container">
@@ -20,13 +37,11 @@
                             <ul>
                                 <li>Categories: <span>All</span></li>
                                 <li><a href="#">All</a></li>
-                                <li><a href="#">Sports</a></li>
-                                <li><a href="#">Entertainment</a></li>
-                                <li><a href="#">Music</a></li>
-                                <li><a href="#">Fashion</a></li>
-                                <li>Art & Collectibles</li>
-                                <li><a href="#">Travel</a></li>
-                                <li><a href="#">Fod & Wine</a></li>
+                                @foreach (var item in categories.Items)
+                                {
+                                    <li><a href="#" data-value="@item.Id">@item.CategoryName</a></li>
+                                }
+
                             </ul>
                             <a href="#" class="remove-dropdown">
                                 <img src="~/auction/images/svg/cross-icon.svg" alt="">
@@ -58,7 +73,7 @@
             </div>
             <div class="inner-topbar">
                 <div class="search-result">
-                    Search Results <span>(9)</span>
+                    Search Results <span>(@data.Items.Count)</span>
                 </div>
                 <ul>
                     <li>
@@ -74,236 +89,38 @@
                 </ul>
             </div>
             <div class="row col-gap-20">
-                <div class="col-lg-4 col-sm-6">
-                    <div class="golf-event closed">
-                        <div class="image">
-                            <img src="~/auction/images/event-img-1.png" alt="">
-                            <div class="numeric">123</div>
-                            <a href="#" class="wishlist"></a>
-                            <div class="event-close"><span>CLOSED</span></div>
+                @foreach (var item in data.Items)
+                {
+                    var fullImagePath = @imageServerPath + "" + @item.ImageName;
+                    var remainingTime = DateTime.Today.Add(@item.RemainingTime).ToString("hh:mm");
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="golf-event">
+                            <div class="image">
+                                <img src="@fullImagePath" alt="">
+                                <div class="numeric">123</div>
+                                <a href="#" class="wishlist liked"></a>
+                            </div>
+                            <div class="desc">
+                                <p class="name">@item.ItemName</p>
+                                <ul>
+                                    <li>
+                                        Last Bid:
+                                        <span>$@item.LastBidAmount</span>
+                                    </li>
+                                    <li>
+                                        Time Left:
+                                        <span>@item.RemainingDays day  @remainingTime hrs</span>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
-                        <div class="desc">
-                            <p class="name">Wilson LaunchPad <br> (Owned by Stephen Amell)</p>
-                            <ul>
-                                <li>
-                                    Last Bid:
-                                    <span>$4,000.00</span>
-                                </li>
-                                <li>
-                                    FMV:
-                                    <span>$4,000.00</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <!-- <a href="#" class="abs-link"></a> -->
-
                     </div>
-                </div>
-                <div class="col-lg-4 col-sm-6">
-                    <div class="golf-event">
-                        <div class="image">
-                            <img src="~/auction/images/event-img-2.png" alt="">
-                            <div class="numeric">123</div>
-                            <a href="#" class="wishlist liked"></a>
-                        </div>
-                        <div class="desc">
-                            <p class="name">Vintage " Nos "Neil Martin" Golf Set In</p>
-                            <ul>
-                                <li>
-                                    Last Bid:
-                                    <span>$4,000.00</span>
-                                </li>
-                                <li>
-                                    Time Left:
-                                    <span>1 day 21:16 hrs</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <!-- <a href="#" class="abs-link"></a> -->
-
-                    </div>
-                </div>
-                <div class="col-lg-4 col-sm-6">
-                    <div class="golf-event">
-                        <div class="image">
-                            <img src="~/auction/images/event-img-3.png" alt="">
-                            <div class="numeric">123</div>
-                            <a href="#" class="wishlist"></a>
-                        </div>
-                        <div class="desc">
-                            <p class="name">
-                                First Annual Invitation <br> Tournament
-                            </p>
-                            <ul>
-                                <li>
-                                    Last Bid:
-                                    <span>$4,000.00</span>
-                                </li>
-                                <li>
-                                    Time Left:
-                                    <span>1 day 21:16 hrs</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <!-- <a href="#" class="abs-link"></a> -->
-
-                    </div>
-                </div>
-                <div class="col-lg-4 col-sm-6">
-                    <div class="golf-event closed">
-                        <div class="image">
-                            <img src="~/auction/images/event-img-1.png" alt="">
-                            <div class="numeric">123</div>
-                            <a href="#" class="wishlist"></a>
-                            <div class="event-close"><span>CLOSED</span></div>
-                        </div>
-                        <div class="desc">
-                            <p class="name">Wilson LaunchPad <br> (Owned by Stephen Amell)</p>
-                            <ul>
-                                <li>
-                                    Last Bid:
-                                    <span>$4,000.00</span>
-                                </li>
-                                <li>
-                                    FMV:
-                                    <span>$4,000.00</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <!-- <a href="#" class="abs-link"></a> -->
-
-                    </div>
-                </div>
-                <div class="col-lg-4 col-sm-6">
-                    <div class="golf-event">
-                        <div class="image">
-                            <img src="~/auction/images/event-img-2.png" alt="">
-                            <div class="numeric">123</div>
-                            <a href="#" class="wishlist liked"></a>
-                        </div>
-                        <div class="desc">
-                            <p class="name">Vintage " Nos "Neil Martin" Golf Set In</p>
-                            <ul>
-                                <li>
-                                    Last Bid:
-                                    <span>$4,000.00</span>
-                                </li>
-                                <li>
-                                    Time Left:
-                                    <span>1 day 21:16 hrs</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <!-- <a href="#" class="abs-link"></a> -->
-
-                    </div>
-                </div>
-                <div class="col-lg-4 col-sm-6">
-                    <div class="golf-event">
-                        <div class="image">
-                            <img src="~/auction/images/event-img-3.png" alt="">
-                            <div class="numeric">123</div>
-                            <a href="#" class="wishlist"></a>
-                        </div>
-                        <div class="desc">
-                            <p class="name">
-                                First Annual Invitation <br> Tournament
-                            </p>
-                            <ul>
-                                <li>
-                                    Last Bid:
-                                    <span>$4,000.00</span>
-                                </li>
-                                <li>
-                                    Time Left:
-                                    <span>1 day 21:16 hrs</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <!-- <a href="#" class="abs-link"></a> -->
-
-                    </div>
-                </div>
-                <div class="col-lg-4 col-sm-6">
-                    <div class="golf-event closed">
-                        <div class="image">
-                            <img src="~/auction/images/event-img-1.png" alt="">
-                            <div class="numeric">123</div>
-                            <a href="#" class="wishlist"></a>
-                            <div class="event-close"><span>CLOSED</span></div>
-                        </div>
-                        <div class="desc">
-                            <p class="name">Wilson LaunchPad <br> (Owned by Stephen Amell)</p>
-                            <ul>
-                                <li>
-                                    Last Bid:
-                                    <span>$4,000.00</span>
-                                </li>
-                                <li>
-                                    FMV:
-                                    <span>$4,000.00</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <!-- <a href="#" class="abs-link"></a> -->
-
-                    </div>
-                </div>
-                <div class="col-lg-4 col-sm-6">
-                    <div class="golf-event">
-                        <div class="image">
-                            <img src="~/auction/images/event-img-2.png" alt="">
-                            <div class="numeric">123</div>
-                            <a href="#" class="wishlist liked"></a>
-                        </div>
-                        <div class="desc">
-                            <p class="name">Vintage " Nos "Neil Martin" Golf Set In</p>
-                            <ul>
-                                <li>
-                                    Last Bid:
-                                    <span>$4,000.00</span>
-                                </li>
-                                <li>
-                                    Time Left:
-                                    <span>1 day 21:16 hrs</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <!-- <a href="#" class="abs-link"></a> -->
-
-                    </div>
-                </div>
-                <div class="col-lg-4 col-sm-6">
-                    <div class="golf-event">
-                        <div class="image">
-                            <img src="~/auction/images/event-img-3.png" alt="">
-                            <div class="numeric">123</div>
-                            <a href="#" class="wishlist"></a>
-                        </div>
-                        <div class="desc">
-                            <p class="name">
-                                First Annual Invitation <br> Tournament
-                            </p>
-                            <ul>
-                                <li>
-                                    Last Bid:
-                                    <span>$4,000.00</span>
-                                </li>
-                                <li>
-                                    Time Left:
-                                    <span>1 day 21:16 hrs</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <!-- <a href="#" class="abs-link"></a> -->
-
-                    </div>
-                </div>
+                }
             </div>
         </div>
     </div>
 </div>
 
-    
+
 
 

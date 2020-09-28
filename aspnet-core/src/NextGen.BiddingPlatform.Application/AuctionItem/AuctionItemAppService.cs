@@ -7,6 +7,7 @@ using Abp.Runtime.Session;
 using Abp.Timing;
 using Abp.UI;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using NextGen.BiddingPlatform.AuctionItem.Dto;
 using NextGen.BiddingPlatform.DashboardCustomization.Dto;
 using Org.BouncyCastle.Math.EC.Rfc7748;
@@ -25,6 +26,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
         private readonly IRepository<Core.Auctions.Auction> _auctionRepository;
         private readonly IRepository<Core.Items.Item> _itemRepository;
         private readonly IAbpSession _abpSession;
+        private readonly IConfiguration _config;
 
         public AuctionItemAppService(IRepository<Core.AuctionItems.AuctionItem> auctionitemRepository,
                                      IRepository<Core.Auctions.Auction> auctionRepository,
@@ -38,7 +40,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
         }
         public async Task<ListResultDto<AuctionItemListDto>> GetAllAuctionItems()
         {
-            var auctionItems = await _auctionitemRepository.GetAllIncluding(x => x.Auction, x => x.Item)
+            var auctionItems = await _auctionitemRepository.GetAllIncluding(x => x.Auction, x => x.Item, x => x.AuctionHistories)
                                                             .Select(s => new AuctionItemListDto
                                                             {
                                                                 AuctionItemId = s.UniqueId,
@@ -49,7 +51,13 @@ namespace NextGen.BiddingPlatform.AuctionItem
                                                                 ItemId = s.Item.UniqueId,
                                                                 ItemName = s.Item.ItemName,
                                                                 ItemNumber = s.Item.ItemNumber,
-                                                                ItemType = s.Item.ItemType
+                                                                ItemType = s.Item.ItemType,
+                                                                FairMarketValue_FMV = s.Item.FairMarketValue_FMV,
+                                                                ImageName = s.Item.MainImageName,
+                                                                Thumbnail = s.Item.ThumbnailImage,
+                                                                RemainingDays = (s.Auction.AuctionEndDateTime - s.Auction.AuctionStartDateTime).TotalDays.ToString(),
+                                                                RemainingTime = (s.Auction.AuctionEndDateTime - s.Auction.AuctionStartDateTime),
+                                                                LastBidAmount = s.AuctionHistories.OrderByDescending(x => x.CreationTime).LastOrDefault().BidAmount
                                                             })
                                                             .ToListAsync();
 
@@ -57,7 +65,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
         }
         public async Task<PagedResultDto<AuctionItemListDto>> GetAuctionItemsWithFilter(AuctionItemFilter input)
         {
-            var query = _auctionitemRepository.GetAllIncluding(x => x.Auction, x => x.Item).AsNoTracking()
+            var query = _auctionitemRepository.GetAllIncluding(x => x.Auction, x => x.Item, x => x.Item.ItemImages).AsNoTracking()
                                        .WhereIf(!input.Search.IsNullOrWhiteSpace(), x => x.Auction.AuctionType.ToLower().IndexOf(input.Search.ToLower()) > -1)
                                        .Select(s => new AuctionItemListDto
                                        {
@@ -69,8 +77,11 @@ namespace NextGen.BiddingPlatform.AuctionItem
                                            ItemId = s.Item.UniqueId,
                                            ItemName = s.Item.ItemName,
                                            ItemNumber = s.Item.ItemNumber,
-                                           ItemType = s.Item.ItemType
-                                       }).AsQueryable();
+                                           ItemType = s.Item.ItemType,
+                                           FairMarketValue_FMV = s.Item.FairMarketValue_FMV,
+                                           ImageName = s.Item.MainImageName,
+                                           Thumbnail = s.Item.ThumbnailImage,
+                                       });
 
             var resultCount = await query.CountAsync();
 
