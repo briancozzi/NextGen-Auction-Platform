@@ -117,6 +117,9 @@ import{EditAuctionComponent} from './auctions/edit-auction.component';
 import { ItemsComponent } from './items/items.component';
 import { CreateItemModalComponent } from './items/create-item-modal.component';
 import { EditItemModalComponent } from './items/edit-item-modal.component';
+import { AuctionItemsComponent } from './auction-items/auction-items.component';
+import { EditAuctionItemsComponent } from './auction-items/edit-auction-items.component';
+import { CreateAuctionItemsComponent } from './auction-items/create-auction-items.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     // suppressScrollX: true
@@ -244,6 +247,9 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         ItemsComponent,
         CreateItemModalComponent,
         EditItemModalComponent,
+        AuctionItemsComponent,
+        EditAuctionItemsComponent,
+        CreateAuctionItemsComponent,
 
     ],
     exports: [

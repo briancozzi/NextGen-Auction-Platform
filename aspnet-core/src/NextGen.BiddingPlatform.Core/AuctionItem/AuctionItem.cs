@@ -5,6 +5,7 @@ using NextGen.BiddingPlatform.Core.Items;
 using NextGen.BiddingPlatform.CustomInterface;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using Toolbelt.ComponentModel.DataAnnotations.Schema;
@@ -28,5 +29,11 @@ namespace NextGen.BiddingPlatform.Core.AuctionItems
         public Item Item { get; set; }
 
         public bool IsActive { get; set; }
+
+        public ICollection<AuctionHistories.AuctionHistory> AuctionHistories { get; set; }
+        public AuctionItem()
+        {
+            AuctionHistories = new Collection<AuctionHistories.AuctionHistory>();
+        }
     }
 }

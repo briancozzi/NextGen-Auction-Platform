@@ -206,5 +206,18 @@ namespace NextGen.BiddingPlatform.Auction
                 throw new Exception("Auction not found for given Id");
             await _auctionRepository.DeleteAsync(auction);
         }
+
+        public async Task<List<AuctionSelectDto>> GetAuctions()
+        {
+            var data = await _auctionRepository.GetAllIncluding()
+                                            .Select(x => new AuctionSelectDto
+                                            {
+                                                UniqueId = x.UniqueId,
+                                                AuctionType = x.AuctionType,
+                                                Id = x.Id
+                                            }).ToListAsync();
+
+            return data;
+        }
     }
 }

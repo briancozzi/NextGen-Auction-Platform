@@ -222,6 +222,19 @@ namespace NextGen.BiddingPlatform.Items
             await _itemRepository.DeleteAsync(item);
         }
 
+        public async Task<List<ItemSelectDto>> GetItems()
+        {
+            var items = await _itemRepository.GetAllIncluding(x => x.AppAccount)
+                                            .Select(x => new ItemSelectDto
+                                            {
+                                                UniqueId = x.UniqueId,
+                                                ItemName = x.ItemName,
+                                                Id = x.Id
+                                            }).ToListAsync();
+
+            return items;
+        }
+
         public Dropdowns GetDropdowns()
         {
             Dropdowns dropdowns = new Dropdowns

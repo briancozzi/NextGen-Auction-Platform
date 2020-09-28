@@ -16,5 +16,6 @@ namespace NextGen.BiddingPlatform.Web.Public.Url
         public override string WebSiteRootAddressFormatKey => "App:WebSiteRootAddress";
 
         public override string ServerRootAddressFormatKey => "App:AdminWebSiteRootAddress";
+        public override string ApiServerRootAddressFormatKey => "App:ApiWebSiteRootAddress";
     }
 }

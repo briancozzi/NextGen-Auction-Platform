@@ -241,6 +241,9 @@ namespace NextGen.BiddingPlatform
             configuration.CreateMap<Core.AuctionItems.AuctionItem, AuctionItemDto>()
                 .ForMember(x => x.AuctionId, option => option.MapFrom(a => a.Auction.UniqueId))
                 .ForMember(x => x.ItemId, option => option.MapFrom(i => i.Item.UniqueId)).ReverseMap();
+            configuration.CreateMap<Core.AuctionItems.AuctionItem, CreateAuctionItemDto>()
+                .ForMember(x => x.AuctionId, option => option.MapFrom(a => a.Auction.UniqueId))
+                .ForMember(x => x.ItemId, option => option.MapFrom(i => i.Item.UniqueId)).ReverseMap();
 
             //CardDetail
             configuration.CreateMap<CreateCardDetailDto, Core.CardDetails.CardDetail>();

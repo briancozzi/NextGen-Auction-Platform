@@ -42,4 +42,7 @@
   <ItemGroup>
     <ProjectReference Include="..\NextGen.BiddingPlatform.Web.Core\NextGen.BiddingPlatform.Web.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\auction\" />
+  </ItemGroup>
 </Project>

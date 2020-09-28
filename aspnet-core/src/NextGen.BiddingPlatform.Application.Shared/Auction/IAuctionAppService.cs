@@ -18,5 +18,6 @@ namespace NextGen.BiddingPlatform.Auction
 
         // AuctionType Filter.
         Task<PagedResultDto<AuctionListDto>> GetAllAuctionFilter(AuctionTypeFilter input);
+        Task<List<AuctionSelectDto>> GetAuctions();
     }
 }
