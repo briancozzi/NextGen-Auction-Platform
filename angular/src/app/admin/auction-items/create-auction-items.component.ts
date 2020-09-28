@@ -51,7 +51,10 @@ export class CreateAuctionItemsComponent extends AppComponentBase implements OnI
     ]).subscribe(result => {
       this.itemList = result[0],
       this.auctionTypeList = result[1];
+      this.item.auctionId = '';
+      this.item.itemId = '';
     });
+    
   }
   close(): void {
     this.active = false;
