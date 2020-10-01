@@ -14,5 +14,21 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
         {
             return PartialView("~/Views/Home/_AuctionItemTemplate.cshtml");
         }
+        public ActionResult ProductDetail()
+        {
+            return View();
+        }
+        public ActionResult ProductDetailClosed()
+        {
+            return View();
+        }
+        public ActionResult ProductDetailWithLogin()
+        {
+            return View();
+        }
+        public ActionResult ProductDetailClosedWithLogin()
+        {
+            return View();
+        }
     }
 }
