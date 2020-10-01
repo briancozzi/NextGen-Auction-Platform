@@ -9,5 +9,21 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
         {
             return View();
         }
+        public ActionResult ProductDetail()
+        {
+            return View();
+        }
+        public ActionResult ProductDetailClosed()
+        {
+            return View();
+        }
+        public ActionResult ProductDetailWithLogin()
+        {
+            return View();
+        }
+        public ActionResult ProductDetailClosedWithLogin()
+        {
+            return View();
+        }
     }
 }
