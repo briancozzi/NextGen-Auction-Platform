@@ -1,19 +1,11 @@
-@using Abp.Application.Services.Dto;
-@using NextGen.BiddingPlatform.AuctionItem.Dto;
-@using NextGen.BiddingPlatform.AuctionItem
 @using Microsoft.AspNetCore.Hosting
 @using NextGen.BiddingPlatform.Configuration
 @using Microsoft.Extensions.Configuration
-@using NextGen.BiddingPlatform.Category
 @inject IWebHostEnvironment env
-@inject IAuctionItemAppService _auctionItemAppService
-@inject ICategoryAppService _categoryService;
-@model PagedResultDto<AuctionItemListDto>
 @{
     var appConfiguration = env.GetAppConfiguration();
-    var imageServerPath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:ApiWebSiteRootAddress", string.Empty);
-    var data = await _auctionItemAppService.GetAllAuctionItems();
-    var categories = await _categoryService.GetAllCategory();
+    var apiServerPath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:ApiWebSiteRootAddress", string.Empty);
+    var webSitePath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:WebSiteRootAddress", string.Empty);
 }
 <div class="inner-wrapper">
     <div class="search-bar">
@@ -34,14 +26,9 @@
                             Categories:<span>All</span>
                         </a>
                         <div class="dropdown-menu">
-                            <ul>
+                            <ul id="categories">
                                 <li>Categories: <span>All</span></li>
                                 <li><a href="#">All</a></li>
-                                @foreach (var item in categories.Items)
-                                {
-                                    <li><a href="#" data-value="@item.Id">@item.CategoryName</a></li>
-                                }
-
                             </ul>
                             <a href="#" class="remove-dropdown">
                                 <img src="~/auction/images/svg/cross-icon.svg" alt="">
@@ -66,14 +53,13 @@
         </div>
     </div>
     <div class="content-wrapper have-sidename">
-
         <div class="container position-relative">
             <div class="side-name">
                 Silent Auctions
             </div>
             <div class="inner-topbar">
                 <div class="search-result">
-                    Search Results <span>(@data.Items.Count)</span>
+                    Search Results <span id="itemCount"></span>
                 </div>
                 <ul>
                     <li>
@@ -88,39 +74,16 @@
                     </li>
                 </ul>
             </div>
-            <div class="row col-gap-20">
-                @foreach (var item in data.Items)
-                {
-                    var fullImagePath = @imageServerPath + "" + @item.ImageName;
-                    var remainingTime = DateTime.Today.Add(@item.RemainingTime).ToString("hh:mm");
-                    <div class="col-lg-4 col-sm-6">
-                        <div class="golf-event">
-                            <div class="image">
-                                <img src="@fullImagePath" alt="">
-                                <div class="numeric">123</div>
-                                <a href="#" class="wishlist liked"></a>
-                            </div>
-                            <div class="desc">
-                                <p class="name">@item.ItemName</p>
-                                <ul>
-                                    <li>
-                                        Last Bid:
-                                        <span>$@item.LastBidAmount</span>
-                                    </li>
-                                    <li>
-                                        Time Left:
-                                        <span>@item.RemainingDays day  @remainingTime hrs</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                }
+            <div class="row col-gap-20" id="auctionItems">
             </div>
         </div>
     </div>
 </div>
-
-
-
-
+@section Scripts
+{
+    <script>
+        var ApiServerPath = "@apiServerPath";
+        var WebSiteUrl = "@webSitePath";
+    </script>
+    <script src="~/auction/js/auctionitems.js"></script>
+}

@@ -1,0 +1,24 @@
+﻿<script id="auctionItemTemplate" type="x-tmpl-mustache">
+    <div class="col-lg-4 col-sm-6">
+        <div class="golf-event">
+            <div class="image">
+                <img src="{{imageName}}" alt="">
+                <div class="numeric">123</div>
+                <a href="#" class="wishlist liked"></a>
+            </div>
+            <div class="desc">
+                <p class="name">{{itemName}}</p>
+                <ul>
+                    <li>
+                        Last Bid:
+                        <span>$ {{lastBidAmount}}</span>
+                    </li>
+                    <li>
+                        Time Left:
+                        <span>{{remainingDays}} day {{remainingTime}} hrs</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</script>

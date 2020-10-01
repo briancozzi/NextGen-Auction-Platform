@@ -49,6 +49,7 @@
     <script src="~/auction/js/slick.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-touchspin/4.2.5/jquery.bootstrap-touchspin.min.js"></script>
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script src="~/mustache.js"></script>
     <script src="~/auction/js/custom.js"></script>
 
     <script type="text/javascript">
@@ -63,6 +64,7 @@
         @await Component.InvokeAsync(typeof(HeaderViewComponent), new { currentPageName = ViewBag.CurrentPageName })
         @RenderBody()
         @await Html.PartialAsync("~/Views/Layout/_Footer.cshtml")
+        <div id="pageTemplates"></div>
     </div>
     <script type="text/javascript">
         $(function () {

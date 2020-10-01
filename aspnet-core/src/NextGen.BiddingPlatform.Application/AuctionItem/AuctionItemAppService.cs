@@ -6,6 +6,7 @@ using Abp.Linq.Extensions;
 using Abp.Runtime.Session;
 using Abp.Timing;
 using Abp.UI;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NextGen.BiddingPlatform.AuctionItem.Dto;
@@ -26,7 +27,6 @@ namespace NextGen.BiddingPlatform.AuctionItem
         private readonly IRepository<Core.Auctions.Auction> _auctionRepository;
         private readonly IRepository<Core.Items.Item> _itemRepository;
         private readonly IAbpSession _abpSession;
-        private readonly IConfiguration _config;
 
         public AuctionItemAppService(IRepository<Core.AuctionItems.AuctionItem> auctionitemRepository,
                                      IRepository<Core.Auctions.Auction> auctionRepository,
@@ -38,6 +38,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
             _itemRepository = itemRepository;
             _abpSession = abpSession;
         }
+        [AllowAnonymous]
         public async Task<ListResultDto<AuctionItemListDto>> GetAllAuctionItems()
         {
             var auctionItems = await _auctionitemRepository.GetAllIncluding(x => x.Auction, x => x.Item, x => x.AuctionHistories)
@@ -56,7 +57,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
                                                                 ImageName = s.Item.MainImageName,
                                                                 Thumbnail = s.Item.ThumbnailImage,
                                                                 RemainingDays = (s.Auction.AuctionEndDateTime - s.Auction.AuctionStartDateTime).TotalDays.ToString(),
-                                                                RemainingTime = (s.Auction.AuctionEndDateTime - s.Auction.AuctionStartDateTime),
+                                                                RemainingTime = (s.Auction.AuctionEndDateTime - s.Auction.AuctionStartDateTime).Hours + ":" + (s.Auction.AuctionEndDateTime - s.Auction.AuctionStartDateTime).Seconds,
                                                                 LastBidAmount = s.AuctionHistories.OrderByDescending(x => x.CreationTime).LastOrDefault().BidAmount
                                                             })
                                                             .ToListAsync();
@@ -65,7 +66,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
         }
         public async Task<PagedResultDto<AuctionItemListDto>> GetAuctionItemsWithFilter(AuctionItemFilter input)
         {
-            var query = _auctionitemRepository.GetAllIncluding(x => x.Auction, x => x.Item, x => x.Item.ItemImages).AsNoTracking()
+            var query = _auctionitemRepository.GetAllIncluding(x => x.Auction, x => x.Item).AsNoTracking()
                                        .WhereIf(!input.Search.IsNullOrWhiteSpace(), x => x.Auction.AuctionType.ToLower().IndexOf(input.Search.ToLower()) > -1)
                                        .Select(s => new AuctionItemListDto
                                        {

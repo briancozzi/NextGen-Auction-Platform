@@ -9,5 +9,10 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
         {
             return View();
         }
+
+        public IActionResult GetAuctionItemTemplate()
+        {
+            return PartialView("~/Views/Home/_AuctionItemTemplate.cshtml");
+        }
     }
 }

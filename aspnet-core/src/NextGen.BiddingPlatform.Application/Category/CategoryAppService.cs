@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Abp.Runtime.Session;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NextGen.BiddingPlatform.Category
 {
@@ -31,6 +32,7 @@ namespace NextGen.BiddingPlatform.Category
             return ObjectMapper.Map<CategoryDto>(category);
         }
 
+        [AllowAnonymous]
         public async Task<ListResultDto<CategoryListDto>> GetAllCategory()
         {
             var categories = await _categoryRepository.GetAll()

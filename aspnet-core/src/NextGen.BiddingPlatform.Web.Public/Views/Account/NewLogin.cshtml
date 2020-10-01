@@ -1,0 +1,165 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>NewLogin</title>
+</head>
+<body>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <style>
+        .help-block.form-error {
+            color: red;
+        }
+    </style>
+    <div class="container">
+        <form>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="UserName">User Name</label>
+                        <input type="hidden" value="" id="accessToken" />
+                        <input type="text" id="UserName" class="form-control" data-validation="required" data-validation-error-msg="Enter user name" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="Password">Password</label>
+                        <input type="text" id="Password" class="form-control" data-validation="required" data-validation-error-msg="Password is required" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <button class="btn  btn-primary" id="SubmitBtn">Submit</button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <button class="btn  btn-success" id="refreshToken" data-token="">Get New Token From Refresh Token</button>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <button class="btn  btn-success" id="getCategories" data-api="api/services/app/Category/GetAllCategory">Get Categories</button>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <button class="btn  btn-success" id="getCountries" data-api="api/services/app/Country/GetAllCountry">Get Countries</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div>
+                    <p id="data"></p>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script src="~/auction/js/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+    <script src="~/auction/js/form-validator.js"></script>
+    <script>
+        $(function () {
+            $.validate();
+        });
+
+        $("#SubmitBtn").on("click", function (e) {
+            e.preventDefault();
+            if ($("form").isValid()) {
+                var userName = $("#UserName").val();
+                var password = $("#Password").val();
+
+                var model = {
+                    userNameOrEmailAddress: userName,
+                    password: password
+                };
+                $.ajax({
+                    url: "https://localhost:44301/api/TokenAuth/Authenticate",
+                    type: "POST",
+                    cache: false,
+                    async: true,
+                    contentType: "application/json",
+                    data: JSON.stringify(model),
+                    dataType: "json",
+                    success: function (response) {
+                        console.log(response);
+                        var refreshToken = response.result.refreshToken;
+                        var accessToken = response.result.accessToken;
+                        $("#refreshToken").attr("data-token", refreshToken);
+                        $("#accessToken").val(accessToken);
+                    },
+                    error: function (xhr) {
+                        console.log(xhr.responseText + " " + xhr.status)
+                    }
+                });
+            }
+            else {
+                return false;
+            }
+        });
+
+        $("#refreshToken").on("click", function (e) {
+            e.preventDefault();
+            var token = $(this).attr("data-token");
+            if (token === "")
+                return false;
+            else {
+                $.ajax({
+                    url: "https://localhost:44301/api/TokenAuth/RefreshToken?refreshToken=" + token,
+                    type: "POST",
+                    cache: false,
+                    async: true,
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (response) {
+                        console.log(response);
+                    },
+                    error: function (xhr) {
+                        console.log(xhr.responseText + " " + xhr.status)
+                    }
+                });
+            }
+        });
+
+        $("#getCategories,#getCountries").on("click", function (e) {
+            e.preventDefault();
+            var api = $(this).attr("data-api");
+            GetData(api, $("#data"));
+        });
+
+        function GetData(api, element) {
+            debugger;
+            var token = $("#accessToken").val();
+            //if (token === "")
+            //    return false;
+            //else {
+            var finalToken = "Bearer " + token;
+            $.ajax({
+                url: "https://localhost:44301/" + api,
+                //headers: { "Authorization": finalToken },
+                type: "GET",
+                cache: false,
+                async: true,
+                contentType: "application/json",
+                dataType: "json",
+                success: function (result) {
+                    $(element).text(JSON.stringify(result));
+                },
+                error: function (xhr) {
+                    console.log(xhr.responseText + " " + xhr.status)
+                }
+            });
+            //}
+        }
+
+    </script>
+</body>
+</html>

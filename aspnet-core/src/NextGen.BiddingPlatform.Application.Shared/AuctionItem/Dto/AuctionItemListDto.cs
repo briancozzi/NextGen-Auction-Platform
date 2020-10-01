@@ -22,7 +22,7 @@ namespace NextGen.BiddingPlatform.AuctionItem.Dto
         public string ImageName { get; set; }
         public string Thumbnail { get; set; }
         public string RemainingDays { get; set; }
-        public TimeSpan RemainingTime { get; set; }
+        public string RemainingTime { get; set; }
         public double LastBidAmount { get; set; }
     }
 }
