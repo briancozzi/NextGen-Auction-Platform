@@ -18,5 +18,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
         Task<AuctionItemDto> Update(CreateAuctionItemDto input);
         Task CreateAuctionItems(List<CreateAuctionItemDto> auctionItems);
         Task Delete(Guid Id);
+        Task<AuctionItemListDto> GetAuctionItem(Guid Id);
+        Task<AuctionItemWithHistoryDto> GetAuctionItemWithHistory(Guid Id, int itemStatus);
     }
 }

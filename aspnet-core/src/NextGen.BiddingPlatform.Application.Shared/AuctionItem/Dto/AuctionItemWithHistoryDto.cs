@@ -4,8 +4,12 @@ using System.Text;
 
 namespace NextGen.BiddingPlatform.AuctionItem.Dto
 {
-    public class AuctionItemListDto
+    public class AuctionItemWithHistoryDto
     {
+        public AuctionItemWithHistoryDto()
+        {
+            AuctionItemHistories = new List<AuctionItemHistoryDto>();
+        }
         public Guid AuctionItemId { get; set; }
         //Auction
         public Guid AuctionId { get; set; }
@@ -17,7 +21,6 @@ namespace NextGen.BiddingPlatform.AuctionItem.Dto
         public Guid ItemId { get; set; }
         public string ItemName { get; set; }
         public string ItemDescription { get; set; }
-        public int ItemStatus { get; set; }
         public int ItemType { get; set; }//may be enum or dropdown
         public int ItemNumber { get; set; }
         public double FairMarketValue_FMV { get; set; }
@@ -26,7 +29,19 @@ namespace NextGen.BiddingPlatform.AuctionItem.Dto
         public string RemainingDays { get; set; }
         public string RemainingTime { get; set; }
         public double LastBidAmount { get; set; }
+        public string LastBidWinnerName { get; set; }
         public int TotalBidCount { get; set; }
-        public bool IsClosedItemStatus { get; set; }
+        public double BidStepIncrementValue { get; set; }
+
+        public List<AuctionItemHistoryDto> AuctionItemHistories { get; set; }
+    }
+
+    public class AuctionItemHistoryDto
+    {
+        public string BidderName { get; set; } = "Annonymous";
+        public double BidAmount { get; set; }
+        public DateTime BidDate { get; set; }
+        public string BiddingDate { get; set; }
+        public string BiddingTime { get; set; }
     }
 }

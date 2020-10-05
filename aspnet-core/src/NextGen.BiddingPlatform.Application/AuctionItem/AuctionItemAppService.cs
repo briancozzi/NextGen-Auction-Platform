@@ -18,6 +18,7 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Text;
 using System.Threading.Tasks;
+using static NextGen.BiddingPlatform.Enums.ItemEnums;
 
 namespace NextGen.BiddingPlatform.AuctionItem
 {
@@ -52,13 +53,15 @@ namespace NextGen.BiddingPlatform.AuctionItem
                                                                 ItemId = s.Item.UniqueId,
                                                                 ItemName = s.Item.ItemName,
                                                                 ItemNumber = s.Item.ItemNumber,
+                                                                ItemStatus = s.Item.ItemStatus,
                                                                 ItemType = s.Item.ItemType,
                                                                 FairMarketValue_FMV = s.Item.FairMarketValue_FMV,
                                                                 ImageName = s.Item.MainImageName,
                                                                 Thumbnail = s.Item.ThumbnailImage,
                                                                 RemainingDays = (s.Auction.AuctionEndDateTime - s.Auction.AuctionStartDateTime).TotalDays.ToString(),
                                                                 RemainingTime = (s.Auction.AuctionEndDateTime - s.Auction.AuctionStartDateTime).Hours + ":" + (s.Auction.AuctionEndDateTime - s.Auction.AuctionStartDateTime).Seconds,
-                                                                LastBidAmount = s.AuctionHistories.OrderByDescending(x => x.CreationTime).LastOrDefault().BidAmount
+                                                                LastBidAmount = s.AuctionHistories.OrderByDescending(x => x.CreationTime).LastOrDefault().BidAmount,
+                                                                IsClosedItemStatus = s.Item.ItemStatus == (int)ItemStatus.Closed
                                                             })
                                                             .ToListAsync();
 
@@ -123,6 +126,97 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 throw new UserFriendlyException("Auction Item not found for given id");
 
             return ObjectMapper.Map<CreateAuctionItemDto>(output);
+        }
+
+        [AllowAnonymous]
+        public async Task<AuctionItemListDto> GetAuctionItem(Guid Id)
+        {
+            try
+            {
+                var output = await _auctionitemRepository.GetAllIncluding(x => x.Item, x => x.Auction, x => x.AuctionHistories).AsNoTracking().FirstOrDefaultAsync(x => x.UniqueId == Id);
+                if (output == null)
+                    throw new UserFriendlyException("Auction Item not found for given id");
+                var lastBidAmount = output.AuctionHistories.OrderByDescending(x => x.CreationTime).LastOrDefault()?.BidAmount ?? 0;
+                return new AuctionItemListDto
+                {
+                    AuctionItemId = output.UniqueId,
+                    AuctionId = output.Auction.UniqueId,
+                    AuctionEndDateTime = output.Auction.AuctionEndDateTime,
+                    AuctionStartDateTime = output.Auction.AuctionStartDateTime,
+                    AuctionType = output.Auction.AuctionType,
+                    ItemId = output.Item.UniqueId,
+                    ItemName = output.Item.ItemName,
+                    ItemNumber = output.Item.ItemNumber,
+                    ItemType = output.Item.ItemType,
+                    FairMarketValue_FMV = output.Item.FairMarketValue_FMV,
+                    ImageName = output.Item.MainImageName,
+                    Thumbnail = output.Item.ThumbnailImage,
+                    RemainingDays = (output.Auction.AuctionEndDateTime - output.Auction.AuctionStartDateTime).TotalDays.ToString(),
+                    RemainingTime = (output.Auction.AuctionEndDateTime - output.Auction.AuctionStartDateTime).Hours + ":" + (output.Auction.AuctionEndDateTime - output.Auction.AuctionStartDateTime).Seconds,
+                    LastBidAmount = lastBidAmount,
+                    TotalBidCount = output.AuctionHistories.Count,
+                    ItemDescription = output.Item.Description
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            //return ObjectMapper.Map<AuctionItemListDto>(output);
+        }
+
+        [AllowAnonymous]
+        public async Task<AuctionItemWithHistoryDto> GetAuctionItemWithHistory(Guid Id, int itemStatus)
+        {
+            try
+            {
+                var output = await _auctionitemRepository.
+                                                                    GetAllIncluding(
+                                                                     x => x.Item,
+                                                                     x => x.Auction,
+                                                                     x => x.AuctionHistories)
+                                                                    .Include($"{nameof(Core.AuctionItems.AuctionItem.AuctionHistories)}.{nameof(Core.AuctionHistories.AuctionHistory.AuctionBidder)}").AsNoTracking().FirstOrDefaultAsync(x => x.UniqueId == Id && x.Item.ItemStatus == itemStatus);
+                if (output == null)
+                    throw new UserFriendlyException("Auction Item not found for given id and status");
+
+
+                var result = new AuctionItemWithHistoryDto
+                {
+                    AuctionItemId = output.UniqueId,
+                    AuctionId = output.Auction.UniqueId,
+                    AuctionEndDateTime = output.Auction.AuctionEndDateTime,
+                    AuctionStartDateTime = output.Auction.AuctionStartDateTime,
+                    AuctionType = output.Auction.AuctionType,
+                    ItemId = output.Item.UniqueId,
+                    ItemName = output.Item.ItemName,
+                    ItemNumber = output.Item.ItemNumber,
+                    ItemType = output.Item.ItemType,
+                    FairMarketValue_FMV = output.Item.FairMarketValue_FMV,
+                    ImageName = output.Item.MainImageName,
+                    Thumbnail = output.Item.ThumbnailImage,
+                    RemainingDays = (output.Auction.AuctionEndDateTime - output.Auction.AuctionStartDateTime).TotalDays.ToString(),
+                    RemainingTime = (output.Auction.AuctionEndDateTime - output.Auction.AuctionStartDateTime).Hours + ":" + (output.Auction.AuctionEndDateTime - output.Auction.AuctionStartDateTime).Seconds,
+                    TotalBidCount = output.AuctionHistories.Count,
+                    ItemDescription = output.Item.Description,
+                    BidStepIncrementValue = output.Item.BidStepIncrementValue,
+                    AuctionItemHistories = output.AuctionHistories.OrderByDescending(x => x.CreationTime).Select(s => new AuctionItemHistoryDto
+                    {
+                        BidderName = s.AuctionBidder.BidderName,
+                        BidAmount = s.BidAmount,
+                        BiddingDate = s.CreationTime.ToString("MM/dd/yyyy"),
+                        BiddingTime = s.CreationTime.ToString("hh:mm tt"),
+                        BidDate = s.CreationTime
+                    }).ToList()
+                };
+                result.LastBidAmount = result.AuctionItemHistories.OrderByDescending(x => x.BidDate).FirstOrDefault()?.BidAmount ?? 0;
+                result.LastBidWinnerName = result.AuctionItemHistories.OrderByDescending(x => x.BidDate).FirstOrDefault()?.BidderName ?? string.Empty;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
         public async Task<AuctionItemDto> Create(CreateAuctionItemDto input)
         {

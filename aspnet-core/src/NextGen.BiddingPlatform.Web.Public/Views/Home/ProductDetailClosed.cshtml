@@ -1,7 +1,14 @@
-﻿<div class="inner-wrapper">
-
+﻿@using Microsoft.AspNetCore.Hosting
+@using NextGen.BiddingPlatform.Configuration
+@using Microsoft.Extensions.Configuration
+@inject IWebHostEnvironment env
+@{
+    var appConfiguration = env.GetAppConfiguration();
+    var apiServerPath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:ApiWebSiteRootAddress", string.Empty);
+    var webSitePath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:WebSiteRootAddress", string.Empty);
+}
+<div class="inner-wrapper">
     <div class="content-wrapper have-sidename pt-80">
-
         <div class="container position-relative">
             <div class="side-name v-center">
                 Silent Auctions
@@ -13,31 +20,7 @@
 
                             <div class="event-slider slick-instance slider-loader" data-slick='{"slidesToShow": 1, "slidesToScroll": 1, "fade": true, "arrows": true, "infinite": false, "dots": false, "autoplay": true}'>
                                 <div class="image">
-                                    <img src="~/auction/images/event-slider-img.png" alt="">
-                                    <div class="numeric">123</div>
-                                    <a href="#" class="wishlist"></a>
-                                    <div class="event-close"><span>CLOSED</span></div>
-                                </div>
-                                <div class="image">
-                                    <img src="~/auction/images/event-slider-img.png" alt="">
-                                    <div class="numeric">123</div>
-                                    <a href="#" class="wishlist"></a>
-                                    <div class="event-close"><span>CLOSED</span></div>
-                                </div>
-                                <div class="image">
-                                    <img src="~/auction/images/event-slider-img.png" alt="">
-                                    <div class="numeric">123</div>
-                                    <a href="#" class="wishlist"></a>
-                                    <div class="event-close"><span>CLOSED</span></div>
-                                </div>
-                                <div class="image">
-                                    <img src="~/auction/images/event-slider-img.png" alt="">
-                                    <div class="numeric">123</div>
-                                    <a href="#" class="wishlist"></a>
-                                    <div class="event-close"><span>CLOSED</span></div>
-                                </div>
-                                <div class="image">
-                                    <img src="~/auction/images/event-slider-img.png" alt="">
+                                    <img src="" alt="" id="itemImage">
                                     <div class="numeric">123</div>
                                     <a href="#" class="wishlist"></a>
                                     <div class="event-close"><span>CLOSED</span></div>
@@ -48,21 +31,23 @@
                     <div class="col-lg-4 col-md-5">
                         <div class="golf-event details">
                             <div class="desc border-bottom-0 mb-0 pb-0">
-                                <p class="name">Wilson Launchpad <br> (owned by Stephen Amell)</p>
+                                <input type="hidden" id="auctionItemId" value="@ViewBag.AuctionItemId" />
+                                <input type="hidden" id="itemStatus" value="@ViewBag.ItemStatus" />
+                                <p class="name"></p>
                                 <ul>
                                     <li>
                                         Last Bid:
-                                        <span>$4,000.00</span>
+                                        <span id="lastBidAmount">$0.0</span>
                                     </li>
                                     <li>
                                         FMV:
-                                        <span>$200.00</span>
+                                        <span id="fmvValue">$0.0</span>
                                     </li>
                                 </ul>
                                 <ul>
                                     <li>
                                         # of Bids:
-                                        <span>26</span>
+                                        <span id="totalBids">0</span>
                                     </li>
                                     <li>
                                         # of Watchers:
@@ -73,7 +58,7 @@
                             <div class="desc mt-0 b bid">
                                 <h5>BIDDING CLOSED</h5>
                                 <div class="sold-price">
-                                    The item is sold for a bid of <span class="price">4,200.00</span> to <span class="green">Anonymous</span>
+                                    The item is sold for a bid of <span class="price">0.0</span> to <span class="green" id="lastBidWinner"></span>
                                 </div>
 
                                 <div class="button-row">
@@ -91,14 +76,9 @@
                             <div class="card-heading">
                                 Item Description
                             </div>
-                            <p class="desc">
-                                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proiden.
+                            <p class="desc" id="itemDescription">
                             </p>
-                            <p class="desc mb-70">
-                                Punt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis
-                                explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
-                            </p>
+
                             <div class="share-wrapper">
                                 <div class="text">
                                     Share this:
@@ -124,98 +104,26 @@
                 </div>
                 <div class="col-lg-4 col-md-5">
                     <div class="card">
-                        <div class="inner pb-0 pl-0 pr-0">
+                        <div class="inner pb-0 pl-0 pr-0" id="itemHistories">
                             <div class="card-heading d-flex pl-10 pr-10">
                                 Item History
                                 <a href="#" class="add-item">
                                     <img src="~/auction/images/plus-icon.png" alt="">
                                 </a>
                             </div>
-                            <div class="item-history">
-                                <div class="pl-10 pr-10">
-                                    <ul>
-                                        <li>
-                                            <div class="name">Anonymous</div>
-                                            <div class="date-time">
-                                                02-27-2020 <span>2:55pm</span>
-                                            </div>
-                                        </li>
-                                        <li>$500.00</li>
-                                    </ul>
-                                </div>
-                                <div class="pl-10 pr-10">
-                                    <ul>
-                                        <li>
-                                            <div class="name">Anonymous</div>
-                                            <div class="date-time">
-                                                02-27-2020 <span>2:55pm</span>
-                                            </div>
-                                        </li>
-                                        <li>$500.00</li>
-                                    </ul>
-                                </div>
-                                <div class="pl-10 pr-10">
-                                    <ul>
-                                        <li>
-                                            <div class="name">Anonymous</div>
-                                            <div class="date-time">
-                                                02-27-2020 <span>2:55pm</span>
-                                            </div>
-                                        </li>
-                                        <li>$500.00</li>
-                                    </ul>
-                                </div>
-                                <div class="pl-10 pr-10">
-                                    <ul>
-                                        <li>
-                                            <div class="name">Anonymous</div>
-                                            <div class="date-time">
-                                                02-27-2020 <span>2:55pm</span>
-                                            </div>
-                                        </li>
-                                        <li>$500.00</li>
-                                    </ul>
-                                </div>
-                                <div class="pl-10 pr-10">
-                                    <ul>
-                                        <li>
-                                            <div class="name">Anonymous</div>
-                                            <div class="date-time">
-                                                02-27-2020 <span>2:55pm</span>
-                                            </div>
-                                        </li>
-                                        <li>$500.00</li>
-                                    </ul>
-                                </div>
-                                <div class="pl-10 pr-10">
-                                    <ul>
-                                        <li>
-                                            <div class="name">Anonymous</div>
-                                            <div class="date-time">
-                                                02-27-2020 <span>2:55pm</span>
-                                            </div>
-                                        </li>
-                                        <li>$500.00</li>
-                                    </ul>
-                                </div>
-                                <div class="pl-10 pr-10">
-                                    <ul>
-                                        <li>
-                                            <div class="name">Anonymous</div>
-                                            <div class="date-time">
-                                                02-27-2020 <span>2:55pm</span>
-                                            </div>
-                                        </li>
-                                        <li>$500.00</li>
-                                    </ul>
-                                </div>
-                            </div>
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+@section Scripts
+{
+    <script>
+        var ApiServerPath = "@apiServerPath";
+        var WebSiteUrl = "@webSitePath";
+    </script>
+    <script src="~/auction/js/closedproductdetails.js"></script>
+}
 

@@ -1,6 +1,32 @@
 ﻿<script id="auctionItemTemplate" type="x-tmpl-mustache">
+    {{#isClosedItemStatus}}
     <div class="col-lg-4 col-sm-6">
-        <div class="golf-event">
+        <div class="golf-event closed" data-id="{{auctionItemId}}" data-is-closed-auction="true" data-itemstatus="{{itemStatus}}">
+            <div class="image">
+                <img src="{{imageName}}" alt="">
+                <div class="numeric">123</div>
+                <a href="#" class="wishlist liked"></a>
+                <div class="event-close"><span>CLOSED</span></div>
+            </div>
+            <div class="desc">
+                <p class="name">{{itemName}}</p>
+                <ul>
+                    <li>
+                        Last Bid:
+                        <span>$ {{lastBidAmount}}</span>
+                    </li>
+                    <li>
+                        Time Left:
+                        <span>{{remainingDays}} day {{remainingTime}} hrs</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    {{/isClosedItemStatus}}
+    {{^isClosedItemStatus}}
+    <div class="col-lg-4 col-sm-6">
+        <div class="golf-event" data-id="{{auctionItemId}}" data-is-closed-auction="false" data-itemstatus="{{itemStatus}}">
             <div class="image">
                 <img src="{{imageName}}" alt="">
                 <div class="numeric">123</div>
@@ -21,4 +47,5 @@
             </div>
         </div>
     </div>
+    {{/isClosedItemStatus}}
 </script>

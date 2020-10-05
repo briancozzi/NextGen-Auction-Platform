@@ -1,7 +1,28 @@
 ﻿$(function () {
-    GetCategories();
     GetTemplate();
+    GetCategories();
     GetAuctionItems();
+    //get auction item by id
+    $(document).on("click", ".golf-event .image, .golf-event .desc", function () {
+        var isClosedAuction = $(this).parents(".golf-event").attr("data-is-closed-auction");
+        var itemStatus = $(this).parents(".golf-event").attr("data-itemstatus");
+        if (isClosedAuction == "true") {
+            if (IsLoggedInUser == "true") {
+                location.href = "/Home/ProductDetailClosedWithLogin?id=" + $(this).parents(".golf-event").attr("data-id") + "&itemStatus=" + itemStatus;
+            }
+            else {
+                location.href = "/Home/ProductDetailClosed?id=" + $(this).parents(".golf-event").attr("data-id") + "&itemStatus=" + itemStatus;
+            }
+        }
+        else {
+            if (IsLoggedInUser == "true") {
+                location.href = "/Home/ProductDetailWithLogin?id=" + $(this).parents(".golf-event").attr("data-id") + "&itemStatus=" + itemStatus;
+            }
+            else {
+                location.href = "/Home/ProductDetail?id=" + $(this).parents(".golf-event").attr("data-id");
+            }
+        }
+    });
 });
 
 function GetCategories() {
@@ -59,7 +80,7 @@ function GetTemplate() {
     $.ajax({
         url: url,
         type: "GET",
-        async: true,
+        //async: true,
         cache: false,
         dataType: "html",
         success: function (response) {

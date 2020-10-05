@@ -1,7 +1,14 @@
-﻿<div class="inner-wrapper">
-
+﻿@using Microsoft.AspNetCore.Hosting
+@using NextGen.BiddingPlatform.Configuration
+@using Microsoft.Extensions.Configuration
+@inject IWebHostEnvironment env
+@{
+    var appConfiguration = env.GetAppConfiguration();
+    var apiServerPath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:ApiWebSiteRootAddress", string.Empty);
+    var webSitePath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:WebSiteRootAddress", string.Empty);
+}
+<div class="inner-wrapper">
     <div class="content-wrapper have-sidename pt-80">
-
         <div class="container position-relative">
             <div class="side-name v-center">
                 Silent Auctions
@@ -10,33 +17,32 @@
                 <div class="row col-gap-20 align-items-center">
                     <div class="col-lg-8 col-md-7">
                         <div class="golf-event bg-transparent box-shadow-n">
-
                             <div class="event-slider slick-instance slider-loader" data-slick='{"slidesToShow": 1, "slidesToScroll": 1, "fade": true, "arrows": true, "infinite": false, "dots": false, "autoplay": true}'>
                                 <div class="image">
-                                    <img src="~/auction/images/event-slider-img.png" alt="">
+                                    <img src="" alt="" id="itemImage">
                                     <div class="numeric">123</div>
                                     <a href="#" class="wishlist"></a>
                                 </div>
-                                <div class="image">
-                                    <img src="~/auction/images/event-slider-img.png" alt="">
-                                    <div class="numeric">123</div>
-                                    <a href="#" class="wishlist"></a>
-                                </div>
-                                <div class="image">
-                                    <img src="~/auction/images/event-slider-img.png" alt="">
-                                    <div class="numeric">123</div>
-                                    <a href="#" class="wishlist"></a>
-                                </div>
-                                <div class="image">
-                                    <img src="~/auction/images/event-slider-img.png" alt="">
-                                    <div class="numeric">123</div>
-                                    <a href="#" class="wishlist"></a>
-                                </div>
-                                <div class="image">
-                                    <img src="~/auction/images/event-slider-img.png" alt="">
-                                    <div class="numeric">123</div>
-                                    <a href="#" class="wishlist"></a>
-                                </div>
+                                @*<div class="image">
+                                        <img src="~/auction/images/event-slider-img.png" alt="">
+                                        <div class="numeric">123</div>
+                                        <a href="#" class="wishlist"></a>
+                                    </div>
+                                    <div class="image">
+                                        <img src="~/auction/images/event-slider-img.png" alt="">
+                                        <div class="numeric">123</div>
+                                        <a href="#" class="wishlist"></a>
+                                    </div>
+                                    <div class="image">
+                                        <img src="~/auction/images/event-slider-img.png" alt="">
+                                        <div class="numeric">123</div>
+                                        <a href="#" class="wishlist"></a>
+                                    </div>
+                                    <div class="image">
+                                        <img src="~/auction/images/event-slider-img.png" alt="">
+                                        <div class="numeric">123</div>
+                                        <a href="#" class="wishlist"></a>
+                                    </div>*@
                             </div>
                         </div>
                     </div>
@@ -48,36 +54,33 @@
                         </div>
                         <div class="golf-event details">
                             <div class="desc ">
-                                <p class="name">Wilson Launchpad <br> (owned by Stephen Amell)</p>
+                                <input type="hidden" id="auctionItemId" value="@ViewBag.AuctionItemId" />
+                                <p class="name"></p>
                                 <ul>
                                     <li>
                                         Last Bid:
-                                        <span>$4,000.00</span>
+                                        <span id="lastBidAmount">$0.0</span>
                                     </li>
                                     <li>
                                         FMV:
-                                        <span>$200.00</span>
+                                        <span id="fmvValue">$0.0</span>
                                     </li>
                                 </ul>
                                 <ul>
                                     <li>
                                         # of Bids:
-                                        <span>26</span>
+                                        <span id="totalBids">0</span>
                                     </li>
                                     <li>
                                         # of Watchers:
                                         <span>5</span>
                                     </li>
                                 </ul>
-
                                 <div class="bid">
-
-
                                     <div class="green-text text-center">Want to place a bid?</div>
                                     <div class="button-row mb-30">
                                         <a href="#" class="btn btn-primary">REGISTER NOW</a>
                                     </div>
-
                                     <div class="black-text text-center">Already have an account?</div>
                                     <div class="button-row">
                                         <a href="#" class="btn btn-default">SIGN IN</a>
@@ -93,15 +96,9 @@
                     <div class="card-heading">
                         Item Description
                     </div>
-                    <p class="desc">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proiden.
+                    <p class="desc" id="itemDescription">
+
                     </p>
-                    <p class="desc">
-                        Punt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis
-                        et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
-                    </p>
-                    <p class="desc mb-70">Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.</p>
                     <div class="share-wrapper">
                         <div class="text">
                             Share this:
@@ -127,3 +124,11 @@
         </div>
     </div>
 </div>
+@section Scripts
+{
+    <script>
+        var ApiServerPath = "@apiServerPath";
+        var WebSiteUrl = "@webSitePath";
+    </script>
+    <script src="~/auction/js/productdetails.js"></script>
+}
