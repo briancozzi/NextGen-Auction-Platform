@@ -157,33 +157,33 @@
     </div>
 </div>
 <script>
-        var ApiServerPath = "@apiServerPath";
+    var ApiServerPath = "@apiServerPath";
     var WebSiteUrl = "@webSitePath";
-    $(document).on("click", "#bidNowBtn", function (e) {
-        e.preventDefault();
-        //first check if current User histroy count is 0 then open popup and get current user name
-        var minimumBidValue = parseFloat($(this).attr("data-minimumBidAmount"));
-        var currBidValue = parseFloat($("#biddingAmount").val());
-        if (isNaN(currBidValue)) {
-            alert("Please enter minimum bid amount");
-            return false;
-        }
-        if (minimumBidValue > currBidValue) {
-            alert("Bid amount should be greater than minimum bid amount");
-            return false;
-        }
-        else {
-            var historyCount = parseInt($("#currentUserAuctionHistoryCount").val());
-            if (historyCount === 0) {
-                //open popup and then save the auction bidder with auction history
-                $("#myModal").modal("show");
-            }
-            else {
-                //save only auction history
-                SaveAuctionBidderFirstThenHistory($("#auctionBidderName").val());
-            }
-        }
-    });
+    //$(document).on("click", "#bidNowBtn", function (e) {
+    //    e.preventDefault();
+    //    //first check if current User histroy count is 0 then open popup and get current user name
+    //    var minimumBidValue = parseFloat($(this).attr("data-minimumBidAmount"));
+    //    var currBidValue = parseFloat($("#biddingAmount").val());
+    //    if (isNaN(currBidValue)) {
+    //        alert("Please enter minimum bid amount");
+    //        return false;
+    //    }
+    //    if (minimumBidValue > currBidValue) {
+    //        alert("Bid amount should be greater than minimum bid amount");
+    //        return false;
+    //    }
+    //    else {
+    //        var historyCount = parseInt($("#currentUserAuctionHistoryCount").val());
+    //        if (historyCount === 0) {
+    //            //open popup and then save the auction bidder with auction history
+    //            $("#myModal").modal("show");
+    //        }
+    //        else {
+    //            //save only auction history
+    //            SaveAuctionBidderFirstThenHistory($("#auctionBidderName").val());
+    //        }
+    //    }
+    //});
 
     $(document).on("click", "#saveBidderBtn", function () {
         var bidderName = $("#bidderName").val();
@@ -250,4 +250,6 @@
     }
 </script>
 <script src="~/auction/js/closedproductdetails.js"></script>
+<script src="~/signalr.js"></script>
+<script src="~/auction/js/bid-signalr.js"></script>
 }

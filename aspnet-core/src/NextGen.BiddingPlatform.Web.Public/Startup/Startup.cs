@@ -92,7 +92,7 @@ namespace NextGen.BiddingPlatform.Web.Public.Startup
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<AbpCommonHub>("/signalr");
-
+                endpoints.MapHub<BidHub.BidHub>("/signalr-BidHub");
                 endpoints.MapControllerRoute("defaultWithArea", "{area}/{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
