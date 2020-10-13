@@ -40,8 +40,8 @@ using NextGen.BiddingPlatform.Web.HealthCheck;
 using HealthChecksUISettings = HealthChecks.UI.Configuration.Settings;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Abp.Timing;
-using NextGen.BiddingPlatform.BackGroundTask.BackGroundService;
 using NextGen.BiddingPlatform.RabbitMQ;
+using NextGen.BiddingPlatform.BackgroundService.RabbitMqService;
 
 namespace NextGen.BiddingPlatform.Web.Startup
 {
@@ -103,8 +103,7 @@ namespace NextGen.BiddingPlatform.Web.Startup
             IdentityRegistrar.Register(services);
             AuthConfigurer.Configure(services, _appConfiguration);
 
-            //custom queue code
-            services.AddHostedService<QueuedHostedService>();
+            services.AddScoped<IRabbitMqService, RabbitMqService>();
 
             //Identity server
             if (bool.Parse(_appConfiguration["IdentityServer:IsEnabled"]))

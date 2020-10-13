@@ -1,26 +1,15 @@
 ﻿using Abp.Application.Services.Dto;
-using Abp.Authorization;
 using Abp.Domain.Repositories;
-using Abp.Runtime.Session;
 using Abp.Timing;
 using Abp.UI;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using NextGen.BiddingPlatform.AuctionHistory.Dto;
-using NextGen.BiddingPlatform.Authorization;
-using NextGen.BiddingPlatform.Authorization.Permissions;
-using NextGen.BiddingPlatform.Authorization.Roles;
 using NextGen.BiddingPlatform.Authorization.Users;
-using NextGen.BiddingPlatform.EntityFrameworkCore;
 using NextGen.BiddingPlatform.RabbitMQ;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using static NextGen.BiddingPlatform.Enums.ItemEnums;
 
@@ -32,7 +21,6 @@ namespace NextGen.BiddingPlatform.AuctionHistory
         private readonly IRepository<Core.AuctionBidders.AuctionBidder> _auctionBidderRepository;
         private readonly IRepository<Core.AuctionItems.AuctionItem> _auctionItemRepository;
         private readonly UserManager _userManager;
-        private readonly RabbitMqSettings _rabbitMqSettings;
         public AuctionHistoryAppService(IRepository<Core.AuctionHistories.AuctionHistory> auctionHistoryRepository,
                                         IRepository<Core.AuctionBidders.AuctionBidder> auctionBidderRepository,
                                         IRepository<Core.AuctionItems.AuctionItem> auctionItemRepository,
@@ -43,7 +31,6 @@ namespace NextGen.BiddingPlatform.AuctionHistory
             _auctionBidderRepository = auctionBidderRepository;
             _auctionItemRepository = auctionItemRepository;
             _userManager = userManager;
-            _rabbitMqSettings = rabbitMqSettings.Value;
         }
 
         public async Task CreateHistory(CreateAuctionHistoryDto input)
@@ -238,7 +225,7 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                     await CurrentUnitOfWork.SaveChangesAsync();
                 }
 
-
+                //return this model as response
                 return new GetAuctionBidderHistoryDto
                 {
                     AuctionBidderId = auctionBidderHistory.AuctionBidderId.Value,
@@ -257,41 +244,6 @@ namespace NextGen.BiddingPlatform.AuctionHistory
         {
             var auctionItemHistory = await _auctionHistoryRepository.GetAllListAsync(x => x.AuctionItemId == auctionItemId);
             return auctionItemHistory.Count;
-        }
-
-        public void TestSend()
-        {
-            ConnectionFactory factory;
-            if (_rabbitMqSettings.Hostname == "localhost")
-                factory = new ConnectionFactory() { HostName = _rabbitMqSettings.Hostname };
-            else
-                factory = new ConnectionFactory() { HostName = _rabbitMqSettings.Hostname, UserName = _rabbitMqSettings.UserName, Password = _rabbitMqSettings.Password };
-
-            using (var connection = factory.CreateConnection())
-            using (var channel = connection.CreateModel())
-            {
-                channel.QueueDeclare(queue: _rabbitMqSettings.QueueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
-
-                //var json = JsonConvert.SerializeObject(customer);
-                //var body = Encoding.UTF8.GetBytes(json);
-
-                channel.BasicPublish(exchange: "", routingKey: _rabbitMqSettings.QueueName, basicProperties: null, body: Encoding.UTF8.GetBytes("Hello World!"));
-            }
-        }
-        public string TestGet()
-        {
-            ConnectionFactory factory;
-            if (_rabbitMqSettings.Hostname == "localhost")
-                factory = new ConnectionFactory() { HostName = _rabbitMqSettings.Hostname };
-            else
-                factory = new ConnectionFactory() { HostName = _rabbitMqSettings.Hostname, UserName = _rabbitMqSettings.UserName, Password = _rabbitMqSettings.Password };
-
-            using var connection = factory.CreateConnection();
-            using var channel = connection.CreateModel();
-            var consumer = new EventingBasicConsumer(channel);
-            BasicGetResult result = channel.BasicGet(_rabbitMqSettings.QueueName, true);
-            if (result != null) return Encoding.UTF8.GetString(result.Body.ToArray());
-            else return "";
         }
     }
 }
