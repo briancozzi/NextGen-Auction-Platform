@@ -58,6 +58,9 @@
     <text name="Visibility">Visibility</text>
     <text name="VideoLink">Video Link</text>
     <text name="DeleteItem">Delete Item {0}</text>
+
+    <text name="AuctionHistory">Auction History</text>
+    <text name="DeleteAuctionHistory">Delete Auction History</text>
     <!-- Custom Changes end here-->
 
     <text name="HomePage">Home page</text>

@@ -36,7 +36,7 @@ namespace NextGen.BiddingPlatform.Web.Public.Startup
             services.AddControllersWithViews(options =>
             {
                 options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-            }).AddNewtonsoftJson();
+            }).AddNewtonsoftJson().AddRazorRuntimeCompilation();
 
             IdentityRegistrar.Register(services);
             services.AddSignalR();

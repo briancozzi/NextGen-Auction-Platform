@@ -38,8 +38,8 @@ namespace NextGen.BiddingPlatform.AuctionBidder
             if (user == null)
                 throw new Exception("User not found for given user id");
 
-            if (!_abpSession.TenantId.HasValue)
-                throw new Exception("You are not authorized user");
+            //if (!_abpSession.TenantId.HasValue)
+            //    throw new Exception("You are not authorized user");
 
             await _auctionBidderRepository.InsertAsync(new Core.AuctionBidders.AuctionBidder
             {

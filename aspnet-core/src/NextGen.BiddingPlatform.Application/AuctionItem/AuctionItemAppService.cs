@@ -1,4 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
@@ -10,8 +11,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NextGen.BiddingPlatform.AuctionItem.Dto;
-using NextGen.BiddingPlatform.DashboardCustomization.Dto;
-using Org.BouncyCastle.Math.EC.Rfc7748;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,7 +41,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
         [AllowAnonymous]
         public async Task<ListResultDto<AuctionItemListDto>> GetAllAuctionItems()
         {
-            var auctionItems = await _auctionitemRepository.GetAllIncluding(x => x.Auction, x => x.Item, x => x.AuctionHistories)
+            var auctionItems = await _auctionitemRepository.GetAllIncluding(x => x.Auction, x => x.Item, x => x.AuctionHistories).AsNoTracking()
                                                             .Select(s => new AuctionItemListDto
                                                             {
                                                                 AuctionItemId = s.UniqueId,
@@ -180,7 +179,6 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 if (output == null)
                     throw new UserFriendlyException("Auction Item not found for given id and status");
 
-
                 var result = new AuctionItemWithHistoryDto
                 {
                     AuctionItemId = output.UniqueId,
@@ -206,11 +204,21 @@ namespace NextGen.BiddingPlatform.AuctionItem
                         BidAmount = s.BidAmount,
                         BiddingDate = s.CreationTime.ToString("MM/dd/yyyy"),
                         BiddingTime = s.CreationTime.ToString("hh:mm tt"),
-                        BidDate = s.CreationTime
+                        BidDate = s.CreationTime,
+                        AuctionBidderUserId = s.AuctionBidder.UserId,
+                        AuctionBidderId = s.AuctionBidderId
                     }).ToList()
                 };
                 result.LastBidAmount = result.AuctionItemHistories.OrderByDescending(x => x.BidDate).FirstOrDefault()?.BidAmount ?? 0;
                 result.LastBidWinnerName = result.AuctionItemHistories.OrderByDescending(x => x.BidDate).FirstOrDefault()?.BidderName ?? string.Empty;
+                var currntUseid = 3;
+                //var currntUseid = _abpSession.UserId.Value;
+                if (currntUseid > 0)
+                {
+                    result.CurrentUserAuctionHistoryCount = result.AuctionItemHistories.Count(x => x.AuctionBidderUserId == currntUseid);
+                    result.CurrUserBidderName = result.AuctionItemHistories.FirstOrDefault(x => x.AuctionBidderUserId == currntUseid)?.BidderName;
+                    result.CurrUserBiddingId = result.AuctionItemHistories.FirstOrDefault(x => x.AuctionBidderUserId == currntUseid)?.AuctionBidderId ?? 0;
+                }
                 return result;
             }
             catch (Exception ex)
@@ -218,6 +226,8 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 throw;
             }
         }
+
+        [AbpAuthorize]
         public async Task<AuctionItemDto> Create(CreateAuctionItemDto input)
         {
             var item = await ValidateItemAndGet(input);
@@ -258,6 +268,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
             else
                 return item;
         }
+        [AbpAuthorize]
         public async Task<AuctionItemDto> Update(CreateAuctionItemDto input)
         {
             if (input.UniqueId == Guid.Empty)
@@ -307,6 +318,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 });
             }
         }
+        [AbpAuthorize]
         public async Task Delete(Guid Id)
         {
             var auctionItem = await _auctionitemRepository.FirstOrDefaultAsync(x => x.UniqueId == Id);

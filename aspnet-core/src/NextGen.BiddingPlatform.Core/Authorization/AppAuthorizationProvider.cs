@@ -118,6 +118,9 @@ namespace NextGen.BiddingPlatform.Authorization
             auctionPermission.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Auction_Create, L("CreateAuction"), multiTenancySides: MultiTenancySides.Tenant);
             auctionPermission.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Auction_Edit, L("EditAuction"), multiTenancySides: MultiTenancySides.Tenant);
             auctionPermission.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Auction_Delete, L("DeleteAuction"), multiTenancySides: MultiTenancySides.Tenant);
+            //Auction bidder permission
+            var auctionHistoryPermission = administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AuctionHistory, L("AuctionHistory"), multiTenancySides: MultiTenancySides.Tenant);
+            auctionHistoryPermission.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AuctionHistory_Delete, L("DeleteAuctionHistory"), multiTenancySides: MultiTenancySides.Tenant);
 
             //HOST-SPECIFIC PERMISSIONS
             var country = administration.CreateChildPermission(AppPermissions.Pages_Administration_Country, L("Country"), multiTenancySides: MultiTenancySides.Host);

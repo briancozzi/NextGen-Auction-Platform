@@ -24,7 +24,12 @@ function GetAuctionItem() {
                 $("#itemDescription").text(data.itemDescription);
                 var imageFullPath = ApiServerPath + data.imageName;
                 $("#itemImage").attr("src", imageFullPath);
-                $("#minimumBidValue").text("$" + data.bidStepIncrementValue)
+                $("#minimumBidValue").text("$" + data.bidStepIncrementValue);
+                $("#bidNowBtn").attr("data-minimumBidAmount", data.bidStepIncrementValue);
+                $("#currentUserAuctionHistoryCount").val(data.currentUserAuctionHistoryCount);
+                $("#auctionBidderId").val(data.currUserBiddingId);
+                $("#auctionBidderName").val(data.currUserBidderName);
+                $("#bidderNameFromDb").text(data.currUserBidderName)
                 var itemHistories = data.auctionItemHistories;
                 $.each(itemHistories, function (i, v) {
                     CreateHistoryData(v);
@@ -32,7 +37,7 @@ function GetAuctionItem() {
             }
         },
         error: function (xhr) {
-            console.log(xhr.responseText + " " + xhr.status)
+            console.log(xhr.responseText + " " + xhr.status);
         }
     });
 }

@@ -109,6 +109,13 @@
         public const string Pages_Administration_Tenant_Auction_Create = "Pages.Tenant.Auction.Create";
         public const string Pages_Administration_Tenant_Auction_Edit = "Pages.Tenant.Auction.Edit";
         public const string Pages_Administration_Tenant_Auction_Delete = "Pages.Tenant.Auction.Delete";
+
+        //Auction Permission
+        public const string Pages_Administration_Tenant_AuctionHistory = "Pages.Tenant.AuctionHistory";
+        //public const string Pages_Administration_Tenant_AuctionHistory_Create = "Pages.Tenant.Auction.Create";
+        //public const string Pages_Administration_Tenant_AuctionHistory_Edit = "Pages.Tenant.Auction.Edit";
+        public const string Pages_Administration_Tenant_AuctionHistory_Delete = "Pages.Tenant.AuctionHistory.Delete";
+
         //HOST-SPECIFIC PERMISSIONS
 
         public const string Pages_Editions = "Pages.Editions";

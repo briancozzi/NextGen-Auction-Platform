@@ -30,5 +30,13 @@ namespace NextGen.BiddingPlatform.Enums
             [Display(Name = "Live")]
             Live
         }
+
+        public enum BiddingStatus
+        {
+            [Display(Name = "Pending")]
+            Pending,
+            [Display(Name = "Winning")]
+            Winning
+        }
     }
 }

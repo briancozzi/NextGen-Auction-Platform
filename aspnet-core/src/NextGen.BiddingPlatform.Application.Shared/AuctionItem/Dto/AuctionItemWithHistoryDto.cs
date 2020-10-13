@@ -32,6 +32,9 @@ namespace NextGen.BiddingPlatform.AuctionItem.Dto
         public string LastBidWinnerName { get; set; }
         public int TotalBidCount { get; set; }
         public double BidStepIncrementValue { get; set; }
+        public int CurrentUserAuctionHistoryCount { get; set; }
+        public string CurrUserBidderName { get; set; }
+        public int CurrUserBiddingId { get; set; }
 
         public List<AuctionItemHistoryDto> AuctionItemHistories { get; set; }
     }
@@ -43,5 +46,7 @@ namespace NextGen.BiddingPlatform.AuctionItem.Dto
         public DateTime BidDate { get; set; }
         public string BiddingDate { get; set; }
         public string BiddingTime { get; set; }
+        public long AuctionBidderUserId { get; set; }
+        public int AuctionBidderId { get; set; }
     }
 }
