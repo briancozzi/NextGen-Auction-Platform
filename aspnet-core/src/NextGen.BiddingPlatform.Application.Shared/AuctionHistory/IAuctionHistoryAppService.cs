@@ -19,7 +19,5 @@ namespace NextGen.BiddingPlatform.AuctionHistory
 
         //Custom method for testing user
         Task<GetAuctionBidderHistoryDto> SaveAuctionBidderWithHistory(AuctionBidderHistoryDto auctionBiddingHistory);
-        void TestSend();
-        string TestGet();
     }
 }
