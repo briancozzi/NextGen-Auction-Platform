@@ -34,16 +34,16 @@ namespace NextGen.BiddingPlatform.HostingServices
         {
             if (_rabbitMqSettings.Hostname == "localhost")
             {
-                _connectionFactory = new ConnectionFactory { HostName = _rabbitMqSettings.Hostname, DispatchConsumersAsync = true, Port = 5672 };
+                _connectionFactory = new ConnectionFactory { HostName = _rabbitMqSettings.Hostname, DispatchConsumersAsync = true };
             }
             else
             {
-                _connectionFactory = new ConnectionFactory { HostName = _rabbitMqSettings.Hostname, UserName = _rabbitMqSettings.UserName, Password = _rabbitMqSettings.Password, DispatchConsumersAsync = true, Port = 5672 };
+                _connectionFactory = new ConnectionFactory { HostName = _rabbitMqSettings.Hostname, UserName = _rabbitMqSettings.UserName, Password = _rabbitMqSettings.Password, DispatchConsumersAsync = true };
             }
 
             _connection = _connectionFactory.CreateConnection();
             _channel = _connection.CreateModel();
-            _channel.QueueDeclarePassive(_rabbitMqSettings.QueueName);
+            _channel.QueueDeclare(queue: _rabbitMqSettings.QueueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
             _channel.BasicQos(0, 1, false);
 
             return base.StartAsync(cancellationToken);
@@ -60,8 +60,11 @@ namespace NextGen.BiddingPlatform.HostingServices
                 var message = Encoding.UTF8.GetString(ea.Body.ToArray());
                 try
                 {
-                    var dataFromQueue = JsonSerializer.Deserialize<AuctionBidderHistoryDto>(message);
-                    await _auctionHistoryService.SaveAuctionBidderWithHistory(dataFromQueue);
+                    if (!string.IsNullOrEmpty(message))
+                    {
+                        var dataFromQueue = JsonSerializer.Deserialize<AuctionBidderHistoryDto>(message);
+                        await _auctionHistoryService.SaveAuctionBidderWithHistory(dataFromQueue);
+                    }
                     //await Task.Delay(new Random().Next(1, 3) * 1000, stoppingToken); // simulate an async email process
 
                     _channel.BasicAck(ea.DeliveryTag, false);

@@ -159,31 +159,31 @@
 <script>
     var ApiServerPath = "@apiServerPath";
     var WebSiteUrl = "@webSitePath";
-    //$(document).on("click", "#bidNowBtn", function (e) {
-    //    e.preventDefault();
-    //    //first check if current User histroy count is 0 then open popup and get current user name
-    //    var minimumBidValue = parseFloat($(this).attr("data-minimumBidAmount"));
-    //    var currBidValue = parseFloat($("#biddingAmount").val());
-    //    if (isNaN(currBidValue)) {
-    //        alert("Please enter minimum bid amount");
-    //        return false;
-    //    }
-    //    if (minimumBidValue > currBidValue) {
-    //        alert("Bid amount should be greater than minimum bid amount");
-    //        return false;
-    //    }
-    //    else {
-    //        var historyCount = parseInt($("#currentUserAuctionHistoryCount").val());
-    //        if (historyCount === 0) {
-    //            //open popup and then save the auction bidder with auction history
-    //            $("#myModal").modal("show");
-    //        }
-    //        else {
-    //            //save only auction history
-    //            SaveAuctionBidderFirstThenHistory($("#auctionBidderName").val());
-    //        }
-    //    }
-    //});
+    $(document).on("click", "#bidNowBtn", function (e) {
+        e.preventDefault();
+        //first check if current User histroy count is 0 then open popup and get current user name
+        var minimumBidValue = parseFloat($(this).attr("data-minimumBidAmount"));
+        var currBidValue = parseFloat($("#biddingAmount").val());
+        if (isNaN(currBidValue)) {
+            alert("Please enter minimum bid amount");
+            return false;
+        }
+        if (minimumBidValue > currBidValue) {
+            alert("Bid amount should be greater than minimum bid amount");
+            return false;
+        }
+        else {
+            var historyCount = parseInt($("#currentUserAuctionHistoryCount").val());
+            if (historyCount === 0) {
+                //open popup and then save the auction bidder with auction history
+                $("#myModal").modal("show");
+            }
+            else {
+                //save only auction history
+                SaveAuctionBidderFirstThenHistory($("#auctionBidderName").val());
+            }
+        }
+    });
 
     $(document).on("click", "#saveBidderBtn", function () {
         var bidderName = $("#bidderName").val();
@@ -203,7 +203,7 @@
             bidAmount: parseFloat($("#biddingAmount").val()),
             auctionBidderId: parseInt($("#auctionBidderId").val())
         };
-        var url = ApiServerPath + "/api/services/app/AuctionHistory/SaveAuctionBidderWithHistory";
+        var url = ApiServerPath + "/api/services/app/RabbitMqService/AddToQueue";
         $.ajax({
             url: url,
             type: 'POST',
@@ -213,11 +213,11 @@
             data: JSON.stringify(auctionHistoryDto) ,
             dataType: "json",
             success: function (response) {
-                $("#currentUserAuctionHistoryCount").val(response.result.historyCount);
-                $("#auctionBidderId").val(response.result.auctionBidderId);
-                $("#myModal").modal("hide");
-                $("#biddingAmount").val("");
-                GetAuctionItemHistory(auctionHistoryDto.auctionItemId);
+                //$("#currentUserAuctionHistoryCount").val(response.result.historyCount);
+                //$("#auctionBidderId").val(response.result.auctionBidderId);
+                //$("#myModal").modal("hide");
+                //$("#biddingAmount").val("");
+                //GetAuctionItemHistory(auctionHistoryDto.auctionItemId);
             },
             error: function (xhr) {
                 $("#myModal").modal("hide");

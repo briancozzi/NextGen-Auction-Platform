@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace NextGen.BiddingPlatform.Web.Public.BidHub
+namespace NextGen.BiddingPlatform.Application
 {
     public class BidHub : Hub
     {
