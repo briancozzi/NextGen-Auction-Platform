@@ -13,10 +13,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NextGen.BiddingPlatform.Application;
 using NextGen.BiddingPlatform.Configuration;
 using NextGen.BiddingPlatform.Identity;
 using NextGen.BiddingPlatform.Web.HealthCheck;
+using NextGen.BiddingPlatform.Web.Public.Notification;
 
 namespace NextGen.BiddingPlatform.Web.Public.Startup
 {
@@ -41,6 +41,8 @@ namespace NextGen.BiddingPlatform.Web.Public.Startup
 
             IdentityRegistrar.Register(services);
             services.AddSignalR();
+            services.AddSingleton<INotificationManager, NotificationManager>();
+            services.AddSingleton<IConnectionManager, ConnectionManager>();
 
             if (bool.Parse(_appConfiguration["HealthChecks:HealthChecksEnabled"]))
             {

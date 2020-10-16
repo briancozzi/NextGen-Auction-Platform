@@ -12,6 +12,9 @@ namespace NextGen.BiddingPlatform.WebHooks
             ));
 
             //Add your webhook definitions here 
+            context.Manager.Add(new WebhookDefinition(
+                name: AppWebHookNames.TestAuctionHistoryWebhook
+            ));
         }
 
         private static ILocalizableString L(string name)

@@ -34,11 +34,11 @@ namespace NextGen.BiddingPlatform.HostingServices
         {
             if (_rabbitMqSettings.Hostname == "localhost")
             {
-                _connectionFactory = new ConnectionFactory { HostName = _rabbitMqSettings.Hostname, DispatchConsumersAsync = true };
+                _connectionFactory = new ConnectionFactory { HostName = _rabbitMqSettings.Hostname, DispatchConsumersAsync = true,Port = 5672 };
             }
             else
             {
-                _connectionFactory = new ConnectionFactory { HostName = _rabbitMqSettings.Hostname, UserName = _rabbitMqSettings.UserName, Password = _rabbitMqSettings.Password, DispatchConsumersAsync = true };
+                _connectionFactory = new ConnectionFactory { HostName = _rabbitMqSettings.Hostname, UserName = _rabbitMqSettings.UserName, Password = _rabbitMqSettings.Password, DispatchConsumersAsync = true, Port = 5672 };
             }
 
             _connection = _connectionFactory.CreateConnection();
@@ -53,7 +53,6 @@ namespace NextGen.BiddingPlatform.HostingServices
             //here we will do our work
             stoppingToken.ThrowIfCancellationRequested();
 
-
             var consumer = new AsyncEventingBasicConsumer(_channel);
             consumer.Received += async (bc, ea) =>
             {
@@ -63,7 +62,7 @@ namespace NextGen.BiddingPlatform.HostingServices
                     if (!string.IsNullOrEmpty(message))
                     {
                         var dataFromQueue = JsonSerializer.Deserialize<AuctionBidderHistoryDto>(message);
-                        await _auctionHistoryService.SaveAuctionBidderWithHistory(dataFromQueue);
+                        await _auctionHistoryService.SaveAuctionBidderWithHistory(dataFromQueue);  
                     }
                     //await Task.Delay(new Random().Next(1, 3) * 1000, stoppingToken); // simulate an async email process
 

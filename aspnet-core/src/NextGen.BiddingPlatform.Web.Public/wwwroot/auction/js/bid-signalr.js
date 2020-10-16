@@ -1,5 +1,5 @@
 ﻿const connection = new signalR.HubConnectionBuilder()
-    .withUrl("/signalr-BidHub")
+    .withUrl("/signalr-BidHub?auctionItemId=" + auctionItemId)
     .build();
 
 
@@ -19,6 +19,11 @@ connection.start().catch(err => console.error(err.toString()));
 //        bidAmount: parseFloat($("#biddingAmount").val()),
 //        auctionBidderId: parseInt($("#auctionBidderId").val())
 //    };
-//    connection.invoke("SaveBid", JSON.stringify(auctionHistoryDto)).catch(err => console.log(err.toString()));
+//    $.ajax({
+//        url: "/Home/Test",
+//        type: "GET",
+//        dataType:"json"
+//    })
+//    //connection.invoke("SaveBid", JSON.stringify(auctionHistoryDto)).catch(err => console.log(err.toString()));
 //    event.preventDefault();
 //});   

@@ -18,8 +18,6 @@ namespace NextGen.BiddingPlatform.AuctionHistory
         Task<ListResultDto<GetAuctionHistoryByAuctionIdDto>> GetHistorbyAuctionItemId(Guid auctionItemId);
 
         //Custom method for testing user
-        // Task<GetAuctionBidderHistoryDto> SaveAuctionBidderWithHistory(AuctionBidderHistoryDto auctionBiddingHistory);
         Task SaveAuctionBidderWithHistory(AuctionBidderHistoryDto auctionBiddingHistory);
-
     }
 }

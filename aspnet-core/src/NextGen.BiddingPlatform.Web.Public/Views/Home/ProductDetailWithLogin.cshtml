@@ -121,13 +121,14 @@
                 </div>
                 <div class="col-lg-4 col-md-5">
                     <div class="card">
-                        <div class="inner pb-0 pl-0 pr-0" id="itemHistories">
+                        <div class="inner pb-0 pl-0 pr-0">
                             <div class="card-heading d-flex pl-10 pr-10">
                                 Item History
                                 <a href="#" class="add-item">
                                     <img src="~/auction/images/plus-icon.png" alt="">
                                 </a>
                             </div>
+                            <div id="itemHistories"></div>
                         </div>
                     </div>
                 </div>
@@ -159,6 +160,51 @@
 <script>
     var ApiServerPath = "@apiServerPath";
     var WebSiteUrl = "@webSitePath";
+    var auctionItemId = "@ViewBag.AuctionItemId";
+    $(function () {
+        const connection = new signalR.HubConnectionBuilder()
+                                        .withUrl("/signalr-BidHub?auctionItemId=" + auctionItemId)
+                                        .build();
+
+        connection.on("BidSaved", (auctionHistoryDto) => {
+            if (auctionHistoryDto != undefined)
+            {
+                $("#currentUserAuctionHistoryCount").val(auctionHistoryDto.historyCount);
+                $("#totalBids").text(auctionHistoryDto.historyCount);
+                $("#auctionBidderId").val(auctionHistoryDto.auctionBidderId);
+                $("#lastBidAmount").text("$" + auctionHistoryDto.lastHistoryAmount.toFixed(2));
+                GetAuctionItemHistory(auctionHistoryDto.auctionItemId);
+            }
+        });
+        connection.start().then(function () {
+            connection
+                .invoke("GetAndStoreConnection", auctionItemId)
+                .catch(err => console.log(err.toString()));
+        }) .catch(err => console.error(err.toString()));
+
+           function GetAuctionItemHistory(auctionItemId) {
+            var url = ApiServerPath + "/api/services/app/AuctionHistory/GetHistorbyAuctionItemId?auctionItemId=" + auctionItemId;
+            $.ajax({
+            url: url,
+            type: 'GET',
+            cache: false,
+            async: true,
+            contentType: "application/json",
+            dataType: "json",
+            success: function (response) {
+                var itemHistories = response.result.items;
+                $("#itemHistories").empty();
+                $.each(itemHistories, function (i, v) {
+                    CreateHistoryData(v);
+                });
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText + " " + xhr.status);
+                alert(xhr.responseText + " " + xhr.status);
+            }
+        });
+        }
+    });
     $(document).on("click", "#bidNowBtn", function (e) {
         e.preventDefault();
         //first check if current User histroy count is 0 then open popup and get current user name
@@ -203,6 +249,11 @@
             bidAmount: parseFloat($("#biddingAmount").val()),
             auctionBidderId: parseInt($("#auctionBidderId").val())
         };
+        if ($("#auctionBidderName").val() == "") {
+             $("#bidderNameFromDb").text(bidderName);
+                $("#auctionBidderName").val(bidderName);
+        }
+
         var url = ApiServerPath + "/api/services/app/RabbitMqService/AddToQueue";
         $.ajax({
             url: url,
@@ -225,31 +276,11 @@
                 alert(xhr.responseText + " " + xhr.status);
             }
         });
-        function GetAuctionItemHistory(auctionItemId) {
-            var url = ApiServerPath + "/api/services/app/AuctionHistory/GetHistorbyAuctionItemId?auctionItemId=" + auctionItemId;
-            $.ajax({
-            url: url,
-            type: 'GET',
-            cache: false,
-            async: true,
-            contentType: "application/json",
-            dataType: "json",
-            success: function (response) {
-                var itemHistories = response.result.items;
-                $("#itemHistories").empty();
-                $.each(itemHistories, function (i, v) {
-                    CreateHistoryData(v);
-                });
-            },
-            error: function (xhr) {
-                console.log(xhr.responseText + " " + xhr.status);
-                alert(xhr.responseText + " " + xhr.status);
-            }
-        });
-        }
+        $("#myModal").modal("hide");
+        $("#biddingAmount").val("");
     }
 </script>
 <script src="~/auction/js/closedproductdetails.js"></script>
 <script src="~/signalr.js"></script>
-<script src="~/auction/js/bid-signalr.js"></script>
+@*<script src="~/auction/js/bid-signalr.js"></script>*@
 }
