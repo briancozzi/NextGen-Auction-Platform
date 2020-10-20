@@ -163,7 +163,7 @@
     var auctionItemId = "@ViewBag.AuctionItemId";
     $(function () {
         const connection = new signalR.HubConnectionBuilder()
-                                        .withUrl("/signalr-BidHub?auctionItemId=" + auctionItemId)
+                                        .withUrl("/signalr-BidHub")
                                         .build();
 
         connection.on("BidSaved", (auctionHistoryDto) => {
@@ -173,7 +173,8 @@
                 $("#totalBids").text(auctionHistoryDto.historyCount);
                 $("#auctionBidderId").val(auctionHistoryDto.auctionBidderId);
                 $("#lastBidAmount").text("$" + auctionHistoryDto.lastHistoryAmount.toFixed(2));
-                GetAuctionItemHistory(auctionHistoryDto.auctionItemId);
+                $("#bidderNameFromDb").text(auctionHistoryDto.bidderName);
+                ClearHistoryAndAppendNew(auctionHistoryDto.auctionItemHistory);
             }
         });
         connection.start().then(function () {
@@ -187,22 +188,25 @@
             $.ajax({
             url: url,
             type: 'GET',
+            data: { auctionItemId : auctionItemId, pageSize : 9999, pageIndex : 1 },
             cache: false,
             async: true,
             contentType: "application/json",
             dataType: "json",
             success: function (response) {
-                var itemHistories = response.result.items;
-                $("#itemHistories").empty();
-                $.each(itemHistories, function (i, v) {
-                    CreateHistoryData(v);
-                });
+                ClearHistoryAndAppendNew(response);
             },
             error: function (xhr) {
                 console.log(xhr.responseText + " " + xhr.status);
                 alert(xhr.responseText + " " + xhr.status);
             }
         });
+        }
+        function ClearHistoryAndAppendNew(itemHistories) {
+                $("#itemHistories").empty();
+                $.each(itemHistories, function (i, v) {
+                    CreateHistoryData(v);
+                });
         }
     });
     $(document).on("click", "#bidNowBtn", function (e) {

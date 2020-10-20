@@ -122,15 +122,16 @@ namespace NextGen.BiddingPlatform.AuctionHistory
 
             return new ListResultDto<AuctionHistoryListDto>(await historyData.ToListAsync());
         }
-        public async Task<ListResultDto<GetAuctionHistoryByAuctionIdDto>> GetHistorbyAuctionItemId(Guid auctionItemId)
+        public async Task<List<GetAuctionHistoryByAuctionIdDto>> GetHistorbyAuctionItemId(Guid auctionItemId, int pageSize, int pageIndex)
         {
             var auctionItem = await _auctionItemRepository.FirstOrDefaultAsync(x => x.UniqueId == auctionItemId);
             if (auctionItem == null)
                 throw new UserFriendlyException("Auction item not found for given id");
 
-            var historyData = _auctionHistoryRepository.GetAllIncluding(x => x.AuctionBidder, x => x.AuctionItem, x => x.AuctionItem.Item).AsNoTracking()
+            var historyData = await _auctionHistoryRepository.GetAllIncluding(x => x.AuctionBidder).AsNoTracking()
                                                        .Where(x => x.AuctionItemId == auctionItem.Id)
                                                        .OrderByDescending(x => x.CreationTime)
+                                                       .Skip((pageIndex - 1) * pageSize).Take(pageSize)
                                                        .Select(x => new GetAuctionHistoryByAuctionIdDto
                                                        {
                                                            BidAmount = x.BidAmount,
@@ -138,9 +139,9 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                                                            BiddingDate = x.CreationTime.ToString("MM/dd/yyyy"),
                                                            BiddingTime = x.CreationTime.ToString("hh:mm tt"),
                                                            BidHistoryDate = x.CreationTime
-                                                       });
+                                                       }).ToListAsync();
 
-            return new ListResultDto<GetAuctionHistoryByAuctionIdDto>(await historyData.ToListAsync());
+            return historyData;
         }
 
         //Get Auction Item History by AuctionItemId
@@ -238,7 +239,8 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                     BidderName = auctionBidderHistory.BidderName,
                     HistoryCount = auctionItemHistoryDetails.Key,
                     AuctionItemId = auctionBidderHistory.AuctionItemId,
-                    LastHistoryAmount = auctionItemHistoryDetails.Value
+                    LastHistoryAmount = auctionItemHistoryDetails.Value,
+                    AuctionItemHistory = await GetHistorbyAuctionItemId(auctionBidderHistory.AuctionItemId, 10, 1)
                 });
             }
             catch (Exception ex)

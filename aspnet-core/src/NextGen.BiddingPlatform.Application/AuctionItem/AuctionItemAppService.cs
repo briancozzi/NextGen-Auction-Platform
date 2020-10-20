@@ -198,7 +198,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
                     TotalBidCount = output.AuctionHistories.Count,
                     ItemDescription = output.Item.Description,
                     BidStepIncrementValue = output.Item.BidStepIncrementValue,
-                    AuctionItemHistories = output.AuctionHistories.OrderByDescending(x => x.CreationTime).Select(s => new AuctionItemHistoryDto
+                    AuctionItemHistories = output.AuctionHistories.OrderByDescending(x => x.CreationTime).Take(10).Select(s => new AuctionItemHistoryDto
                     {
                         BidderName = s.AuctionBidder.BidderName,
                         BidAmount = s.BidAmount,

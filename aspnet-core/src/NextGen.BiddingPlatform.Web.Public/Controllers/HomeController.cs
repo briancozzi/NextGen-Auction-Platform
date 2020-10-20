@@ -90,7 +90,6 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
                     return BadRequest("Error occured while deserializing data");
 
                 await _notify.SendAsync(result.Data.AuctionItemId.ToString(), result.Data);
-                //It is certain that Webhook has not been modified.
             }
             return Ok("Success");
         }

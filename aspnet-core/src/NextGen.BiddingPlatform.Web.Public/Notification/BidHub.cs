@@ -23,5 +23,14 @@ namespace NextGen.BiddingPlatform.Web.Public.Notification
                 _connectionManager.Add(auctionItemId, Context.ConnectionId);
             }
         }
+        public override Task OnDisconnectedAsync(Exception exception)
+        {
+            var auctionItemId = _httpContext.HttpContext.Request.Query["auctionItemId"];
+            if (!string.IsNullOrEmpty(auctionItemId))
+            {
+                _connectionManager.Remove(auctionItemId, Context.ConnectionId);
+            }
+            return base.OnDisconnectedAsync(exception);
+        }
     }
 }

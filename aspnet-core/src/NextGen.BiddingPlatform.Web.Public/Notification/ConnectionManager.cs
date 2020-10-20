@@ -7,8 +7,7 @@ namespace NextGen.BiddingPlatform.Web.Public.Notification
 {
     public class ConnectionManager : IConnectionManager
     {
-        private readonly Dictionary<string, HashSet<string>> _connections =
-            new Dictionary<string, HashSet<string>>();
+        private readonly Dictionary<string, HashSet<string>> _connections = new Dictionary<string, HashSet<string>>();
 
         public int Count
         {
@@ -21,8 +20,7 @@ namespace NextGen.BiddingPlatform.Web.Public.Notification
         {
             lock (_connections)
             {
-                HashSet<string> connections;
-                if (!_connections.TryGetValue(key, out connections))
+                if (!_connections.TryGetValue(key, out HashSet<string> connections))
                 {
                     connections = new HashSet<string>();
                     _connections.Add(key, connections);
@@ -34,7 +32,6 @@ namespace NextGen.BiddingPlatform.Web.Public.Notification
                 }
             }
         }
-
         public IEnumerable<string> GetConnections(string key)
         {
             if (_connections.TryGetValue(key, out HashSet<string> connections))
