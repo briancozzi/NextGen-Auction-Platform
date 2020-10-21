@@ -61,6 +61,7 @@ function GetAuctionItems() {
                 if ($("#pageTemplates #auctionItemTemplate").length > 0) {
                     $.each(data, function (i, v) {
                         v.imageName = ApiServerPath + v.imageName;
+
                         var output = Mustache.render($("#auctionItemTemplate").html(), v);
                         $("#auctionItems").append(output);
                     });

@@ -59,7 +59,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
                                                                 Thumbnail = s.Item.ThumbnailImage,
                                                                 RemainingDays = (s.Auction.AuctionEndDateTime - s.Auction.AuctionStartDateTime).TotalDays.ToString(),
                                                                 RemainingTime = (s.Auction.AuctionEndDateTime - s.Auction.AuctionStartDateTime).Hours + ":" + (s.Auction.AuctionEndDateTime - s.Auction.AuctionStartDateTime).Seconds,
-                                                                LastBidAmount = s.AuctionHistories.OrderByDescending(x => x.CreationTime).LastOrDefault().BidAmount,
+                                                                LastBidAmount = s.AuctionHistories.OrderByDescending(x => x.CreationTime).FirstOrDefault().BidAmount,
                                                                 IsClosedItemStatus = s.Item.ItemStatus == (int)ItemStatus.Closed
                                                             })
                                                             .ToListAsync();
@@ -135,7 +135,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 var output = await _auctionitemRepository.GetAllIncluding(x => x.Item, x => x.Auction, x => x.AuctionHistories).AsNoTracking().FirstOrDefaultAsync(x => x.UniqueId == Id);
                 if (output == null)
                     throw new UserFriendlyException("Auction Item not found for given id");
-                var lastBidAmount = output.AuctionHistories.OrderByDescending(x => x.CreationTime).LastOrDefault()?.BidAmount ?? 0;
+                var lastBidAmount = output.AuctionHistories.OrderByDescending(x => x.CreationTime).FirstOrDefault()?.BidAmount ?? 0;
                 return new AuctionItemListDto
                 {
                     AuctionItemId = output.UniqueId,

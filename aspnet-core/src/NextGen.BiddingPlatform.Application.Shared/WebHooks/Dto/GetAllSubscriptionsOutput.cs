@@ -21,5 +21,6 @@ namespace NextGen.BiddingPlatform.WebHooks.Dto
         /// Subscribed webhook definitions unique names. <see cref="WebhookDefinition.Name"/>
         /// </summary>
         public List<string> Webhooks { get; set; }
+        public string Secret { get; set; }
     }
 }
