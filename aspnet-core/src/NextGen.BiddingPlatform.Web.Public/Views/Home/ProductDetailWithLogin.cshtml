@@ -1,11 +1,14 @@
 ﻿@using Microsoft.AspNetCore.Hosting
+@using Microsoft.AspNetCore.Http
 @using NextGen.BiddingPlatform.Configuration
 @using Microsoft.Extensions.Configuration
 @inject IWebHostEnvironment env
+@inject IHttpContextAccessor _context
 @{
     var appConfiguration = env.GetAppConfiguration();
     var apiServerPath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:ApiWebSiteRootAddress", string.Empty);
     var webSitePath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:WebSiteRootAddress", string.Empty);
+    var cookie = _context.HttpContext.Request.Cookies["Abp.AuthToken"];
 }
 <div class="inner-wrapper">
     <div class="content-wrapper have-sidename pt-80">
@@ -161,6 +164,8 @@
     var ApiServerPath = "@apiServerPath";
     var WebSiteUrl = "@webSitePath";
     var auctionItemId = "@ViewBag.AuctionItemId";
+    var authCookie = '@cookie'
+    var tenantId = '@ViewBag.TenantId';
     $(function () {
         const connection = new signalR.HubConnectionBuilder()
                                         .withUrl("/signalr-BidHub")
@@ -188,7 +193,10 @@
             $.ajax({
             url: url,
             type: 'GET',
-            data: { auctionItemId : auctionItemId, pageSize : 9999, pageIndex : 1 },
+                data: { auctionItemId: auctionItemId, pageSize: 9999, pageIndex: 1 },
+            headers: {
+      'Authorization': 'Bearer' + authCookie
+   },
             cache: false,
             async: true,
             contentType: "application/json",
@@ -262,9 +270,13 @@
         $.ajax({
             url: url,
             type: 'POST',
-            cache: false,
-            async: true,
             contentType: "application/json",
+             headers: {
+            'Abp.TenantId': tenantId,
+            'Authorization': 'Bearer ' + authCookie
+            },
+             async: true,
+              cache: false,
             data: JSON.stringify(auctionHistoryDto) ,
             dataType: "json",
             success: function (response) {

@@ -8,9 +8,13 @@ function GetAuctionItem() {
     $.ajax({
         url: ApiServerPath + "/api/services/app/AuctionItem/GetAuctionItemWithHistory?Id=" + id + "&itemStatus=" + itemStatus,
         type: "GET",
-        cache: false,
-        async: true,
         contentType: "application/json",
+        headers: {
+            'Abp.TenantId': tenantId,
+            'Authorization': 'Bearer ' + authCookie
+        },
+        async: true,
+        cache: false,
         dataType: "json",
         success: function (response) {
             if (response != null || response != undefined) {
