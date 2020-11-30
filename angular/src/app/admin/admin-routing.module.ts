@@ -34,10 +34,7 @@ import { EditAuctionComponent } from './auctions/edit-auction.component';
 import { AuctionItemsComponent } from './auction-items/auction-items.component';
 import { CreateAuctionItemsComponent } from './auction-items/create-auction-items.component';
 import { EditAuctionItemsComponent } from './auction-items/edit-auction-items.component';
-
-
-
-
+import { CategoryComponent } from './category/category.component'
 @NgModule({
     imports: [
         RouterModule.forChild([
@@ -77,6 +74,7 @@ import { EditAuctionItemsComponent } from './auction-items/edit-auction-items.co
                     { path: 'auction-items', component:AuctionItemsComponent},
                     { path: 'auction-items/create-auction-items', component:CreateAuctionItemsComponent},
                     { path: 'auction-items/edit-auction-items', component:EditAuctionItemsComponent},
+                    { path: 'category', component:CategoryComponent},
 
                     { path: 'items', component: ItemsComponent },
                     { path: '', redirectTo: 'hostDashboard', pathMatch: 'full' },
