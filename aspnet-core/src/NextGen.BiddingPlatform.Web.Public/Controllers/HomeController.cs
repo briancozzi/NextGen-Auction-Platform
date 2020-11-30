@@ -1,3 +1,4 @@
+using Abp.Runtime.Session;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -24,7 +25,6 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
         private readonly IPerRequestSessionCache _sessionCache;
         private readonly INotificationManager _notify;
         private readonly IWebhookSubscriptionAppService _webhookSubscriptionService;
-
         public HomeController(IPerRequestSessionCache sessionCache,
                                                   INotificationManager notificationManager,
                                                   IWebhookSubscriptionAppService webhookSubscriptionService)
@@ -44,10 +44,12 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
             ViewBag.AuctionItemId = id;
             return View();
         }
-        public ActionResult ProductDetailWithLogin(Guid id, int itemStatus)
+        public async Task<ActionResult> ProductDetailWithLogin(Guid id, int itemStatus)
         {
             ViewBag.AuctionItemId = id;
             ViewBag.ItemStatus = itemStatus;
+            var user = await _sessionCache.GetCurrentLoginInformationsAsync();
+            ViewBag.TenantId = user?.Tenant?.Id;
             return View();
         }
         public ActionResult ProductDetailClosed(Guid id, int itemStatus)
@@ -88,7 +90,6 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
         {
             try
             {
-                var user = await _sessionCache.GetCurrentLoginInformationsAsync();
                 using (StreamReader reader = new StreamReader(HttpContext.Request.Body, Encoding.UTF8))
                 {
                     var body = await reader.ReadToEndAsync();
@@ -101,7 +102,7 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
 
                     //right now we don't need below code because we are able to sent webhooks to specific tenant during publish webhook
 
-                    if (!await _webhookSubscriptionService.IsWebhookSubscribed(user?.Tenant?.Id, result.Event))
+                    if (!await _webhookSubscriptionService.IsWebhookSubscribed(result.Data?.TenantId, result.Event))
                         return BadRequest("Webhook not subscribe by this user");
 
                     if (!await IsSignatureValid(result.Event, body))

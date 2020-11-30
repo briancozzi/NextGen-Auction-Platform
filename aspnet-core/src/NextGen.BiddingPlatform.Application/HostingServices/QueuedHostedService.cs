@@ -34,7 +34,7 @@ namespace NextGen.BiddingPlatform.HostingServices
         {
             if (_rabbitMqSettings.Hostname == "localhost")
             {
-                _connectionFactory = new ConnectionFactory { HostName = _rabbitMqSettings.Hostname, DispatchConsumersAsync = true,Port = 5672 };
+                _connectionFactory = new ConnectionFactory { HostName = _rabbitMqSettings.Hostname, DispatchConsumersAsync = true, Port = 5672 };
             }
             else
             {
@@ -62,7 +62,8 @@ namespace NextGen.BiddingPlatform.HostingServices
                     if (!string.IsNullOrEmpty(message))
                     {
                         var dataFromQueue = JsonSerializer.Deserialize<AuctionBidderHistoryDto>(message);
-                        await _auctionHistoryService.SaveAuctionBidderWithHistory(dataFromQueue);  
+                        if (dataFromQueue.UserId != 0)
+                            await _auctionHistoryService.SaveAuctionBidderWithHistory(dataFromQueue);
                     }
                     //await Task.Delay(new Random().Next(1, 3) * 1000, stoppingToken); // simulate an async email process
 

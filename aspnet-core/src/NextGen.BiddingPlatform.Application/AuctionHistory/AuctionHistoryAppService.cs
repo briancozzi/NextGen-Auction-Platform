@@ -1,4 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Timing;
 using Abp.UI;
@@ -166,6 +167,7 @@ namespace NextGen.BiddingPlatform.AuctionHistory
 
         //custom Method
         [AllowAnonymous]
+        //[AbpAuthorize]
         public async Task SaveAuctionBidderWithHistory(AuctionBidderHistoryDto auctionBidderHistory)
         {
             try
@@ -174,14 +176,9 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                 if (auctionItem == null)
                     throw new UserFriendlyException("Auction item not found for bidding");
 
-                //var currUserId = 3;
-                //var tenantId = 2;
+                var currUserId = auctionBidderHistory.UserId;
+                var tenantId = auctionBidderHistory.TenantId;
 
-                if (!AbpSession.UserId.HasValue)
-                    throw new UserFriendlyException("User not found");
-
-                var currUserId = AbpSession.UserId.Value;
-                var tenantId = AbpSession.TenantId;
                 var currentUser = await _userManager.GetUserAsync(new Abp.UserIdentifier(tenantId, currUserId));
                 if (currentUser == null)
                     throw new UserFriendlyException("User not found");
@@ -246,8 +243,9 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                     HistoryCount = auctionItemHistoryDetails.Key,
                     AuctionItemId = auctionBidderHistory.AuctionItemId,
                     LastHistoryAmount = auctionItemHistoryDetails.Value,
-                    AuctionItemHistory = await GetHistorbyAuctionItemId(auctionBidderHistory.AuctionItemId, 10, 1)
-                }, AbpSession.TenantId);
+                    AuctionItemHistory = await GetHistorbyAuctionItemId(auctionBidderHistory.AuctionItemId, 10, 1),
+                    TenantId = tenantId
+                }, tenantId);
             }
             catch (Exception ex)
             {
