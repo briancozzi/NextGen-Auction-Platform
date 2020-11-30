@@ -88,6 +88,7 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
         {
             try
             {
+                var user = await _sessionCache.GetCurrentLoginInformationsAsync();
                 using (StreamReader reader = new StreamReader(HttpContext.Request.Body, Encoding.UTF8))
                 {
                     var body = await reader.ReadToEndAsync();
@@ -100,7 +101,7 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
 
                     //right now we don't need below code because we are able to sent webhooks to specific tenant during publish webhook
 
-                    if (!await _webhookSubscriptionService.IsWebhookSubscribed(null, result.Event))
+                    if (!await _webhookSubscriptionService.IsWebhookSubscribed(user?.Tenant?.Id, result.Event))
                         return BadRequest("Webhook not subscribe by this user");
 
                     if (!await IsSignatureValid(result.Event, body))
@@ -119,7 +120,7 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
         private async Task<bool> IsSignatureValid(string webhookName, string body)
         {
             //we also can gets the subscriptions based on tenantId
-            var userSubscriptions = await _webhookSubscriptionService.GetTenantsAllSubscriptions(null);
+            var userSubscriptions = await _webhookSubscriptionService.GetTenantsAllSubscriptions(2);
             var webhookSecrets = userSubscriptions.Items.Where(x => x.Webhooks.Contains(webhookName)).Select(x => x.Secret);
             bool isValidSignature = false;
             foreach (var secret in webhookSecrets)

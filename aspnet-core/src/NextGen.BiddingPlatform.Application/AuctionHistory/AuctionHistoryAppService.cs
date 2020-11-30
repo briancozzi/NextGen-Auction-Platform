@@ -174,9 +174,14 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                 if (auctionItem == null)
                     throw new UserFriendlyException("Auction item not found for bidding");
 
-                var currUserId = 3;
-                var tenantId = 2;
+                //var currUserId = 3;
+                //var tenantId = 2;
 
+                if (!AbpSession.UserId.HasValue)
+                    throw new UserFriendlyException("User not found");
+
+                var currUserId = AbpSession.UserId.Value;
+                var tenantId = AbpSession.TenantId;
                 var currentUser = await _userManager.GetUserAsync(new Abp.UserIdentifier(tenantId, currUserId));
                 if (currentUser == null)
                     throw new UserFriendlyException("User not found");
@@ -242,8 +247,7 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                     AuctionItemId = auctionBidderHistory.AuctionItemId,
                     LastHistoryAmount = auctionItemHistoryDetails.Value,
                     AuctionItemHistory = await GetHistorbyAuctionItemId(auctionBidderHistory.AuctionItemId, 10, 1)
-                },
-                2);
+                }, AbpSession.TenantId);
             }
             catch (Exception ex)
             {
