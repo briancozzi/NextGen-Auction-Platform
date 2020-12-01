@@ -6,7 +6,7 @@ function GetAuctionItem() {
     var id = $("#auctionItemId").val();
     var itemStatus = $("#itemStatus").val();
     $.ajax({
-        url: ApiServerPath + "/api/services/app/AuctionItem/GetAuctionItemWithHistory?Id=" + id + "&itemStatus=" + itemStatus,
+        url: ApiServerPath + "/api/services/app/AuctionItem/GetAuctionItemWithHistory?Id=" + id + "&itemStatus=" + itemStatus + "&userId=" + userId,
         type: "GET",
         contentType: "application/json",
         headers: {

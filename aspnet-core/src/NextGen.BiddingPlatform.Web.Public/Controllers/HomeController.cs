@@ -50,6 +50,7 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
             ViewBag.ItemStatus = itemStatus;
             var user = await _sessionCache.GetCurrentLoginInformationsAsync();
             ViewBag.TenantId = user?.Tenant?.Id;
+            ViewBag.UserId = user?.User?.Id;
             return View();
         }
         public ActionResult ProductDetailClosed(Guid id, int itemStatus)

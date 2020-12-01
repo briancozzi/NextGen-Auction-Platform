@@ -186,7 +186,7 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                 var userhasBidderRole = await _userManager.IsInRoleAsync(currentUser, "Bidder");
                 var historyCount = await GetAuctionItemHistoryCount(auctionItem.Id);
 
-                if (/*!userhasBidderRole &&*/ historyCount.Key == 0)
+                if (/*!userhasBidderRole &&*/ historyCount.Key == 0 || auctionBidderHistory.AuctionBidderId == 0)
                 {
                     //CheckErrors(await _userManager.AddToRoleAsync(currentUser, "Bidder"));
 

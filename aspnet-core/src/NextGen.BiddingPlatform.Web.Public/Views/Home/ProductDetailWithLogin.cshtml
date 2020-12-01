@@ -166,6 +166,7 @@
     var auctionItemId = "@ViewBag.AuctionItemId";
     var authCookie = '@cookie'
     var tenantId = '@ViewBag.TenantId';
+    var userId = '@ViewBag.UserId';
     $(function () {
         const connection = new signalR.HubConnectionBuilder()
                                         .withUrl("/signalr-BidHub")
@@ -178,7 +179,7 @@
                 $("#totalBids").text(auctionHistoryDto.historyCount);
                 $("#auctionBidderId").val(auctionHistoryDto.auctionBidderId);
                 $("#lastBidAmount").text("$" + auctionHistoryDto.lastHistoryAmount.toFixed(2));
-                $("#bidderNameFromDb").text(auctionHistoryDto.bidderName);
+                //$("#bidderNameFromDb").text(auctionHistoryDto.bidderName);
                 ClearHistoryAndAppendNew(auctionHistoryDto.auctionItemHistory);
             }
         });
@@ -251,6 +252,7 @@
         }
         else {
             $("#errorMessage").hide();
+            $("#bidderNameFromDb").text(bidderName);
             SaveAuctionBidderFirstThenHistory(bidderName);
         }
     });

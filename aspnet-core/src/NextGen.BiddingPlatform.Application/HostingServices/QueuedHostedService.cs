@@ -85,7 +85,7 @@ namespace NextGen.BiddingPlatform.HostingServices
 
             _channel.BasicConsume(queue: _rabbitMqSettings.QueueName, autoAck: false, consumer: consumer);
 
-            await Task.CompletedTask;
+            //await Task.CompletedTask;
         }
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
