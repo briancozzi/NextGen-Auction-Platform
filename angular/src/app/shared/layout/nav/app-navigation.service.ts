@@ -1,4 +1,4 @@
-import { PermissionCheckerService } from 'abp-ng2-module';
+﻿import { PermissionCheckerService } from 'abp-ng2-module';
 import { AppSessionService } from '@shared/common/session/app-session.service';
 
 import { Injectable } from '@angular/core';
@@ -25,6 +25,8 @@ export class AppNavigationService {
             new AppMenuItem("Events",'','flaticon-app','/app/admin/events'),
             new AppMenuItem("Auctions",'',"flaticon-app","/app/admin/auctions"),
             new AppMenuItem("Items",'',"flaticon-app","/app/admin/items"),
+            new AppMenuItem("Category",'',"flaticon-app","/app/admin/category"),
+
             new AppMenuItem("Auction Items",'',"flaticon-app","/app/admin/auction-items"),
             new AppMenuItem('Parameter','','flaticon-interface-8','',[],[
                 new AppMenuItem('Countries','Pages.Administration.Country','flaticon-app','/app/main/country'),

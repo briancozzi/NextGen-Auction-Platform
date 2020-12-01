@@ -12,9 +12,10 @@ namespace NextGen.BiddingPlatform.Category
     {
         Task<CategoryDto> GetCategoryById(Guid Id);
         Task<ListResultDto<CategoryListDto>> GetAllCategory();
+        Task<PagedResultDto<CategoryListDto>> GetCategoryWithFilter(CategoryFilter input);
         Task<CategoryDto> Create(CreateCategoryDto input);
         Task CreateSubCategory(CreateSubCategoryDto input);
         Task Update(UpdateCategoryDto input);
-        Task Delete(EntityDto<Guid> input);
+        Task Delete(Guid input);
     }
 }

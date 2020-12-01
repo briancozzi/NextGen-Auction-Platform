@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Abp.Runtime.Session;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using Microsoft.AspNetCore.Authorization;
+using Abp.Linq.Extensions;
 
 namespace NextGen.BiddingPlatform.Category
 {
@@ -47,6 +49,25 @@ namespace NextGen.BiddingPlatform.Category
             return new ListResultDto<CategoryListDto>(categories);
         }
 
+        public async Task<PagedResultDto<CategoryListDto>> GetCategoryWithFilter(CategoryFilter input)
+        {
+            var query = _categoryRepository.GetAll()
+                                                     .Select(x => new CategoryListDto
+                                                     {
+                                                         Id = x.Id,
+                                                         UniqueId = x.UniqueId,
+                                                         CategoryName = x.CategoryName
+                                                     });
+                                                     
+            var resultCount = await query.CountAsync();
+
+            if (!string.IsNullOrWhiteSpace(input.Sorting))
+                query = query.OrderBy(input.Sorting);
+
+            var resultQuery = query.PageBy(input).ToList();
+
+            return new PagedResultDto<CategoryListDto>(resultCount, resultQuery);
+        }
         public async Task<CategoryDto> Create(CreateCategoryDto input)
         {
             var category = await _categoryRepository.InsertAsync(new Core.Categories.Category
@@ -88,9 +109,9 @@ namespace NextGen.BiddingPlatform.Category
             await _categoryRepository.UpdateAsync(category);
         }
 
-        public async Task Delete(EntityDto<Guid> input)
+        public async Task Delete(Guid input)
         {
-            var category = await _categoryRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Id);
+            var category = await _categoryRepository.FirstOrDefaultAsync(x => x.UniqueId == input);
             if (category == null)
                 throw new Exception("Category data not found for given id");
 

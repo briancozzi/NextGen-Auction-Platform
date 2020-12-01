@@ -2243,6 +2243,76 @@ export class AuctionHistoryServiceProxy {
     }
 
     /**
+     * @param auctionItemId (optional) 
+     * @param pageSize (optional) 
+     * @param pageIndex (optional) 
+     * @return Success
+     */
+    getHistorbyAuctionItemId(auctionItemId: string | undefined, pageSize: number | undefined, pageIndex: number | undefined): Observable<GetAuctionHistoryByAuctionIdDto[]> {
+        let url_ = this.baseUrl + "/api/services/app/AuctionHistory/GetHistorbyAuctionItemId?";
+        if (auctionItemId === null)
+            throw new Error("The parameter 'auctionItemId' cannot be null.");
+        else if (auctionItemId !== undefined)
+            url_ += "auctionItemId=" + encodeURIComponent("" + auctionItemId) + "&"; 
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&"; 
+        if (pageIndex === null)
+            throw new Error("The parameter 'pageIndex' cannot be null.");
+        else if (pageIndex !== undefined)
+            url_ += "pageIndex=" + encodeURIComponent("" + pageIndex) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetHistorbyAuctionItemId(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetHistorbyAuctionItemId(<any>response_);
+                } catch (e) {
+                    return <Observable<GetAuctionHistoryByAuctionIdDto[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<GetAuctionHistoryByAuctionIdDto[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetHistorbyAuctionItemId(response: HttpResponseBase): Observable<GetAuctionHistoryByAuctionIdDto[]> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(GetAuctionHistoryByAuctionIdDto.fromJS(item));
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<GetAuctionHistoryByAuctionIdDto[]>(<any>null);
+    }
+
+    /**
      * @param id (optional) 
      * @return Success
      */
@@ -2296,6 +2366,58 @@ export class AuctionHistoryServiceProxy {
             }));
         }
         return _observableOf<AuctionHistoryListDto>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    saveAuctionBidderWithHistory(body: AuctionBidderHistoryDto | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/AuctionHistory/SaveAuctionBidderWithHistory";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json", 
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSaveAuctionBidderWithHistory(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSaveAuctionBidderWithHistory(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processSaveAuctionBidderWithHistory(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
     }
 }
 
@@ -2538,6 +2660,123 @@ export class AuctionItemServiceProxy {
             }));
         }
         return _observableOf<CreateAuctionItemDto>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    getAuctionItem(id: string | undefined): Observable<AuctionItemListDto> {
+        let url_ = this.baseUrl + "/api/services/app/AuctionItem/GetAuctionItem?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAuctionItem(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAuctionItem(<any>response_);
+                } catch (e) {
+                    return <Observable<AuctionItemListDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<AuctionItemListDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAuctionItem(response: HttpResponseBase): Observable<AuctionItemListDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AuctionItemListDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AuctionItemListDto>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @param itemStatus (optional) 
+     * @return Success
+     */
+    getAuctionItemWithHistory(id: string | undefined, itemStatus: number | undefined): Observable<AuctionItemWithHistoryDto> {
+        let url_ = this.baseUrl + "/api/services/app/AuctionItem/GetAuctionItemWithHistory?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&"; 
+        if (itemStatus === null)
+            throw new Error("The parameter 'itemStatus' cannot be null.");
+        else if (itemStatus !== undefined)
+            url_ += "itemStatus=" + encodeURIComponent("" + itemStatus) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAuctionItemWithHistory(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAuctionItemWithHistory(<any>response_);
+                } catch (e) {
+                    return <Observable<AuctionItemWithHistoryDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<AuctionItemWithHistoryDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAuctionItemWithHistory(response: HttpResponseBase): Observable<AuctionItemWithHistoryDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AuctionItemWithHistoryDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AuctionItemWithHistoryDto>(<any>null);
     }
 
     /**
@@ -3872,6 +4111,73 @@ export class CategoryServiceProxy {
     }
 
     /**
+     * @param search (optional) 
+     * @param sorting (optional) 
+     * @param maxResultCount (optional) 
+     * @param skipCount (optional) 
+     * @return Success
+     */
+    getCategoryWithFilter(search: string | null | undefined, sorting: string | null | undefined, maxResultCount: number | undefined, skipCount: number | undefined): Observable<PagedResultDtoOfCategoryListDto> {
+        let url_ = this.baseUrl + "/api/services/app/Category/GetCategoryWithFilter?";
+        if (search !== undefined)
+            url_ += "Search=" + encodeURIComponent("" + search) + "&"; 
+        if (sorting !== undefined)
+            url_ += "Sorting=" + encodeURIComponent("" + sorting) + "&"; 
+        if (maxResultCount === null)
+            throw new Error("The parameter 'maxResultCount' cannot be null.");
+        else if (maxResultCount !== undefined)
+            url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&"; 
+        if (skipCount === null)
+            throw new Error("The parameter 'skipCount' cannot be null.");
+        else if (skipCount !== undefined)
+            url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetCategoryWithFilter(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetCategoryWithFilter(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfCategoryListDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfCategoryListDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetCategoryWithFilter(response: HttpResponseBase): Observable<PagedResultDtoOfCategoryListDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultDtoOfCategoryListDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfCategoryListDto>(<any>null);
+    }
+
+    /**
      * @param body (optional) 
      * @return Success
      */
@@ -4032,15 +4338,15 @@ export class CategoryServiceProxy {
     }
 
     /**
-     * @param id (optional) 
+     * @param input (optional) 
      * @return Success
      */
-    delete(id: string | undefined): Observable<void> {
+    delete(input: string | undefined): Observable<void> {
         let url_ = this.baseUrl + "/api/services/app/Category/Delete?";
-        if (id === null)
-            throw new Error("The parameter 'id' cannot be null.");
-        else if (id !== undefined)
-            url_ += "Id=" + encodeURIComponent("" + id) + "&"; 
+        if (input === null)
+            throw new Error("The parameter 'input' cannot be null.");
+        else if (input !== undefined)
+            url_ += "input=" + encodeURIComponent("" + input) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -12557,6 +12863,70 @@ export class ProfileServiceProxy {
 }
 
 @Injectable()
+export class RabbitMqServiceServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    addToQueue(body: AuctionBidderHistoryDto | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/RabbitMqService/AddToQueue";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json", 
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processAddToQueue(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processAddToQueue(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processAddToQueue(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+}
+
+@Injectable()
 export class RoleServiceProxy {
     private http: HttpClient;
     private baseUrl: string;
@@ -17328,6 +17698,60 @@ export class WebhookSubscriptionServiceProxy {
     }
 
     /**
+     * @param tenantId (optional) 
+     * @return Success
+     */
+    getTenantsAllSubscriptions(tenantId: number | null | undefined): Observable<ListResultDtoOfGetAllSubscriptionsOutput> {
+        let url_ = this.baseUrl + "/api/services/app/WebhookSubscription/GetTenantsAllSubscriptions?";
+        if (tenantId !== undefined)
+            url_ += "tenantId=" + encodeURIComponent("" + tenantId) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetTenantsAllSubscriptions(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetTenantsAllSubscriptions(<any>response_);
+                } catch (e) {
+                    return <Observable<ListResultDtoOfGetAllSubscriptionsOutput>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<ListResultDtoOfGetAllSubscriptionsOutput>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetTenantsAllSubscriptions(response: HttpResponseBase): Observable<ListResultDtoOfGetAllSubscriptionsOutput> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ListResultDtoOfGetAllSubscriptionsOutput.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ListResultDtoOfGetAllSubscriptionsOutput>(<any>null);
+    }
+
+    /**
      * @param subscriptionId (optional) 
      * @return Success
      */
@@ -17570,6 +17994,63 @@ export class WebhookSubscriptionServiceProxy {
     }
 
     protected processIsSubscribed(response: HttpResponseBase): Observable<boolean> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<boolean>(<any>null);
+    }
+
+    /**
+     * @param tenentId (optional) 
+     * @param webhookName (optional) 
+     * @return Success
+     */
+    isWebhookSubscribed(tenentId: number | null | undefined, webhookName: string | null | undefined): Observable<boolean> {
+        let url_ = this.baseUrl + "/api/services/app/WebhookSubscription/IsWebhookSubscribed?";
+        if (tenentId !== undefined)
+            url_ += "tenentId=" + encodeURIComponent("" + tenentId) + "&"; 
+        if (webhookName !== undefined)
+            url_ += "webhookName=" + encodeURIComponent("" + webhookName) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processIsWebhookSubscribed(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processIsWebhookSubscribed(<any>response_);
+                } catch (e) {
+                    return <Observable<boolean>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<boolean>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processIsWebhookSubscribed(response: HttpResponseBase): Observable<boolean> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -19943,6 +20424,106 @@ export interface IListResultDtoOfAuctionHistoryListDto {
     items: AuctionHistoryListDto[] | undefined;
 }
 
+export class GetAuctionHistoryByAuctionIdDto implements IGetAuctionHistoryByAuctionIdDto {
+    bidAmount!: number;
+    bidderName!: string | undefined;
+    biddingDate!: string | undefined;
+    biddingTime!: string | undefined;
+    bidHistoryDate!: moment.Moment;
+
+    constructor(data?: IGetAuctionHistoryByAuctionIdDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.bidAmount = _data["bidAmount"];
+            this.bidderName = _data["bidderName"];
+            this.biddingDate = _data["biddingDate"];
+            this.biddingTime = _data["biddingTime"];
+            this.bidHistoryDate = _data["bidHistoryDate"] ? moment(_data["bidHistoryDate"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): GetAuctionHistoryByAuctionIdDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetAuctionHistoryByAuctionIdDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["bidAmount"] = this.bidAmount;
+        data["bidderName"] = this.bidderName;
+        data["biddingDate"] = this.biddingDate;
+        data["biddingTime"] = this.biddingTime;
+        data["bidHistoryDate"] = this.bidHistoryDate ? this.bidHistoryDate.toISOString() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IGetAuctionHistoryByAuctionIdDto {
+    bidAmount: number;
+    bidderName: string | undefined;
+    biddingDate: string | undefined;
+    biddingTime: string | undefined;
+    bidHistoryDate: moment.Moment;
+}
+
+export class AuctionBidderHistoryDto implements IAuctionBidderHistoryDto {
+    bidderName!: string | undefined;
+    auctionItemId!: string;
+    bidAmount!: number;
+    auctionBidderId!: number | undefined;
+
+    constructor(data?: IAuctionBidderHistoryDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.bidderName = _data["bidderName"];
+            this.auctionItemId = _data["auctionItemId"];
+            this.bidAmount = _data["bidAmount"];
+            this.auctionBidderId = _data["auctionBidderId"];
+        }
+    }
+
+    static fromJS(data: any): AuctionBidderHistoryDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AuctionBidderHistoryDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["bidderName"] = this.bidderName;
+        data["auctionItemId"] = this.auctionItemId;
+        data["bidAmount"] = this.bidAmount;
+        data["auctionBidderId"] = this.auctionBidderId;
+        return data; 
+    }
+}
+
+export interface IAuctionBidderHistoryDto {
+    bidderName: string | undefined;
+    auctionItemId: string;
+    bidAmount: number;
+    auctionBidderId: number | undefined;
+}
+
 export class AuctionItemListDto implements IAuctionItemListDto {
     auctionItemId!: string;
     auctionId!: string;
@@ -19951,8 +20532,18 @@ export class AuctionItemListDto implements IAuctionItemListDto {
     auctionEndDateTime!: moment.Moment;
     itemId!: string;
     itemName!: string | undefined;
+    itemDescription!: string | undefined;
+    itemStatus!: number;
     itemType!: number;
     itemNumber!: number;
+    fairMarketValue_FMV!: number;
+    imageName!: string | undefined;
+    thumbnail!: string | undefined;
+    remainingDays!: string | undefined;
+    remainingTime!: string | undefined;
+    lastBidAmount!: number;
+    totalBidCount!: number;
+    isClosedItemStatus!: boolean;
 
     constructor(data?: IAuctionItemListDto) {
         if (data) {
@@ -19972,8 +20563,18 @@ export class AuctionItemListDto implements IAuctionItemListDto {
             this.auctionEndDateTime = _data["auctionEndDateTime"] ? moment(_data["auctionEndDateTime"].toString()) : <any>undefined;
             this.itemId = _data["itemId"];
             this.itemName = _data["itemName"];
+            this.itemDescription = _data["itemDescription"];
+            this.itemStatus = _data["itemStatus"];
             this.itemType = _data["itemType"];
             this.itemNumber = _data["itemNumber"];
+            this.fairMarketValue_FMV = _data["fairMarketValue_FMV"];
+            this.imageName = _data["imageName"];
+            this.thumbnail = _data["thumbnail"];
+            this.remainingDays = _data["remainingDays"];
+            this.remainingTime = _data["remainingTime"];
+            this.lastBidAmount = _data["lastBidAmount"];
+            this.totalBidCount = _data["totalBidCount"];
+            this.isClosedItemStatus = _data["isClosedItemStatus"];
         }
     }
 
@@ -19993,8 +20594,18 @@ export class AuctionItemListDto implements IAuctionItemListDto {
         data["auctionEndDateTime"] = this.auctionEndDateTime ? this.auctionEndDateTime.toISOString() : <any>undefined;
         data["itemId"] = this.itemId;
         data["itemName"] = this.itemName;
+        data["itemDescription"] = this.itemDescription;
+        data["itemStatus"] = this.itemStatus;
         data["itemType"] = this.itemType;
         data["itemNumber"] = this.itemNumber;
+        data["fairMarketValue_FMV"] = this.fairMarketValue_FMV;
+        data["imageName"] = this.imageName;
+        data["thumbnail"] = this.thumbnail;
+        data["remainingDays"] = this.remainingDays;
+        data["remainingTime"] = this.remainingTime;
+        data["lastBidAmount"] = this.lastBidAmount;
+        data["totalBidCount"] = this.totalBidCount;
+        data["isClosedItemStatus"] = this.isClosedItemStatus;
         return data; 
     }
 }
@@ -20007,8 +20618,18 @@ export interface IAuctionItemListDto {
     auctionEndDateTime: moment.Moment;
     itemId: string;
     itemName: string | undefined;
+    itemDescription: string | undefined;
+    itemStatus: number;
     itemType: number;
     itemNumber: number;
+    fairMarketValue_FMV: number;
+    imageName: string | undefined;
+    thumbnail: string | undefined;
+    remainingDays: string | undefined;
+    remainingTime: string | undefined;
+    lastBidAmount: number;
+    totalBidCount: number;
+    isClosedItemStatus: boolean;
 }
 
 export class ListResultDtoOfAuctionItemListDto implements IListResultDtoOfAuctionItemListDto {
@@ -20149,6 +20770,198 @@ export interface ICreateAuctionItemDto {
     auctionId: string;
     itemId: string;
     isActive: boolean;
+}
+
+export class AuctionItemHistoryDto implements IAuctionItemHistoryDto {
+    bidderName!: string | undefined;
+    bidAmount!: number;
+    bidDate!: moment.Moment;
+    biddingDate!: string | undefined;
+    biddingTime!: string | undefined;
+    auctionBidderUserId!: number;
+    auctionBidderId!: number;
+
+    constructor(data?: IAuctionItemHistoryDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.bidderName = _data["bidderName"];
+            this.bidAmount = _data["bidAmount"];
+            this.bidDate = _data["bidDate"] ? moment(_data["bidDate"].toString()) : <any>undefined;
+            this.biddingDate = _data["biddingDate"];
+            this.biddingTime = _data["biddingTime"];
+            this.auctionBidderUserId = _data["auctionBidderUserId"];
+            this.auctionBidderId = _data["auctionBidderId"];
+        }
+    }
+
+    static fromJS(data: any): AuctionItemHistoryDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AuctionItemHistoryDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["bidderName"] = this.bidderName;
+        data["bidAmount"] = this.bidAmount;
+        data["bidDate"] = this.bidDate ? this.bidDate.toISOString() : <any>undefined;
+        data["biddingDate"] = this.biddingDate;
+        data["biddingTime"] = this.biddingTime;
+        data["auctionBidderUserId"] = this.auctionBidderUserId;
+        data["auctionBidderId"] = this.auctionBidderId;
+        return data; 
+    }
+}
+
+export interface IAuctionItemHistoryDto {
+    bidderName: string | undefined;
+    bidAmount: number;
+    bidDate: moment.Moment;
+    biddingDate: string | undefined;
+    biddingTime: string | undefined;
+    auctionBidderUserId: number;
+    auctionBidderId: number;
+}
+
+export class AuctionItemWithHistoryDto implements IAuctionItemWithHistoryDto {
+    auctionItemId!: string;
+    auctionId!: string;
+    auctionType!: string | undefined;
+    auctionStartDateTime!: moment.Moment;
+    auctionEndDateTime!: moment.Moment;
+    itemId!: string;
+    itemName!: string | undefined;
+    itemDescription!: string | undefined;
+    itemType!: number;
+    itemNumber!: number;
+    fairMarketValue_FMV!: number;
+    imageName!: string | undefined;
+    thumbnail!: string | undefined;
+    remainingDays!: string | undefined;
+    remainingTime!: string | undefined;
+    lastBidAmount!: number;
+    lastBidWinnerName!: string | undefined;
+    totalBidCount!: number;
+    bidStepIncrementValue!: number;
+    currentUserAuctionHistoryCount!: number;
+    currUserBidderName!: string | undefined;
+    currUserBiddingId!: number;
+    auctionItemHistories!: AuctionItemHistoryDto[] | undefined;
+
+    constructor(data?: IAuctionItemWithHistoryDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.auctionItemId = _data["auctionItemId"];
+            this.auctionId = _data["auctionId"];
+            this.auctionType = _data["auctionType"];
+            this.auctionStartDateTime = _data["auctionStartDateTime"] ? moment(_data["auctionStartDateTime"].toString()) : <any>undefined;
+            this.auctionEndDateTime = _data["auctionEndDateTime"] ? moment(_data["auctionEndDateTime"].toString()) : <any>undefined;
+            this.itemId = _data["itemId"];
+            this.itemName = _data["itemName"];
+            this.itemDescription = _data["itemDescription"];
+            this.itemType = _data["itemType"];
+            this.itemNumber = _data["itemNumber"];
+            this.fairMarketValue_FMV = _data["fairMarketValue_FMV"];
+            this.imageName = _data["imageName"];
+            this.thumbnail = _data["thumbnail"];
+            this.remainingDays = _data["remainingDays"];
+            this.remainingTime = _data["remainingTime"];
+            this.lastBidAmount = _data["lastBidAmount"];
+            this.lastBidWinnerName = _data["lastBidWinnerName"];
+            this.totalBidCount = _data["totalBidCount"];
+            this.bidStepIncrementValue = _data["bidStepIncrementValue"];
+            this.currentUserAuctionHistoryCount = _data["currentUserAuctionHistoryCount"];
+            this.currUserBidderName = _data["currUserBidderName"];
+            this.currUserBiddingId = _data["currUserBiddingId"];
+            if (Array.isArray(_data["auctionItemHistories"])) {
+                this.auctionItemHistories = [] as any;
+                for (let item of _data["auctionItemHistories"])
+                    this.auctionItemHistories!.push(AuctionItemHistoryDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): AuctionItemWithHistoryDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AuctionItemWithHistoryDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["auctionItemId"] = this.auctionItemId;
+        data["auctionId"] = this.auctionId;
+        data["auctionType"] = this.auctionType;
+        data["auctionStartDateTime"] = this.auctionStartDateTime ? this.auctionStartDateTime.toISOString() : <any>undefined;
+        data["auctionEndDateTime"] = this.auctionEndDateTime ? this.auctionEndDateTime.toISOString() : <any>undefined;
+        data["itemId"] = this.itemId;
+        data["itemName"] = this.itemName;
+        data["itemDescription"] = this.itemDescription;
+        data["itemType"] = this.itemType;
+        data["itemNumber"] = this.itemNumber;
+        data["fairMarketValue_FMV"] = this.fairMarketValue_FMV;
+        data["imageName"] = this.imageName;
+        data["thumbnail"] = this.thumbnail;
+        data["remainingDays"] = this.remainingDays;
+        data["remainingTime"] = this.remainingTime;
+        data["lastBidAmount"] = this.lastBidAmount;
+        data["lastBidWinnerName"] = this.lastBidWinnerName;
+        data["totalBidCount"] = this.totalBidCount;
+        data["bidStepIncrementValue"] = this.bidStepIncrementValue;
+        data["currentUserAuctionHistoryCount"] = this.currentUserAuctionHistoryCount;
+        data["currUserBidderName"] = this.currUserBidderName;
+        data["currUserBiddingId"] = this.currUserBiddingId;
+        if (Array.isArray(this.auctionItemHistories)) {
+            data["auctionItemHistories"] = [];
+            for (let item of this.auctionItemHistories)
+                data["auctionItemHistories"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IAuctionItemWithHistoryDto {
+    auctionItemId: string;
+    auctionId: string;
+    auctionType: string | undefined;
+    auctionStartDateTime: moment.Moment;
+    auctionEndDateTime: moment.Moment;
+    itemId: string;
+    itemName: string | undefined;
+    itemDescription: string | undefined;
+    itemType: number;
+    itemNumber: number;
+    fairMarketValue_FMV: number;
+    imageName: string | undefined;
+    thumbnail: string | undefined;
+    remainingDays: string | undefined;
+    remainingTime: string | undefined;
+    lastBidAmount: number;
+    lastBidWinnerName: string | undefined;
+    totalBidCount: number;
+    bidStepIncrementValue: number;
+    currentUserAuctionHistoryCount: number;
+    currUserBidderName: string | undefined;
+    currUserBiddingId: number;
+    auctionItemHistories: AuctionItemHistoryDto[] | undefined;
 }
 
 export class AuctionItemDto implements IAuctionItemDto {
@@ -21026,6 +21839,54 @@ export class ListResultDtoOfCategoryListDto implements IListResultDtoOfCategoryL
 }
 
 export interface IListResultDtoOfCategoryListDto {
+    items: CategoryListDto[] | undefined;
+}
+
+export class PagedResultDtoOfCategoryListDto implements IPagedResultDtoOfCategoryListDto {
+    totalCount!: number;
+    items!: CategoryListDto[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfCategoryListDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.totalCount = _data["totalCount"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(CategoryListDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfCategoryListDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfCategoryListDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfCategoryListDto {
+    totalCount: number;
     items: CategoryListDto[] | undefined;
 }
 
@@ -33828,6 +34689,7 @@ export class GetAllSubscriptionsOutput implements IGetAllSubscriptionsOutput {
     webhookUri!: string | undefined;
     isActive!: boolean;
     webhooks!: string[] | undefined;
+    secret!: string | undefined;
     id!: string;
 
     constructor(data?: IGetAllSubscriptionsOutput) {
@@ -33848,6 +34710,7 @@ export class GetAllSubscriptionsOutput implements IGetAllSubscriptionsOutput {
                 for (let item of _data["webhooks"])
                     this.webhooks!.push(item);
             }
+            this.secret = _data["secret"];
             this.id = _data["id"];
         }
     }
@@ -33868,6 +34731,7 @@ export class GetAllSubscriptionsOutput implements IGetAllSubscriptionsOutput {
             for (let item of this.webhooks)
                 data["webhooks"].push(item);
         }
+        data["secret"] = this.secret;
         data["id"] = this.id;
         return data; 
     }
@@ -33877,6 +34741,7 @@ export interface IGetAllSubscriptionsOutput {
     webhookUri: string | undefined;
     isActive: boolean;
     webhooks: string[] | undefined;
+    secret: string | undefined;
     id: string;
 }
 

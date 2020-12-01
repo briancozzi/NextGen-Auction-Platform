@@ -2,7 +2,13 @@
 <localizationDictionary culture="en">
   <texts>
 
+  
     <!--Custom Changes start from here -->
+    <text name="CategoryName">Category Name</text>
+    <text name="CreateCategory">Create Category</text>
+    <text name="SearchCategory">Search Category</text>
+    <text name="EditCategory">Edit Category</text>
+    
     <text name="Country">Country</text>
     <text name="CreateNewCountry">Create New Country</text>
     <text name="EditingCountry">Edit Country</text>
