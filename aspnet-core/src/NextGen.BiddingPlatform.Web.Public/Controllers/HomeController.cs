@@ -106,7 +106,7 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
                     if (!await _webhookSubscriptionService.IsWebhookSubscribed(result.Data?.TenantId, result.Event))
                         return BadRequest("Webhook not subscribe by this user");
 
-                    if (!await IsSignatureValid(result.Event, body))
+                    if (!await IsSignatureValid(result.Event, body, result.Data?.TenantId))
                         return BadRequest("Unexpected signature");
 
                     await _notify.SendAsync(result.Data.AuctionItemId.ToString(), result.Data);
@@ -119,10 +119,10 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
             }
         }
 
-        private async Task<bool> IsSignatureValid(string webhookName, string body)
+        private async Task<bool> IsSignatureValid(string webhookName, string body, int? tenantId)
         {
             //we also can gets the subscriptions based on tenantId
-            var userSubscriptions = await _webhookSubscriptionService.GetTenantsAllSubscriptions(2);
+            var userSubscriptions = await _webhookSubscriptionService.GetTenantsAllSubscriptions(tenantId);
             var webhookSecrets = userSubscriptions.Items.Where(x => x.Webhooks.Contains(webhookName)).Select(x => x.Secret);
             bool isValidSignature = false;
             foreach (var secret in webhookSecrets)

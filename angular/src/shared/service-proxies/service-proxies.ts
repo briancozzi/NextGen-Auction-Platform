@@ -2721,9 +2721,10 @@ export class AuctionItemServiceProxy {
     /**
      * @param id (optional) 
      * @param itemStatus (optional) 
+     * @param userId (optional) 
      * @return Success
      */
-    getAuctionItemWithHistory(id: string | undefined, itemStatus: number | undefined): Observable<AuctionItemWithHistoryDto> {
+    getAuctionItemWithHistory(id: string | undefined, itemStatus: number | undefined, userId: number | undefined): Observable<AuctionItemWithHistoryDto> {
         let url_ = this.baseUrl + "/api/services/app/AuctionItem/GetAuctionItemWithHistory?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -2733,6 +2734,10 @@ export class AuctionItemServiceProxy {
             throw new Error("The parameter 'itemStatus' cannot be null.");
         else if (itemStatus !== undefined)
             url_ += "itemStatus=" + encodeURIComponent("" + itemStatus) + "&"; 
+        if (userId === null)
+            throw new Error("The parameter 'userId' cannot be null.");
+        else if (userId !== undefined)
+            url_ += "userId=" + encodeURIComponent("" + userId) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -20481,6 +20486,8 @@ export class AuctionBidderHistoryDto implements IAuctionBidderHistoryDto {
     auctionItemId!: string;
     bidAmount!: number;
     auctionBidderId!: number | undefined;
+    userId!: number;
+    tenantId!: number | undefined;
 
     constructor(data?: IAuctionBidderHistoryDto) {
         if (data) {
@@ -20497,6 +20504,8 @@ export class AuctionBidderHistoryDto implements IAuctionBidderHistoryDto {
             this.auctionItemId = _data["auctionItemId"];
             this.bidAmount = _data["bidAmount"];
             this.auctionBidderId = _data["auctionBidderId"];
+            this.userId = _data["userId"];
+            this.tenantId = _data["tenantId"];
         }
     }
 
@@ -20513,6 +20522,8 @@ export class AuctionBidderHistoryDto implements IAuctionBidderHistoryDto {
         data["auctionItemId"] = this.auctionItemId;
         data["bidAmount"] = this.bidAmount;
         data["auctionBidderId"] = this.auctionBidderId;
+        data["userId"] = this.userId;
+        data["tenantId"] = this.tenantId;
         return data; 
     }
 }
@@ -20522,6 +20533,8 @@ export interface IAuctionBidderHistoryDto {
     auctionItemId: string;
     bidAmount: number;
     auctionBidderId: number | undefined;
+    userId: number;
+    tenantId: number | undefined;
 }
 
 export class AuctionItemListDto implements IAuctionItemListDto {
