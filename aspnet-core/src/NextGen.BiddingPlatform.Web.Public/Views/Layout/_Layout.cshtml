@@ -68,6 +68,8 @@
         @await Html.PartialAsync("~/Views/Layout/_Footer.cshtml")
         <div id="pageTemplates"></div>
     </div>
+    @await Html.PartialAsync("~/Views/Home/_AuctionItemTemplate.cshtml")
+    @await Html.PartialAsync("~/Views/Home/_AuctionHistoryTemplate.cshtml")
     <script type="text/javascript">
         $(function () {
             //Layout.init();

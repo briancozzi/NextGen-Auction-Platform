@@ -10,7 +10,6 @@ using System.Text;
 
 namespace NextGen.BiddingPlatform.BackgroundService.RabbitMqService
 {
-    [AbpAuthorize]
     public class RabbitMqService : BiddingPlatformAppServiceBase, IRabbitMqService
     {
         private readonly RabbitMqSettings _rabbitMqSettings;
@@ -30,8 +29,6 @@ namespace NextGen.BiddingPlatform.BackgroundService.RabbitMqService
             using var channel = connection.CreateModel();
             channel.QueueDeclare(queue: _rabbitMqSettings.QueueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
 
-            data.UserId = AbpSession.UserId.Value;
-            data.TenantId = AbpSession.TenantId;
             var json = JsonConvert.SerializeObject(data);
             var body = Encoding.UTF8.GetBytes(json);
 

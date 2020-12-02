@@ -16,6 +16,7 @@ namespace NextGen.BiddingPlatform.AuctionHistory.Dto
         public Guid AuctionItemId { get; set; }
         public double LastHistoryAmount { get; set; }
         public int? TenantId { get; set; }
+        public long UserId { get; set; }
         public List<GetAuctionHistoryByAuctionIdDto> AuctionItemHistory { get; set; }
     }
 }

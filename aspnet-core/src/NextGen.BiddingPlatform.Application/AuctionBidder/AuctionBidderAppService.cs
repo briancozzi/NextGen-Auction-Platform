@@ -43,7 +43,6 @@ namespace NextGen.BiddingPlatform.AuctionBidder
 
             await _auctionBidderRepository.InsertAsync(new Core.AuctionBidders.AuctionBidder
             {
-                TenantId = _abpSession.TenantId.Value,
                 UniqueId = Guid.NewGuid(),
                 UserId = user.Id,
                 AuctionId = auction.Id,

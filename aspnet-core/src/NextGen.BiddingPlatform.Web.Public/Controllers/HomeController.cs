@@ -67,17 +67,6 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
         }
         #endregion
 
-        #region Templates
-        public IActionResult GetAuctionItemTemplate()
-        {
-            return PartialView("~/Views/Home/_AuctionItemTemplate.cshtml");
-        }
-        public IActionResult GetAuctionHistoryTemplate()
-        {
-            return PartialView("~/Views/Home/_AuctionHistoryTemplate.cshtml");
-        }
-        #endregion
-
         private async Task<bool> IsCurrentUserLoggedIn()
         {
             var user = await _sessionCache.GetCurrentLoginInformationsAsync();

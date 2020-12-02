@@ -14,9 +14,8 @@ using Toolbelt.ComponentModel.DataAnnotations.Schema;
 namespace NextGen.BiddingPlatform.Core.AuctionBidders
 {
     [Table("AuctionBidders")]
-    public class AuctionBidder : FullAuditedEntity, IMustHaveTenant, IHasUniqueIdentifier
+    public class AuctionBidder : FullAuditedEntity, IHasUniqueIdentifier
     {
-        public int TenantId { get; set; }
 
         [Index("IX_AuctionHistory_UniqueId", IsClustered = false, IsUnique = true)]
         public Guid UniqueId { get; set; }

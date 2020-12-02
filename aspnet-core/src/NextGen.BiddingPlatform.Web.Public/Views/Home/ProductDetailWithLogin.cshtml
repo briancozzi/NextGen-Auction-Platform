@@ -8,7 +8,7 @@
     var appConfiguration = env.GetAppConfiguration();
     var apiServerPath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:ApiWebSiteRootAddress", string.Empty);
     var webSitePath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:WebSiteRootAddress", string.Empty);
-    var cookie = _context.HttpContext.Request.Cookies["Abp.AuthToken"];
+    //var cookie = _context.HttpContext.Request.Cookies["Abp.AuthToken"];
 }
 <div class="inner-wrapper">
     <div class="content-wrapper have-sidename pt-80">
@@ -37,6 +37,7 @@
                         </div>
                         <div class="golf-event details">
                             <div class="desc border-bottom-0 mb-0 pb-0">
+                                <input type="hidden" id="userId" value="@ViewBag.UserId" />
                                 <input type="hidden" id="auctionItemId" value="@ViewBag.AuctionItemId" />
                                 <input type="hidden" id="itemStatus" value="@ViewBag.ItemStatus" />
                                 <input type="hidden" id="currentUserAuctionHistoryCount" value="0" />
@@ -164,7 +165,6 @@
     var ApiServerPath = "@apiServerPath";
     var WebSiteUrl = "@webSitePath";
     var auctionItemId = "@ViewBag.AuctionItemId";
-    var authCookie = '@cookie'
     var tenantId = '@ViewBag.TenantId';
     var userId = '@ViewBag.UserId';
     $(function () {
@@ -175,11 +175,15 @@
         connection.on("BidSaved", (auctionHistoryDto) => {
             if (auctionHistoryDto != undefined)
             {
-                $("#currentUserAuctionHistoryCount").val(auctionHistoryDto.historyCount);
+
                 $("#totalBids").text(auctionHistoryDto.historyCount);
-                $("#auctionBidderId").val(auctionHistoryDto.auctionBidderId);
+                var hiddUserId = parseInt($("#userId").val());
+                if (hiddUserId == auctionHistoryDto.userId) {
+                    $("#auctionBidderId").val(auctionHistoryDto.auctionBidderId);
+                    $("#currentUserAuctionHistoryCount").val(auctionHistoryDto.historyCount);
+                    $("#bidderNameFromDb").text(auctionHistoryDto.bidderName);
+                }
                 $("#lastBidAmount").text("$" + auctionHistoryDto.lastHistoryAmount.toFixed(2));
-                //$("#bidderNameFromDb").text(auctionHistoryDto.bidderName);
                 ClearHistoryAndAppendNew(auctionHistoryDto.auctionItemHistory);
             }
         });
@@ -189,28 +193,6 @@
                 .catch(err => console.log(err.toString()));
         }) .catch(err => console.error(err.toString()));
 
-           function GetAuctionItemHistory(auctionItemId) {
-            var url = ApiServerPath + "/api/services/app/AuctionHistory/GetHistorbyAuctionItemId?auctionItemId=" + auctionItemId;
-            $.ajax({
-            url: url,
-            type: 'GET',
-                data: { auctionItemId: auctionItemId, pageSize: 9999, pageIndex: 1 },
-            headers: {
-      'Authorization': 'Bearer' + authCookie
-   },
-            cache: false,
-            async: true,
-            contentType: "application/json",
-            dataType: "json",
-            success: function (response) {
-                ClearHistoryAndAppendNew(response);
-            },
-            error: function (xhr) {
-                console.log(xhr.responseText + " " + xhr.status);
-                alert(xhr.responseText + " " + xhr.status);
-            }
-        });
-        }
         function ClearHistoryAndAppendNew(itemHistories) {
                 $("#itemHistories").empty();
                 $.each(itemHistories, function (i, v) {
@@ -253,6 +235,7 @@
         else {
             $("#errorMessage").hide();
             $("#bidderNameFromDb").text(bidderName);
+            $("#auctionBidderName").val(bidderName);
             SaveAuctionBidderFirstThenHistory(bidderName);
         }
     });
@@ -261,7 +244,9 @@
             bidderName: bidderName,
             auctionItemId: $("#auctionItemId").val(),
             bidAmount: parseFloat($("#biddingAmount").val()),
-            auctionBidderId: parseInt($("#auctionBidderId").val())
+            auctionBidderId: parseInt($("#auctionBidderId").val()),
+            userId: userId,
+            tenantId:tenantId
         };
         if ($("#auctionBidderName").val() == "") {
              $("#bidderNameFromDb").text(bidderName);
@@ -273,20 +258,11 @@
             url: url,
             type: 'POST',
             contentType: "application/json",
-             headers: {
-            'Abp.TenantId': tenantId,
-            'Authorization': 'Bearer ' + authCookie
-            },
              async: true,
               cache: false,
             data: JSON.stringify(auctionHistoryDto) ,
             dataType: "json",
             success: function (response) {
-                //$("#currentUserAuctionHistoryCount").val(response.result.historyCount);
-                //$("#auctionBidderId").val(response.result.auctionBidderId);
-                //$("#myModal").modal("hide");
-                //$("#biddingAmount").val("");
-                //GetAuctionItemHistory(auctionHistoryDto.auctionItemId);
             },
             error: function (xhr) {
                 $("#myModal").modal("hide");
@@ -298,7 +274,6 @@
         $("#biddingAmount").val("");
     }
 </script>
-<script src="~/auction/js/closedproductdetails.js"></script>
+<script src="~/auction/js/getproductdetails.js"></script>
 <script src="~/signalr.js"></script>
-@*<script src="~/auction/js/bid-signalr.js"></script>*@
 }

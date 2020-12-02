@@ -13,10 +13,8 @@ using Toolbelt.ComponentModel.DataAnnotations.Schema;
 namespace NextGen.BiddingPlatform.Core.AuctionHistories
 {
     [Table("AuctionHistory")]
-    public class AuctionHistory : FullAuditedEntity, IMustHaveTenant, IHasUniqueIdentifier
+    public class AuctionHistory : FullAuditedEntity, IHasUniqueIdentifier
     {
-        public int TenantId { get; set; }
-
         [Index("IX_AuctionHistory_UniqueId", IsClustered = false, IsUnique = true)]
         public Guid UniqueId { get; set; }
 

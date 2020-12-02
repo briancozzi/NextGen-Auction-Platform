@@ -166,8 +166,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
         }
 
         [AllowAnonymous]
-        //[AbpAuthorize]
-        public async Task<AuctionItemWithHistoryDto> GetAuctionItemWithHistory(Guid Id, int itemStatus,long userId)
+        public async Task<AuctionItemWithHistoryDto> GetAuctionItemWithHistory(Guid Id, int itemStatus, long userId)
         {
             try
             {
@@ -213,7 +212,6 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 result.LastBidAmount = result.AuctionItemHistories.OrderByDescending(x => x.BidDate).FirstOrDefault()?.BidAmount ?? 0;
                 result.LastBidWinnerName = result.AuctionItemHistories.OrderByDescending(x => x.BidDate).FirstOrDefault()?.BidderName ?? string.Empty;
                 //var currntUseid = 3;
-                var currntUseid = _abpSession.UserId.HasValue ? _abpSession.UserId.Value : 0;
                 if (userId > 0)
                 {
                     result.CurrentUserAuctionHistoryCount = output.AuctionHistories.Count(x => x.AuctionBidder.UserId == userId);

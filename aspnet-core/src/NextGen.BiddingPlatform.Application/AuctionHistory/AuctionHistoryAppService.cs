@@ -1,16 +1,12 @@
 ﻿using Abp.Application.Services.Dto;
-using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Timing;
 using Abp.UI;
 using Abp.Webhooks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using NextGen.BiddingPlatform.AuctionHistory.Dto;
 using NextGen.BiddingPlatform.Authorization.Users;
-using NextGen.BiddingPlatform.RabbitMQ;
 using NextGen.BiddingPlatform.WebHooks;
 using System;
 using System.Collections.Generic;
@@ -25,7 +21,6 @@ namespace NextGen.BiddingPlatform.AuctionHistory
         private readonly IRepository<Core.AuctionHistories.AuctionHistory> _auctionHistoryRepository;
         private readonly IRepository<Core.AuctionBidders.AuctionBidder> _auctionBidderRepository;
         private readonly IRepository<Core.AuctionItems.AuctionItem> _auctionItemRepository;
-        private readonly UserManager _userManager;
         private readonly IWebhookPublisher _webHookPublisher;
 
         public AuctionHistoryAppService(IRepository<Core.AuctionHistories.AuctionHistory> auctionHistoryRepository,
@@ -36,7 +31,6 @@ namespace NextGen.BiddingPlatform.AuctionHistory
             _auctionHistoryRepository = auctionHistoryRepository;
             _auctionBidderRepository = auctionBidderRepository;
             _auctionItemRepository = auctionItemRepository;
-            _userManager = userManager;
             _webHookPublisher = webhookPublisher;
         }
 
@@ -53,7 +47,6 @@ namespace NextGen.BiddingPlatform.AuctionHistory
             await _auctionHistoryRepository.InsertAsync(new Core.AuctionHistories.AuctionHistory
             {
                 UniqueId = Guid.NewGuid(),
-                TenantId = AbpSession.TenantId.Value,
                 AuctionBidderId = auctionBidder.Id,
                 AuctionItemId = auctionItem.Id,
                 BidAmount = input.BidAmount,
@@ -167,7 +160,6 @@ namespace NextGen.BiddingPlatform.AuctionHistory
 
         //custom Method
         [AllowAnonymous]
-        //[AbpAuthorize]
         public async Task SaveAuctionBidderWithHistory(AuctionBidderHistoryDto auctionBidderHistory)
         {
             try
@@ -177,13 +169,12 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                     throw new UserFriendlyException("Auction item not found for bidding");
 
                 var currUserId = auctionBidderHistory.UserId;
-                var tenantId = auctionBidderHistory.TenantId;
 
-                var currentUser = await _userManager.GetUserAsync(new Abp.UserIdentifier(tenantId, currUserId));
-                if (currentUser == null)
-                    throw new UserFriendlyException("User not found");
+                //var currentUser = await _userRepository.GetAsync(currUserId);
+                //if (currentUser == null)
+                //    throw new UserFriendlyException("User not found");
 
-                var userhasBidderRole = await _userManager.IsInRoleAsync(currentUser, "Bidder");
+                //var userhasBidderRole = await _userManager.IsInRoleAsync(currentUser, "Bidder");
                 var historyCount = await GetAuctionItemHistoryCount(auctionItem.Id);
 
                 if (/*!userhasBidderRole &&*/ historyCount.Key == 0 || auctionBidderHistory.AuctionBidderId == 0)
@@ -197,7 +188,6 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                         BidderName = auctionBidderHistory.BidderName,
                         CreationTime = Clock.Now,
                         CreatorUserId = currUserId,
-                        TenantId = auctionItem.TenantId,
                         UserId = currUserId,
                         UniqueId = Guid.NewGuid()
                     };
@@ -208,7 +198,6 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                         BidStatus = BiddingStatus.Pending.ToString(),
                         CreationTime = Clock.Now,
                         CreatorUserId = currUserId,
-                        TenantId = auctionItem.TenantId,
                         UniqueId = Guid.NewGuid()
                     });
                     await _auctionBidderRepository.InsertAsync(auctionBidder);
@@ -227,7 +216,6 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                         BidStatus = BiddingStatus.Pending.ToString(),
                         CreationTime = Clock.Now,
                         CreatorUserId = currUserId,
-                        TenantId = auctionItem.TenantId,
                         UniqueId = Guid.NewGuid(),
                         AuctionBidderId = auctionBidderHistory.AuctionBidderId.Value
                     });
@@ -236,6 +224,7 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                 var auctionItemHistoryDetails = await GetAuctionItemHistoryCount(auctionItem.Id);
                 //if we want to send webhook to specific tenant then we have optional parameter TenantId with PublishAsync Method
                 //if we will not pass the TenantId parameter then it will pick the subscriptions of the host
+                var tenantId = auctionBidderHistory.TenantId;
                 await _webHookPublisher.PublishAsync(AppWebHookNames.TestAuctionHistoryWebhook, new GetAuctionBidderHistoryDto
                 {
                     AuctionBidderId = auctionBidderHistory.AuctionBidderId.Value,
@@ -244,7 +233,8 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                     AuctionItemId = auctionBidderHistory.AuctionItemId,
                     LastHistoryAmount = auctionItemHistoryDetails.Value,
                     AuctionItemHistory = await GetHistorbyAuctionItemId(auctionBidderHistory.AuctionItemId, 10, 1),
-                    TenantId = tenantId
+                    TenantId = tenantId,
+                    UserId = currUserId
                 }, tenantId);
             }
             catch (Exception ex)
