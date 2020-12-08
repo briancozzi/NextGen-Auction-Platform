@@ -1,7 +1,10 @@
 ﻿using Castle.Core.Logging;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using NextGen.BiddingPlatform.AuctionHistory;
 using NextGen.BiddingPlatform.AuctionHistory.Dto;
+using NextGen.BiddingPlatform.Configuration;
 using NextGen.BiddingPlatform.RabbitMQ;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -22,75 +25,87 @@ namespace NextGen.BiddingPlatform.HostingServices
         private IModel _channel;
         private readonly RabbitMqSettings _rabbitMqSettings;
         private readonly IAuctionHistoryAppService _auctionHistoryService;
+        private readonly bool IsRabbitMqEnabled;
+        private readonly bool IsRedisCacheEnabled;
+        private readonly IConfigurationRoot _appConfiguration;
         public QueuedHostedService(IOptions<RabbitMqSettings> rabbitMqSettings,
                                                              ILogger logger,
-                                                             IAuctionHistoryAppService auctionHistoryService)
+                                                             IAuctionHistoryAppService auctionHistoryService,
+                                                              IWebHostEnvironment env)
         {
             _rabbitMqSettings = rabbitMqSettings.Value;
             _logger = logger;
             _auctionHistoryService = auctionHistoryService;
+            _appConfiguration = env.GetAppConfiguration();
+            IsRabbitMqEnabled = bool.Parse(_appConfiguration["RabbitMQ:IsEnabled"]);
+            IsRedisCacheEnabled = bool.Parse(_appConfiguration["Abp:RedisCache:IsEnabled"]);
         }
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            if (_rabbitMqSettings.Hostname == "localhost")
+            if (IsRabbitMqEnabled)
             {
-                _connectionFactory = new ConnectionFactory { HostName = _rabbitMqSettings.Hostname, DispatchConsumersAsync = true, Port = 5672 };
-            }
-            else
-            {
-                _connectionFactory = new ConnectionFactory { HostName = _rabbitMqSettings.Hostname, UserName = _rabbitMqSettings.UserName, Password = _rabbitMqSettings.Password, DispatchConsumersAsync = true, Port = 5672 };
-            }
+                if (_rabbitMqSettings.Hostname == "localhost")
+                {
+                    _connectionFactory = new ConnectionFactory { HostName = _rabbitMqSettings.Hostname, DispatchConsumersAsync = true, Port = 5672 };
+                }
+                else
+                {
+                    _connectionFactory = new ConnectionFactory { HostName = _rabbitMqSettings.Hostname, UserName = _rabbitMqSettings.UserName, Password = _rabbitMqSettings.Password, DispatchConsumersAsync = true, Port = 5672 };
+                }
 
-            _connection = _connectionFactory.CreateConnection();
-            _channel = _connection.CreateModel();
-            _channel.QueueDeclare(queue: _rabbitMqSettings.QueueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
-            _channel.BasicQos(0, 1, false);
-
+                _connection = _connectionFactory.CreateConnection();
+                _channel = _connection.CreateModel();
+                _channel.QueueDeclare(queue: _rabbitMqSettings.QueueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+                _channel.BasicQos(0, 1, false);
+            }
             return base.StartAsync(cancellationToken);
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             //here we will do our work
             stoppingToken.ThrowIfCancellationRequested();
-
-            var consumer = new AsyncEventingBasicConsumer(_channel);
-            consumer.Received += async (bc, ea) =>
+            if (IsRabbitMqEnabled)
             {
-                var message = Encoding.UTF8.GetString(ea.Body.ToArray());
-                try
+                var consumer = new AsyncEventingBasicConsumer(_channel);
+                consumer.Received += async (bc, ea) =>
                 {
-                    if (!string.IsNullOrEmpty(message))
+                    var message = Encoding.UTF8.GetString(ea.Body.ToArray());
+                    try
                     {
-                        var dataFromQueue = JsonSerializer.Deserialize<AuctionBidderHistoryDto>(message);
-                        if (dataFromQueue.UserId != 0)
-                            await _auctionHistoryService.SaveAuctionBidderWithHistory(dataFromQueue);
+                        if (!string.IsNullOrEmpty(message))
+                        {
+                            var dataFromQueue = JsonSerializer.Deserialize<AuctionBidderHistoryDto>(message);
+                            if (dataFromQueue.UserId != 0)
+                                await _auctionHistoryService.SaveAuctionBidderWithHistory(dataFromQueue);
+                        }
+                        //await Task.Delay(new Random().Next(1, 3) * 1000, stoppingToken); // simulate an async email process
+
+                        _channel.BasicAck(ea.DeliveryTag, false);
                     }
-                    //await Task.Delay(new Random().Next(1, 3) * 1000, stoppingToken); // simulate an async email process
+                    catch (JsonException ex)
+                    {
+                        _channel.BasicNack(ea.DeliveryTag, false, false);
+                    }
+                    catch (AlreadyClosedException ex)
+                    {
+                        _logger.Error("RabbitMQ is closed!");
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.Error(e.Message, e);
+                    }
+                };
 
-                    _channel.BasicAck(ea.DeliveryTag, false);
-                }
-                catch (JsonException ex)
-                {
-                    _channel.BasicNack(ea.DeliveryTag, false, false);
-                }
-                catch (AlreadyClosedException ex)
-                {
-                    _logger.Error("RabbitMQ is closed!");
-                }
-                catch (Exception e)
-                {
-                    _logger.Error(e.Message, e);
-                }
-            };
-
-            _channel.BasicConsume(queue: _rabbitMqSettings.QueueName, autoAck: false, consumer: consumer);
-
+                _channel.BasicConsume(queue: _rabbitMqSettings.QueueName, autoAck: false, consumer: consumer);
+            }
             await Task.CompletedTask;
         }
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
+            if (IsRabbitMqEnabled)
+                _connection.Close();
+
             await base.StopAsync(cancellationToken);
-            _connection.Close();
         }
     }
 }

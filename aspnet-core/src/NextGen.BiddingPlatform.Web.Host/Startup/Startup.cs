@@ -210,7 +210,6 @@ namespace NextGen.BiddingPlatform.Web.Startup
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             //Initializes ABP framework.
-           
 
             app.UseAbp(options =>
             {

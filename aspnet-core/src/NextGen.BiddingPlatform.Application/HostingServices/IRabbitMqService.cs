@@ -3,11 +3,12 @@ using NextGen.BiddingPlatform.AuctionHistory.Dto;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace NextGen.BiddingPlatform.BackgroundService.RabbitMqService
 {
     public interface IRabbitMqService : IApplicationService
     {
-        void AddToQueue(AuctionBidderHistoryDto data);
+        Task AddToQueue(AuctionBidderHistoryDto data);
     }
 }
