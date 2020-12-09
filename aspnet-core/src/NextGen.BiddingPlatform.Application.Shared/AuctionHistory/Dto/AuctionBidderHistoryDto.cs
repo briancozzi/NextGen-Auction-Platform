@@ -15,4 +15,11 @@ namespace NextGen.BiddingPlatform.AuctionHistory.Dto
         public DateTime CreationTime { get; set; }
         public Guid UniqueId { get; set; }
     }
+    public class AuctionItemWinnerDto
+    {
+        public Guid AuctionItemId { get; set; }
+        public double BidAmount { get; set; }
+        public int? AuctionBidderId { get; set; }
+        public long UserId { get; set; }
+    }
 }

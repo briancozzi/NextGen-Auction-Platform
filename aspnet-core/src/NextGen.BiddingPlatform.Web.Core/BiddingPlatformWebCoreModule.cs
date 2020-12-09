@@ -88,8 +88,8 @@ namespace NextGen.BiddingPlatform.Web
 
             //Uncomment this line to use Redis cache instead of in-memory cache.
             //See app.config for Redis configuration and connection string
-            var isRedisCacheEnabled = string.IsNullOrEmpty(_appConfiguration["Abp:RedisCache:IsEnabled"]) ? false : bool.Parse(_appConfiguration["Abp:RedisCache:IsEnabled"]);
-            if (isRedisCacheEnabled && !string.IsNullOrEmpty(_appConfiguration["Abp:RedisCache:ConnectionString"]))
+            var enabledQueue = _appConfiguration["EnabledQueue"];
+            if (enabledQueue?.ToLower() == "redis" && !string.IsNullOrEmpty(_appConfiguration["Abp:RedisCache:ConnectionString"]))
             {
                 Configuration.Caching.UseRedis(options =>
                 {

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using NextGen.BiddingPlatform.AuctionHistory.Dto;
 using NextGen.BiddingPlatform.Authorization.Users;
+using NextGen.BiddingPlatform.Caching;
 using NextGen.BiddingPlatform.WebHooks;
 using System;
 using System.Collections.Generic;
@@ -22,16 +23,19 @@ namespace NextGen.BiddingPlatform.AuctionHistory
         private readonly IRepository<Core.AuctionBidders.AuctionBidder> _auctionBidderRepository;
         private readonly IRepository<Core.AuctionItems.AuctionItem> _auctionItemRepository;
         private readonly IWebhookPublisher _webHookPublisher;
+        private readonly ICachingAppService _cacheService;
 
         public AuctionHistoryAppService(IRepository<Core.AuctionHistories.AuctionHistory> auctionHistoryRepository,
                                         IRepository<Core.AuctionBidders.AuctionBidder> auctionBidderRepository,
                                         IRepository<Core.AuctionItems.AuctionItem> auctionItemRepository,
-                                        UserManager userManager, IWebhookPublisher webhookPublisher)
+                                        UserManager userManager, IWebhookPublisher webhookPublisher,
+                                        ICachingAppService cacheService)
         {
             _auctionHistoryRepository = auctionHistoryRepository;
             _auctionBidderRepository = auctionBidderRepository;
             _auctionItemRepository = auctionItemRepository;
             _webHookPublisher = webhookPublisher;
+            _cacheService = cacheService;
         }
 
         public async Task CreateHistory(CreateAuctionHistoryDto input)
@@ -160,98 +164,141 @@ namespace NextGen.BiddingPlatform.AuctionHistory
 
         //custom Method
         [AllowAnonymous]
-        public async Task SaveAuctionBidderWithHistory(AuctionBidderHistoryDto auctionBidderHistory)
+        public async Task SaveAuctionBidderWithHistory(object auctionBidderHistory)
         {
-            try
+            if (auctionBidderHistory.GetType() == typeof(AuctionBidderHistoryDto))
+                await SaveSingleHistory(auctionBidderHistory as AuctionBidderHistoryDto);
+            else if (auctionBidderHistory.GetType() == typeof(List<AuctionBidderHistoryDto>))
+                await SaveBulkHistory(auctionBidderHistory as List<AuctionBidderHistoryDto>);
+        }
+
+        private async Task SaveBulkHistory(List<AuctionBidderHistoryDto> auctionItemBids)
+        {
+            var auctionItemId = auctionItemBids.FirstOrDefault().AuctionItemId;
+            var auctionItem = await _auctionItemRepository.FirstOrDefaultAsync(x => x.UniqueId == auctionItemId);
+            if (auctionItem == null)
+                throw new UserFriendlyException("Auction item not found for bidding");
+
+            //var currUserId = auctionBidderHistory.UserId;
+            foreach (var item in auctionItemBids)
             {
-                var auctionItem = await _auctionItemRepository.FirstOrDefaultAsync(x => x.UniqueId == auctionBidderHistory.AuctionItemId);
-                if (auctionItem == null)
-                    throw new UserFriendlyException("Auction item not found for bidding");
-
-                var currUserId = auctionBidderHistory.UserId;
-
-                var existingUser = await _auctionBidderRepository.FirstOrDefaultAsync(x => x.AuctionId == auctionItem.AuctionId && x.UserId == currUserId);
-                if (existingUser != null)
-                    auctionBidderHistory.AuctionBidderId = existingUser.Id;
-                //var currentUser = await _userRepository.GetAsync(currUserId);
-                //if (currentUser == null)
-                //    throw new UserFriendlyException("User not found");
-
-                //var userhasBidderRole = await _userManager.IsInRoleAsync(currentUser, "Bidder");
-                var historyCount = await GetAuctionItemHistoryCount(auctionItem.Id);
-
-                if (/*!userhasBidderRole &&*/ historyCount.Key == 0 || existingUser == null)
+                await _auctionHistoryRepository.InsertAsync(new Core.AuctionHistories.AuctionHistory
                 {
-                    //CheckErrors(await _userManager.AddToRoleAsync(currentUser, "Bidder"));
-
-                    //now add auction bidder
-                    var auctionBidder = new Core.AuctionBidders.AuctionBidder
-                    {
-                        AuctionId = auctionItem.AuctionId,
-                        BidderName = auctionBidderHistory.BidderName,
-                        CreationTime = Clock.Now,
-                        CreatorUserId = currUserId,
-                        UserId = currUserId,
-                        UniqueId = Guid.NewGuid()
-                    };
-                    auctionBidder.AuctionHistories.Add(new Core.AuctionHistories.AuctionHistory
-                    {
-                        AuctionItemId = auctionItem.Id,
-                        BidAmount = auctionBidderHistory.BidAmount,
-                        BidStatus = BiddingStatus.Pending.ToString(),
-                        CreationTime = Clock.Now,
-                        CreatorUserId = currUserId,
-                        UniqueId = Guid.NewGuid()
-                    });
-                    await _auctionBidderRepository.InsertAsync(auctionBidder);
-                    await CurrentUnitOfWork.SaveChangesAsync();
-                    auctionBidderHistory.AuctionBidderId = auctionBidder.Id;
-                }
-                else
-                {
-                    if (!auctionBidderHistory.AuctionBidderId.HasValue)
-                        throw new UserFriendlyException("Bidder not found");
-
-                    await _auctionHistoryRepository.InsertAsync(new Core.AuctionHistories.AuctionHistory
-                    {
-                        AuctionItemId = auctionItem.Id,
-                        BidAmount = auctionBidderHistory.BidAmount,
-                        BidStatus = BiddingStatus.Pending.ToString(),
-                        CreationTime = Clock.Now,
-                        CreatorUserId = currUserId,
-                        UniqueId = Guid.NewGuid(),
-                        AuctionBidderId = auctionBidderHistory.AuctionBidderId.Value
-                    });
-                    await CurrentUnitOfWork.SaveChangesAsync();
-                }
-                var auctionItemHistoryDetails = await GetAuctionItemHistoryCount(auctionItem.Id);
-                //if we want to send webhook to specific tenant then we have optional parameter TenantId with PublishAsync Method
-                //if we will not pass the TenantId parameter then it will pick the subscriptions of the host
-                var tenantId = auctionBidderHistory.TenantId;
-                await _webHookPublisher.PublishAsync(AppWebHookNames.TestAuctionHistoryWebhook, new GetAuctionBidderHistoryDto
-                {
-                    AuctionBidderId = auctionBidderHistory.AuctionBidderId.Value,
-                    BidderName = auctionBidderHistory.BidderName,
-                    HistoryCount = auctionItemHistoryDetails.Key,
-                    AuctionItemId = auctionBidderHistory.AuctionItemId,
-                    LastHistoryAmount = auctionItemHistoryDetails.Value,
-                    AuctionItemHistory = await GetHistorbyAuctionItemId(auctionBidderHistory.AuctionItemId, 10, 1),
-                    TenantId = tenantId,
-                    UserId = currUserId
-                }, tenantId);
+                    AuctionItemId = auctionItem.Id,
+                    BidAmount = item.BidAmount,
+                    BidStatus = BiddingStatus.Pending.ToString(),
+                    CreationTime = Clock.Now,
+                    UniqueId = Guid.NewGuid(),
+                    AuctionBidderId = item.AuctionBidderId.Value
+                });
             }
-            catch (Exception ex)
+
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+            var auctionItemHistoryDetails = await GetAuctionItemHistoryCount(auctionItem.Id);
+            //if we want to send webhook to specific tenant then we have optional parameter TenantId with PublishAsync Method
+            //if we will not pass the TenantId parameter then it will pick the subscriptions of the host
+            await _webHookPublisher.PublishAsync(AppWebHookNames.TestAuctionHistoryWebhook, new GetAuctionBidderHistoryDto
             {
-                throw;
-            }
-            //for now Tenant = Alpesh, UserId=3, TenantId = 2
+                //AuctionBidderId = auctionBidderHistory.AuctionBidderId.Value,
+                // BidderName = auctionBidderHistory.BidderName,
+                HistoryCount = auctionItemHistoryDetails.Key,
+                AuctionItemId = auctionItemId,
+                LastHistoryAmount = auctionItemHistoryDetails.Value,
+                AuctionItemHistory = await GetHistorbyAuctionItemId(auctionItemId, 10, 1),
+            });
+        }
+        private async Task SaveSingleHistory(AuctionBidderHistoryDto auctionBidderHistory)
+        {
+            var auctionItem = await _auctionItemRepository.FirstOrDefaultAsync(x => x.UniqueId == auctionBidderHistory.AuctionItemId);
+            if (auctionItem == null)
+                throw new UserFriendlyException("Auction item not found for bidding");
 
+            await _auctionHistoryRepository.InsertAsync(new Core.AuctionHistories.AuctionHistory
+            {
+                AuctionItemId = auctionItem.Id,
+                BidAmount = auctionBidderHistory.BidAmount,
+                BidStatus = BiddingStatus.Pending.ToString(),
+                CreationTime = Clock.Now,
+                UniqueId = Guid.NewGuid(),
+                AuctionBidderId = auctionBidderHistory.AuctionBidderId.Value
+            });
+            await CurrentUnitOfWork.SaveChangesAsync();
+            var auctionItemHistoryDetails = await GetAuctionItemHistoryCount(auctionItem.Id);
+            //if we want to send webhook to specific tenant then we have optional parameter TenantId with PublishAsync Method
+            //if we will not pass the TenantId parameter then it will pick the subscriptions of the host
+            var tenantId = auctionBidderHistory.TenantId;
+            await _webHookPublisher.PublishAsync(AppWebHookNames.TestAuctionHistoryWebhook, new GetAuctionBidderHistoryDto
+            {
+                // AuctionBidderId = auctionBidderHistory.AuctionBidderId.Value,
+                // = auctionBidderHistory.BidderName,
+                HistoryCount = auctionItemHistoryDetails.Key,
+                AuctionItemId = auctionBidderHistory.AuctionItemId,
+                LastHistoryAmount = auctionItemHistoryDetails.Value,
+                AuctionItemHistory = await GetHistorbyAuctionItemId(auctionBidderHistory.AuctionItemId, 10, 1),
+            });
         }
         private async Task<KeyValuePair<int, double>> GetAuctionItemHistoryCount(int auctionItemId)
         {
             var auctionItemHistory = await _auctionHistoryRepository.GetAllListAsync(x => x.AuctionItemId == auctionItemId);
             var lastAmount = auctionItemHistory.OrderByDescending(x => x.Id).FirstOrDefault()?.BidAmount;
             return new KeyValuePair<int, double>(auctionItemHistory.Count, lastAmount ?? 0);
+        }
+
+        public async Task<GetAuctionBidderHistoryDto> SaveFreshBidder(AuctionBidderHistoryDto auctionBidderHistory)
+        {
+            var auctionItem = await _auctionItemRepository.FirstOrDefaultAsync(x => x.UniqueId == auctionBidderHistory.AuctionItemId);
+            if (auctionItem == null)
+                throw new UserFriendlyException("Auction item not found for bidding");
+            var currUserId = auctionBidderHistory.UserId;
+            var auctionBidder = new Core.AuctionBidders.AuctionBidder
+            {
+                AuctionId = auctionItem.AuctionId,
+                BidderName = auctionBidderHistory.BidderName,
+                CreationTime = Clock.Now,
+                CreatorUserId = currUserId,
+                UserId = currUserId,
+                UniqueId = Guid.NewGuid()
+            };
+            auctionBidder.AuctionHistories.Add(new Core.AuctionHistories.AuctionHistory
+            {
+                AuctionItemId = auctionItem.Id,
+                BidAmount = auctionBidderHistory.BidAmount,
+                BidStatus = BiddingStatus.Pending.ToString(),
+                CreationTime = Clock.Now,
+                CreatorUserId = currUserId,
+                UniqueId = Guid.NewGuid()
+            });
+            await _auctionBidderRepository.InsertAsync(auctionBidder);
+            await CurrentUnitOfWork.SaveChangesAsync();
+            var auctionItemHistoryDetails = await GetAuctionItemHistoryCount(auctionItem.Id);
+
+            var auctionWinnerCache = _cacheService.GetWinnerCache(auctionBidderHistory.AuctionItemId.ToString());
+            if (auctionWinnerCache != null)
+            {
+                var castObj = auctionWinnerCache as AuctionItemWinnerDto;
+                if (auctionBidderHistory.BidAmount > castObj.BidAmount)
+                    await _cacheService.SetWinnerCache(new AuctionItemWinnerDto { });
+            }
+            else
+                await _cacheService.SetWinnerCache(new AuctionItemWinnerDto { AuctionItemId = auctionBidderHistory.AuctionItemId, AuctionBidderId = auctionBidder.Id, BidAmount = auctionBidderHistory.BidAmount, UserId = auctionBidderHistory.UserId });
+
+            var auctionHistory = await GetHistorbyAuctionItemId(auctionBidderHistory.AuctionItemId, 10, 1);
+            await _webHookPublisher.PublishAsync(AppWebHookNames.TestAuctionHistoryWebhook, new GetAuctionBidderHistoryDto
+            {
+                HistoryCount = auctionItemHistoryDetails.Key,
+                AuctionItemId = auctionBidderHistory.AuctionItemId,
+                LastHistoryAmount = auctionItemHistoryDetails.Value,
+                AuctionItemHistory = auctionHistory
+            });
+
+            return new GetAuctionBidderHistoryDto
+            {
+                HistoryCount = auctionItemHistoryDetails.Key,
+                LastHistoryAmount = auctionItemHistoryDetails.Value,
+                AuctionBidderId = auctionBidder.Id,
+                AuctionItemHistory = auctionHistory
+            };
         }
     }
 }

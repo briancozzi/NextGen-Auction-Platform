@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using NextGen.BiddingPlatform.AuctionHistory;
 using NextGen.BiddingPlatform.AuctionHistory.Dto;
+using NextGen.BiddingPlatform.Caching;
 using NextGen.BiddingPlatform.Configuration;
 using NextGen.BiddingPlatform.RabbitMQ;
 using RabbitMQ.Client;
@@ -22,26 +23,24 @@ namespace NextGen.BiddingPlatform.BackgroundService.RabbitMqService
     {
         private readonly RabbitMqSettings _rabbitMqSettings;
         private ConnectionFactory factory;
-        private readonly bool IsRabbitMqEnabled;
-        private readonly bool IsRedisCacheEnabled;
+        private readonly string EnabledQueue;
         private readonly IAuctionHistoryAppService _auctionHistoryService;
-        private readonly ICacheManager _cacheManager;
+        private readonly ICachingAppService _cacheAppService;
         private readonly IConfigurationRoot _appConfiguration;
         public RabbitMqService(IOptions<RabbitMqSettings> rabbitMqSettings,
                                                     IAuctionHistoryAppService auctionHistoryAppService,
-                                                    ICacheManager cacheManager,
+                                                    ICachingAppService cacheAppService,
                                                     IWebHostEnvironment env)
         {
             _rabbitMqSettings = rabbitMqSettings.Value;
             _auctionHistoryService = auctionHistoryAppService;
-            _cacheManager = cacheManager;
+            _cacheAppService = cacheAppService;
             _appConfiguration = env.GetAppConfiguration();
-            IsRabbitMqEnabled = bool.Parse(_appConfiguration["RabbitMQ:IsEnabled"]);
-            IsRedisCacheEnabled = bool.Parse(_appConfiguration["Abp:RedisCache:IsEnabled"]);
+            EnabledQueue = _appConfiguration["EnabledQueue"];
         }
         public async Task AddToQueue(AuctionBidderHistoryDto data)
         {
-            if (IsRabbitMqEnabled)
+            if (EnabledQueue?.ToLower() == "rabbitmq")
             {
                 if (_rabbitMqSettings.Hostname == "localhost")
                     factory = new ConnectionFactory() { HostName = _rabbitMqSettings.Hostname };
@@ -59,15 +58,15 @@ namespace NextGen.BiddingPlatform.BackgroundService.RabbitMqService
 
                 channel.BasicPublish(exchange: "", routingKey: _rabbitMqSettings.QueueName, basicProperties: null, body: body);
             }
-            else if (IsRedisCacheEnabled)
+            else if (EnabledQueue?.ToLower() == "redis")
             {
                 List<AuctionBidderHistoryDto> lstData = new List<AuctionBidderHistoryDto>();
                 data.CreationTime = DateTime.UtcNow;
                 data.UniqueId = Guid.NewGuid();
-                lstData = await _cacheManager.GetCache("AuctionHistoryCache").GetAsync("auctionhistories", () => Task.Run(()=> new List<AuctionBidderHistoryDto>()));
-                lstData = lstData.OrderBy(x=>x.CreationTime).ToList();
+                lstData = _cacheAppService.GetHistoryCache();
+                lstData = lstData.OrderBy(x => x.CreationTime).ToList();
                 lstData.Add(data);
-                await _cacheManager.GetCache("AuctionHistoryCache").SetAsync("auctionhistories", lstData);
+                await _cacheAppService.SetHistoryCache(lstData);
             }
             else
                 await _auctionHistoryService.SaveAuctionBidderWithHistory(data);

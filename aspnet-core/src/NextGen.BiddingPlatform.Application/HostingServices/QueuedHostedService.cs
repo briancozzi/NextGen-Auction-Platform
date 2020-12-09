@@ -25,8 +25,7 @@ namespace NextGen.BiddingPlatform.HostingServices
         private IModel _channel;
         private readonly RabbitMqSettings _rabbitMqSettings;
         private readonly IAuctionHistoryAppService _auctionHistoryService;
-        private readonly bool IsRabbitMqEnabled;
-        private readonly bool IsRedisCacheEnabled;
+        private readonly string EnabledQueue;
         private readonly IConfigurationRoot _appConfiguration;
         public QueuedHostedService(IOptions<RabbitMqSettings> rabbitMqSettings,
                                                              ILogger logger,
@@ -37,12 +36,11 @@ namespace NextGen.BiddingPlatform.HostingServices
             _logger = logger;
             _auctionHistoryService = auctionHistoryService;
             _appConfiguration = env.GetAppConfiguration();
-            IsRabbitMqEnabled = bool.Parse(_appConfiguration["RabbitMQ:IsEnabled"]);
-            IsRedisCacheEnabled = bool.Parse(_appConfiguration["Abp:RedisCache:IsEnabled"]);
+            EnabledQueue = _appConfiguration["EnabledQueue"];
         }
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            if (IsRabbitMqEnabled)
+            if (EnabledQueue?.ToLower() == "rabbitmq")
             {
                 if (_rabbitMqSettings.Hostname == "localhost")
                 {
@@ -64,7 +62,7 @@ namespace NextGen.BiddingPlatform.HostingServices
         {
             //here we will do our work
             stoppingToken.ThrowIfCancellationRequested();
-            if (IsRabbitMqEnabled)
+            if (EnabledQueue?.ToLower() == "rabbitmq")
             {
                 var consumer = new AsyncEventingBasicConsumer(_channel);
                 consumer.Received += async (bc, ea) =>
@@ -102,7 +100,7 @@ namespace NextGen.BiddingPlatform.HostingServices
         }
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
-            if (IsRabbitMqEnabled)
+            if (EnabledQueue?.ToLower() == "rabbitmq")
                 _connection.Close();
 
             await base.StopAsync(cancellationToken);

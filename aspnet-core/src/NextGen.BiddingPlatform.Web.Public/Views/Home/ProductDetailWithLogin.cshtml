@@ -2,14 +2,23 @@
 @using Microsoft.AspNetCore.Http
 @using NextGen.BiddingPlatform.Configuration
 @using Microsoft.Extensions.Configuration
+@using  NextGen.BiddingPlatform.Caching
+@using NextGen.BiddingPlatform.AuctionHistory.Dto
 @inject IWebHostEnvironment env
 @inject IHttpContextAccessor _context
+@inject ICachingAppService _cacheService;
 @{
     var appConfiguration = env.GetAppConfiguration();
     var apiServerPath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:ApiWebSiteRootAddress", string.Empty);
     var webSitePath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:WebSiteRootAddress", string.Empty);
     //var cookie = _context.HttpContext.Request.Cookies["Abp.AuthToken"];
 }
+<style>
+    .disbale-btn {
+        pointer-events: none;
+        cursor: no-drop;
+    }
+</style>
 <div class="inner-wrapper">
     <div class="content-wrapper have-sidename pt-80">
         <div class="container position-relative">
@@ -175,14 +184,13 @@
         connection.on("BidSaved", (auctionHistoryDto) => {
             if (auctionHistoryDto != undefined)
             {
-
                 $("#totalBids").text(auctionHistoryDto.historyCount);
-                var hiddUserId = parseInt($("#userId").val());
-                if (hiddUserId == auctionHistoryDto.userId) {
-                    $("#auctionBidderId").val(auctionHistoryDto.auctionBidderId);
-                    $("#currentUserAuctionHistoryCount").val(auctionHistoryDto.historyCount);
-                    $("#bidderNameFromDb").text(auctionHistoryDto.bidderName);
-                }
+                //var hiddUserId = parseInt($("#userId").val());
+                //if (hiddUserId == auctionHistoryDto.userId) {
+                //    $("#auctionBidderId").val(auctionHistoryDto.auctionBidderId);
+                //    $("#currentUserAuctionHistoryCount").val(auctionHistoryDto.historyCount);
+                //    $("#bidderNameFromDb").text(auctionHistoryDto.bidderName);
+                //}
                 $("#lastBidAmount").text("$" + auctionHistoryDto.lastHistoryAmount.toFixed(2));
                 ClearHistoryAndAppendNew(auctionHistoryDto.auctionItemHistory);
             }
@@ -193,12 +201,7 @@
                 .catch(err => console.log(err.toString()));
         }) .catch(err => console.error(err.toString()));
 
-        function ClearHistoryAndAppendNew(itemHistories) {
-                $("#itemHistories").empty();
-                $.each(itemHistories, function (i, v) {
-                    CreateHistoryData(v);
-                });
-        }
+
     });
     $(document).on("click", "#bidNowBtn", function (e) {
         e.preventDefault();
@@ -236,7 +239,45 @@
             $("#errorMessage").hide();
             $("#bidderNameFromDb").text(bidderName);
             $("#auctionBidderName").val(bidderName);
-            SaveAuctionBidderFirstThenHistory(bidderName);
+            ///SaveAuctionBidderFirstThenHistory(bidderName);
+            //here we will have new method for save bid for new user
+
+            var auctionHistoryDto = {
+                bidderName: bidderName,
+                auctionItemId: $("#auctionItemId").val(),
+                bidAmount: parseFloat($("#biddingAmount").val()),
+                userId: userId,
+                tenantId:tenantId
+            };
+            $("#bidNowBtn").addClass("disbale-btn");
+              var url = ApiServerPath + "/api/services/app/AuctionHistory/SaveFreshBidder";
+              $.ajax({
+                    url: url,
+                    type: 'POST',
+                    contentType: "application/json",
+                     async: true,
+                      cache: false,
+                    data: JSON.stringify(auctionHistoryDto) ,
+                    dataType: "json",
+                  success: function (response) {
+                      var result = response.result;
+                      $("#currentUserAuctionHistoryCount").val("1");
+                      $("#auctionBidderId").val(result.auctionBidderId);
+                      $("#totalBids").text(result.historyCount);
+                      $("#lastBidAmount").text("$" + result.lastHistoryAmount.toFixed(2));
+                      ClearHistoryAndAppendNew(result.auctionItemHistory);
+                      $("#bidNowBtn").removeClass("disbale-btn");
+                    },
+                    error: function (xhr) {
+                        $("#myModal").modal("hide");
+                        console.log(xhr.responseText + " " + xhr.status);
+                        $("#bidNowBtn").removeClass("disbale-btn");
+                        alert(xhr.responseText + " " + xhr.status);
+                    }
+              });
+                $("#bidderName").val("");
+                $("#myModal").modal("hide");
+                $("#biddingAmount").val("");
         }
     });
     function SaveAuctionBidderFirstThenHistory(bidderName) {
@@ -273,6 +314,12 @@
         $("#myModal").modal("hide");
         $("#biddingAmount").val("");
     }
+      function ClearHistoryAndAppendNew(itemHistories) {
+                $("#itemHistories").empty();
+                $.each(itemHistories, function (i, v) {
+                    CreateHistoryData(v);
+                });
+        }
 </script>
 <script src="~/auction/js/getproductdetails.js"></script>
 <script src="~/signalr.js"></script>
