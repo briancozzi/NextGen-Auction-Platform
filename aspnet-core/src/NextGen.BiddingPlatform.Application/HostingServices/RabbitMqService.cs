@@ -11,6 +11,7 @@ using NextGen.BiddingPlatform.RabbitMQ;
 using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -60,12 +61,16 @@ namespace NextGen.BiddingPlatform.BackgroundService.RabbitMqService
             }
             else if (IsRedisCacheEnabled)
             {
-                await _cacheManager.GetCache("AuctionHistoryCache").SetAsync("AuctionHistoryTest", data);
+                List<AuctionBidderHistoryDto> lstData = new List<AuctionBidderHistoryDto>();
+                data.CreationTime = DateTime.UtcNow;
+                data.UniqueId = Guid.NewGuid();
+                lstData = await _cacheManager.GetCache("AuctionHistoryCache").GetAsync("auctionhistories", () => Task.Run(()=> new List<AuctionBidderHistoryDto>()));
+                lstData = lstData.OrderBy(x=>x.CreationTime).ToList();
+                lstData.Add(data);
+                await _cacheManager.GetCache("AuctionHistoryCache").SetAsync("auctionhistories", lstData);
             }
             else
-            {
                 await _auctionHistoryService.SaveAuctionBidderWithHistory(data);
-            }
         }
     }
 }

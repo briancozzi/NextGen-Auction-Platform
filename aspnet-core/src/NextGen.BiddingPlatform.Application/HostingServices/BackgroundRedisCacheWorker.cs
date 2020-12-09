@@ -7,7 +7,9 @@ using NextGen.BiddingPlatform.AuctionHistory;
 using NextGen.BiddingPlatform.AuctionHistory.Dto;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace NextGen.BiddingPlatform.HostingServices
 {
@@ -22,17 +24,19 @@ namespace NextGen.BiddingPlatform.HostingServices
             _cacheManager = cacheManager;
             _auctionHistoryService = auctionHistoryAppService;
         }
-        protected override void DoWork()
+        protected override async void DoWork()
         {
-            var data = _cacheManager.GetCache("AuctionHistoryCache").Get("AuctionHistoryTest", () => GetData());
-            if (data != null)
+            // _cacheManager.GetCache("AuctionHistoryCache").Remove("auctionhistories");
+            List<AuctionBidderHistoryDto> lstData = new List<AuctionBidderHistoryDto>();
+            lstData = _cacheManager.GetCache("AuctionHistoryCache").Get("auctionhistories", () => new List<AuctionBidderHistoryDto>());
+            var processData = lstData.FirstOrDefault();
+            if (processData != null)
             {
-
+                await _auctionHistoryService.SaveAuctionBidderWithHistory(processData);
+                var data = _cacheManager.GetCache("AuctionHistoryCache").Get("auctionhistories", () => new List<AuctionBidderHistoryDto>());
+                data = data.Where(x => x.UniqueId != processData.UniqueId).ToList();
+                _cacheManager.GetCache("AuctionHistoryCache").Set("auctionhistories", data);
             }
-        }
-        private AuctionBidderHistoryDto GetData()
-        {
-            return null;
         }
     }
 }

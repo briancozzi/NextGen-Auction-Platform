@@ -170,6 +170,9 @@ namespace NextGen.BiddingPlatform.AuctionHistory
 
                 var currUserId = auctionBidderHistory.UserId;
 
+                var existingUser = await _auctionBidderRepository.FirstOrDefaultAsync(x => x.AuctionId == auctionItem.AuctionId && x.UserId == currUserId);
+                if (existingUser != null)
+                    auctionBidderHistory.AuctionBidderId = existingUser.Id;
                 //var currentUser = await _userRepository.GetAsync(currUserId);
                 //if (currentUser == null)
                 //    throw new UserFriendlyException("User not found");
@@ -177,7 +180,7 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                 //var userhasBidderRole = await _userManager.IsInRoleAsync(currentUser, "Bidder");
                 var historyCount = await GetAuctionItemHistoryCount(auctionItem.Id);
 
-                if (/*!userhasBidderRole &&*/ historyCount.Key == 0 || auctionBidderHistory.AuctionBidderId == 0)
+                if (/*!userhasBidderRole &&*/ historyCount.Key == 0 || existingUser == null)
                 {
                     //CheckErrors(await _userManager.AddToRoleAsync(currentUser, "Bidder"));
 
