@@ -46,6 +46,7 @@ namespace NextGen.BiddingPlatform.Core.Auctions
         [ForeignKey("Address")]
         public int AddressId { get; set; }
         public Address Address { get; set; }
+        public Guid? AuctionLink { get; set; }
 
         public virtual ICollection<AuctionItem> AuctionItems { get; set; }
 

@@ -124,8 +124,12 @@ namespace NextGen.BiddingPlatform.Web
             IocManager.Resolve<ApplicationPartManager>()
                 .AddApplicationPartsIfNotAddedBefore(typeof(BiddingPlatformWebCoreModule).Assembly);
 
-            var workManager = IocManager.Resolve<IBackgroundWorkerManager>();
-            workManager.Add(IocManager.Resolve<BackgroundRedisCacheWorker>());
+            var _enabledQueue = _appConfiguration["EnabledQueue"];
+            if (_enabledQueue == "redis")
+            {
+                var workManager = IocManager.Resolve<IBackgroundWorkerManager>();
+                workManager.Add(IocManager.Resolve<BackgroundRedisCacheWorker>());
+            }
         }
 
         private void SetAppFolders()

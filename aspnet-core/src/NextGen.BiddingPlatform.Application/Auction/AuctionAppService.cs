@@ -92,10 +92,10 @@ namespace NextGen.BiddingPlatform.Auction
 
             var auctionItems = _auctionItemRepository.GetAll()
                                                      .Where(x => x.AuctionId == existingAuction.Id)
-                                                     .Select(x=>x.ItemId).ToList();
+                                                     .Select(x => x.ItemId).ToList();
 
             var mappedData = ObjectMapper.Map<UpdateAuctionDto>(existingAuction);
-            
+
             mappedData.Items = auctionItems;
             return mappedData;
         }
@@ -119,9 +119,11 @@ namespace NextGen.BiddingPlatform.Auction
             if (!AbpSession.TenantId.HasValue)
                 throw new Exception("You are not authorized user");
 
+            var uniqueId = Guid.NewGuid();
             var auction = ObjectMapper.Map<Core.Auctions.Auction>(input);
             auction.TenantId = AbpSession.TenantId.Value;
-            auction.UniqueId = Guid.NewGuid();
+            auction.UniqueId = uniqueId;
+            auction.AuctionLink = uniqueId;
             auction.AppAccountId = account.Id;
             auction.EventId = existingEvent.Id;
             auction.Address.UniqueId = Guid.NewGuid();
@@ -169,18 +171,18 @@ namespace NextGen.BiddingPlatform.Auction
             if (exisingAuction == null)
                 throw new Exception("Auction not found for given Id");
 
-            if (exisingAuction.AuctionItems.Count > 0)
-                await _auctionItemRepository.DeleteAsync(x => x.AuctionId == exisingAuction.Id);
+            //if (exisingAuction.AuctionItems.Count > 0)
+            //    await _auctionItemRepository.DeleteAsync(x => x.AuctionId == exisingAuction.Id);
 
-            foreach (var item in input.Items)
-            {
-                exisingAuction.AuctionItems.Add(new Core.AuctionItems.AuctionItem
-                {
-                    ItemId = item,
-                    IsActive = true,
-                    UniqueId = Guid.NewGuid()
-                });
-            }
+            //foreach (var item in input.Items)
+            //{
+            //    exisingAuction.AuctionItems.Add(new Core.AuctionItems.AuctionItem
+            //    {
+            //        ItemId = item,
+            //        IsActive = true,
+            //        UniqueId = Guid.NewGuid()
+            //    });
+            //}
 
             exisingAuction.AuctionType = input.AuctionType;
             exisingAuction.AuctionStartDateTime = input.AuctionStartDateTime;
@@ -194,6 +196,7 @@ namespace NextGen.BiddingPlatform.Auction
             exisingAuction.Address.StateId = state.Id;
             exisingAuction.EventId = existingEvent.Id;
             exisingAuction.AppAccountId = existingAccount.Id;
+            exisingAuction.AuctionLink = exisingAuction.UniqueId;
             await _auctionRepository.UpdateAsync(exisingAuction);
             return input;
         }

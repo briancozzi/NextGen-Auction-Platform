@@ -194,7 +194,7 @@ namespace NextGen.BiddingPlatform.AuctionHistory
             }
 
             await CurrentUnitOfWork.SaveChangesAsync();
-
+            var tenantId = auctionItemBids.FirstOrDefault()?.TenantId;
             var auctionItemHistoryDetails = await GetAuctionItemHistoryCount(auctionItem.Id);
             //if we want to send webhook to specific tenant then we have optional parameter TenantId with PublishAsync Method
             //if we will not pass the TenantId parameter then it will pick the subscriptions of the host
@@ -206,7 +206,7 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                 AuctionItemId = auctionItemId,
                 LastHistoryAmount = auctionItemHistoryDetails.Value,
                 AuctionItemHistory = await GetHistorbyAuctionItemId(auctionItemId, 10, 1),
-            });
+            }, tenantId);
         }
         private async Task SaveSingleHistory(AuctionBidderHistoryDto auctionBidderHistory)
         {
@@ -236,7 +236,8 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                 AuctionItemId = auctionBidderHistory.AuctionItemId,
                 LastHistoryAmount = auctionItemHistoryDetails.Value,
                 AuctionItemHistory = await GetHistorbyAuctionItemId(auctionBidderHistory.AuctionItemId, 10, 1),
-            });
+            },
+            auctionBidderHistory.TenantId);
         }
         private async Task<KeyValuePair<int, double>> GetAuctionItemHistoryCount(int auctionItemId)
         {

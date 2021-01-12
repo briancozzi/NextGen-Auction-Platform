@@ -4,6 +4,7 @@ using Abp.Zero.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NextGen.BiddingPlatform.AppAccount.AppAccountPermission;
 using NextGen.BiddingPlatform.AppAccountEvents.EventPermission;
+using NextGen.BiddingPlatform.AuctionUserInvitations;
 using NextGen.BiddingPlatform.Authorization.Delegation;
 using NextGen.BiddingPlatform.Authorization.Roles;
 using NextGen.BiddingPlatform.Authorization.Users;
@@ -72,6 +73,7 @@ namespace NextGen.BiddingPlatform.EntityFrameworkCore
         public virtual DbSet<ItemCategory.ItemCategory> ItemCategories { get; set; }
         public virtual DbSet<AppAccountPermission> AppAccountPermissions { get; set; }
         public virtual DbSet<EventPermission> EventPermissions { get; set; }
+        public virtual DbSet<AuctionUserInvitation> AuctionUserInvitations { get; set; }
 
         public BiddingPlatformDbContext(DbContextOptions<BiddingPlatformDbContext> options)
             : base(options)
