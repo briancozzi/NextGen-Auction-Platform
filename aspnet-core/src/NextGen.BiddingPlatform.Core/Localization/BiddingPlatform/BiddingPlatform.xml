@@ -2,13 +2,23 @@
 <localizationDictionary culture="en">
   <texts>
 
-  
+
     <!--Custom Changes start from here -->
     <text name="CategoryName">Category Name</text>
     <text name="CreateCategory">Create Category</text>
     <text name="SearchCategory">Search Category</text>
     <text name="EditCategory">Edit Category</text>
-    
+
+    <!--Category-->
+    <text name="Categories">Categories</text>
+    <text name="DeleteCategory">Delete Category</text>
+
+    <!-- Auction Items-->
+    <text name="AuctionItems">Auction Items</text>
+    <text name="CreateAuctionItem">Create Auction Item</text>
+    <text name="EditAuctionItem">Edit Auction Item</text>
+    <text name="DeleteAuctionItem">Delete Auction Item</text>
+
     <text name="Country">Country</text>
     <text name="CreateNewCountry">Create New Country</text>
     <text name="EditingCountry">Edit Country</text>

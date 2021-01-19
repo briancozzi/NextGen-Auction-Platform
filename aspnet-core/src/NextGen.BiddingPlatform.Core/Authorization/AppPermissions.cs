@@ -110,6 +110,24 @@
         public const string Pages_Administration_Tenant_Auction_Edit = "Pages.Tenant.Auction.Edit";
         public const string Pages_Administration_Tenant_Auction_Delete = "Pages.Tenant.Auction.Delete";
 
+        //items permission
+        public const string Pages_Administration_Tenant_Item = "Pages.Tenant.Item";
+        public const string Pages_Administration_Tenant_Item_Create = "Pages.Tenant.Item.Create";
+        public const string Pages_Administration_Tenant_Item_Edit = "Pages.Tenant.Item.Edit";
+        public const string Pages_Administration_Tenant_Item_Delete = "Pages.Tenant.Item.Delete";
+
+        //category permission
+        public const string Pages_Administration_Tenant_Category = "Pages.Tenant.Category";
+        public const string Pages_Administration_Tenant_Category_Create = "Pages.Tenant.Category.Create";
+        public const string Pages_Administration_Tenant_Category_Edit = "Pages.Tenant.Category.Edit";
+        public const string Pages_Administration_Tenant_Category_Delete = "Pages.Tenant.Category.Delete";
+
+        //auction items
+        public const string Pages_Administration_Tenant_AuctionItem = "Pages.Tenant.AuctionItem";
+        public const string Pages_Administration_Tenant_AuctionItem_Create = "Pages.Tenant.AuctionItem.Create";
+        public const string Pages_Administration_Tenant_AuctionItem_Edit = "Pages.Tenant.AuctionItem.Edit";
+        public const string Pages_Administration_Tenant_AuctionItem_Delete = "Pages.Tenant.AuctionItem.Delete";
+
         //Auction Permission
         public const string Pages_Administration_Tenant_AuctionHistory = "Pages.Tenant.AuctionHistory";
         //public const string Pages_Administration_Tenant_AuctionHistory_Create = "Pages.Tenant.Auction.Create";

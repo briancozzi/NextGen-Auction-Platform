@@ -109,13 +109,13 @@ export class CreateAccountsModalComponent extends AppComponentBase implements On
         this.account.address = new AddressDto();
         forkJoin([
             this._countryService.getCountriesWithState(),
-            this._userService.getUsers(undefined,undefined,undefined,undefined,undefined,undefined,undefined)
+            //this._userService.getUsers(undefined,undefined,undefined,undefined,undefined,undefined,undefined)
             // this._userService.getUsers(null,null,2,false,null,1000,0),
         ]).subscribe(result => {
             this.countryList = result[0];
             this.account.address.countryUniqueId = result[0][0].countryUniqueId;
             this.loadStateList(this.account.address.countryUniqueId);
-            this.userList = result[1].items;
+            //this.userList = result[1].items;
         });
     }
     loadStateList(countryId): void {

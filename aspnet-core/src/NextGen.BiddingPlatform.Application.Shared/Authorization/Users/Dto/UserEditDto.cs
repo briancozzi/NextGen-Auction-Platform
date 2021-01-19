@@ -45,6 +45,6 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Dto
         public virtual bool IsTwoFactorEnabled { get; set; }
 
         public virtual bool IsLockoutEnabled { get; set; }
-
+        public int? AppAccountId { get; set; }
     }
 }

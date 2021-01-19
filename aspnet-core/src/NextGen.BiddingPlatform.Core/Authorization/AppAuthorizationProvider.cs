@@ -122,6 +122,25 @@ namespace NextGen.BiddingPlatform.Authorization
             var auctionHistoryPermission = administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AuctionHistory, L("AuctionHistory"), multiTenancySides: MultiTenancySides.Tenant);
             auctionHistoryPermission.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AuctionHistory_Delete, L("DeleteAuctionHistory"), multiTenancySides: MultiTenancySides.Tenant);
 
+            //items permission
+            var itemPermissions = administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Item, L("Items"), multiTenancySides: MultiTenancySides.Tenant);
+            itemPermissions.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Item_Create, L("CreateItem"), multiTenancySides: MultiTenancySides.Tenant);
+            itemPermissions.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Item_Edit, L("EditItem"), multiTenancySides: MultiTenancySides.Tenant);
+            itemPermissions.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Item_Delete, L("DeleteItem"), multiTenancySides: MultiTenancySides.Tenant);
+
+            //category permission
+            var categoryPermissions = administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Category, L("Categories"), multiTenancySides: MultiTenancySides.Tenant);
+            categoryPermissions.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Category_Create, L("CreateCategory"), multiTenancySides: MultiTenancySides.Tenant);
+            categoryPermissions.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Category_Edit, L("EditCategory"), multiTenancySides: MultiTenancySides.Tenant);
+            categoryPermissions.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Category_Delete, L("DeleteCategory"), multiTenancySides: MultiTenancySides.Tenant);
+
+            //auction item permission
+            var auctionItemPermissions = administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AuctionItem, L("AuctionItems"), multiTenancySides: MultiTenancySides.Tenant);
+            auctionItemPermissions.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AuctionItem_Create, L("CreateAuctionItem"), multiTenancySides: MultiTenancySides.Tenant);
+            auctionItemPermissions.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AuctionItem_Edit, L("EditAuctionItem"), multiTenancySides: MultiTenancySides.Tenant);
+            auctionItemPermissions.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AuctionItem_Delete, L("DeleteAuctionItem"), multiTenancySides: MultiTenancySides.Tenant);
+
+
             //HOST-SPECIFIC PERMISSIONS
             var country = administration.CreateChildPermission(AppPermissions.Pages_Administration_Country, L("Country"), multiTenancySides: MultiTenancySides.Host);
             country.CreateChildPermission(AppPermissions.Pages_Administration_Country_Create, L("CreateNewCountry"), multiTenancySides: MultiTenancySides.Host);

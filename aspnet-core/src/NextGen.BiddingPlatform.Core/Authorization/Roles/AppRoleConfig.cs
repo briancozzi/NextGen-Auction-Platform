@@ -30,6 +30,18 @@ namespace NextGen.BiddingPlatform.Authorization.Roles
                     StaticRoleNames.Tenants.User,
                     MultiTenancySides.Tenant)
                 );
+
+            roleManagementConfig.StaticRoles.Add(
+                new StaticRoleDefinition(
+                    StaticRoleNames.Tenants.AccountAdmin,
+                    MultiTenancySides.Tenant)
+                );
+
+            roleManagementConfig.StaticRoles.Add(
+                new StaticRoleDefinition(
+                    StaticRoleNames.Tenants.AccountUser,
+                    MultiTenancySides.Tenant)
+                );
         }
     }
 }

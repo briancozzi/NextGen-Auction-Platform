@@ -3,18 +3,17 @@ using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.Linq.Extensions;
-using Abp.UI;
 using Microsoft.EntityFrameworkCore;
 using NextGen.BiddingPlatform.Core.Items;
 using NextGen.BiddingPlatform.Items.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Dynamic.Core;
-using Abp.Runtime.Session;
 using NextGen.BiddingPlatform.Enums;
+using NextGen.BiddingPlatform.Authorization.Users;
+using Abp.UI;
 
 namespace NextGen.BiddingPlatform.Items
 {
@@ -24,34 +23,38 @@ namespace NextGen.BiddingPlatform.Items
         private readonly IRepository<ItemGallery> _itemGalleryRepository;
         private readonly IRepository<ItemCategory.ItemCategory> _itemCategoryRepository;
         private readonly IRepository<Core.AppAccounts.AppAccount> _appAccountRepository;
-        private readonly IAbpSession _abpSession;
+        private readonly IUserAppService _userAppService;
         public ItemAppService(IRepository<Item> itemRepository,
                            IRepository<ItemGallery> itemGalleryRepository,
                            IRepository<ItemCategory.ItemCategory> itemCategoryRepository,
                            IRepository<Core.AppAccounts.AppAccount> appAccountRepository,
-                           IAbpSession abpSession)
+                           IUserAppService userAppService)
         {
             _itemRepository = itemRepository;
             _itemGalleryRepository = itemGalleryRepository;
             _itemCategoryRepository = itemCategoryRepository;
             _appAccountRepository = appAccountRepository;
-            _abpSession = abpSession;
+            _userAppService = userAppService;
         }
 
         public async Task<List<ItemListDto>> GetAllItems()
         {
-            var items = await _itemRepository.GetAllIncluding(x => x.AppAccount)
-                                             .Select(x => new ItemListDto
-                                             {
-                                                 UniqueId = x.UniqueId,
-                                                 Description = x.Description,
-                                                 ItemName = x.ItemName,
-                                                 ItemNumber = x.ItemNumber,
-                                                 MainImageName = x.MainImageName,
-                                                 ThumbnailImage = x.ThumbnailImage,
-                                                 ItemStatus = x.ItemStatus,
-                                                 AppAccountName = x.AppAccount.FirstName + " " + x.AppAccount.LastName
-                                             }).ToListAsync();
+            var currUser = _userAppService.GetCurrUser();
+            var query = _itemRepository.GetAllIncluding(x => x.AppAccount);
+            if (currUser.AppAccountId.HasValue)
+                query = query.Where(x => x.AppAccountId == currUser.AppAccountId.Value);
+
+            var items = await query.Select(x => new ItemListDto
+            {
+                UniqueId = x.UniqueId,
+                Description = x.Description,
+                ItemName = x.ItemName,
+                ItemNumber = x.ItemNumber,
+                MainImageName = x.MainImageName,
+                ThumbnailImage = x.ThumbnailImage,
+                ItemStatus = x.ItemStatus,
+                AppAccountName = x.AppAccount.FirstName + " " + x.AppAccount.LastName
+            }).ToListAsync();
 
             foreach (var item in items)
             {
@@ -62,26 +65,30 @@ namespace NextGen.BiddingPlatform.Items
 
         public async Task<PagedResultDto<ItemListDto>> GetItemsWithFilter(ItemFilter input)
         {
-            var query = _itemRepository.GetAllIncluding(x => x.AppAccount)
-                                       .WhereIf(!input.Search.IsNullOrWhiteSpace(), x => x.ItemName.ToLower().IndexOf(input.Search.ToLower()) > -1)
-                                       .Select(x => new ItemListDto
-                                       {
-                                           UniqueId = x.UniqueId,
-                                           Description = x.Description,
-                                           ItemName = x.ItemName,
-                                           ItemNumber = x.ItemNumber,
-                                           MainImageName = x.MainImageName,
-                                           ThumbnailImage = x.ThumbnailImage,
-                                           ItemStatus = x.ItemStatus,
-                                           AppAccountName = x.AppAccount.FirstName + " " + x.AppAccount.LastName
-                                       });
+            var currUser = _userAppService.GetCurrUser();
+            var query = _itemRepository.GetAllIncluding(x => x.AppAccount);
+            if (currUser.AppAccountId.HasValue)
+                query = query.Where(x => x.AppAccountId == currUser.AppAccountId.Value);
 
-            var resultCount = await query.CountAsync();
+            var result = query.WhereIf(!input.Search.IsNullOrWhiteSpace(), x => x.ItemName.ToLower().IndexOf(input.Search.ToLower()) > -1)
+                                .Select(x => new ItemListDto
+                                {
+                                    UniqueId = x.UniqueId,
+                                    Description = x.Description,
+                                    ItemName = x.ItemName,
+                                    ItemNumber = x.ItemNumber,
+                                    MainImageName = x.MainImageName,
+                                    ThumbnailImage = x.ThumbnailImage,
+                                    ItemStatus = x.ItemStatus,
+                                    AppAccountName = x.AppAccount.FirstName + " " + x.AppAccount.LastName
+                                });
+
+            var resultCount = await result.CountAsync();
 
             if (!string.IsNullOrWhiteSpace(input.Sorting))
-                query = query.OrderBy(input.Sorting);
+                result = result.OrderBy(input.Sorting);
 
-            var resultQuery = query.PageBy(input).ToList();
+            var resultQuery = result.PageBy(input).ToList();
 
             foreach (var item in resultQuery)
             {
@@ -112,17 +119,17 @@ namespace NextGen.BiddingPlatform.Items
         {
             var account = await _appAccountRepository.FirstOrDefaultAsync(x => x.UniqueId == input.AppAccountUniqueId);
             if (account == null)
-                throw new Exception("AppAccount not found for given id");
+                throw new UserFriendlyException("AppAccount not found for given id");
             if (input.Categories.Count() == 0)
-                throw new Exception("Please select at least one category for item");
+                throw new UserFriendlyException("Please select at least one category for item");
 
-            if (!_abpSession.TenantId.HasValue)
-                throw new Exception("You are not authorized user");
+            if (!AbpSession.TenantId.HasValue)
+                throw new UserFriendlyException("You are not authorized user");
 
             var mappedItem = ObjectMapper.Map<Item>(input);
             mappedItem.AppAccountId = account.Id;
             mappedItem.UniqueId = Guid.NewGuid();
-            mappedItem.TenantId = _abpSession.TenantId.Value;
+            mappedItem.TenantId = AbpSession.TenantId.Value;
             //add category to ItemCategory Table
             foreach (var category in input.Categories)
             {
@@ -152,14 +159,14 @@ namespace NextGen.BiddingPlatform.Items
         {
             var existingItem = await _itemRepository.FirstOrDefaultAsync(x => x.UniqueId == input.UniqueId);
             if (existingItem == null)
-                throw new Exception("Item not available for given id");
+                throw new UserFriendlyException("Item not available for given id");
 
             var account = await _appAccountRepository.FirstOrDefaultAsync(x => x.UniqueId == input.AppAccountUniqueId);
             if (account == null)
-                throw new Exception("AppAccount not found for given id");
+                throw new UserFriendlyException("AppAccount not found for given id");
 
             if (input.Categories.Count() == 0)
-                throw new Exception("Please select at least one category for item");
+                throw new UserFriendlyException("Please select at least one category for item");
 
             //first remove gallery
             var itemImages = await _itemGalleryRepository.GetAllListAsync(x => x.ItemId == existingItem.Id);
@@ -224,15 +231,24 @@ namespace NextGen.BiddingPlatform.Items
 
         public async Task<List<ItemSelectDto>> GetItems()
         {
-            var items = await _itemRepository.GetAllIncluding(x => x.AppAccount)
+            var currUser = _userAppService.GetCurrUser();
+            if (currUser.AppAccountId.HasValue)
+                return await _itemRepository.GetAllIncluding(x => x.AppAccount).Where(x => x.AppAccountId == currUser.AppAccountId.Value)
                                             .Select(x => new ItemSelectDto
                                             {
                                                 UniqueId = x.UniqueId,
                                                 ItemName = x.ItemName,
                                                 Id = x.Id
                                             }).ToListAsync();
+            else
+                return await _itemRepository.GetAllIncluding(x => x.AppAccount)
+                                                .Select(x => new ItemSelectDto
+                                                {
+                                                    UniqueId = x.UniqueId,
+                                                    ItemName = x.ItemName,
+                                                    Id = x.Id
+                                                }).ToListAsync();
 
-            return items;
         }
 
         public Dropdowns GetDropdowns()

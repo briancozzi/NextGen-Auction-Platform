@@ -96,7 +96,7 @@ export class EditAccountsModalComponent extends AppComponentBase {
         forkJoin([
             this._countryService.getCountriesWithState(),
             this._accountService.getAccountById(AccountId),
-            this._userService.getUsers(undefined,undefined,undefined,undefined,undefined,undefined,undefined)
+            //this._userService.getUsers(undefined,undefined,undefined,undefined,undefined,undefined,undefined)
         ]).subscribe(allResults => {
             this.countryList = allResults[0];
             this.account = allResults[1];
@@ -105,7 +105,7 @@ export class EditAccountsModalComponent extends AppComponentBase {
             if (this.account.logo != '' && this.account.logo != null) {
                 this.isLogo = true;
             }
-            this.userList = allResults[2].items;
+            //this.userList = allResults[2].items;
             this.modal.show();
         });
 

@@ -25,5 +25,6 @@ namespace NextGen.BiddingPlatform.Authorization.Users
         Task DeleteUser(EntityDto<long> input);
 
         Task UnlockUser(EntityDto<long> input);
+        UserEditDto GetCurrUser();
     }
 }

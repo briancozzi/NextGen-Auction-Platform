@@ -102,6 +102,7 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
   show() {
     this.active = true;
     this.init();
+    this.item = new ItemDto();
     this.modal.show();
   }
   init(): void {
@@ -122,7 +123,21 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
   }
   save(): void {
     this.saving = true;
-    this.logoUploader.uploadAll();
+    if (this.inputFile.nativeElement.value != "") {
+      this.logoUploader.uploadAll();
+    }
+    else {
+      this.CreateItem();
+    }
+  }
+  CreateItem(): void {
+    this._itemService.createItem(this.item)
+      .pipe(finalize(() => this.saving = false))
+      .subscribe(() => {
+        this.notify.info(this.l('SavedSuccessfully'));
+        this.close();
+        this.modalSave.emit(null);
+      });
   }
   getFiles(event): void {
     var files = event.target.files;
