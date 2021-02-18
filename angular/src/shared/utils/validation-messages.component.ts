@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { AppLocalizationService } from '@app/shared/common/localization/app-localization.service';
-import * as _ from 'lodash';
+import { filter as _filter, find as _find, concat as _concat } from 'lodash-es';
 
 class ErrorDef {
     error: string;
@@ -36,8 +36,8 @@ export class ValidationMessagesComponent {
     ];
 
     get errorDefsInternal(): ErrorDef[] {
-        let standarts = _.filter(this.standartErrorDefs, (ed) => !_.find(this._errorDefs, (edC) => edC.error === ed.error));
-        let all = <ErrorDef[]>_.concat(standarts, this._errorDefs);
+        let standarts = _filter(this.standartErrorDefs, (ed) => !_find(this._errorDefs, (edC) => edC.error === ed.error));
+        let all = <ErrorDef[]>_concat(standarts, this._errorDefs);
 
         return all;
     }

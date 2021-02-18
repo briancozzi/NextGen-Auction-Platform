@@ -1,9 +1,12 @@
-﻿using GraphQL;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using GraphQL;
 using GraphQL.Server;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using NextGen.BiddingPlatform.Debugging;
+using NextGen.BiddingPlatform.Schemas;
 
 namespace NextGen.BiddingPlatform.Configure
 {
@@ -11,14 +14,16 @@ namespace NextGen.BiddingPlatform.Configure
     {
         public static void AddAndConfigureGraphQL(this IServiceCollection services)
         {
-            services.AddScoped<IDependencyResolver>(
-                x => new FuncDependencyResolver(x.GetRequiredService)
-            );
-
             services
-                .AddGraphQL(x => { x.ExposeExceptions = DebugHelper.IsDebug; })
+                .AddGraphQL(x => { x.EnableMetrics = DebugHelper.IsDebug; })
+                .AddNewtonsoftJson(deserializerSettings => { }, serializerSettings => { }) // For everything else
+                .AddErrorInfoProvider(opt => opt.ExposeExceptionStackTrace = DebugHelper.IsDebug)
                 .AddGraphTypes(ServiceLifetime.Scoped)
-                .AddUserContextBuilder(httpContext => httpContext.User)
+                .AddUserContextBuilder(httpContext => new Dictionary<string, object>
+                {
+                    {"user", httpContext.User}
+                })
+                .AddNewtonsoftJson(deserializerSettings => { }, serializerSettings => { }) // For everything else
                 .AddDataLoader();
 
             AllowSynchronousIo(services);

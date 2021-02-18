@@ -1,16 +1,21 @@
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using Abp.Authorization;
+using Abp.Collections.Extensions;
 using Abp.Configuration;
 using Abp.Configuration.Startup;
 using Abp.Extensions;
+using Abp.Json;
 using Abp.Net.Mail;
 using Abp.Runtime.Security;
 using Abp.Runtime.Session;
 using Abp.Timing;
 using Abp.Zero.Configuration;
 using Abp.Zero.Ldap.Configuration;
+using NextGen.BiddingPlatform.Authentication;
 using NextGen.BiddingPlatform.Authorization;
+using NextGen.BiddingPlatform.Configuration.Dto;
 using NextGen.BiddingPlatform.Configuration.Host.Dto;
 using NextGen.BiddingPlatform.Configuration.Tenants.Dto;
 using NextGen.BiddingPlatform.Security;
@@ -22,6 +27,8 @@ namespace NextGen.BiddingPlatform.Configuration.Tenants
     [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Settings)]
     public class TenantSettingsAppService : SettingsAppServiceBase, ITenantSettingsAppService
     {
+        public IExternalLoginOptionsCacheManager ExternalLoginOptionsCacheManager { get; set; }
+
         private readonly IMultiTenancyConfig _multiTenancyConfig;
         private readonly ITimeZoneService _timeZoneService;
         private readonly IBinaryObjectManager _binaryObjectManager;
@@ -32,8 +39,12 @@ namespace NextGen.BiddingPlatform.Configuration.Tenants
             IMultiTenancyConfig multiTenancyConfig,
             ITimeZoneService timeZoneService,
             IEmailSender emailSender,
-            IBinaryObjectManager binaryObjectManager) : base(emailSender)
+            IBinaryObjectManager binaryObjectManager,
+            IAppConfigurationAccessor configurationAccessor
+            ) : base(emailSender, configurationAccessor)
         {
+            ExternalLoginOptionsCacheManager = NullExternalLoginOptionsCacheManager.Instance;
+
             _multiTenancyConfig = multiTenancyConfig;
             _ldapModuleConfig = ldapModuleConfig;
             _timeZoneService = timeZoneService;
@@ -50,7 +61,8 @@ namespace NextGen.BiddingPlatform.Configuration.Tenants
                 Security = await GetSecuritySettingsAsync(),
                 Billing = await GetBillingSettingsAsync(),
                 OtherSettings = await GetOtherSettingsAsync(),
-                Email = await GetEmailSettingsAsync()
+                Email = await GetEmailSettingsAsync(),
+                ExternalLoginProviderSettings = await GetExternalLoginProviderSettings()
             };
 
             if (!_multiTenancyConfig.IsEnabled || Clock.SupportsMultipleTimezone)
@@ -144,6 +156,7 @@ namespace NextGen.BiddingPlatform.Configuration.Tenants
                 UseCaptchaOnLogin = await SettingManager.GetSettingValueAsync<bool>(AppSettings.UserManagement.UseCaptchaOnLogin),
                 IsCookieConsentEnabled = await SettingManager.GetSettingValueAsync<bool>(AppSettings.UserManagement.IsCookieConsentEnabled),
                 IsQuickThemeSelectEnabled = await SettingManager.GetSettingValueAsync<bool>(AppSettings.UserManagement.IsQuickThemeSelectEnabled),
+                AllowUsingGravatarProfilePicture = await SettingManager.GetSettingValueAsync<bool>(AppSettings.UserManagement.AllowUsingGravatarProfilePicture),
                 SessionTimeOutSettings = new SessionTimeOutSettingsEditDto()
                 {
                     IsEnabled = await SettingManager.GetSettingValueAsync<bool>(AppSettings.UserManagement.SessionTimeOut.IsEnabled),
@@ -248,6 +261,59 @@ namespace NextGen.BiddingPlatform.Configuration.Tenants
             return await SettingManager.GetSettingValueAsync<bool>(AppSettings.UserManagement.AllowOneConcurrentLoginPerUser);
         }
 
+        private async Task<ExternalLoginProviderSettingsEditDto> GetExternalLoginProviderSettings()
+        {
+            var facebookSettings = await SettingManager.GetSettingValueForTenantAsync(AppSettings.ExternalLoginProvider.Tenant.Facebook, AbpSession.GetTenantId());
+            var googleSettings = await SettingManager.GetSettingValueForTenantAsync(AppSettings.ExternalLoginProvider.Tenant.Google, AbpSession.GetTenantId());
+            var twitterSettings = await SettingManager.GetSettingValueForTenantAsync(AppSettings.ExternalLoginProvider.Tenant.Twitter, AbpSession.GetTenantId());
+            var microsoftSettings = await SettingManager.GetSettingValueForTenantAsync(AppSettings.ExternalLoginProvider.Tenant.Microsoft, AbpSession.GetTenantId());
+            
+            var openIdConnectSettings = await SettingManager.GetSettingValueForTenantAsync(AppSettings.ExternalLoginProvider.Tenant.OpenIdConnect, AbpSession.GetTenantId());
+            var openIdConnectMappedClaims = await SettingManager.GetSettingValueAsync(AppSettings.ExternalLoginProvider.OpenIdConnectMappedClaims);
+            
+            var wsFederationSettings = await SettingManager.GetSettingValueForTenantAsync(AppSettings.ExternalLoginProvider.Tenant.WsFederation, AbpSession.GetTenantId());
+            var wsFederationMappedClaims = await SettingManager.GetSettingValueAsync(AppSettings.ExternalLoginProvider.WsFederationMappedClaims);
+
+            return new ExternalLoginProviderSettingsEditDto
+            {
+                Facebook_IsDeactivated = await SettingManager.GetSettingValueForTenantAsync<bool>(AppSettings.ExternalLoginProvider.Tenant.Facebook_IsDeactivated,AbpSession.GetTenantId()),
+                Facebook = facebookSettings.IsNullOrWhiteSpace()
+                    ? new FacebookExternalLoginProviderSettings()
+                    : facebookSettings.FromJsonString<FacebookExternalLoginProviderSettings>(),
+                
+                Google_IsDeactivated = await SettingManager.GetSettingValueForTenantAsync<bool>(AppSettings.ExternalLoginProvider.Tenant.Google_IsDeactivated,AbpSession.GetTenantId()),
+                Google = googleSettings.IsNullOrWhiteSpace()
+                    ? new GoogleExternalLoginProviderSettings()
+                    : googleSettings.FromJsonString<GoogleExternalLoginProviderSettings>(),
+                
+                Twitter_IsDeactivated = await SettingManager.GetSettingValueForTenantAsync<bool>(AppSettings.ExternalLoginProvider.Tenant.Twitter_IsDeactivated,AbpSession.GetTenantId()),
+                Twitter = twitterSettings.IsNullOrWhiteSpace()
+                    ? new TwitterExternalLoginProviderSettings()
+                    : twitterSettings.FromJsonString<TwitterExternalLoginProviderSettings>(),
+                
+                Microsoft_IsDeactivated = await SettingManager.GetSettingValueForTenantAsync<bool>(AppSettings.ExternalLoginProvider.Tenant.Microsoft_IsDeactivated,AbpSession.GetTenantId()),
+                Microsoft = microsoftSettings.IsNullOrWhiteSpace()
+                    ? new MicrosoftExternalLoginProviderSettings()
+                    : microsoftSettings.FromJsonString<MicrosoftExternalLoginProviderSettings>(),
+                
+                OpenIdConnect_IsDeactivated = await SettingManager.GetSettingValueForTenantAsync<bool>(AppSettings.ExternalLoginProvider.Tenant.OpenIdConnect_IsDeactivated,AbpSession.GetTenantId()),
+                OpenIdConnect = openIdConnectSettings.IsNullOrWhiteSpace()
+                    ? new OpenIdConnectExternalLoginProviderSettings()
+                    : openIdConnectSettings.FromJsonString<OpenIdConnectExternalLoginProviderSettings>(),
+                OpenIdConnectClaimsMapping = openIdConnectMappedClaims.IsNullOrWhiteSpace()
+                    ? new List<JsonClaimMapDto>() 
+                    : openIdConnectMappedClaims.FromJsonString<List<JsonClaimMapDto>>(),
+                
+                WsFederation_IsDeactivated = await SettingManager.GetSettingValueForTenantAsync<bool>(AppSettings.ExternalLoginProvider.Tenant.WsFederation_IsDeactivated,AbpSession.GetTenantId()),
+                WsFederation = wsFederationSettings.IsNullOrWhiteSpace()
+                    ? new WsFederationExternalLoginProviderSettings()
+                    : wsFederationSettings.FromJsonString<WsFederationExternalLoginProviderSettings>(),
+                WsFederationClaimsMapping = wsFederationMappedClaims.IsNullOrWhiteSpace()
+                    ? new List<JsonClaimMapDto>() 
+                    : wsFederationMappedClaims.FromJsonString<List<JsonClaimMapDto>>()
+            };
+        }
+
         #endregion
 
         #region Update Settings
@@ -258,6 +324,7 @@ namespace NextGen.BiddingPlatform.Configuration.Tenants
             await UpdateSecuritySettingsAsync(input.Security);
             await UpdateBillingSettingsAsync(input.Billing);
             await UpdateEmailSettingsAsync(input.Email);
+            await UpdateExternalLoginSettingsAsync(input.ExternalLoginProviderSettings);
 
             //Time Zone
             if (Clock.SupportsMultipleTimezone)
@@ -357,31 +424,43 @@ namespace NextGen.BiddingPlatform.Configuration.Tenants
                 AppSettings.UserManagement.AllowSelfRegistration,
                 settings.AllowSelfRegistration.ToString().ToLowerInvariant()
             );
+            
             await SettingManager.ChangeSettingForTenantAsync(
                 AbpSession.GetTenantId(),
                 AppSettings.UserManagement.IsNewRegisteredUserActiveByDefault,
                 settings.IsNewRegisteredUserActiveByDefault.ToString().ToLowerInvariant()
             );
+            
             await SettingManager.ChangeSettingForTenantAsync(
                 AbpSession.GetTenantId(),
                 AbpZeroSettingNames.UserManagement.IsEmailConfirmationRequiredForLogin,
                 settings.IsEmailConfirmationRequiredForLogin.ToString().ToLowerInvariant()
             );
+            
             await SettingManager.ChangeSettingForTenantAsync(
                 AbpSession.GetTenantId(),
                 AppSettings.UserManagement.UseCaptchaOnRegistration,
                 settings.UseCaptchaOnRegistration.ToString().ToLowerInvariant()
             );
+            
             await SettingManager.ChangeSettingForTenantAsync(
                 AbpSession.GetTenantId(),
                 AppSettings.UserManagement.UseCaptchaOnLogin,
                 settings.UseCaptchaOnLogin.ToString().ToLowerInvariant()
             );
+            
             await SettingManager.ChangeSettingForTenantAsync(
                 AbpSession.GetTenantId(),
                 AppSettings.UserManagement.IsCookieConsentEnabled,
                 settings.IsCookieConsentEnabled.ToString().ToLowerInvariant()
             );
+            
+            await SettingManager.ChangeSettingForTenantAsync(
+                AbpSession.GetTenantId(),
+                AppSettings.UserManagement.AllowUsingGravatarProfilePicture,
+                settings.AllowUsingGravatarProfilePicture.ToString().ToLowerInvariant()
+            );
+            
             await UpdateUserManagementSessionTimeOutSettingsAsync(settings.SessionTimeOutSettings);
         }
 
@@ -492,6 +571,115 @@ namespace NextGen.BiddingPlatform.Configuration.Tenants
                 return;
             }
             await SettingManager.ChangeSettingForApplicationAsync(AppSettings.UserManagement.AllowOneConcurrentLoginPerUser, allowOneConcurrentLoginPerUser.ToString());
+        }
+
+        private async Task UpdateExternalLoginSettingsAsync(ExternalLoginProviderSettingsEditDto input)
+        {
+            await SettingManager.ChangeSettingForTenantAsync(
+                AbpSession.GetTenantId(),
+                AppSettings.ExternalLoginProvider.Tenant.Facebook,
+                input.Facebook == null || !input.Facebook.IsValid() ? "" : input.Facebook.ToJsonString()
+            );
+            
+            await SettingManager.ChangeSettingForTenantAsync(
+                AbpSession.GetTenantId(),
+                AppSettings.ExternalLoginProvider.Tenant.Facebook_IsDeactivated,
+                input.Facebook_IsDeactivated.ToString()
+            );
+
+            await SettingManager.ChangeSettingForTenantAsync(
+                AbpSession.GetTenantId(),
+                AppSettings.ExternalLoginProvider.Tenant.Google,
+                input.Google == null || !input.Google.IsValid() ? "" : input.Google.ToJsonString()
+            );
+            
+            await SettingManager.ChangeSettingForTenantAsync(
+                AbpSession.GetTenantId(),
+                AppSettings.ExternalLoginProvider.Tenant.Google_IsDeactivated,
+                input.Google_IsDeactivated.ToString()
+            );
+
+            await SettingManager.ChangeSettingForTenantAsync(
+                AbpSession.GetTenantId(),
+                AppSettings.ExternalLoginProvider.Tenant.Twitter,
+                input.Twitter == null || !input.Twitter.IsValid() ? "" : input.Twitter.ToJsonString()
+            );
+            
+            await SettingManager.ChangeSettingForTenantAsync(
+                AbpSession.GetTenantId(),
+                AppSettings.ExternalLoginProvider.Tenant.Twitter_IsDeactivated,
+                input.Twitter_IsDeactivated.ToString()
+            );
+
+            await SettingManager.ChangeSettingForTenantAsync(
+                AbpSession.GetTenantId(),
+                AppSettings.ExternalLoginProvider.Tenant.Microsoft,
+                input.Microsoft == null || !input.Microsoft.IsValid() ? "" : input.Microsoft.ToJsonString()
+            );
+            
+            await SettingManager.ChangeSettingForTenantAsync(
+                AbpSession.GetTenantId(),
+                AppSettings.ExternalLoginProvider.Tenant.Microsoft_IsDeactivated,
+                input.Microsoft_IsDeactivated.ToString()
+            );
+            
+            await SettingManager.ChangeSettingForTenantAsync(
+                AbpSession.GetTenantId(),
+                AppSettings.ExternalLoginProvider.Tenant.OpenIdConnect,
+                input.OpenIdConnect == null || !input.OpenIdConnect.IsValid() ? "" : input.OpenIdConnect.ToJsonString()
+            );
+            
+            await SettingManager.ChangeSettingForTenantAsync(
+                AbpSession.GetTenantId(),
+                AppSettings.ExternalLoginProvider.Tenant.OpenIdConnect_IsDeactivated,
+                input.OpenIdConnect_IsDeactivated.ToString()
+            );
+
+            var openIdConnectMappedClaimsValue = "";
+            if (input.OpenIdConnect == null || !input.OpenIdConnect.IsValid() || input.OpenIdConnectClaimsMapping.IsNullOrEmpty())
+            {
+                openIdConnectMappedClaimsValue = await SettingManager.GetSettingValueForApplicationAsync(AppSettings.ExternalLoginProvider.OpenIdConnectMappedClaims);//set default value
+            }
+            else
+            {
+                openIdConnectMappedClaimsValue = input.OpenIdConnectClaimsMapping.ToJsonString();
+            }
+            
+            await SettingManager.ChangeSettingForTenantAsync(
+                AbpSession.GetTenantId(),
+                AppSettings.ExternalLoginProvider.OpenIdConnectMappedClaims,
+                openIdConnectMappedClaimsValue
+            );
+            
+            await SettingManager.ChangeSettingForTenantAsync(
+                AbpSession.GetTenantId(),
+                AppSettings.ExternalLoginProvider.Tenant.WsFederation,
+                input.WsFederation == null || !input.WsFederation.IsValid() ? "" : input.WsFederation.ToJsonString()
+            );
+            
+            await SettingManager.ChangeSettingForTenantAsync(
+                AbpSession.GetTenantId(),
+                AppSettings.ExternalLoginProvider.Tenant.WsFederation_IsDeactivated,
+                input.WsFederation_IsDeactivated.ToString()
+            );
+
+            var wsFederationMappedClaimsValue = "";
+            if (input.WsFederation == null || !input.WsFederation.IsValid() || input.WsFederationClaimsMapping.IsNullOrEmpty())
+            {
+                wsFederationMappedClaimsValue = await SettingManager.GetSettingValueForApplicationAsync(AppSettings.ExternalLoginProvider.WsFederationMappedClaims);//set default value
+            }
+            else
+            {
+                wsFederationMappedClaimsValue = input.WsFederationClaimsMapping.ToJsonString();
+            }
+            
+            await SettingManager.ChangeSettingForTenantAsync(
+                AbpSession.GetTenantId(),
+                AppSettings.ExternalLoginProvider.WsFederationMappedClaims,
+                wsFederationMappedClaimsValue
+            );
+            
+            ExternalLoginOptionsCacheManager.ClearCache();
         }
 
         #endregion

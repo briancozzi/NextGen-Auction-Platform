@@ -9,7 +9,7 @@
                         <span *ngIf="!role.id">{{"CreateNewRole" | localize}}</span>
                     </h4>
                     <button type="button" class="close" (click)="close()" [attr.aria-label]="l('Close')" [disabled]="saving">
-                        <span aria-hidden="true">&times;</span>
+                         <i aria-hidden="true" class="ki ki-close"></i>
                     </button>
                 </div>
                 <div class="modal-body">
@@ -21,13 +21,13 @@
                                 <validation-messages [formCtrl]="roleNameInput"></validation-messages>
                             </div>
 
-                            <div class="kt-checkbox-list">
-                                <label class="kt-checkbox">
+                            <div class="checkbox-list">
+                                <label class="checkbox">
                                     <input id="EditRole_IsDefault" type="checkbox" name="IsDefault" [(ngModel)]="role.isDefault">
-                                    {{"Default" | localize}}
                                     <span></span>
+                                    {{"Default" | localize}}
                                 </label>
-                                <span class="help-block">{{"DefaultRole_Description" | localize}}</span>
+                                <small class="form-text text-muted">{{"DefaultRole_Description" | localize}}</small>
                             </div>
                         </tab>
                         <tab heading="{{'Permissions' | localize}}">
@@ -39,8 +39,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button [disabled]="saving" type="button" class="btn btn-secondary" (click)="close()">{{"Cancel" | localize}}</button>
-                    <button type="submit" class="btn btn-primary" [disabled]="!roleForm.form.valid" [buttonBusy]="saving" [busyText]="l('SavingWithThreeDot')"><i class="fa fa-save"></i> <span>{{"Save" | localize}}</span></button>
+                    <button [disabled]="saving" type="button" class="btn btn-light-primary font-weight-bold" (click)="close()">{{"Cancel" | localize}}</button>
+                    <button type="submit" class="btn btn-primary font-weight-bold" [disabled]="!roleForm.form.valid" [buttonBusy]="saving" [busyText]="l('SavingWithThreeDot')"><i class="fa fa-save"></i> <span>{{"Save" | localize}}</span></button>
                 </div>
 
             </form>

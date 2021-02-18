@@ -5,11 +5,12 @@ import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { AuditLogListDto, AuditLogServiceProxy, EntityChangeListDto, NameValueDto } from '@shared/service-proxies/service-proxies';
 import { FileDownloadService } from '@shared/utils/file-download.service';
-import * as moment from 'moment';
-import { LazyLoadEvent } from 'primeng/public_api';
+import { DateTime } from 'luxon';
+import { LazyLoadEvent } from 'primeng/api';
 import { Paginator } from 'primeng/paginator';
 import { Table } from 'primeng/table';
 import { PrimengTableHelper } from 'shared/helpers/PrimengTableHelper';
+import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 
 @Component({
     templateUrl: './audit-logs.component.html',
@@ -27,7 +28,7 @@ export class AuditLogsComponent extends AppComponentBase implements AfterViewIni
     @ViewChild('paginatorEntityChanges', { static: true }) paginatorEntityChanges: Paginator;
 
     //Filters
-    public dateRange: moment.Moment[] = [moment().startOf('day'), moment().endOf('day')];
+    public dateRange: DateTime[] = [this._dateTimeService.getStartOfDay(), this._dateTimeService.getEndOfDay()];
 
     public usernameAuditLog: string;
     public usernameEntityChange: string;
@@ -47,7 +48,8 @@ export class AuditLogsComponent extends AppComponentBase implements AfterViewIni
     constructor(
         injector: Injector,
         private _auditLogService: AuditLogServiceProxy,
-        private _fileDownloadService: FileDownloadService
+        private _fileDownloadService: FileDownloadService,
+        private _dateTimeService: DateTimeService
     ) {
         super(injector);
     }
@@ -75,8 +77,8 @@ export class AuditLogsComponent extends AppComponentBase implements AfterViewIni
         this.primengTableHelperAuditLogs.showLoadingIndicator();
 
         this._auditLogService.getAuditLogs(
-            this.dateRange[0],
-            this.dateRange[1].endOf('day'),
+            this._dateTimeService.getStartOfDayForDate(this.dateRange[0]),
+            this._dateTimeService.getEndOfDayForDate(this.dateRange[1]),
             this.usernameAuditLog,
             this.serviceName,
             this.methodName,
@@ -109,8 +111,8 @@ export class AuditLogsComponent extends AppComponentBase implements AfterViewIni
         this.primengTableHelperEntityChanges.showLoadingIndicator();
 
         this._auditLogService.getEntityChanges(
-            this.dateRange[0],
-            this.dateRange[1].endOf('day'),
+            this._dateTimeService.getStartOfDayForDate(this.dateRange[0]),
+            this._dateTimeService.getEndOfDayForDate(this.dateRange[1]),
             this.usernameEntityChange,
             this.entityTypeFullName,
             this.primengTableHelperEntityChanges.getSorting(this.dataTableEntityChanges),
@@ -126,8 +128,8 @@ export class AuditLogsComponent extends AppComponentBase implements AfterViewIni
     exportToExcelAuditLogs(): void {
         const self = this;
         self._auditLogService.getAuditLogsToExcel(
-            self.dateRange[0],
-            self.dateRange[1].endOf('day'),
+            this._dateTimeService.getStartOfDayForDate(self.dateRange[0]),
+            this._dateTimeService.getEndOfDayForDate(self.dateRange[1]),
             self.usernameAuditLog,
             self.serviceName,
             self.methodName,
@@ -146,8 +148,8 @@ export class AuditLogsComponent extends AppComponentBase implements AfterViewIni
     exportToExcelEntityChanges(): void {
         const self = this;
         self._auditLogService.getEntityChangesToExcel(
-            self.dateRange[0],
-            self.dateRange[1].endOf('day'),
+            this._dateTimeService.getStartOfDayForDate(self.dateRange[0]),
+            self._dateTimeService.getEndOfDayForDate(self.dateRange[1]),
             self.usernameEntityChange,
             self.entityTypeFullName,
             undefined,

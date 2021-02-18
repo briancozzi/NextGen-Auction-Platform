@@ -8,13 +8,13 @@
                         <span>{{"NotificationSettings" | localize}}</span>
                     </h5>
                     <button type="button" class="close" (click)="close()" [attr.aria-label]="l('Close')">
-                        <span aria-hidden="true">&times;</span>
+                         <i aria-hidden="true" class="ki ki-close"></i>
                     </button>
                 </div>
                 <div class="modal-body" *ngIf="settings">
                     <h4>{{"ReceiveNotifications" | localize}}</h4>
                     <div>
-                        <span class="kt-switch kt-switch--icon-check">
+                        <span class="switch switch-icon-check">
                             <label>
                                 <input type="checkbox" name="ReceiveNotifications" value="true" [(ngModel)]="settings.receiveNotifications">
                                 <span></span>
@@ -26,20 +26,20 @@
                     <h4 *ngIf="settings.notifications.length" class="mt-4">{{"NotificationTypes" | localize}}</h4>
                     <p *ngIf="settings.notifications.length && !settings.receiveNotifications" class="text-danger"><small>{{"ReceiveNotifications_DisableInfo" | localize}}</small>
                     </p>
-                    <div class="kt-checkbox-list">
+                    <div class="checkbox-list">
                         <div *ngFor="let notification of settings.notifications">
-                            <label attr.for="Notification_{{notification.name}}" class="kt-checkbox">
+                            <label attr.for="Notification_{{notification.name}}" class="checkbox">
                                 <input id="Notification_{{notification.name}}" type="checkbox" name="Notification_{{notification.name}}" [(ngModel)]="notification.isSubscribed" [disabled]="!settings.receiveNotifications">
-                                {{notification.displayName}}
                                 <span></span>
+                                {{notification.displayName}}
                             </label>
                             <span *ngIf="notification.description" class="help-block">{{notification.description}}</span>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button [disabled]="saving" type="button" class="btn btn-default" (click)="close()">{{"Cancel" | localize}}</button>
-                    <button type="submit" class="btn btn-primary" [buttonBusy]="saving" [busyText]="l('SavingWithThreeDot')"><i class="fa fa-save"></i> <span>{{"Save" | localize}}</span></button>
+                    <button [disabled]="saving" type="button" class="btn btn-light-primary font-weight-bold" (click)="close()">{{"Cancel" | localize}}</button>
+                    <button type="submit" class="btn btn-primary font-weight-bold" [buttonBusy]="saving" [busyText]="l('SavingWithThreeDot')"><i class="fa fa-save"></i> <span>{{"Save" | localize}}</span></button>
                 </div>
             </form>
         </div>

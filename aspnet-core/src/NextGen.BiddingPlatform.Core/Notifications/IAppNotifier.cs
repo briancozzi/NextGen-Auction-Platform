@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Abp;
+using Abp.Localization;
 using Abp.Notifications;
 using NextGen.BiddingPlatform.Authorization.Users;
 using NextGen.BiddingPlatform.MultiTenancy;
@@ -19,8 +21,10 @@ namespace NextGen.BiddingPlatform.Notifications
 
         Task SendMessageAsync(UserIdentifier user, string message, NotificationSeverity severity = NotificationSeverity.Info);
 
-        Task TenantsMovedToEdition(UserIdentifier argsUser, string sourceEditionName, string targetEditionName);
+        Task SendMessageAsync(UserIdentifier user, LocalizableString localizableMessage, IDictionary<string, object> localizableMessageData = null, NotificationSeverity severity = NotificationSeverity.Info);
 
-        Task SomeUsersCouldntBeImported(UserIdentifier argsUser, string fileToken, string fileType, string fileName);
+        Task TenantsMovedToEdition(UserIdentifier user, string sourceEditionName, string targetEditionName);
+
+        Task SomeUsersCouldntBeImported(UserIdentifier user, string fileToken, string fileType, string fileName);
     }
 }

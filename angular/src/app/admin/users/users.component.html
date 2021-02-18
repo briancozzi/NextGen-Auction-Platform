@@ -1,57 +1,44 @@
 <div [@routerTransition]>
-    <div class="kt-content  kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor">
-        <div class="kt-subheader kt-grid__item">
-            <div [class]="containerClass">
-                <div class="kt-subheader__main">
-                    <h3 class="kt-subheader__title">
-                        <span>{{"Users" | localize}}</span>
-                    </h3>
-                    <span class="kt-subheader__separator kt-subheader__separator--v"></span>
-                    <span class="kt-subheader__desc">
-                        {{"UsersHeaderInfo" | localize}}
-                    </span>
-                </div>
-                <div class="kt-subheader__toolbar">
-                    <div class="kt-subheader__wrapper">
-                        <div class="btn-group" dropdown>
-                            <button dropdownToggle type="button" class="btn btn-outline-success dropdown-toggle"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="far fa-file-excel"></i> {{"ExcelOperations" | localize}}
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-right dropdown-excel-operations" *dropdownMenu>
-                                <a class="dropdown-item" id="ExportUsersToExcelButton" (click)="exportToExcel()"
-                                    href="javascript:;">
-                                    <i class="fa fa-download" style="font-size: 1rem;"></i>
-                                    {{'ExportToExcel' | localize}}
-                                </a>
-                                <a href="javascript:;" *ngIf="'Pages.Administration.Users.Create' | permission"
-                                    class="no-padding">
-                                    <span class="fileinput-button">
-                                        <p-fileUpload customUpload="true" name="ExcelFileUpload" #ExcelFileUpload
-                                            maxFileSize="10000000" auto="auto" accept=".csv,.xls,.xlsx"
-                                            (uploadHandler)="uploadExcel($event)" (onError)="onUploadExcelError()"
-                                            chooseLabel="{{'ImportFromExcel' | localize}}">
-                                        </p-fileUpload>
-                                    </span>
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <span class="dropdown-item-text text-muted pl-3" href="#">
-                                    <small
-                                        [innerHTML]="l('ImportToExcelSampleFileDownloadInfo', '<a href=/assets/sampleFiles/ImportUsersSampleFile.xlsx>' + l('ClickHere') + '</a>')"></small>
-                                </span>
-                            </div>
-                        </div>
-
-                        <button (click)="createUser()" *ngIf="'Pages.Administration.Users.Create' | permission"
-                            class="btn btn-primary"><i class="fa fa-plus"></i> {{"CreateNewUser" | localize}}</button>
+    <div class="content d-flex flex-column flex-column-fluid">
+        <sub-header [title]="'Users' | localize" [description]="'UsersHeaderInfo' | localize">
+            <div role="actions">
+                <div class="btn-group" dropdown>
+                    <button dropdownToggle type="button" class="btn btn-outline-success dropdown-toggle mr-1"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="far fa-file-excel"></i> {{"ExcelOperations" | localize}}
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right dropdown-excel-operations" *dropdownMenu>
+                        <a class="dropdown-item" id="ExportUsersToExcelButton" (click)="exportToExcel()"
+                            href="javascript:;">
+                            <i class="fa fa-download mr-2 mt-1" style="font-size: 1rem;"></i>
+                            {{'ExportToExcel' | localize}}
+                        </a>
+                        <a href="javascript:;" *ngIf="'Pages.Administration.Users.Create' | permission"
+                            class="no-padding">
+                            <span class="fileinput-button">
+                                <p-fileUpload customUpload="true" name="ExcelFileUpload" #ExcelFileUpload
+                                    maxFileSize="10000000" auto="auto" accept=".csv,.xls,.xlsx"
+                                    (uploadHandler)="uploadExcel($event)" (onError)="onUploadExcelError()"
+                                    chooseLabel="{{'ImportFromExcel' | localize}}">
+                                </p-fileUpload>
+                            </span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <span class="dropdown-item-text text-muted pl-3" href="#">
+                            <small
+                                [innerHTML]="l('ImportToExcelSampleFileDownloadInfo', '<a href=/assets/sampleFiles/ImportUsersSampleFile.xlsx>' + l('ClickHere') + '</a>')"></small>
+                        </span>
                     </div>
                 </div>
+
+                <button (click)="createUser()" *ngIf="'Pages.Administration.Users.Create' | permission"
+                    class="btn btn-primary"><i class="fa fa-plus"></i> {{"CreateNewUser" | localize}}</button>
             </div>
-        </div>
-        <div [class]="containerClass + ' kt-grid__item kt-grid__item--fluid'">
-            <div class="kt-portlet kt-portlet--mobile">
-                <div class="kt-portlet__body">
-                    <form class="kt-form" autocomplete="new-password">
+        </sub-header>
+        <div [class]="containerClass">
+            <div class="card card-custom gutter-b">
+                <div class="card-body">
+                    <form class="form" autocomplete="new-password">
                         <div>
                             <div class="row align-items-center mb-4">
                                 <div class="col-xl-12">
@@ -74,7 +61,7 @@
                                 <div
                                     [ngClass]="{'col-md-6': ('Pages.Administration.Roles' | permission), 'col-md-12':!('Pages.Administration.Roles' | permission)}">
                                     <div class="form-group">
-                                        <permission-tree-modal #permissionFilterTreeModal (onModalclose)="getUsers()">
+                                        <permission-tree-modal #permissionFilterTreeModal (onModalclose)="getUsers()" [disableCascade]="true">
                                         </permission-tree-modal>
                                     </div>
                                 </div>
@@ -84,12 +71,12 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="kt-checkbox-list">
-                                        <label for="UsersTable_OnlyLockedUsers" class="kt-checkbox">
+                                    <div class="checkbox-inline">
+                                        <label for="UsersTable_OnlyLockedUsers" class="checkbox">
                                             <input id="UsersTable_OnlyLockedUsers" type="checkbox"
                                                 name="OnlyLockedUsers" [(ngModel)]="onlyLockedUsers">
-                                            {{"OnlyLockedUsers" | localize}}
                                             <span></span>
+                                            {{"OnlyLockedUsers" | localize}}
                                         </label>
                                     </div>
                                 </div>
@@ -117,7 +104,8 @@
                     <div class="row align-items-center">
                         <!--<Primeng-TurboTable-Start>-->
                         <div class="primeng-datatable-container" [busyIf]="primengTableHelper.isLoading">
-                            <p-table #dataTable (onLazyLoad)="getUsers($event)" [value]="primengTableHelper.records"
+                            <p-table #dataTable sortMode="multiple" (onLazyLoad)="getUsers($event)"
+                                [value]="primengTableHelper.records"
                                 rows="{{primengTableHelper.defaultRecordsCountPerPage}}" [paginator]="false"
                                 [lazy]="true" [scrollable]="true" ScrollWidth="100%"
                                 [responsive]="primengTableHelper.isResponsive"
@@ -171,27 +159,32 @@
                                                 </button>
                                                 <ul class="dropdown-menu" *dropdownMenu>
                                                     <li>
-                                                        <a href="javascript:;"
+                                                        <a href="javascript:;" class="dropdown-item"
                                                             *ngIf="('Pages.Administration.Users.Impersonation' | permission) && record.id !== appSession.userId"
                                                             (click)="_impersonationService.impersonate(record.id, appSession.tenantId)">{{'LoginAsThisUser' | localize}}</a>
                                                     </li>
                                                     <li>
-                                                        <a href="javascript:;"
+                                                        <a href="javascript:;" class="dropdown-item"
                                                             *ngIf="'Pages.Administration.Users.Edit' | permission"
                                                             (click)="createOrEditUserModal.show(record.id)">{{'Edit' | localize}}</a>
                                                     </li>
                                                     <li>
-                                                        <a href="javascript:;"
+                                                        <a href="javascript:;" class="dropdown-item"
                                                             *ngIf="'Pages.Administration.Users.ChangePermissions' | permission"
                                                             (click)="editUserPermissionsModal.show(record.id, record.userName)">{{'Permissions' | localize}}</a>
                                                     </li>
                                                     <li>
-                                                        <a href="javascript:;"
+                                                        <a href="javascript:;" class="dropdown-item"
                                                             *ngIf="'Pages.Administration.Users.Unlock' | permission"
                                                             (click)="unlockUser(record)">{{'Unlock' | localize}}</a>
                                                     </li>
                                                     <li>
-                                                        <a href="javascript:;"
+                                                        <a href="javascript:;" class="dropdown-item"
+                                                            *ngIf="'Pages.Administration.DynamicEntityPropertyValue.Edit' | permission"
+                                                            (click)="showDynamicProperties(record)">{{'DynamicProperties' | localize}}</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="javascript:;" class="dropdown-item"
                                                             *ngIf="'Pages.Administration.Users.Delete' | permission"
                                                             (click)="deleteUser(record)">{{'Delete' | localize}}</a>
                                                     </li>
@@ -199,42 +192,47 @@
                                             </div>
                                         </td>
                                         <td style="width: 150px">
-                                            <span class="ui-column-title"> {{'UserName' | localize}}</span>
-                                            {{record.userName}}
+                                            <span class="p-column-title"> {{'UserName' | localize}}</span>
+                                            <span>
+                                                <a [href]="record.profilePictureUrl" target="_blank" class="float-left">
+                                                    <img class="img-circle" [src]="record.profilePictureUrl">
+                                                </a>
+                                                {{record.userName}}
+                                            </span>
                                         </td>
                                         <td style="width: 150px">
-                                            <span class="ui-column-title"> {{'Name' | localize}}</span>
+                                            <span class="p-column-title"> {{'FirstName' | localize}}</span>
                                             {{record.name}}
                                         </td>
                                         <td style="width: 150px">
-                                            <span class="ui-column-title"> {{'Surname' | localize}}</span>
+                                            <span class="p-column-title"> {{'Surname' | localize}}</span>
                                             {{record.surname}}
                                         </td>
                                         <td style="width: 150px">
-                                            <span class="ui-column-title"> {{'Roles' | localize}}</span>
+                                            <span class="p-column-title"> {{'Roles' | localize}}</span>
                                             {{getRolesAsString(record.roles)}}
                                         </td>
                                         <td style="width: 250px">
-                                            <span class="ui-column-title"> {{'EmailAddress' | localize}}</span>
+                                            <span class="p-column-title"> {{'EmailAddress' | localize}}</span>
                                             {{record.emailAddress}}
                                         </td>
                                         <td style="width: 200px">
-                                            <span class="ui-column-title"> {{'EmailConfirm' | localize}}</span>
-                                            <span class="kt-badge kt-badge--success kt-badge--inline"
+                                            <span class="p-column-title"> {{'EmailConfirm' | localize}}</span>
+                                            <span class="label label-success label-inline"
                                                 *ngIf="record.isEmailConfirmed">{{'Yes' | localize}}</span>
-                                            <span class="kt-badge kt-badge--dark kt-badge--inline"
+                                            <span class="label label-dark label-inline"
                                                 *ngIf="!record.isEmailConfirmed">{{'No' | localize}}</span>
                                         </td>
                                         <td style="width: 100px">
-                                            <span class="ui-column-title"> {{'Active' | localize}}</span>
-                                            <span class="kt-badge kt-badge--success kt-badge--inline"
+                                            <span class="p-column-title"> {{'Active' | localize}}</span>
+                                            <span class="label label-success label-inline"
                                                 *ngIf="record.isActive">{{'Yes' | localize}}</span>
-                                            <span class="kt-badge kt-badge--dark kt-badge--inline"
+                                            <span class="label label-dark label-inline"
                                                 *ngIf="!record.isActive">{{'No' | localize}}</span>
                                         </td>
                                         <td style="width: 200px">
-                                            <span class="ui-column-title"> {{'CreationTime' | localize}}</span>
-                                            {{record.creationTime | momentFormat:'L'}}
+                                            <span class="p-column-title"> {{'CreationTime' | localize}}</span>
+                                            {{record.creationTime | luxonFormat:'F'}}
                                         </td>
                                     </tr>
                                 </ng-template>
@@ -262,5 +260,7 @@
 
         <createOrEditUserModal #createOrEditUserModal (modalSave)="getUsers()"></createOrEditUserModal>
         <editUserPermissionsModal #editUserPermissionsModal></editUserPermissionsModal>
+        <manage-dynamic-entity-property-values-modal #dynamicPropertiesModal>
+        </manage-dynamic-entity-property-values-modal>
     </div>
 </div>

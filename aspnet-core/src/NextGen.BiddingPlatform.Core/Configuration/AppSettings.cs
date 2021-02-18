@@ -48,6 +48,7 @@ namespace NextGen.BiddingPlatform.Configuration
                 public const string FixedAside = "App.UiManagement.Left.FixedAside";
                 public const string AllowAsideMinimizing = "App.UiManagement.Left.AllowAsideMinimizing";
                 public const string DefaultMinimizedAside = "App.UiManagement.Left.DefaultMinimizedAside";
+                public const string HoverableAside = "App.UiManagement.Left.HoverableAside";
                 public const string SubmenuToggle = "App.UiManagement.Left.SubmenuToggle";
             }
 
@@ -92,6 +93,8 @@ namespace NextGen.BiddingPlatform.Configuration
             public const string IsCookieConsentEnabled = "App.UserManagement.IsCookieConsentEnabled";
             public const string IsQuickThemeSelectEnabled = "App.UserManagement.IsQuickThemeSelectEnabled";
             public const string AllowOneConcurrentLoginPerUser = "App.UserManagement.AllowOneConcurrentLoginPerUser";
+            public const string AllowUsingGravatarProfilePicture = "App.UserManagement.AllowUsingGravatarProfilePicture";
+            public const string UseGravatarProfilePicture = "App.UserManagement.UseGravatarProfilePicture";
         }
 
         public static class Email
@@ -102,6 +105,38 @@ namespace NextGen.BiddingPlatform.Configuration
         public static class Recaptcha
         {
             public const string SiteKey = "Recaptcha.SiteKey";
+        }
+
+        public static class ExternalLoginProvider
+        {
+            public const string OpenIdConnectMappedClaims = "ExternalLoginProvider.OpenIdConnect.MappedClaims";
+            public const string WsFederationMappedClaims = "ExternalLoginProvider.WsFederation.MappedClaims";
+
+            public static class Host
+            {
+                public const string Facebook = "ExternalLoginProvider.Facebook";
+                public const string Google = "ExternalLoginProvider.Google";
+                public const string Twitter = "ExternalLoginProvider.Twitter";
+                public const string Microsoft = "ExternalLoginProvider.Microsoft";
+                public const string OpenIdConnect = "ExternalLoginProvider.OpenIdConnect";
+                public const string WsFederation = "ExternalLoginProvider.WsFederation";
+            }
+
+            public static class Tenant
+            {
+                public const string Facebook = "ExternalLoginProvider.Facebook.Tenant";
+                public const string Facebook_IsDeactivated = "ExternalLoginProvider.Facebook.IsDeactivated";
+                public const string Google = "ExternalLoginProvider.Google.Tenant";
+                public const string Google_IsDeactivated = "ExternalLoginProvider.Google.IsDeactivated";
+                public const string Twitter = "ExternalLoginProvider.Twitter.Tenant";
+                public const string Twitter_IsDeactivated = "ExternalLoginProvider.Twitter.IsDeactivated";
+                public const string Microsoft = "ExternalLoginProvider.Microsoft.Tenant";
+                public const string Microsoft_IsDeactivated = "ExternalLoginProvider.Microsoft.IsDeactivated";
+                public const string OpenIdConnect = "ExternalLoginProvider.OpenIdConnect.Tenant";
+                public const string OpenIdConnect_IsDeactivated = "ExternalLoginProvider.OpenIdConnect.IsDeactivated";
+                public const string WsFederation = "ExternalLoginProvider.WsFederation.Tenant";
+                public const string WsFederation_IsDeactivated = "ExternalLoginProvider.WsFederation.IsDeactivated";
+            }
         }
     }
 }

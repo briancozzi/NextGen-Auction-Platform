@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { UtilsService, TokenService, RefreshTokenService } from 'abp-ng2-module';
+import { TokenService, RefreshTokenService } from 'abp-ng2-module';
 import { TokenAuthServiceProxy, RefreshTokenResult } from '@shared/service-proxies/service-proxies';
 import { Observable, Subject, of } from 'rxjs';
 import { AppConsts } from '@shared/AppConsts';
+import { LocalStorageService } from '@shared/utils/local-storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class ZeroRefreshTokenService implements RefreshTokenService {
   constructor(
     private _tokenAuthService: TokenAuthServiceProxy,
     private _tokenService: TokenService,
-    private _utilsService: UtilsService
+    private _localStorageService: LocalStorageService
   ) { }
 
   tryAuthWithRefreshToken(): Observable<boolean> {
@@ -29,12 +30,11 @@ export class ZeroRefreshTokenService implements RefreshTokenService {
             let tokenExpireDate = (new Date(new Date().getTime() + 1000 * tokenResult.expireInSeconds));
             this._tokenService.setToken(tokenResult.accessToken, tokenExpireDate);
 
-            this._utilsService.setCookieValue(
-              AppConsts.authorization.encrptedAuthTokenName,
-              tokenResult.encryptedAccessToken,
-              tokenExpireDate,
-              abp.appPath
-            );
+            this._localStorageService.setItem(AppConsts.authorization.encrptedAuthTokenName,
+              {
+                  token: tokenResult.encryptedAccessToken,
+                  expireDate: tokenExpireDate
+              });
 
             refreshTokenObservable.next(true);
           } else {

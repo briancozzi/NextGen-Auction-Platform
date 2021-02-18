@@ -1,12 +1,13 @@
 import { Component, EventEmitter, Injector, Output, ViewChild } from '@angular/core';
+import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import {
     CommonLookupServiceProxy, CreateTenantInput,
     PasswordComplexitySetting, ProfileServiceProxy,
     TenantServiceProxy, SubscribableEditionComboboxItemDto
 } from '@shared/service-proxies/service-proxies';
-import * as _ from 'lodash';
-import { ModalDirective } from 'ngx-bootstrap';
+import { filter as _filter } from 'lodash-es';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -35,7 +36,8 @@ export class CreateTenantModalComponent extends AppComponentBase {
         injector: Injector,
         private _tenantService: TenantServiceProxy,
         private _commonLookupService: CommonLookupServiceProxy,
-        private _profileService: ProfileServiceProxy
+        private _profileService: ProfileServiceProxy,
+        private _dateTimeService: DateTimeService
     ) {
         super(injector);
     }
@@ -73,7 +75,7 @@ export class CreateTenantModalComponent extends AppComponentBase {
                 this.editions.unshift(notAssignedItem);
 
                 this._commonLookupService.getDefaultEditionName().subscribe((getDefaultEditionResult) => {
-                    let defaultEdition = _.filter(this.editions, { 'displayText': getDefaultEditionResult.name });
+                    let defaultEdition = _filter(this.editions, { 'displayText': getDefaultEditionResult.name });
                     if (defaultEdition && defaultEdition[0]) {
                         this.tenant.editionId = parseInt(defaultEdition[0].value);
                         this.toggleSubscriptionFields();
@@ -87,7 +89,7 @@ export class CreateTenantModalComponent extends AppComponentBase {
     }
 
     selectedEditionIsFree(): boolean {
-        let selectedEditions = _.filter(this.editions, { 'value': this.tenant.editionId.toString() })
+        let selectedEditions = _filter(this.editions, { 'value': this.tenant.editionId.toString() })
             .map(u => Object.assign(new SubscribableEditionComboboxItemDto(), u));
 
         if (selectedEditions.length !== 1) {
@@ -132,6 +134,8 @@ export class CreateTenantModalComponent extends AppComponentBase {
 
         if (this.isUnlimited || this.tenant.editionId <= 0) {
             this.tenant.subscriptionEndDateUtc = null;
+        } else {
+            this.tenant.subscriptionEndDateUtc = this._dateTimeService.toUtcDate(this.tenant.subscriptionEndDateUtc);
         }
 
         this._tenantService.createTenant(this.tenant)

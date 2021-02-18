@@ -6,7 +6,9 @@ import { ApplicationInfoDto, GetCurrentLoginInformationsOutput, SessionServicePr
 export class AppSessionService {
 
     private _user: UserLoginInfoDto;
+    private _impersonatorUser: UserLoginInfoDto;
     private _tenant: TenantLoginInfoDto;
+    private _impersonatorTenant: TenantLoginInfoDto;
     private _application: ApplicationInfoDto;
     private _theme: UiCustomizationSettingsDto;
 
@@ -67,7 +69,8 @@ export class AppSessionService {
                 this._user = result.user;
                 this._tenant = result.tenant;
                 this._theme = result.theme;
-
+                this._impersonatorTenant = result.impersonatorTenant;
+                this._impersonatorUser = result.impersonatorUser;
                 resolve(result.theme);
             }, (err) => {
                 reject(err);
@@ -99,5 +102,21 @@ export class AppSessionService {
         }
 
         return true;
+    }
+
+    get impersonatorUser(): UserLoginInfoDto {
+        return this._impersonatorUser;
+    }
+    get impersonatorUserId(): number {
+        return this.impersonatorUser ? this.impersonatorUser.id : null;
+    }
+    get impersonatorTenant(): TenantLoginInfoDto {
+        return this._impersonatorTenant;
+    }
+    get impersonatorTenancyName(): string {
+        return this.impersonatorTenant ? this.impersonatorTenant.tenancyName : '';
+    }
+    get impersonatorTenantId(): number {
+        return this.impersonatorTenant ? this.impersonatorTenant.id : null;
     }
 }

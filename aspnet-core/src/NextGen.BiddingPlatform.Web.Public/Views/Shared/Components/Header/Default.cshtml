@@ -1,6 +1,5 @@
 @using NextGen.BiddingPlatform.Web.Public.Views.Shared.Components.Header
 @using NextGen.BiddingPlatform.Web.Navigation
-@using Abp.Extensions;
 @model HeaderViewModel
 @{
     var orderedMenuItems = Model.Menu.Items.OrderByCustom().ToList();
@@ -23,15 +22,21 @@
                             <div id="LanguageDropDown" class="btn-group dropdown">
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-delay="1000" data-close-others="true"><i class="@Model.CurrentLanguage.Icon"></i> @Model.CurrentLanguage.DisplayName <i class="fa fa-angle-down"></i></button>
                                 <ul class="dropdown-menu" role="menu">
-                                    @foreach (var language in Model.Languages)
+                                    @foreach (var languageInfo in Model.Languages)
                                     {
-                                        if (Model.CurrentLanguage.Name == language.Name)
+                                        if (Model.CurrentLanguage.Name == languageInfo.Name)
                                         {
                                             continue;
                                         }
 
                                         <li class="language-menu-item">
-                                            <a href="@Url.Action("ChangeCulture", "AbpLocalization")?cultureName=@(language.Name)&returnUrl=@ApplicationPath@Context.Request.Path.Value.RemovePreFix("/")"><i class="@language.Icon"></i> <span>@language.DisplayName</span></a>
+                                            <a href="@Url.Action("ChangeCulture", "AbpLocalization", new {
+                                                        area = "",
+                                                        cultureName = languageInfo.Name,
+                                                        returnUrl = Context.Request.Path + Context.Request.QueryString
+                                                    })">
+                                                <i class="@languageInfo.Icon"></i> <span>@languageInfo.DisplayName</span>
+                                            </a>
                                         </li>
                                     }
                                 </ul>

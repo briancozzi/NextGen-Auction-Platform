@@ -2,12 +2,12 @@ import { Component, EventEmitter, Injector, Output, ViewChild } from '@angular/c
 import { AppConsts } from '@shared/AppConsts';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { NameValueDto, PagedResultDtoOfNameValueDto } from '@shared/service-proxies/service-proxies';
-import { ModalDirective } from 'ngx-bootstrap';
-import { LazyLoadEvent } from 'primeng/public_api';
+import { ModalDirective } from 'ngx-bootstrap/modal';
+import { LazyLoadEvent } from 'primeng/api';
 import { Paginator } from 'primeng/paginator';
 import { Table } from 'primeng/table';
 import { Observable } from 'rxjs';
-import * as _ from 'lodash';
+import { merge as _merge } from 'lodash-es';
 import { finalize } from 'rxjs/operators';
 
 export interface ICommonLookupModalOptions {
@@ -41,11 +41,12 @@ export class CommonLookupModalComponent extends AppComponentBase {
     @ViewChild('dataTable', {static: true}) dataTable: Table;
     @ViewChild('paginator', {static: true}) paginator: Paginator;
 
-    options: ICommonLookupModalOptions = _.merge({});
+    options: ICommonLookupModalOptions = _merge({});
 
     isShown = false;
     isInitialized = false;
     filterText = '';
+    excludeCurrentUser = false;
     tenantId?: number;
 
     constructor(
@@ -55,7 +56,7 @@ export class CommonLookupModalComponent extends AppComponentBase {
     }
 
     configure(options: ICommonLookupModalOptions): void {
-        this.options = _.merge({}, CommonLookupModalComponent.defaultOptions, { title: this.l('SelectAnItem') }, options);
+        this.options = _merge({}, CommonLookupModalComponent.defaultOptions, { title: this.l('SelectAnItem') }, options);
     }
 
     show(): void {

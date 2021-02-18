@@ -97,7 +97,7 @@ gridster.no-tab{
     border-left: 1px dotted #c1c1c1 !important;
     border-right: 1px dotted #c1c1c1 !important;
 }
- 
+
 .div-dashboard-customization {
     position: fixed;
     bottom: 20px;
@@ -138,3 +138,7 @@ gridster.no-tab{
 .filterModal h5{
   margin-bottom:10px
 }
+
+ gridster-item{
+     background:none;
+ }

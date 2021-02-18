@@ -1,7 +1,7 @@
 import { Component, Injector, OnInit, ViewEncapsulation } from '@angular/core';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { AppComponentBase } from '@shared/common/app-component-base';
-import { CommonLookupServiceProxy, EmailSettingsEditDto, HostBillingSettingsEditDto, InstallDto, InstallServiceProxy, NameValue } from '@shared/service-proxies/service-proxies';
+import { EmailSettingsEditDto, HostBillingSettingsEditDto, InstallDto, InstallServiceProxy, NameValue } from '@shared/service-proxies/service-proxies';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -18,8 +18,7 @@ export class InstallComponent extends AppComponentBase implements OnInit {
 
     constructor(
         injector: Injector,
-        private _installSettingService: InstallServiceProxy,
-        private _commonLookupService: CommonLookupServiceProxy
+        private _installSettingService: InstallServiceProxy
     ) {
         super(injector);
     }

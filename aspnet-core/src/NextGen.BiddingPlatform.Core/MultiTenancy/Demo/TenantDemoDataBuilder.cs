@@ -213,7 +213,8 @@ namespace NextGen.BiddingPlatform.MultiTenancy.Demo
             try
             {
                 //Save a random profile picture
-                var storedFile = new BinaryObject(user.TenantId, GetRandomProfilePictureBytes());
+                var (fileBytes, fileName) = GetRandomProfilePictureBytes();
+                var storedFile = new BinaryObject(user.TenantId, fileBytes, $"{user.Name}-{DateTime.UtcNow}-{fileName}");
                 await _binaryObjectManager.SaveAsync(storedFile);
 
                 //Update new picture on the user
@@ -226,7 +227,7 @@ namespace NextGen.BiddingPlatform.MultiTenancy.Demo
             }
         }
 
-        private byte[] GetRandomProfilePictureBytes()
+        private (byte[], string fileName) GetRandomProfilePictureBytes()
         {
             var fileName = string.Format("sample-profile-{0}.jpg", (RandomHelper.GetRandom(1, 11)).ToString("00"));
             var fullPath = Path.Combine(_appFolders.SampleProfileImagesFolder, fileName);
@@ -236,7 +237,7 @@ namespace NextGen.BiddingPlatform.MultiTenancy.Demo
                 throw new Exception("Could not find sample profile picture on " + fullPath);
             }
 
-            return File.ReadAllBytes(fullPath);
+            return (File.ReadAllBytes(fullPath), fileName);
         }
     }
 }

@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ChatMessageDto, ChatServiceProxy } from '@shared/service-proxies/service-proxies';
 import { AppConsts } from 'shared/AppConsts';
-import { UtilsService } from 'abp-ng2-module';
+import { LocalStorageService } from '@shared/utils/local-storage.service';
 
 @Component({
     selector: 'chat-message',
@@ -17,7 +17,10 @@ export class ChatMessageComponent implements OnInit {
     fileName: string;
     fileContentType: string;
 
-    constructor(private _chatService: ChatServiceProxy) {
+    constructor(
+        private _chatService: ChatServiceProxy,
+        private _localStorageService: LocalStorageService
+    ) {
     }
 
     ngOnInit(): void {
@@ -25,41 +28,42 @@ export class ChatMessageComponent implements OnInit {
     }
 
     private setChatMessageType(): void {
-        let encryptedAuthToken = new UtilsService().getCookieValue(AppConsts.authorization.encrptedAuthTokenName);
+        const self = this;
+        this._localStorageService.getItem(AppConsts.authorization.encrptedAuthTokenName, function (err, value) {
+            let encryptedAuthToken = value?.token;
+            if (self.message.message.startsWith('[image]')) {
+                self.chatMessageType = 'image';
 
-        if (this.message.message.startsWith('[image]')) {
-            this.chatMessageType = 'image';
+                let image = JSON.parse(self.message.message.substring('[image]'.length));
+                self.chatMessage = AppConsts.remoteServiceBaseUrl +
+                    '/Chat/GetUploadedObject?fileId=' +
+                    image.id +
+                    '&fileName=' +
+                    image.name +
+                    '&contentType=' +
+                    image.contentType + '&' + AppConsts.authorization.encrptedAuthTokenName + '=' + encodeURIComponent(encryptedAuthToken);
 
-            let image = JSON.parse(this.message.message.substring('[image]'.length));
-            this.chatMessage = AppConsts.remoteServiceBaseUrl +
-                '/Chat/GetUploadedObject?fileId=' +
-                image.id +
-                '&fileName=' +
-                image.name +
-                '&contentType=' +
-                image.contentType + '&' + AppConsts.authorization.encrptedAuthTokenName + '=' + encodeURIComponent(encryptedAuthToken);
+            } else if (self.message.message.startsWith('[file]')) {
+                self.chatMessageType = 'file';
 
-        } else if (this.message.message.startsWith('[file]')) {
-            this.chatMessageType = 'file';
+                let file = JSON.parse(self.message.message.substring('[file]'.length));
+                self.chatMessage = AppConsts.remoteServiceBaseUrl +
+                    '/Chat/GetUploadedObject?fileId=' +
+                    file.id +
+                    '&fileName=' +
+                    file.name +
+                    '&contentType=' +
+                    file.contentType + '&' + AppConsts.authorization.encrptedAuthTokenName + '=' + encodeURIComponent(encryptedAuthToken);
 
-            let file = JSON.parse(this.message.message.substring('[file]'.length));
-            this.chatMessage = AppConsts.remoteServiceBaseUrl +
-                '/Chat/GetUploadedObject?fileId=' +
-                file.id +
-                '&fileName=' +
-                file.name +
-                '&contentType=' +
-                file.contentType + '&' + AppConsts.authorization.encrptedAuthTokenName + '=' + encodeURIComponent(encryptedAuthToken);
-
-            this.fileName = file.name;
-        } else if (this.message.message.startsWith('[link]')) {
-            this.chatMessageType = 'link';
-            let linkMessage = JSON.parse(this.message.message.substring('[link]'.length));
-            this.chatMessage = linkMessage.message == null ? '' : linkMessage.message;
-        } else {
-            this.chatMessageType = 'text';
-            this.chatMessage = this.message.message;
-        }
+                    self.fileName = file.name;
+            } else if (self.message.message.startsWith('[link]')) {
+                self.chatMessageType = 'link';
+                let linkMessage = JSON.parse(self.message.message.substring('[link]'.length));
+                self.chatMessage = linkMessage.message == null ? '' : linkMessage.message;
+            } else {
+                self.chatMessageType = 'text';
+                self.chatMessage = self.message.message;
+            }
+        });
     }
-
 }

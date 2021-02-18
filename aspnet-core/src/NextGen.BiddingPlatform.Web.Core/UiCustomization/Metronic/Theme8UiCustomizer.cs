@@ -40,7 +40,11 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
             settings.BaseSettings.Theme = ThemeName;
             settings.BaseSettings.Menu.Position = "tab";
             settings.BaseSettings.Menu.AsideSkin = "dark";
-
+            
+            settings.BaseSettings.SubHeader.SubheaderSize = 5;
+            settings.BaseSettings.SubHeader.TitleStlye = "text-dark font-weight-bold my-2 mr-5";
+            settings.BaseSettings.SubHeader.ContainerStyle = "subheader py-2 py-lg-4";
+            
             settings.IsLeftMenuUsed = false;
             settings.IsTopMenuUsed = false;
             settings.IsTabMenuUsed = true;

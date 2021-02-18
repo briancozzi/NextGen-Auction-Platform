@@ -41,6 +41,9 @@ namespace NextGen.BiddingPlatform.Configuration
                 builder.AddUserSecrets(typeof(AppConfigurations).GetAssembly());
             }
 
+            var builtConfig = builder.Build();
+            new AppAzureKeyVaultConfigurer().Configure(builder, builtConfig);
+
             return builder.Build();
         }
     }

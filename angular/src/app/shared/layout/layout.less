@@ -63,7 +63,8 @@ li.nav-item {
 
 .active-user-delegations {
     &:hover {
-        div, span {
+        div,
+        span {
             cursor: default !important;
         }
 
@@ -75,4 +76,20 @@ li.nav-item {
     .kt-header__topbar-icon--brand {
         width: 200px !important;
     }
+}
+
+html[dir="rtl"] {
+    .btn + .btn {
+        margin-right: 5px;
+    }
+
+    .checkbox span,
+    .radio span {
+        margin-left: 0.75rem !important;
+    }
+}
+
+.checkbox span,
+.radio span {
+    margin-right: 0.75rem !important;
 }

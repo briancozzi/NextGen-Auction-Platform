@@ -20,7 +20,8 @@ namespace NextGen.BiddingPlatform.Migrator
             abpZeroTemplateEntityFrameworkCoreModule.SkipDbSeed = true;
 
             _appConfiguration = AppConfigurations.Get(
-                typeof(BiddingPlatformMigratorModule).GetAssembly().GetDirectoryPathOrNull(), addUserSecrets: true
+                typeof(BiddingPlatformMigratorModule).GetAssembly().GetDirectoryPathOrNull(),
+                addUserSecrets: true
             );
         }
 

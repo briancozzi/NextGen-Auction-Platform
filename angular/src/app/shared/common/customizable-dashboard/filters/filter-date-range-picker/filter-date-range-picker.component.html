@@ -1,7 +1,7 @@
 <div class="input-group">
     <input type="text" class="form-control  date-range-filter"
-        value="{{selectedDateRange[0] | momentFormat: 'LL'}} - {{selectedDateRange[1] | momentFormat: 'LL'}}"
-        disabled="disabled" #dateRangePicker="bsDaterangepicker" bsDaterangepicker dateRangePickerMomentModifier
+        value="{{selectedDateRange[0] | luxonFormat: 'ff'}} - {{selectedDateRange[1] | luxonFormat: 'ff'}}"
+        disabled="disabled" #dateRangePicker="bsDaterangepicker" bsDaterangepicker dateRangePickerLuxonModifier
         placement="bottom" [(date)]="selectedDateRange" (dateChange)="onChange()">
     <div class="input-group-append">
         <button class="btn btn-primary" type="button" (click)="dateRangePicker.toggle()">

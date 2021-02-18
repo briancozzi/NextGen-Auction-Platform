@@ -1,9 +1,10 @@
 import { Component, ElementRef, EventEmitter, Injector, Output, ViewChild } from '@angular/core';
+import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { CommonLookupServiceProxy, SubscribableEditionComboboxItemDto, TenantEditDto, TenantServiceProxy } from '@shared/service-proxies/service-proxies';
-import * as _ from 'lodash';
-import * as moment from 'moment';
-import { ModalDirective } from 'ngx-bootstrap';
+import { filter as _filter } from 'lodash-es';
+import { DateTime } from 'luxon';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -31,7 +32,8 @@ export class EditTenantModalComponent extends AppComponentBase {
     constructor(
         injector: Injector,
         private _tenantService: TenantServiceProxy,
-        private _commonLookupService: CommonLookupServiceProxy
+        private _commonLookupService: CommonLookupServiceProxy,
+        private _dateTimeService: DateTimeService
     ) {
         super(injector);
     }
@@ -62,7 +64,7 @@ export class EditTenantModalComponent extends AppComponentBase {
         document.getElementById('Name').focus();
 
         if (this.tenant.subscriptionEndDateUtc) {
-            (this.subscriptionEndDateUtc.nativeElement as any).value = this.tenant.subscriptionEndDateUtc.format('L');
+            (this.subscriptionEndDateUtc.nativeElement as any).value = this._dateTimeService.formatDate(this.tenant.subscriptionEndDateUtc, 'F');
         }
     }
 
@@ -75,7 +77,7 @@ export class EditTenantModalComponent extends AppComponentBase {
             return true;
         }
 
-        let selectedEditions = _.filter(this.editions, { value: this.tenant.editionId + '' });
+        let selectedEditions = _filter(this.editions, { value: this.tenant.editionId + '' });
         if (selectedEditions.length !== 1) {
             return true;
         }
@@ -97,6 +99,8 @@ export class EditTenantModalComponent extends AppComponentBase {
         //take selected date as UTC
         if (this.isUnlimited || !this.tenant.editionId) {
             this.tenant.subscriptionEndDateUtc = null;
+        } else {
+            this.tenant.subscriptionEndDateUtc = this._dateTimeService.toUtcDate(this.tenant.subscriptionEndDateUtc);
         }
 
         this._tenantService.updateTenant(this.tenant)

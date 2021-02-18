@@ -5,6 +5,8 @@ import { AppComponentBase } from '@shared/common/app-component-base';
 import { Subscription, Observable } from 'rxjs';
 import { timer } from 'rxjs';
 import { LoginService } from './login.service';
+import { ReCaptchaV3Service } from 'ngx-captcha';
+import { AppConsts } from '@shared/AppConsts';
 
 @Component({
     templateUrl: './validate-two-factor-code.component.html',
@@ -12,7 +14,7 @@ import { LoginService } from './login.service';
     animations: [accountModuleAnimation()]
 })
 export class ValidateTwoFactorCodeComponent extends AppComponentBase implements CanActivate, OnInit, OnDestroy {
-
+    recaptchaSiteKey: string = AppConsts.recaptchaSiteKey;
     code: string;
     submitting = false;
     remainingSeconds = 90;
@@ -21,6 +23,7 @@ export class ValidateTwoFactorCodeComponent extends AppComponentBase implements 
     constructor(
         injector: Injector,
         public loginService: LoginService,
+        private _reCaptchaV3Service: ReCaptchaV3Service,
         private _router: Router
     ) {
         super(injector);
@@ -61,8 +64,22 @@ export class ValidateTwoFactorCodeComponent extends AppComponentBase implements 
         }
     }
 
+    get useCaptcha(): boolean {
+        return this.setting.getBoolean('App.UserManagement.UseCaptchaOnLogin');
+    }
+
     submit(): void {
-        this.loginService.authenticateModel.twoFactorVerificationCode = this.code;
-        this.loginService.authenticate();
+        let recaptchaCallback = (token: string) => {
+            this.loginService.authenticateModel.twoFactorVerificationCode = this.code;
+            this.loginService.authenticate(() => { }, null, token);
+        };
+
+        if (this.useCaptcha) {
+            this._reCaptchaV3Service.execute(this.recaptchaSiteKey, 'login', (token) => {
+                recaptchaCallback(token);
+            });
+        } else {
+            recaptchaCallback(null);
+        }
     }
 }

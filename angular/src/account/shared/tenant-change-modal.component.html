@@ -10,20 +10,22 @@
     <div class="modal-dialog">
         <div class="modal-content">
 
-            <form *ngIf="active" #changeTenantForm="ngForm" novalidate (ngSubmit)="save()" class="kt-form kt-form--label-right">
+            <form *ngIf="active" #changeTenantForm="ngForm" novalidate (ngSubmit)="save()" class="form form-label-right">
 
                 <div class="modal-header">
                     <h5 class="modal-title">
                         <span>{{"ChangeTenant" | localize}}</span>
                     </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="close()"></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="close()">
+                        <i aria-hidden="true" class="ki ki-close"></i>
+                    </button>
                 </div>
 
                 <div class="modal-body">
                     <div class="form-group row text-left mb-0">
                         <label class="col-4 col-form-label">{{"SwitchToTenant" | localize}}</label>
                         <div class="col">
-                            <span class="kt-switch kt-switch--icon">
+                            <span class="switch switch-icon">
                                 <label>
                                     <input checked="checked"
                                            name="SwitchToTenant"
@@ -64,13 +66,13 @@
                 <div class="modal-footer">
                     <button [disabled]="saving"
                             type="button"
-                            class="btn btn-secondary close-button"
+                            class="btn btn-light-primary font-weight-bold"
                             (click)="close()">
                         {{"Cancel" | localize}}
                     </button>
 
                     <button type="submit"
-                            class="btn btn-primary save-button"
+                            class="btn btn-primary font-weight-bold save-button"
                             [disabled]="!changeTenantForm.form.valid"
                             [buttonBusy]="saving"
                             [busyText]="l('ProcessingWithThreeDot')">

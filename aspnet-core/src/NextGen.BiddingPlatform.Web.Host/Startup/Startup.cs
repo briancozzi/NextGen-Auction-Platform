@@ -3,7 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Abp.AspNetCore;
+using Abp.AspNetCore.Configuration;
 using Abp.AspNetCore.Mvc.Antiforgery;
+using Abp.AspNetCore.Mvc.Extensions;
 using Abp.AspNetCore.SignalR.Hubs;
 using Abp.AspNetZeroCore.Web.Authentication.JwtBearer;
 using Abp.Castle.Logging.Log4Net;
@@ -22,7 +24,7 @@ using NextGen.BiddingPlatform.EntityFrameworkCore;
 using NextGen.BiddingPlatform.Identity;
 using NextGen.BiddingPlatform.Web.Chat.SignalR;
 using NextGen.BiddingPlatform.Web.Common;
-using PaulMiami.AspNetCore.Mvc.Recaptcha;
+using Swashbuckle.AspNetCore.Swagger;
 using NextGen.BiddingPlatform.Web.IdentityServer;
 using NextGen.BiddingPlatform.Web.Swagger;
 using Stripe;
@@ -37,7 +39,10 @@ using Microsoft.OpenApi.Models;
 using NextGen.BiddingPlatform.Configure;
 using NextGen.BiddingPlatform.Schemas;
 using NextGen.BiddingPlatform.Web.HealthCheck;
+using Newtonsoft.Json.Serialization;
+using Owl.reCAPTCHA;
 using HealthChecksUISettings = HealthChecks.UI.Configuration.Settings;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
 
 namespace NextGen.BiddingPlatform.Web.Startup
 {
@@ -62,7 +67,7 @@ namespace NextGen.BiddingPlatform.Web.Startup
                 options.Filters.Add(new AbpAutoValidateAntiforgeryTokenAttribute());
             }).AddNewtonsoftJson();
 
-            services.AddSignalR(options => { options.EnableDetailedErrors = true; });
+            services.AddSignalR();
 
             //Configure CORS for angular2 UI
             services.AddCors(options =>
@@ -85,6 +90,11 @@ namespace NextGen.BiddingPlatform.Web.Startup
                 });
             });
 
+            if (bool.Parse(_appConfiguration["KestrelServer:IsEnabled"]))
+            {
+                ConfigureKestrel(services);
+            }
+
             IdentityRegistrar.Register(services);
             AuthConfigurer.Configure(services, _appConfiguration);
 
@@ -92,12 +102,12 @@ namespace NextGen.BiddingPlatform.Web.Startup
             if (bool.Parse(_appConfiguration["IdentityServer:IsEnabled"]))
             {
                 IdentityServerRegistrar.Register(services, _appConfiguration, options =>
-                     options.UserInteraction = new UserInteractionOptions()
-                     {
-                         LoginUrl = "/UI/Login",
-                         LogoutUrl = "/UI/LogOut",
-                         ErrorUrl = "/Error"
-                     });
+                    options.UserInteraction = new UserInteractionOptions()
+                    {
+                        LoginUrl = "/UI/Login",
+                        LogoutUrl = "/UI/LogOut",
+                        ErrorUrl = "/Error"
+                    });
             }
 
             if (WebConsts.SwaggerUiEnabled)
@@ -105,7 +115,7 @@ namespace NextGen.BiddingPlatform.Web.Startup
                 //Swagger - Enable this line and the related lines in Configure method to enable swagger UI
                 services.AddSwaggerGen(options =>
                 {
-                    options.SwaggerDoc("v1", new OpenApiInfo() { Title = "BiddingPlatform API", Version = "v1" });
+                    options.SwaggerDoc("v1", new OpenApiInfo() {Title = "BiddingPlatform API", Version = "v1"});
                     options.DocInclusionPredicate((docName, description) => true);
                     options.ParameterFilter<SwaggerEnumParameterFilter>();
                     options.SchemaFilter<SwaggerEnumSchemaFilter>();
@@ -116,10 +126,10 @@ namespace NextGen.BiddingPlatform.Web.Startup
             }
 
             //Recaptcha
-            services.AddRecaptcha(new RecaptchaOptions
+            services.AddreCAPTCHAV3(x =>
             {
-                SiteKey = _appConfiguration["Recaptcha:SiteKey"],
-                SecretKey = _appConfiguration["Recaptcha:SecretKey"]
+                x.SiteKey = _appConfiguration["Recaptcha:SiteKey"];
+                x.SiteSecret = _appConfiguration["Recaptcha:SecretKey"];
             });
 
             if (WebConsts.HangfireDashboardEnabled)
@@ -148,7 +158,8 @@ namespace NextGen.BiddingPlatform.Web.Startup
                     {
                         healthCheckUISection.Bind(settings, c => c.BindNonPublicProperties = true);
                     });
-                    services.AddHealthChecksUI();
+                    services.AddHealthChecksUI()
+                        .AddInMemoryStorage();
                 }
             }
 
@@ -158,11 +169,12 @@ namespace NextGen.BiddingPlatform.Web.Startup
                 //Configure Log4Net logging
                 options.IocManager.IocContainer.AddFacility<LoggingFacility>(
                     f => f.UseAbpLog4Net().WithConfig(_hostingEnvironment.IsDevelopment()
-                            ? "log4net.config"
-                            : "log4net.Production.config")
+                        ? "log4net.config"
+                        : "log4net.Production.config")
                 );
 
-                options.PlugInSources.AddFolder(Path.Combine(_hostingEnvironment.WebRootPath, "Plugins"), SearchOption.AllDirectories);
+                options.PlugInSources.AddFolder(Path.Combine(_hostingEnvironment.WebRootPath, "Plugins"),
+                    SearchOption.AllDirectories);
             });
         }
 
@@ -202,7 +214,8 @@ namespace NextGen.BiddingPlatform.Web.Startup
 
             using (var scope = app.ApplicationServices.CreateScope())
             {
-                if (scope.ServiceProvider.GetService<DatabaseCheckHelper>().Exist(_appConfiguration["ConnectionStrings:Default"]))
+                if (scope.ServiceProvider.GetService<DatabaseCheckHelper>()
+                    .Exist(_appConfiguration["ConnectionStrings:Default"]))
                 {
                     app.UseAbpRequestLocalization();
                 }
@@ -213,7 +226,8 @@ namespace NextGen.BiddingPlatform.Web.Startup
                 //Hangfire dashboard &server(Enable to use Hangfire instead of default job manager)
                 app.UseHangfireDashboard(WebConsts.HangfireDashboardEndPoint, new DashboardOptions
                 {
-                    Authorization = new[] { new AbpHangfireAuthorizationFilter(AppPermissions.Pages_Administration_HangfireDashboard) }
+                    Authorization = new[]
+                        {new AbpHangfireAuthorizationFilter(AppPermissions.Pages_Administration_HangfireDashboard)}
                 });
                 app.UseHangfireServer();
             }
@@ -249,6 +263,8 @@ namespace NextGen.BiddingPlatform.Web.Startup
                         ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                     });
                 }
+                
+                app.ApplicationServices.GetRequiredService<IAbpAspNetCoreConfiguration>().EndpointConfiguration.ConfigureAllEndpoints(endpoints);
             });
 
             if (bool.Parse(_appConfiguration["HealthChecks:HealthChecksEnabled"]))
@@ -273,6 +289,25 @@ namespace NextGen.BiddingPlatform.Web.Startup
                     options.InjectBaseUrl(_appConfiguration["App:ServerRootAddress"]);
                 }); //URL: /swagger
             }
+        }
+
+        private void ConfigureKestrel(IServiceCollection services)
+        {
+            services.Configure<Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerOptions>(options =>
+            {
+                options.Listen(new System.Net.IPEndPoint(System.Net.IPAddress.Any, 443),
+                    listenOptions =>
+                    {
+                        var certPassword = _appConfiguration.GetValue<string>("Kestrel:Certificates:Default:Password");
+                        var certPath = _appConfiguration.GetValue<string>("Kestrel:Certificates:Default:Path");
+                        var cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(certPath,
+                            certPassword);
+                        listenOptions.UseHttps(new HttpsConnectionAdapterOptions()
+                        {
+                            ServerCertificate = cert
+                        });
+                    });
+            });
         }
     }
 }

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\common.props"></Import>
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wp8+wpa81;</AssetTargetFallback>
     <AssemblyName>NextGen.BiddingPlatform.Application</AssemblyName>
     <PackageId>NextGen.BiddingPlatform.Application</PackageId>
@@ -13,8 +13,8 @@
     <RootNamespace>NextGen.BiddingPlatform</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Abp.EntityFrameworkCore.EFPlus" Version="5.5.0" />
-    <PackageReference Include="NPOI" Version="2.4.1" />
+    <PackageReference Include="Abp.EntityFrameworkCore.EFPlus" Version="6.2.0" />
+    <PackageReference Include="NPOI" Version="2.5.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NextGen.BiddingPlatform.Application.Shared\NextGen.BiddingPlatform.Application.Shared.csproj" />

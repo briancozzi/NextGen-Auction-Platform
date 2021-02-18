@@ -261,7 +261,6 @@
     <text name="Language">Language</text>
     <text name="Flag">Flag</text>
     <text name="SetAsDefaultLanguage">Set as default language</text>
-    <text name="InvlalidLanguageCode">Invalid language code.</text>
     <text name="EditLanguage">Edit language</text>
     <text name="ChangeTexts">Change texts</text>
     <text name="TargetValue">Target value</text>

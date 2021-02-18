@@ -3,5 +3,5 @@
         placeholder='{{"SearchWithThreeDot" | localize}}'>
 </div>
 <p-tree [value]="treeData" [(selection)]="selectedPermissions" selectionMode="checkbox"
-    (onNodeSelect)="nodeSelect($event)" (onNodeUnselect)="onNodeUnselect($event)" [propagateSelectionUp]="false">
+    (onNodeSelect)="nodeSelect($event)" (onNodeUnselect)="onNodeUnselect($event)" [propagateSelectionUp]="false" [propagateSelectionDown]="!disableCascade">
 </p-tree>

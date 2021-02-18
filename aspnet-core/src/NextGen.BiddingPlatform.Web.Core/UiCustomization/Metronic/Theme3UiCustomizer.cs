@@ -26,11 +26,6 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
                         DesktopFixedHeader = await GetSettingValueAsync<bool>(AppSettings.UiManagement.Header.DesktopFixedHeader),
                         MobileFixedHeader = await GetSettingValueAsync<bool>(AppSettings.UiManagement.Header.MobileFixedHeader),
                     },
-                    SubHeader = new ThemeSubHeaderSettingsDto()
-                    {
-                        FixedSubHeader = await GetSettingValueAsync<bool>(AppSettings.UiManagement.SubHeader.Fixed),
-                        SubheaderStyle = await GetSettingValueAsync(AppSettings.UiManagement.SubHeader.Style)
-                    },
                     Footer = new ThemeFooterSettingsDto
                     {
                         FixedFooter = await GetSettingValueAsync<bool>(AppSettings.UiManagement.Footer.FixedFooter)
@@ -46,13 +41,18 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
 
             settings.BaseSettings.Layout.LayoutType = "fluid";
 
-            settings.BaseSettings.Menu.FixedAside = false;
+            settings.BaseSettings.Menu.FixedAside = true;
             settings.BaseSettings.Menu.Position = "left";
             settings.BaseSettings.Menu.AsideSkin = "dark";
-            settings.BaseSettings.Menu.SubmenuToggle = "true";
+            settings.BaseSettings.Menu.SubmenuToggle = "false";
+            settings.BaseSettings.Menu.EnableSecondary = true;
 
             settings.BaseSettings.Header.HeaderSkin = "light";
 
+            settings.BaseSettings.SubHeader.SubheaderSize = 5;
+            settings.BaseSettings.SubHeader.TitleStlye = "subheader-title text-dark font-weight-bold my-2 mr-3";
+            settings.BaseSettings.SubHeader.ContainerStyle = "subheader py-3 py-lg-8  subheader-transparent ";
+            
             settings.IsLeftMenuUsed = true;
             settings.IsTopMenuUsed = false;
             settings.IsTabMenuUsed = false;

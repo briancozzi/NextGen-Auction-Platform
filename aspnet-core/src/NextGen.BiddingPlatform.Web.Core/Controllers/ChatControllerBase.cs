@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Abp.AspNetCore.Mvc.Authorization;
@@ -46,10 +47,11 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                     fileBytes = stream.GetAllBytes();
                 }
 
-                var fileObject = new BinaryObject(null, fileBytes);
+                var fileObject = new BinaryObject(null, fileBytes, $"File uploaded from chat by {AbpSession.UserId}, File name: {file.FileName} {DateTime.UtcNow}");
                 using (CurrentUnitOfWork.SetTenantId(null))
                 {
                     await BinaryObjectManager.SaveAsync(fileObject);
+                    await CurrentUnitOfWork.SaveChangesAsync();
                 }
 
                 return Json(new AjaxResponse(new

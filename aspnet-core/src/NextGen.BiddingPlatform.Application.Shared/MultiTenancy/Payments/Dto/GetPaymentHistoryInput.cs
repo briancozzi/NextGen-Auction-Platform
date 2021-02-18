@@ -1,4 +1,5 @@
-﻿using Abp.Runtime.Validation;
+using Abp.Runtime.Validation;
+using NextGen.BiddingPlatform.Common;
 using NextGen.BiddingPlatform.Dto;
 
 namespace NextGen.BiddingPlatform.MultiTenancy.Payments.Dto
@@ -12,7 +13,10 @@ namespace NextGen.BiddingPlatform.MultiTenancy.Payments.Dto
                 Sorting = "CreationTime";
             }
 
-            Sorting = Sorting.Replace("editionDisplayName", "Edition.DisplayName");
+            Sorting = DtoSortingHelper.ReplaceSorting(Sorting, s =>
+            {
+                return s.Replace("editionDisplayName", "Edition.DisplayName");
+            });
         }
     }
 }

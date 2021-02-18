@@ -1,5 +1,4 @@
-﻿using Abp.IdentityServer4;
-using Abp.Organizations;
+﻿using Abp.IdentityServer4vNext;
 using Abp.Zero.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NextGen.BiddingPlatform.Authorization.Delegation;
@@ -92,9 +91,6 @@ namespace NextGen.BiddingPlatform.EntityFrameworkCore
                 b.HasIndex(e => new { e.TenantId, e.SourceUserId });
                 b.HasIndex(e => new { e.TenantId, e.TargetUserId });
             });
-
-            // Remove when https://github.com/aspnetboilerplate/aspnetboilerplate/issues/5457 is fixed
-            modelBuilder.Entity<OrganizationUnit>().HasIndex(e => new { e.TenantId, e.Code }).IsUnique(false);
 
             modelBuilder.ConfigurePersistedGrantEntity();
         }

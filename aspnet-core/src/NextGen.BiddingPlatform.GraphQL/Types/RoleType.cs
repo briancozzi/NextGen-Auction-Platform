@@ -7,6 +7,8 @@ namespace NextGen.BiddingPlatform.Types
     {
         public RoleType()
         {
+            Name = "RoleType";
+            
             Field(x => x.Id);
             Field(x => x.IsDefault);
             Field(x => x.IsStatic);

@@ -260,7 +260,6 @@
     <text name="Language">Taal</text>
     <text name="Flag">Vlag</text>
     <text name="SetAsDefaultLanguage">Instellen als standaardtaal</text>
-    <text name="InvlalidLanguageCode">Ongeldige taalcode.</text>
     <text name="EditLanguage">Bewerk taal</text>
     <text name="ChangeTexts">Verander tekst</text>
     <text name="TargetValue">Streefwaarde</text>

@@ -1,5 +1,5 @@
 ﻿using System;
-using Abp.IdentityServer4;
+using Abp.IdentityServer4vNext;
 using IdentityServer4.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +15,7 @@ namespace NextGen.BiddingPlatform.Web.IdentityServer
             services.AddIdentityServer(setupOptions)
                 .AddDeveloperSigningCredential()
                 .AddInMemoryIdentityResources(IdentityServerConfig.GetIdentityResources())
+                .AddInMemoryApiScopes(IdentityServerConfig.GetApiScopes())
                 .AddInMemoryApiResources(IdentityServerConfig.GetApiResources())
                 .AddInMemoryClients(IdentityServerConfig.GetClients(configuration))
                 .AddAbpPersistedGrants<BiddingPlatformDbContext>()

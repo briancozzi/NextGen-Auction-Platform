@@ -60,11 +60,6 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization
                 return _serviceProvider.GetService<Theme11UiCustomizer>();
             }
 
-            if (theme.Equals(AppConsts.Theme12, StringComparison.InvariantCultureIgnoreCase))
-            {
-                return _serviceProvider.GetService<Theme12UiCustomizer>();
-            }
-
             if (theme.Equals(AppConsts.Theme3, StringComparison.InvariantCultureIgnoreCase))
             {
                 return _serviceProvider.GetService<Theme3UiCustomizer>();

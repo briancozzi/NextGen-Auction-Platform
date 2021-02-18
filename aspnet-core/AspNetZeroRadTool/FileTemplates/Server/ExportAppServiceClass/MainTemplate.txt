@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using Abp.Runtime.Session;
 using Abp.Timing.Timezone;
-using {{Namespace_Here}}.DataExporting.Excel.NPOI;
+{{Excel_Reporter_Using_Here}}
 using {{Namespace_Here}}.{{Namespace_Relative_Full_Here}}.Dtos;
 using {{Namespace_Here}}.Dto;
 using {{Namespace_Here}}.Storage;
 
 namespace {{Namespace_Here}}.{{Namespace_Relative_Full_Here}}.Exporting
 {
-    public class {{Entity_Name_Plural_Here}}ExcelExporter : NpoiExcelExporterBase, I{{Entity_Name_Plural_Here}}ExcelExporter
+    public class {{Entity_Name_Plural_Here}}ExcelExporter : {{Excel_Reporter_Base_Here}}, I{{Entity_Name_Plural_Here}}ExcelExporter
     {
 
         private readonly ITimeZoneConverter _timeZoneConverter;
@@ -30,7 +30,8 @@ namespace {{Namespace_Here}}.{{Namespace_Relative_Full_Here}}.Exporting
                 "{{Entity_Name_Plural_Here}}.xlsx",
                 excelPackage =>
                 {
-                    var sheet = excelPackage.CreateSheet(L("{{Entity_Name_Plural_Here}}"));
+                    
+                    {{Sheet_Initialization_Here}}
 
                     AddHeader(
                         sheet{{Property_Header_Here}}{{NP_Header_Here}}
@@ -40,8 +41,8 @@ namespace {{Namespace_Here}}.{{Namespace_Relative_Full_Here}}.Exporting
                         sheet, 2, {{entity_Name_Plural_Here}}{{Property_Params_Here}}{{NP_Params_Here}}
                         );
 
-					{{Property_DateTime_Formatter_Here}}
-
+					{{Property_DateTime_Formatter_Here_Before_080400}}
+					{{Property_DateTime_Formatter_Here_After_080400}}
                 });
         }
     }

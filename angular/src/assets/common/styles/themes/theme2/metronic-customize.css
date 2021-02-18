@@ -1,71 +1,46 @@
-.cc-window {
-    background-color: #282a3a;
+body {
+    background-image: url(/assets/metronic/themes/theme2/images/bg/bg-10.jpg);
+    background-size: 100% 350px;
 }
 
-.cc-btn {
-    background-color: #5867dd;
-    border-color: #5867dd;
-    color: #ffffff;
+theme2-brand {
+    display: flex;
 }
 
-.cc-message {
-    color: #fefefe;
+theme2-layout {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
 }
 
-.kt-header__topbar .kt-header__topbar-item.kt-header__topbar-item--langs {
-    margin-right: 0;
-}
-
-.kt-header__topbar .subscription-warning {
-    padding-top: 13px;
-}
-
-@media (max-width: 1024px) {
-    #kt_header {
-        margin-top: -40px;
-    }
+#kt_wrapper > ng-component {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
 }
 
 .unread-notification-count {
     position: absolute;
-    top: 1px;
-    right: 0px;
-    font-size: 1rem !important;
-    height: 10px !important;
-    width: 10px !important;
-    background-color: #ff0000 !important;
-    padding: 9px;
+    top: 5px;
+    left: 23px;
 }
 
-@media (min-width: 1024px) {
-    .menuSearchBarInput {
-        background-color: rgb(18, 18, 30) !important;
-        border: 1px solid rgb(44, 45, 68) !important;
-        color: #9899ac !important;
-    }
-
-    .menuSearchBarInput:focus {
-        border-color: #7380fc !important;
-        color: #fff !important;
-    }
+.unread-chat-message-count {
+    position: absolute;
+    top: -6px;
+    left: 13px;
 }
 
-.menuSearchBarContainer {
-    min-width: 150px !important;
-    margin-right: 14px;
+.mobile-subscription-warning *{
+    color: #fff;
+}menu-search-bar {
+    min-width: 100px !important;
 }
 
-.menuSearchBarContainer .ui-autocomplete-panel {
-    margin-left: 14px;
+p-autoComplete{
+    padding: 10px;
 }
 
-@media (max-width: 1024px) {
-    .menuSearchBarContainer {
-        width: calc(100% - 20px);
-        margin-bottom: 10px;
-    }
-
-    .menuSearchBarInput {
-        width: 214px !important;
-    }
+.menuSearchBarContainer{
+    width: calc(100% - 20px);
 }

@@ -27,6 +27,7 @@ namespace NextGen.BiddingPlatform
         public const int MaxProfilPictureBytesUserFriendlyValue = 5;
 
         public const string TokenValidityKey = "token_validity_key";
+        public const string RefreshTokenValidityKey = "refresh_token_validity_key";
         public const string SecurityStampKey = "AspNet.Identity.SecurityStamp";
 
         public const string TokenType = "token_type";
@@ -44,7 +45,6 @@ namespace NextGen.BiddingPlatform
         public const string Theme9 = "theme9";
         public const string Theme10 = "theme10";
         public const string Theme11 = "theme11";
-        public const string Theme12 = "theme12";
 
         public static TimeSpan AccessTokenExpiration = TimeSpan.FromDays(1);
         public static TimeSpan RefreshTokenExpiration = TimeSpan.FromDays(365);

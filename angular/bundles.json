@@ -142,19 +142,6 @@
         "src/assets/metronic/themes/theme11/css/style.bundle.rtl.css"
       ]
     },
-     
-    {
-      "output": "src/assets/metronic/themes/theme12/css/style.bundle.min.css",
-      "input": [
-        "src/assets/metronic/themes/theme12/css/style.bundle.css"
-      ]
-    },
-    {
-      "output": "src/assets/metronic/themes/theme12/css/style.bundle.rtl.min.css",
-      "input": [
-        "src/assets/metronic/themes/theme12/css/style.bundle.rtl.css"
-      ]
-    },
     
     {
       "output": "src/assets/primeng/datatable/css/primeng.datatable.min.css",

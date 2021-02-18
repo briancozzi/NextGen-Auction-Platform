@@ -4,7 +4,7 @@ import { AppComponentBase } from '@shared/common/app-component-base';
 import { AccountServiceProxy, ActivateEmailInput, ResolveTenantIdInput } from '@shared/service-proxies/service-proxies';
 
 @Component({
-    template: `<div class="kt-login__form"><div class="alert alert-success text-center" role="alert"><div class="alert-text">{{waitMessage}}</div></div></div>`
+    template: `<div class="login-form"><div class="alert alert-success text-center" role="alert"><div class="alert-text">{{waitMessage}}</div></div></div>`
 })
 export class ConfirmEmailComponent extends AppComponentBase implements OnInit {
 

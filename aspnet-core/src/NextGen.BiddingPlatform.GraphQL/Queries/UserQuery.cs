@@ -19,6 +19,7 @@ using NextGen.BiddingPlatform.Core.Base;
 using NextGen.BiddingPlatform.Dto;
 using NextGen.BiddingPlatform.Types;
 using NextGen.BiddingPlatform.Core.Extensions;
+using GraphQL;
 
 namespace NextGen.BiddingPlatform.Queries
 {
@@ -68,7 +69,7 @@ namespace NextGen.BiddingPlatform.Queries
         }
 
         [AbpAuthorize(AppPermissions.Pages_Administration_Users)]
-        protected override async Task<PagedResultDto<UserDto>> Resolve(ResolveFieldContext<object> context)
+        public override async Task<PagedResultDto<UserDto>> Resolve(IResolveFieldContext context)
         {
             var query = _userManager.Users.AsNoTracking();
 
@@ -87,7 +88,7 @@ namespace NextGen.BiddingPlatform.Queries
             return new PagedResultDto<UserDto>(totalCount, userDtos);
         }
 
-        private static async Task<List<User>> FetchUsers(IQueryable<User> query, ResolveFieldContext<object> context)
+        private static async Task<List<User>> FetchUsers(IQueryable<User> query, IResolveFieldContext context)
         {
             return await query
                 .OrderBy(context.GetArgument(Args.Sorting, "Name,Surname"))
@@ -96,7 +97,7 @@ namespace NextGen.BiddingPlatform.Queries
                 .ToListAsync();
         }
 
-        private async Task IncludeDetails(ResolveFieldContext<object> context, List<User> users, List<UserDto> userDtos)
+        private async Task IncludeDetails(IResolveFieldContext context, List<User> users, List<UserDto> userDtos)
         {
             if (context.HasSelectionField(UserType.ChildFields.GetFieldSelector(UserType.ChildFields.Roles)))
             {
@@ -194,7 +195,7 @@ namespace NextGen.BiddingPlatform.Queries
             }).ToList();
         }
 
-        private static IQueryable<User> IncludeQuery(IQueryable<User> query, ResolveFieldContext<object> context)
+        private static IQueryable<User> IncludeQuery(IQueryable<User> query, IResolveFieldContext context)
         {
             if (context.HasSelectionField(UserType.ChildFields.GetFieldSelector(UserType.ChildFields.Roles)))
             {
@@ -209,7 +210,7 @@ namespace NextGen.BiddingPlatform.Queries
             return query;
         }
 
-        private static IQueryable<User> FilterQuery(IQueryable<User> query, ResolveFieldContext<object> context)
+        private static IQueryable<User> FilterQuery(IQueryable<User> query, IResolveFieldContext context)
         {
             context
                 .ContainsArgument<long>(Args.Id,

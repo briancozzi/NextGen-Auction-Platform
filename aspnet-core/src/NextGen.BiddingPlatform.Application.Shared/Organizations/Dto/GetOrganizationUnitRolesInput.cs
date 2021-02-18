@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Abp.Runtime.Validation;
+using NextGen.BiddingPlatform.Common;
 using NextGen.BiddingPlatform.Dto;
 
 namespace NextGen.BiddingPlatform.Organizations.Dto
@@ -15,14 +16,21 @@ namespace NextGen.BiddingPlatform.Organizations.Dto
             {
                 Sorting = "role.DisplayName, role.Name";
             }
-            else if (Sorting.Contains("displayName"))
+
+            Sorting = DtoSortingHelper.ReplaceSorting(Sorting, s =>
             {
-                Sorting = Sorting.Replace("displayName", "role.displayName");
-            }
-            else if (Sorting.Contains("addedTime"))
-            {
-                Sorting = Sorting.Replace("addedTime", "uou.creationTime");
-            }
+                if (s.Contains("displayName"))
+                {
+                    s = s.Replace("displayName", "role.displayName");
+                }
+
+                if (s.Contains("addedTime"))
+                {
+                    s = s.Replace("addedTime", "ouRole.creationTime");
+                }
+
+                return s;
+            });
         }
     }
 }

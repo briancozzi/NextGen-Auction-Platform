@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Injector, OnInit, Input, Output, ViewChild, ViewEncapsulation, NgZone, HostBinding, ElementRef } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Injector, OnInit, Input, Output, ViewChild, ViewEncapsulation, NgZone, HostBinding, ElementRef, HostListener } from '@angular/core';
 import { CommonLookupModalComponent } from '@app/shared/common/lookup/common-lookup-modal.component';
 import { AppConsts } from '@shared/AppConsts';
 import { AppComponentBase } from '@shared/common/app-component-base';
@@ -6,7 +6,6 @@ import { DomHelper } from '@shared/helpers/DomHelper';
 import { HttpClient } from '@angular/common/http';
 import { FileUpload } from 'primeng/fileupload';
 import { finalize } from 'rxjs/operators';
-
 import {
     BlockUserInput,
     ChatSide,
@@ -23,13 +22,15 @@ import {
     ProfileServiceProxy,
     UnblockUserInput,
     UserLoginInfoDto,
-    ChatMessageReadState
+    ChatMessageReadState,
+    ChatMessageDto
 } from '@shared/service-proxies/service-proxies';
 import { LocalStorageService } from '@shared/utils/local-storage.service';
-import * as _ from 'lodash';
-import * as moment from 'moment';
+import { filter as _filter, map as _map, forEach as _forEach, min as _min, reduce as _reduce } from 'lodash-es';
+import { DateTime } from 'luxon';
 import { ChatFriendDto } from './ChatFriendDto';
 import { ChatSignalrService } from './chat-signalr.service';
+import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 
 @Component({
     templateUrl: './chat-bar.component.html',
@@ -46,17 +47,14 @@ export class ChatBarComponent extends AppComponentBase implements OnInit, AfterV
     uploadUrl: string;
     isFileSelected = false;
 
-    @HostBinding('id') id = 'kt_quick_sidebar';
-    @HostBinding('class')
-    classes = 'kt-quick-panel';
-    @HostBinding('attr.mQuickSidebarOffcanvas')
+    @HostBinding('attr.ktOffcanvas')
 
     @HostBinding('style.overflow') styleOverflow: any = 'hidden';
 
     mQuickSidebarOffcanvas: any;
 
-    @ViewChild('ChatMessage', {static: true}) chatMessageInput: ElementRef;
-    @ViewChild('chatScrollBar', {static: true}) chatScrollBar;
+    @ViewChild('ChatMessage', { static: true }) chatMessageInput: ElementRef;
+    @ViewChild('chatScrollBar', { static: true }) chatScrollBar;
 
     @ViewChild('chatImageUpload', { static: false }) chatImageUpload: FileUpload;
     @ViewChild('chatFileUpload', { static: false }) chatFileUpload: FileUpload;
@@ -79,11 +77,20 @@ export class ChatBarComponent extends AppComponentBase implements OnInit, AfterV
     appChatSide: typeof ChatSide = ChatSide;
     appChatMessageReadState: typeof ChatMessageReadState = ChatMessageReadState;
 
+    _isOpen: boolean;
+    _pinned = false;
+    _selectedUser: ChatFriendDto = new ChatFriendDto();
+
+    @HostListener('mouseleave') mouseleave() {
+        if (!this.pinned && this.mQuickSidebarOffcanvas) {
+            this.mQuickSidebarOffcanvas.hide();
+        }
+    }
+
     get chatUserSearchHint(): string {
         return this.l('ChatUserSearch_Hint');
     }
 
-    _isOpen: boolean;
     set isOpen(newValue: boolean) {
         if (newValue === this._isOpen) {
             return;
@@ -101,7 +108,6 @@ export class ChatBarComponent extends AppComponentBase implements OnInit, AfterV
         return this._isOpen;
     }
 
-    _pinned = false;
     set pinned(newValue: boolean) {
         if (newValue === this._pinned) {
             return;
@@ -114,7 +120,6 @@ export class ChatBarComponent extends AppComponentBase implements OnInit, AfterV
         return this._pinned;
     }
 
-    _selectedUser: ChatFriendDto = new ChatFriendDto();
     set selectedUser(newValue: ChatFriendDto) {
         if (newValue === this._selectedUser) {
             return;
@@ -143,6 +148,7 @@ export class ChatBarComponent extends AppComponentBase implements OnInit, AfterV
         private _chatSignalrService: ChatSignalrService,
         private _profileService: ProfileServiceProxy,
         private _httpClient: HttpClient,
+        private _dateTimeService: DateTimeService,
         public _zone: NgZone) {
         super(injector);
         this.uploadUrl = AppConsts.remoteServiceBaseUrl + '/Chat/UploadFile';
@@ -243,8 +249,8 @@ export class ChatBarComponent extends AppComponentBase implements OnInit, AfterV
             return;
         }
 
-        const unreadMessages = _.filter(user.messages, m => m.readState === ChatMessageReadState.Unread);
-        const unreadMessageIds = _.map(unreadMessages, 'id');
+        const unreadMessages = _filter(user.messages, m => m.readState === ChatMessageReadState.Unread);
+        const unreadMessageIds = _map(unreadMessages, 'id');
 
         if (!unreadMessageIds.length) {
             return;
@@ -255,7 +261,7 @@ export class ChatBarComponent extends AppComponentBase implements OnInit, AfterV
         input.userId = user.friendUserId;
 
         this._chatService.markAllUnreadMessagesOfUserAsRead(input).subscribe(() => {
-            _.forEach(user.messages, message => {
+            _forEach(user.messages, message => {
                 if (unreadMessageIds.indexOf(message.id) >= 0) {
                     message.readState = ChatMessageReadState.Read;
                 }
@@ -274,7 +280,7 @@ export class ChatBarComponent extends AppComponentBase implements OnInit, AfterV
 
         let minMessageId;
         if (user.messages && user.messages.length) {
-            minMessageId = _.min(_.map(user.messages, m => m.id));
+            minMessageId = _min(_map(user.messages, m => m.id));
         }
 
         this._chatService.getUserChatMessages(user.friendTenantId ? user.friendTenantId : undefined, user.friendUserId, minMessageId)
@@ -336,7 +342,7 @@ export class ChatBarComponent extends AppComponentBase implements OnInit, AfterV
     }
 
     getFriendOrNull(userId: number, tenantId?: number): ChatFriendDto {
-        const friends = _.filter(this.friends, friend => friend.friendUserId === userId && friend.friendTenantId === tenantId);
+        const friends = _filter(this.friends, friend => friend.friendUserId === userId && friend.friendTenantId === tenantId);
         if (friends.length) {
             return friends[0];
         }
@@ -345,7 +351,7 @@ export class ChatBarComponent extends AppComponentBase implements OnInit, AfterV
     }
 
     getFilteredFriends(state: FriendshipState, userNameFilter: string): FriendDto[] {
-        const foundFriends = _.filter(this.friends, friend => friend.state === state &&
+        const foundFriends = _filter(this.friends, friend => friend.state === state &&
             this.getShownUserName(friend.friendTenancyName, friend.friendUserName)
                 .toLocaleLowerCase()
                 .indexOf(userNameFilter.toLocaleLowerCase()) >= 0);
@@ -354,7 +360,7 @@ export class ChatBarComponent extends AppComponentBase implements OnInit, AfterV
     }
 
     getFilteredFriendsCount(state: FriendshipState): number {
-        return _.filter(this.friends, friend => friend.state === state).length;
+        return _filter(this.friends, friend => friend.state === state).length;
     }
 
     getUserNameByChatSide(chatSide: ChatSide): string {
@@ -363,14 +369,18 @@ export class ChatBarComponent extends AppComponentBase implements OnInit, AfterV
             this.selectedUser.friendUserName;
     }
 
-    getFixedMessageTime(messageTime: moment.Moment): string {
-        return moment(messageTime).add(-1 * this.serverClientTimeDifference, 'seconds').format('YYYY-MM-DDTHH:mm:ssZ');
+    getFixedMessageTime(messageTime: DateTime): DateTime {
+        if (typeof messageTime === 'string') {
+            messageTime = this._dateTimeService.fromISODateString(messageTime);
+        }
+
+        return this._dateTimeService.plusSeconds(messageTime, -1 * this.serverClientTimeDifference);
     }
 
     getFriendsAndSettings(callback: any): void {
         this._chatService.getUserChatFriendsWithSettings().subscribe(result => {
             this.friends = (result.friends as ChatFriendDto[]);
-            this.serverClientTimeDifference = moment(abp.clock.now()).diff(result.serverTime, 'seconds');
+            this.serverClientTimeDifference = this._dateTimeService.getDiffInSeconds(this._dateTimeService.getDate(), result.serverTime);
 
             this.triggerUnreadMessageCountChangeEvent();
             callback();
@@ -436,9 +446,9 @@ export class ChatBarComponent extends AppComponentBase implements OnInit, AfterV
 
         let height =
             document.getElementById('kt_quick_sidebar').clientHeight -
-            document.getElementsByClassName('kt-messenger-conversation')[0].getElementsByClassName('kt-portlet__head')[0].clientHeight -
-            document.getElementsByClassName('kt-messenger-conversation')[0].getElementsByClassName('kt-portlet__foot')[0].clientHeight -
-            75;
+            document.getElementById('kt_chat_content').getElementsByClassName('card-header')[0].clientHeight -
+            document.getElementById('kt_chat_content').getElementsByClassName('card-footer')[0].clientHeight -
+            100;
 
         this.chatScrollBar.directiveRef.elementRef.nativeElement.parentElement.style.height = height + 'px';
     }
@@ -477,9 +487,10 @@ export class ChatBarComponent extends AppComponentBase implements OnInit, AfterV
     }
 
     ngAfterViewInit(): void {
-        this.mQuickSidebarOffcanvas = new KTOffcanvas(this.el.nativeElement, {
-            overlay: true,
-            baseClass: 'kt-quick-panel',
+        this.mQuickSidebarOffcanvas = new KTOffcanvas('kt_quick_sidebar', {
+            overlay: false,
+            baseClass: 'offcanvas',
+            placement: 'left',
             closeBy: 'kt_quick_sidebar_close',
             toggleBy: 'kt_quick_sidebar_toggle'
         });
@@ -487,18 +498,14 @@ export class ChatBarComponent extends AppComponentBase implements OnInit, AfterV
         this.mQuickSidebarOffcanvas.events.push({
             name: 'afterHide',
             handler: () => {
-                if (this._pinned) {
-                    this.mQuickSidebarOffcanvas.show();
-                } else {
-                    this.isOpen = false;
-                }
+                this.isOpen = this._pinned;
             }
         }, {
-                name: 'afterShow',
-                handler: () => {
-                    this.isOpen = true;
-                }
-            });
+            name: 'afterShow',
+            handler: () => {
+                this.isOpen = true;
+            }
+        });
 
         this.userLookupModal.configure({
             title: this.l('SelectAUser'),
@@ -517,7 +524,7 @@ export class ChatBarComponent extends AppComponentBase implements OnInit, AfterV
         let totalUnreadMessageCount = 0;
 
         if (this.friends) {
-            totalUnreadMessageCount = _.reduce(this.friends, (memo, friend) => memo + friend.unreadMessageCount, 0);
+            totalUnreadMessageCount = _reduce(this.friends, (memo, friend) => memo + friend.unreadMessageCount, 0);
         }
 
         abp.event.trigger('app.chat.unreadMessageCountChanged', totalUnreadMessageCount);
@@ -548,7 +555,7 @@ export class ChatBarComponent extends AppComponentBase implements OnInit, AfterV
                         null,
                         {
                             onclick() {
-                                if (document.body.className.indexOf('kt-quick-panel--on') < 0) {
+                                if (document.body.className.indexOf('offcanvas-on') < 0) {
                                     self.showChatPanel();
                                     self.isOpen = true;
                                 }
@@ -574,7 +581,7 @@ export class ChatBarComponent extends AppComponentBase implements OnInit, AfterV
                 abp.notify.info(self.l('UserSendYouAFriendshipRequest', data.friendUserName));
             }
 
-            if (!_.filter(self.friends, f => f.friendUserId === data.friendUserId && f.friendTenantId === data.friendTenantId).length) {
+            if (!_filter(self.friends, f => f.friendUserId === data.friendUserId && f.friendTenantId === data.friendTenantId).length) {
                 self.friends.push(data);
             }
         }
@@ -637,7 +644,7 @@ export class ChatBarComponent extends AppComponentBase implements OnInit, AfterV
                 return;
             }
 
-            _.forEach(user.messages, message => {
+            _forEach(user.messages, message => {
                 message.receiverReadState = ChatMessageReadState.Read;
             });
         }
@@ -661,11 +668,20 @@ export class ChatBarComponent extends AppComponentBase implements OnInit, AfterV
                 onConnected();
             });
         });
+
+        abp.event.on('app.show.quickUserPanel', () => {
+            this.mQuickSidebarOffcanvas.hide();
+        });
+    }
+
+    getReadStateHtml(message: ChatMessageDto): string {
+        let readStateClass = message.receiverReadState === ChatMessageReadState.Read ? ' text-primary' : ' text-muted';
+        return message.side === ChatSide.Sender ? '<i class="read-state-check fa fa-check' + readStateClass + '" aria-hidden="true"></i>' : '';
     }
 
     showChatPanel(): void {
-        document.body.className += ' kt-quick-panel--on';
-        document.getElementById('kt_quick_sidebar').className += ' kt-quick-panel--on';
+        document.body.className += ' offcanvas-on';
+        document.getElementById('kt_quick_sidebar').className += ' offcanvas-on';
     }
 
     onWindowResize(event): void {

@@ -19,7 +19,9 @@ describe('abp-zero-template App', () => {
 
         await page.loginAsHostAdmin();
 
-        await page.waitForItemToBeVisible(element(by.css('.kt-header__topbar-username')));
+        await page.waitForItemToBeVisible(element(by.id('kt_quick_user_toggle')));
+        await element(by.id('kt_quick_user_toggle')).click();
+        await page.waitForItemToBeVisible(element(by.css('.topbar-username')));
 
         let username = await page.getUsername();
         expect(username.toUpperCase()).toEqual('\\ADMIN');
@@ -34,7 +36,9 @@ describe('abp-zero-template App', () => {
 
         await page.loginAsTenantAdmin();
 
-        await page.waitForItemToBeVisible(element(by.css('.kt-header__topbar-username')));
+        await page.waitForItemToBeVisible(element(by.id('kt_quick_user_toggle')));
+        await element(by.id('kt_quick_user_toggle')).click();
+        await page.waitForItemToBeVisible(element(by.css('.topbar-username')));
 
         let username = await page.getUsername();
         expect(username.toUpperCase()).toEqual('DEFAULT\\ADMIN');

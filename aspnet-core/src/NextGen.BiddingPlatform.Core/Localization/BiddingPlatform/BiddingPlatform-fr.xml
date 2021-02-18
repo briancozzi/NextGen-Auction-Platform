@@ -260,7 +260,6 @@
     <text name="Language">Langue</text>
     <text name="Flag">Flag</text>
     <text name="SetAsDefaultLanguage">Définir comme langue par défaut</text>
-    <text name="InvlalidLanguageCode">Code de langue non valide.</text>
     <text name="EditLanguage">Modifier la langue</text>
     <text name="Changetexts">Modifier les textes</text>
     <text name="TargetValue">Valeur cible</text>

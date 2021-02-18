@@ -20,7 +20,7 @@ export class DatePickerInitialValueSetterDirective extends AppComponentBase impl
     ngAfterViewInit(): void {
         if (this.ngModel) {
             setTimeout(() => {
-                (this.hostElement.nativeElement as any).value = this.ngModel.format('L');
+                (this.hostElement.nativeElement as any).value = this.ngModel.toFormat('D');
             });
         }
     }

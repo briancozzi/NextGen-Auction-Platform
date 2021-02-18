@@ -1,21 +1,15 @@
-<div class="kt-portlet">
-    <div class="kt-portlet__head">
-        <div class="kt-portlet__head-label">
-            <h3 class="kt-portlet__head-title">
-                Editor
-            </h3>
-        </div>
+<div class="card card-custom gutter-b">
+    <div class="card-header align-items-center border-0">
+        <h3 class="card-title align-items-start flex-column">
+            <span class="font-weight-bolder text-dark">
+                 {{"Editor" | localize}}
+            </span>
+        </h3>
     </div>
-    <form class="kt-form">
-        <div class="kt-portlet__body">
-            <div class="form-group">
-                <p-editor [(ngModel)]="htmlEditorInput" name="HtmlEditorInput" [style]="{'height':'300px'}"></p-editor>
-            </div>
-        </div>
-        <div class="kt-portlet__foot">
-            <div class="kt-form__actions">
-                <button class="btn btn-primary" (click)="submitValue()" type="button">{{"Submit" | localize}}</button>
-            </div>
-        </div>
-    </form>
+    <div class="card-body">
+        <p-editor [(ngModel)]="htmlEditorInput" name="HtmlEditorInput" [style]="{'height':'300px'}"></p-editor>
+    </div>
+    <div class="card-footer">
+        <button class="btn btn-primary" (click)="submitValue()" type="button">{{"Submit" | localize}}</button>
+    </div>
 </div>

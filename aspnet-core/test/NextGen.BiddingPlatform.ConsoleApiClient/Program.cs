@@ -53,7 +53,7 @@ namespace NextGen.BiddingPlatform.ConsoleApiClient
 
                 ClientId = "client",
                 ClientSecret = "def2edf7-5d42-4edc-a84a-30136c340e13",
-
+                
                 Scope = "default-api",
 
                 UserName = "admin",

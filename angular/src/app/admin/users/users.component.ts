@@ -1,20 +1,28 @@
-import { Component, Injector, ViewChild, ViewEncapsulation, AfterViewInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { AppConsts } from '@shared/AppConsts';
-import { appModuleAnimation } from '@shared/animations/routerTransition';
-import { AppComponentBase } from '@shared/common/app-component-base';
-import { EntityDtoOfInt64, UserListDto, UserServiceProxy, PermissionServiceProxy, FlatPermissionDto } from '@shared/service-proxies/service-proxies';
-import { FileDownloadService } from '@shared/utils/file-download.service';
-import { LazyLoadEvent } from 'primeng/public_api';
-import { Paginator } from 'primeng/paginator';
-import { Table } from 'primeng/table';
-import { CreateOrEditUserModalComponent } from './create-or-edit-user-modal.component';
-import { EditUserPermissionsModalComponent } from './edit-user-permissions-modal.component';
-import { ImpersonationService } from './impersonation.service';
-import { HttpClient } from '@angular/common/http';
-import { FileUpload } from 'primeng/fileupload';
-import { finalize } from 'rxjs/operators';
-import { PermissionTreeModalComponent } from '../shared/permission-tree-modal.component';
+import {Component, Injector, ViewChild, ViewEncapsulation, AfterViewInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {AppConsts} from '@shared/AppConsts';
+import {appModuleAnimation} from '@shared/animations/routerTransition';
+import {AppComponentBase} from '@shared/common/app-component-base';
+import {
+    EntityDtoOfInt64,
+    GetRolesInput,
+    GetUsersInput,
+    UserListDto,
+    UserServiceProxy
+} from '@shared/service-proxies/service-proxies';
+import {FileDownloadService} from '@shared/utils/file-download.service';
+import {LazyLoadEvent} from 'primeng/api';
+import {Paginator} from 'primeng/paginator';
+import {Table} from 'primeng/table';
+import {CreateOrEditUserModalComponent} from './create-or-edit-user-modal.component';
+import {EditUserPermissionsModalComponent} from './edit-user-permissions-modal.component';
+import {ImpersonationService} from './impersonation.service';
+import {HttpClient} from '@angular/common/http';
+import {FileUpload} from 'primeng/fileupload';
+import {finalize} from 'rxjs/operators';
+import {PermissionTreeModalComponent} from '../shared/permission-tree-modal.component';
+import {LocalStorageService} from '@shared/utils/local-storage.service';
+import {ManageValuesModalComponent} from '@app/admin/dynamic-properties/dynamic-entity-properties/value/manage-values-modal.component';
 
 @Component({
     templateUrl: './users.component.html',
@@ -30,6 +38,8 @@ export class UsersComponent extends AppComponentBase implements AfterViewInit {
     @ViewChild('paginator', { static: true }) paginator: Paginator;
     @ViewChild('ExcelFileUpload', { static: false }) excelFileUpload: FileUpload;
     @ViewChild('permissionFilterTreeModal', { static: true }) permissionFilterTreeModal: PermissionTreeModalComponent;
+    @ViewChild('dynamicPropertiesModal', { static: true }) dynamicPropertiesModal: ManageValuesModalComponent;
+
     uploadUrl: string;
 
     //Filters
@@ -45,6 +55,7 @@ export class UsersComponent extends AppComponentBase implements AfterViewInit {
         private _fileDownloadService: FileDownloadService,
         private _activatedRoute: ActivatedRoute,
         private _httpClient: HttpClient,
+        private _localStorageService: LocalStorageService
     ) {
         super(injector);
         this.filterText = this._activatedRoute.snapshot.queryParams['filterText'] || '';
@@ -64,17 +75,19 @@ export class UsersComponent extends AppComponentBase implements AfterViewInit {
 
         this.primengTableHelper.showLoadingIndicator();
 
-        this._userServiceProxy.getUsers(
-            this.filterText,
-            this.permissionFilterTreeModal.getSelectedPermissions(),
-            this.role !== '' ? parseInt(this.role) : undefined,
-            this.onlyLockedUsers,
-            this.primengTableHelper.getSorting(this.dataTable),
-            this.primengTableHelper.getMaxResultCount(this.paginator, event),
-            this.primengTableHelper.getSkipCount(this.paginator, event)
+        this._userServiceProxy.getUsers(new GetUsersInput({
+                filter: this.filterText,
+                permissions: this.permissionFilterTreeModal.getSelectedPermissions(),
+                role: this.role !== '' ? parseInt(this.role) : undefined,
+                onlyLockedUsers: this.onlyLockedUsers,
+                sorting: this.primengTableHelper.getSorting(this.dataTable),
+                maxResultCount: this.primengTableHelper.getMaxResultCount(this.paginator, event),
+                skipCount: this.primengTableHelper.getSkipCount(this.paginator, event)
+            })
         ).pipe(finalize(() => this.primengTableHelper.hideLoadingIndicator())).subscribe(result => {
             this.primengTableHelper.totalRecordsCount = result.totalCount;
             this.primengTableHelper.records = result.items;
+            this.setUsersProfilePictureUrl(this.primengTableHelper.records);
             this.primengTableHelper.hideLoadingIndicator();
         });
     }
@@ -159,5 +172,19 @@ export class UsersComponent extends AppComponentBase implements AfterViewInit {
                 }
             }
         );
+    }
+
+    showDynamicProperties(user: UserListDto): void {
+        this.dynamicPropertiesModal.show('NextGen.BiddingPlatform.Authorization.Users.User', user.id.toString());
+    }
+
+    setUsersProfilePictureUrl(users: UserListDto[]): void {
+        for (let i = 0; i < users.length; i++) {
+            let user = users[i];
+            this._localStorageService.getItem(AppConsts.authorization.encrptedAuthTokenName, function (err, value) {
+                let profilePictureUrl = AppConsts.remoteServiceBaseUrl + '/Profile/GetProfilePictureByUser?userId=' + user.id + '&' + AppConsts.authorization.encrptedAuthTokenName + '=' + encodeURIComponent(value.token);
+                (user as any).profilePictureUrl = profilePictureUrl;
+            });
+        }
     }
 }

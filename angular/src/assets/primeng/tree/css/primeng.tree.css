@@ -1,12 +1,13 @@
-.ui-tree {
+.p-tree {
     width: 100%;
+    border: none;
 }
 
-body .ui-widget-content {
+body .p-tree.ui-widget-content {
     border: none !important;
 }
 
-span.ui-treenode-label {
+span.p-treenode-label {
     font-family: Poppins !important;
     line-height: 24px !important;
     font-size: 14px !important;
@@ -14,16 +15,16 @@ span.ui-treenode-label {
     padding-right: 5px !important;
 }
 
-span.ui-treenode-icon {
+span.p-treenode-icon {
     line-height: 24px !important;
     font-size: 1.2rem !important;
 }
 
-.ui-tree .ui-chkbox .ui-chkbox-icon {
+.p-tree .ui-chkbox .ui-chkbox-icon {
     margin-left: 0px;
 }
 
-.ui-tree .ui-treenode-children {
+.p-tree .p-treenode-children {
     padding-left: 20px !important;
 }
 
@@ -31,18 +32,18 @@ span.ui-treenode-icon {
     display: none;
 }
 
-p-tree[selectionmode="checkbox"] .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label.ui-state-highlight {
+p-tree[selectionmode="checkbox"] .p-tree .p-tree-container .p-treenode .p-treenode-content .p-treenode-label.ui-state-highlight {
     background-color: transparent !important;
     color: #333 !important;
     font-weight: 300 !important;
 }
 
-span.ui-treenode-label {
+span.p-treenode-label {
     line-height: 18px !important;
     font-size: 13px !important;
 }
 
-body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-chkbox .ui-chkbox-icon {
+body .p-tree .p-tree-container .p-treenode .p-treenode-content .ui-chkbox .ui-chkbox-icon {
     margin: -1px 0 0 -1px;
 }
 
@@ -60,6 +61,6 @@ body .ui-chkbox {
     height: 16px;
 }
 
-body .ui-tree .ui-tree-container .ui-treenode {
+body .p-tree .p-tree-container .p-treenode {
     padding: 0;
 }

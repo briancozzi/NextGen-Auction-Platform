@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Abp.Application.Services;
 using Abp.UI;
+using NextGen.BiddingPlatform.Authorization.Users;
 using NextGen.BiddingPlatform.Editions;
 using NextGen.BiddingPlatform.MultiTenancy.Payments.Dto;
 using NextGen.BiddingPlatform.MultiTenancy.Payments.Stripe;
@@ -39,10 +40,10 @@ namespace NextGen.BiddingPlatform.MultiTenancy.Payments
         public async Task ConfirmPayment(StripeConfirmPaymentInput input)
         {
             var paymentId = await _subscriptionPaymentExtensionDataRepository.GetPaymentIdOrNullAsync(
-                StripeGatewayManager.StripeSessionIdSubscriptionPaymentExtensionDataKey, 
+                StripeGatewayManager.StripeSessionIdSubscriptionPaymentExtensionDataKey,
                 input.StripeSessionId
             );
-            
+
             if (!paymentId.HasValue)
             {
                 throw new ApplicationException($"Cannot find any payment with sessionId {input.StripeSessionId}");
@@ -53,7 +54,8 @@ namespace NextGen.BiddingPlatform.MultiTenancy.Payments
 
             if (payment.Status != SubscriptionPaymentStatus.NotPaid)
             {
-                throw new ApplicationException($"Invalid payment status {payment.Status}, cannot create a charge on stripe !");
+                throw new ApplicationException(
+                    $"Invalid payment status {payment.Status}, cannot create a charge on stripe !");
             }
 
             payment.Gateway = SubscriptionPaymentGatewayType.Stripe;
@@ -73,7 +75,8 @@ namespace NextGen.BiddingPlatform.MultiTenancy.Payments
             }
             else
             {
-                throw new ApplicationException($"Unexpected session mode {session.Mode}. 'payment' or 'subscription' expected");
+                throw new ApplicationException(
+                    $"Unexpected session mode {session.Mode}. 'payment' or 'subscription' expected");
             }
 
             payment.SetAsPaid();
@@ -111,9 +114,9 @@ namespace NextGen.BiddingPlatform.MultiTenancy.Payments
                     await _paymentAppService.NewRegistrationSucceed(paymentId);
                     break;
                 default:
-                    throw new ApplicationException($"Unhandled payment type: {payment.EditionPaymentType}. payment(id: {paymentId}) could not be completed.");
+                    throw new ApplicationException(
+                        $"Unhandled payment type: {payment.EditionPaymentType}. payment(id: {paymentId}) could not be completed.");
             }
-
         }
 
         public StripeConfigurationDto GetConfiguration()
@@ -126,13 +129,19 @@ namespace NextGen.BiddingPlatform.MultiTenancy.Payments
 
         public async Task<SubscriptionPaymentDto> GetPaymentAsync(StripeGetPaymentInput input)
         {
-            var paymentId = await _subscriptionPaymentExtensionDataRepository.GetPaymentIdOrNullAsync(StripeGatewayManager.StripeSessionIdSubscriptionPaymentExtensionDataKey, input.StripeSessionId);
+            var paymentId = await _subscriptionPaymentExtensionDataRepository.GetPaymentIdOrNullAsync(
+                StripeGatewayManager.StripeSessionIdSubscriptionPaymentExtensionDataKey,
+                input.StripeSessionId
+            );
+            
             if (!paymentId.HasValue)
             {
                 throw new ApplicationException($"Cannot find any payment with sessionId {input.StripeSessionId}");
             }
 
-            return ObjectMapper.Map<SubscriptionPaymentDto>(await _subscriptionPaymentRepository.GetAsync(paymentId.Value));
+            return ObjectMapper.Map<SubscriptionPaymentDto>(
+                await _subscriptionPaymentRepository.GetAsync(paymentId.Value)
+            );
         }
 
         public async Task<string> CreatePaymentSession(StripeCreatePaymentSessionInput input)
@@ -143,10 +152,11 @@ namespace NextGen.BiddingPlatform.MultiTenancy.Payments
             var sessionCreateOptions = new SessionCreateOptions
             {
                 PaymentMethodTypes = paymentTypes,
-                SuccessUrl = input.SuccessUrl + (input.SuccessUrl.Contains("?") ? "&" : "?") + "sessionId={CHECKOUT_SESSION_ID}",
-                CancelUrl = input.CancelUrl,
+                SuccessUrl = input.SuccessUrl + (input.SuccessUrl.Contains("?") ? "&" : "?") +
+                             "sessionId={CHECKOUT_SESSION_ID}",
+                CancelUrl = input.CancelUrl
             };
-
+            
             if (payment.IsRecurring && !payment.IsProrationPayment())
             {
                 var plan = await _stripeGatewayManager.GetOrCreatePlanForPayment(input.PaymentId);
@@ -192,13 +202,20 @@ namespace NextGen.BiddingPlatform.MultiTenancy.Payments
         public async Task<StripePaymentResultOutput> GetPaymentResult(StripePaymentResultInput input)
         {
             var payment = await _subscriptionPaymentRepository.GetAsync(input.PaymentId);
-            var sessionId = await _subscriptionPaymentExtensionDataRepository.GetExtensionDataAsync(input.PaymentId, StripeGatewayManager.StripeSessionIdSubscriptionPaymentExtensionDataKey);
+            var sessionId = await _subscriptionPaymentExtensionDataRepository.GetExtensionDataAsync(input.PaymentId,
+                StripeGatewayManager.StripeSessionIdSubscriptionPaymentExtensionDataKey);
 
             if (string.IsNullOrEmpty(sessionId))
             {
                 throw new UserFriendlyException(L("ThereIsNoStripeSessionIdOnPayment", input.PaymentId));
             }
 
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
+                var tenant = await TenantManager.GetByIdAsync(payment.TenantId);
+                await _stripeGatewayManager.UpdateCustomerDescriptionAsync(sessionId, tenant.TenancyName);
+            }
+            
             if (payment.Status == SubscriptionPaymentStatus.Completed)
             {
                 return new StripePaymentResultOutput

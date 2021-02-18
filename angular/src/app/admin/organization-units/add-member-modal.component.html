@@ -9,7 +9,7 @@
                     <span>{{'SelectUsers' | localize}}</span>
                 </h5>
                 <button type="button" class="close" (click)="close()" [attr.aria-label]="l('Close')" [disabled]="saving">
-                    <span aria-hidden="true">&times;</span>
+                     <i aria-hidden="true" class="ki ki-close"></i>
                 </button>
             </div>
 
@@ -49,7 +49,7 @@
                                         <p-tableCheckbox [value]="record"></p-tableCheckbox>
                                     </td>
                                     <td>
-                                        <span class="ui-column-title">{{'Name' | localize}}</span>
+                                        <span class="p-column-title">{{'Name' | localize}}</span>
                                         {{record.name}}
                                     </td>
                                 </tr>
@@ -76,8 +76,8 @@
             </div>
 
             <div class="modal-footer">
-                <button [disabled]="saving" type="button" class="btn btn-secondary" (click)="close()">{{"Cancel" | localize}}</button>
-                <button class="btn btn-primary" (click)="addUsersToOrganizationUnit()" [buttonBusy]="saving" [busyText]="l('SavingWithThreeDot')"><i class="fa fa-save"></i> <span>{{"Save" | localize}}</span></button>
+                <button [disabled]="saving" type="button" class="btn btn-light-primary font-weight-bold" (click)="close()">{{"Cancel" | localize}}</button>
+                <button class="btn btn-primary font-weight-bold" (click)="addUsersToOrganizationUnit()" [buttonBusy]="saving" [busyText]="l('SavingWithThreeDot')"><i class="fa fa-save"></i> <span>{{"Save" | localize}}</span></button>
             </div>
 
         </div>

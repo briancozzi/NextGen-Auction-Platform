@@ -1,8 +1,13 @@
-import { Component, Injector, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
-import { AppComponentBase } from '@shared/common/app-component-base';
-import { WebhookSubscriptionServiceProxy, WebhookSubscription, NameValueOfString } from '@shared/service-proxies/service-proxies';
-import { Observable } from 'rxjs';
-import { ModalDirective } from 'ngx-bootstrap';
+import {Component, Injector, Output, EventEmitter, ViewChild} from '@angular/core';
+import {AppComponentBase} from '@shared/common/app-component-base';
+import {
+    WebhookSubscriptionServiceProxy,
+    WebhookSubscription,
+    NameValueOfString
+} from '@shared/service-proxies/service-proxies';
+import {Observable} from 'rxjs';
+import {ModalDirective} from 'ngx-bootstrap/modal';
+import {KeyValueListManagerComponent} from '@app/shared/common/key-value-list-manager/key-value-list-manager.component';
 
 @Component({
     selector: 'create-or-edit-webhook-subscription',
@@ -10,9 +15,11 @@ import { ModalDirective } from 'ngx-bootstrap';
     styleUrls: ['./create-or-edit-webhook-subscription-modal.component.css']
 })
 export class CreateOrEditWebhookSubscriptionModalComponent extends AppComponentBase {
-    objectKeys = Object.keys;
-    @ViewChild('createOrEditModal', { static: true }) modal: ModalDirective;
+    @ViewChild('headerKeyValueManager') headerKeyValueManager: KeyValueListManagerComponent;
+    @ViewChild('createOrEditModal', {static: true}) modal: ModalDirective;
     @Output() modalSave: EventEmitter<any> = new EventEmitter<any>();
+
+    objectKeys = Object.keys;
 
     webhookSubscription: WebhookSubscription = new WebhookSubscription();
     webhookSubscriptionId?: string;
@@ -25,9 +32,7 @@ export class CreateOrEditWebhookSubscriptionModalComponent extends AppComponentB
     saving = false;
 
     webhooks: NameValueOfString[] = new Array<NameValueOfString>();
-
-    @ViewChild('additionalHeaderKey') additionalHeaderKey: ElementRef;
-    @ViewChild('additionalHeaderValue') additionalHeaderValue: ElementRef;
+    headers: { key: string, value: string }[] = [];
 
     constructor(
         injector: Injector,
@@ -44,6 +49,7 @@ export class CreateOrEditWebhookSubscriptionModalComponent extends AppComponentB
             this.modal.show();
             return;
         }
+
         this.showMainSpinner();
         this._webhookSubscriptionService.getSubscription(subscriptionId)
             .subscribe(result => {
@@ -53,6 +59,17 @@ export class CreateOrEditWebhookSubscriptionModalComponent extends AppComponentB
                         name: wh,
                         value: wh
                     }));
+
+                let keys = Object.keys(this.webhookSubscription.headers);
+                if (this.webhookSubscription.headers && keys.length > 0) {
+                    this.headers = keys.map(x => {
+                        return {
+                            key: x,
+                            value: this.webhookSubscription.headers[x]
+                        };
+                    });
+                }
+
                 this.hideMainSpinner();
                 this.active = true;
                 this.modal.show();
@@ -61,8 +78,13 @@ export class CreateOrEditWebhookSubscriptionModalComponent extends AppComponentB
             });
     }
 
-    private save(): void {
+    save(): void {
         this.webhookSubscription.webhooks = this.webhooks.map(wh => wh.name);
+        this.webhookSubscription.headers = {};
+
+        this.headerKeyValueManager.getItems().forEach(item => {
+            this.webhookSubscription.headers[item.key] = item.value;
+        });
 
         let observable: Observable<void>;
         if (!this.webhookSubscriptionId) {
@@ -108,26 +130,5 @@ export class CreateOrEditWebhookSubscriptionModalComponent extends AppComponentB
         let item = document.getElementById('additional-header-' + headerKey);
         item.remove();
         delete this.webhookSubscription.headers[headerKey];
-    }
-
-    addAdditionalHeader(): void {
-        let headerKey = this.additionalHeaderKey.nativeElement.value;
-        let headerValue = this.additionalHeaderValue.nativeElement.value;
-
-        if (!headerKey || headerKey === '' || !headerValue || headerValue === '') {
-            abp.notify.error(this.l('HeaderKeyAndValueCanNotBeNull'));
-            return;
-        }
-
-        if (!this.webhookSubscription.headers) {
-            this.webhookSubscription.headers = {};
-        }
-
-        if (this.webhookSubscription.headers[headerKey]) {
-            abp.notify.error(this.l('HeaderKeysMustBeUnique'));
-            return;
-        }
-
-        this.webhookSubscription.headers[headerKey] = headerValue;
     }
 }

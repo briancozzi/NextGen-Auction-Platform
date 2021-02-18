@@ -1,4 +1,4 @@
-import { LazyLoadEvent } from 'primeng/public_api';
+import { LazyLoadEvent } from 'primeng/api';
 import { Paginator } from 'primeng/paginator';
 import { Table } from 'primeng/table';
 import * as rtlDetect from 'rtl-detect';
@@ -31,14 +31,33 @@ export class PrimengTableHelper {
     }
 
     getSorting(table: Table): string {
-        let sorting;
-        if (table.sortField) {
-            sorting = table.sortField;
-            if (table.sortOrder === 1) {
-                sorting += ' ASC';
-            } else if (table.sortOrder === -1) {
-                sorting += ' DESC';
+        let sorting = '';
+
+        if (table.sortMode === 'multiple') {
+            if (table.multiSortMeta) {
+                for (let i = 0; i < table.multiSortMeta.length; i++) {
+                    const element = table.multiSortMeta[i];
+                    if (i > 0) {
+                        sorting += ',';
+                    }
+                    sorting += element.field;
+                    if (element.order === 1) {
+                        sorting += ' ASC';
+                    } else if (element.order === -1) {
+                        sorting += ' DESC';
+                    }
+                }
             }
+        } else {
+            if (table.sortField) {
+                sorting = table.sortField;
+                if (table.sortOrder === 1) {
+                    sorting += ' ASC';
+                } else if (table.sortOrder === -1) {
+                    sorting += ' DESC';
+                }
+            }
+
         }
 
         return sorting;

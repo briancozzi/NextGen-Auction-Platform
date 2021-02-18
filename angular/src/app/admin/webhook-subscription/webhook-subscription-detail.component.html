@@ -1,64 +1,46 @@
 <div [@routerTransition]>
-    <div class="kt-content  kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor">
-        <div class="kt-subheader kt-grid__item">
-            <div [class]="containerClass">
-                <div class="kt-subheader__main">
-                    <div class="kt-subheader__breadcrumbs">
-                        <a routerLink="/app/admin/webhook-subscriptions" routerLinkActive="active"
-                            class="kt-subheader__breadcrumbs-home">
-                            <i class="flaticon2-shelter"></i>
-                            {{"WebhookSubscriptions" | localize}}
-                        </a>
-                        <span class="kt-subheader__breadcrumbs-separator"></span>
-                        <span class="kt-subheader__breadcrumbs-link">
-                            {{"WebhookSubscriptionDetail" | localize}}
-                        </span>
-                    </div>
-                </div>
-                <div class="kt-subheader__toolbar">
-                    <div class="kt-subheader__wrapper">
-                        <span *ngIf="subscription && subscription.isActive"
-                            class="label kt-badge kt-badge--success kt-badge--inline">{{"Active"|localize}}</span>
-                        <span *ngIf="subscription && !subscription.isActive"
-                            class="label kt-badge kt-badge--dark kt-badge--inline">{{"Disabled"|localize}}</span>
-                        <div class="btn-group dropdown"
-                            *ngIf="subscription && ('Pages.Administration.WebhookSubscription.Edit' | permission) || ('Pages.Administration.WebhookSubscription.ChangeActivity' | permission)"
-                            dropdown placement="bottom right">
-                            <button dropdownToggle class="dropdown-toggle btn btn-sm btn-primary">
-                                <i class="fa fa-cog"></i><span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu  dropdown-menu-right" *dropdownMenu>
-                                <li>
-                                    <a href="javascript:;"
-                                        *ngIf="('Pages.Administration.WebhookSubscription.Edit' | permission) && subscription"
-                                        (click)="createOrEditWebhookSubscriptionModal.show(subscription.id)">{{'EditWebhookSubscription' | localize}}</a>
-                                </li>
-                                <li>
-                                    <a href="javascript:;"
-                                        *ngIf="'Pages.Administration.WebhookSubscription.ChangeActivity' | permission"
-                                        (click)="toggleActivity()">
-                                        <span *ngIf="subscription.isActive">{{'Disable' | localize}}</span>
-                                        <span *ngIf="!subscription.isActive">{{'Enable' | localize}}</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+    <div class="content d-flex flex-column flex-column-fluid">
+        <sub-header [title]="'WebhookSubscriptions' | localize" [breadcrumbs]="breadcrumbs">
+            <div role="actions">
+                <span *ngIf="subscription && subscription.isActive" class="label label-success label-inline mr-2">{{"Active"|localize}}</span>
+                <span *ngIf="subscription && !subscription.isActive" class="label label-dark label-inline mr-2">{{"Disabled"|localize}}</span>
+                <div class="btn-group dropdown"
+                     *ngIf="subscription && ('Pages.Administration.WebhookSubscription.Edit' | permission) || ('Pages.Administration.WebhookSubscription.ChangeActivity' | permission)"
+                     dropdown placement="bottom right">
+                    <button dropdownToggle class="dropdown-toggle btn btn-sm btn-primary">
+                        <i class="fa fa-cog"></i><span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right" *dropdownMenu>
+                        <li>
+                            <a href="javascript:;" class="dropdown-item"
+                               *ngIf="('Pages.Administration.WebhookSubscription.Edit' | permission) && subscription"
+                               (click)="createOrEditWebhookSubscriptionModal.show(subscription.id)">{{'EditWebhookSubscription' | localize}}</a>
+                        </li>
+                        <li>
+                            <a href="javascript:;" class="dropdown-item"
+                               *ngIf="'Pages.Administration.WebhookSubscription.ChangeActivity' | permission"
+                               (click)="toggleActivity()">
+                                <span *ngIf="subscription.isActive">{{'Disable' | localize}}</span>
+                                <span *ngIf="!subscription.isActive">{{'Enable' | localize}}</span>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
-        </div>
-        <div [class]="containerClass + ' kt-grid__item kt-grid__item--fluid'">
-            <div class="kt-portlet kt-portlet--mobile" id="portlet-detail">
-                <div class="kt-portlet__body" *ngIf="subscription">
+        </sub-header>
+
+        <div [class]="containerClass">
+            <div class="card card-custom gutter-b">
+                <div class="card-body" *ngIf="subscription">
                     <div class="form-group row">
                         <label class="col-2 col-form-label">{{'WebhookEndpoint' | localize}}</label>
-                        <div class="col-10 text-break">
+                        <div class="col-10 text-break mt-2">
                             {{subscription.webhookUri}}
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-2 col-form-label">{{"WebhookEvents"| localize}}</label>
-                        <div class="col-10 text-break">
+                        <div class="col-10 text-break mt-2">
                             <div *ngIf="subscription.webhooks">
                                 <div class="col-12" *ngFor="let webhook of subscription.webhooks">
                                     {{webhook}}
@@ -68,7 +50,7 @@
                     </div>
                     <div class="form-group row">
                         <label class="col-2 col-form-label">{{"AdditionalWebhookHeaders" | localize}}</label>
-                        <div class="col-10 text-break">
+                        <div class="col-10 text-break mt-2">
                             <div *ngIf="subscription.headers">
                                 <div class="col-12" *ngFor="let headerKey of objectKeys(subscription.headers)">
                                     "{{headerKey}}" : "{{subscription.headers[headerKey]}}"
@@ -78,40 +60,36 @@
                     </div>
                     <div class="form-group row mb-0">
                         <label class="col-2 col-form-label">{{"WebhookSecret"| localize}}</label>
-                        <div class="col-10 position-relative">
+                        <div class="col-10 position-relative mt-2">
                             <span [class.blur]="isSecretBlurActive">{{subscription.secret}}</span>
                             <button *ngIf="isSecretBlurActive"
-                                class="btn btn-sm btn-dark btn-elevate btn-elevate-air secret-view-btn"
-                                (click)="viewSecret()">{{"ViewWebhookSecret" | localize}}</button>
+                                    class="btn btn-sm btn-dark btn-elevate btn-elevate-air secret-view-btn"
+                                    (click)="viewSecret()">{{"ViewWebhookSecret" | localize}}</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="kt-portlet">
-                <div class="kt-portlet__head">
-                    <div class="kt-portlet__head-label">
-                        <h3 class="kt-portlet__head-title">
-                            {{"WebhookSendAttempts" | localize}}
-                        </h3>
-                    </div>
-                    <div class="kt-portlet__head-toolbar">
-                        <div class="kt-portlet__head-actions">
-                            <button (click)="getSendAttempts()"
+            <div class="card card-custom gutter-b">
+                <div class="card-header align-items-center border-0 mt-4">
+                    <h3 class="card-title align-items-start flex-column">
+                        <span class="font-weight-bolder text-dark">  {{"WebhookSendAttempts" | localize}}</span>
+                    </h3>
+                    <div class="card-toolbar">
+                        <button (click)="getSendAttempts()"
                                 class="btn btn-outline-brand btn-sm btn-icon btn-icon-md">
-                                <i class="flaticon2-refresh"></i>
-                            </button>
-                        </div>
+                            <i class="flaticon2-refresh"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="kt-portlet__body">
+                <div class="card-body">
                     <div class="row align-items-center">
                         <!--<Primeng-TurboTable-Start>-->
                         <div class="col primeng-datatable-container" [busyIf]="primengTableHelper.isLoading">
                             <p-table #dataTable (onLazyLoad)="getSendAttempts($event)"
-                                [value]="primengTableHelper.records"
-                                rows="{{primengTableHelper.defaultRecordsCountPerPage}}" [paginator]="false"
-                                [lazy]="true" [responsive]="primengTableHelper.isResponsive">
+                                     [value]="primengTableHelper.records"
+                                     rows="{{primengTableHelper.defaultRecordsCountPerPage}}" [paginator]="false"
+                                     [lazy]="true" [responsive]="primengTableHelper.isResponsive">
                                 <ng-template pTemplate="header">
                                     <tr>
                                         <th style="width: 100px;">{{ 'Actions' | localize}}</th>
@@ -128,21 +106,21 @@
                                     <tr>
                                         <td>
                                             <div class="btn-group dropdown"
-                                                *ngIf="subscription && ('Pages.Administration.WebhookSubscription.Edit' | permission) || ('Pages.Administration.WebhookSubscription.ChangeActivity' | permission)"
-                                                dropdown>
+                                                 *ngIf="subscription && ('Pages.Administration.WebhookSubscription.Edit' | permission) || ('Pages.Administration.WebhookSubscription.ChangeActivity' | permission)"
+                                                 dropdown>
                                                 <button dropdownToggle class="dropdown-toggle btn btn-sm btn-primary">
                                                     <i class="fa fa-cog"></i><span class="caret"></span>
                                                 </button>
                                                 <ul class="dropdown-menu" *dropdownMenu>
                                                     <li>
-                                                        <a href="javascript:;"
-                                                            *ngIf="('Pages.Administration.Webhook.ResendWebhook' | permission)"
-                                                            (click)="resend(record.id)">{{'Resend' | localize}}</a>
+                                                        <a href="javascript:;" class="dropdown-item"
+                                                           *ngIf="('Pages.Administration.Webhook.ResendWebhook' | permission)"
+                                                           (click)="resend(record.id)">{{'Resend' | localize}}</a>
                                                     </li>
                                                     <li>
-                                                        <a href="javascript:;"
-                                                            *ngIf="'Pages.Administration.WebhookSubscription.ChangeActivity' | permission"
-                                                            (click)="goToWebhookDetail(record.webhookEventId)">
+                                                        <a href="javascript:;" class="dropdown-item"
+                                                           *ngIf="'Pages.Administration.WebhookSubscription.ChangeActivity' | permission"
+                                                           (click)="goToWebhookDetail(record.webhookEventId)">
                                                             {{"ViewWebhookEvent" |localize}}
                                                         </a>
                                                     </li>
@@ -156,7 +134,7 @@
                                             {{record.webhookEventId}}
                                         </td>
                                         <td>
-                                            {{record.creationTime | momentFormat:'YYYY-MM-DD HH:mm:ss'}}
+                                            {{record.creationTime | luxonFormat:'yyyy-LL-dd HH:mm:ss'}}
                                         </td>
                                         <td style="text-align: center;">
                                             {{record.responseStatusCode }}
@@ -167,7 +145,7 @@
                                             </span>
                                             <span *ngIf="record?.response?.length > listMaxDataLength">
                                                 <button class="btn btn-outline-primary btn-sm"
-                                                    (click)="showDetailModal(record.response)">{{'ShowResponse' | localize}}</button>
+                                                        (click)="showDetailModal(record.response)">{{'ShowResponse' | localize}}</button>
                                             </span>
                                         </td>
                                         <td>
@@ -177,7 +155,7 @@
                                             <span *ngIf="record.data.length > listMaxDataLength">
                                                 <div class="d-none">{{record.data}}</div>
                                                 <button class="btn btn-outline-primary btn-sm"
-                                                    (click)="showDetailModal(record.data)">{{'ShowData' | localize}}</button>
+                                                        (click)="showDetailModal(record.data)">{{'ShowData' | localize}}</button>
                                             </span>
                                         </td>
                                     </tr>
@@ -188,9 +166,9 @@
                             </div>
                             <div class="primeng-paging-container">
                                 <p-paginator [rows]="primengTableHelper.defaultRecordsCountPerPage" #paginator
-                                    (onPageChange)="getSendAttempts($event)"
-                                    [totalRecords]="primengTableHelper.totalRecordsCount"
-                                    [rowsPerPageOptions]="primengTableHelper.predefinedRecordsCountPerPage">
+                                             (onPageChange)="getSendAttempts($event)"
+                                             [totalRecords]="primengTableHelper.totalRecordsCount"
+                                             [rowsPerPageOptions]="primengTableHelper.predefinedRecordsCountPerPage">
                                 </p-paginator>
                                 <span class="total-records-count">
                                     {{'TotalRecordsCount' | localize:primengTableHelper.totalRecordsCount}}
@@ -205,7 +183,7 @@
             </create-or-edit-webhook-subscription>
 
             <div bsModal #detailModal="bs-modal" id="detailModal" class="modal fade" tabindex="-1" role="dialog"
-                aria-labelledby="detailModal" aria-hidden="true">
+                 aria-labelledby="detailModal" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-body">

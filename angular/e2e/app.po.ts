@@ -6,7 +6,7 @@ export class BiddingPlatformPage {
     }
 
     async getUsername() {
-        return (await element(by.css('.kt-header__topbar-username')).getText()).replace('\n', '');
+        return (await element(by.css('.topbar-username')).getText()).replace('\n', '');
     }
 
     async getTenancyName() {
@@ -26,7 +26,7 @@ export class BiddingPlatformPage {
 
         await username.sendKeys('admin');
         await password.sendKeys('123qwe');
-        await element(by.className('kt-form')).submit();
+        await element(by.className('form')).submit();
     }
 
     async loginAsTenantAdmin() {
@@ -43,7 +43,7 @@ export class BiddingPlatformPage {
         await browser.sleep(1000);
 
         // select default Tenant
-        await tenantChangeBox.element(by.className('kt-switch')).click();
+        await tenantChangeBox.element(by.className('switch')).click();
         let tenancyName = element(by.id('tenancyNameInput'));
         await this.waitForItemToBeVisible(tenancyName);
         await tenancyName.sendKeys('Default');
@@ -56,6 +56,6 @@ export class BiddingPlatformPage {
 
         await username.sendKeys('admin');
         await password.sendKeys('123qwe');
-        await element(by.className('kt-form')).submit();
+        await element(by.className('form')).submit();
     }
 }

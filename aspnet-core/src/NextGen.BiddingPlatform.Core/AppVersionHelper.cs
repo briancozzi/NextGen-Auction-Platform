@@ -13,7 +13,7 @@ namespace NextGen.BiddingPlatform
         /// Gets current version of the application.
         /// It's also shown in the web page.
         /// </summary>
-        public const string Version = "8.5.0.0";
+        public const string Version = "10.2.0";
 
         /// <summary>
         /// Gets release (last build) date of the application.

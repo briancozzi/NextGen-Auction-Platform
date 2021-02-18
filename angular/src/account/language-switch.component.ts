@@ -1,10 +1,11 @@
-import { Component, Injector, OnInit } from '@angular/core';
-import { AppComponentBase } from '@shared/common/app-component-base';
-import * as _ from 'lodash';
+import {Component, Injector, OnInit} from '@angular/core';
+import {AppComponentBase} from '@shared/common/app-component-base';
+import { filter as _filter } from 'lodash-es';
 
 @Component({
     selector: 'language-switch',
-    templateUrl: './language-switch.component.html'
+    templateUrl: './language-switch.component.html',
+    styles: ['.language-switch-btn { width: auto; height: auto; }']
 })
 export class LanguageSwitchComponent extends AppComponentBase implements OnInit {
 
@@ -16,7 +17,7 @@ export class LanguageSwitchComponent extends AppComponentBase implements OnInit 
     }
 
     ngOnInit(): void {
-        this.languages = _.filter(abp.localization.languages, l => (<any>l).isDisabled === false);
+        this.languages = _filter(abp.localization.languages, l => (<any>l).isDisabled === false);
         this.currentLanguage = abp.localization.currentLanguage;
     }
 

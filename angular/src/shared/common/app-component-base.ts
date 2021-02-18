@@ -7,7 +7,7 @@ import {
     NotifyService,
     SettingService
 } from 'abp-ng2-module';
-import { Injector } from '@angular/core';
+import { Component, Injector } from '@angular/core';
 import { AppConsts } from '@shared/AppConsts';
 import { AppUrlService } from '@shared/common/nav/app-url.service';
 import { AppSessionService } from '@shared/common/session/app-session.service';
@@ -112,14 +112,14 @@ export abstract class AppComponentBase {
 
     get containerClass(): string {
         if (this.appSession.theme.baseSettings.layout.layoutType === 'fluid') {
-            return 'kt-container kt-container--fluid';
+            return 'container-fluid';
         }
 
-        return 'kt-container';
+        return 'container';
     }
 
     showMainSpinner(text?: string): void {
-        this.ngxSpinnerTextService.currentText = text;
+        this.ngxSpinnerTextService.setText(text);
         this.spinnerService.show();
     }
 

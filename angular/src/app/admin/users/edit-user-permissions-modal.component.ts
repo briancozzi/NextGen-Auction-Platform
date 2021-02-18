@@ -1,7 +1,7 @@
 import { Component, Injector, ViewChild } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { EntityDtoOfInt64, UpdateUserPermissionsInput, UserServiceProxy } from '@shared/service-proxies/service-proxies';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { PermissionTreeComponent } from '../shared/permission-tree.component';
 import { finalize } from 'rxjs/operators';
 
@@ -11,7 +11,7 @@ import { finalize } from 'rxjs/operators';
 })
 export class EditUserPermissionsModalComponent extends AppComponentBase {
 
-    @ViewChild('editModal', {static: true}) modal: ModalDirective;
+    @ViewChild('editModal', { static: true }) modal: ModalDirective;
     @ViewChild('permissionTree') permissionTree: PermissionTreeComponent;
 
     saving = false;
@@ -59,13 +59,16 @@ export class EditUserPermissionsModalComponent extends AppComponentBase {
         input.id = this.userId;
 
         this.resettingPermissions = true;
-        this._userService.resetUserSpecificPermissions(input).subscribe(() => {
-            this.notify.info(this.l('ResetSuccessfully'));
-            this._userService.getUserPermissionsForEdit(this.userId).subscribe(result => {
-                this.permissionTree.editData = result;
-            });
-        }, undefined, () => {
-            this.resettingPermissions = false;
+        this._userService.resetUserSpecificPermissions(input).subscribe({
+            next: () => {
+                this.notify.info(this.l('ResetSuccessfully'));
+                this._userService.getUserPermissionsForEdit(this.userId).subscribe(result => {
+                    this.permissionTree.editData = result;
+                });
+            },
+            complete: () => {
+                this.resettingPermissions = false;
+            }
         });
     }
 

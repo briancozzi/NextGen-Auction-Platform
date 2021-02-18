@@ -17,11 +17,15 @@ function processInputDefinition(input) {
     var result = [];
     for (var i = 0; i < input.length; i++) {
         var url = input[i];
+        var longPath = '';
         if (url.startsWith('!')) {
-            result.push('!' + path.resolve(__dirname, url.substring(1)));
+            longPath = '!' + path.resolve(__dirname, url.substring(1));
         } else {
-            result.push(path.resolve(__dirname, url));
+            longPath = path.resolve(__dirname, url);
         }
+
+        longPath = longPath.replace(/\\/g, '/');
+        result.push(longPath);
     }
 
     return result;
@@ -91,7 +95,7 @@ function createStyleBundles() {
 function createStyleBundle(style) {
 
     var bundleName = getFileNameFromPath(style);
-    var bundlePath = getPathWithoutFileNameFromPath(style);    
+    var bundlePath = getPathWithoutFileNameFromPath(style);
 
     var stream = gulp.src(styleEntries[style])
         .pipe(less({ math: 'parens-division' }));

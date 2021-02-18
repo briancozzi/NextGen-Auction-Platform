@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-12">
+    <div class="col-12 p-3">
         <button *ngIf="('Pages.Administration.OrganizationUnits.ManageRoles' | permission) && organizationUnit" (click)="openAddRoleModal()" class="btn btn-primary float-right mb-3">
             <i class="fa fa-plus"></i> {{"AddRole" | localize}}
         </button>
@@ -9,6 +9,7 @@
             <!--<Primeng-TurboTable-Start>-->
             <div class="primeng-datatable-container" [busyIf]="primengTableHelper.isLoading" [hidden]="!organizationUnit">
                 <p-table #dataTable
+                         sortMode="multiple"
                          (onLazyLoad)="getOrganizationUnitRoles($event)"
                          [value]="primengTableHelper.records"
                          rows="{{primengTableHelper.defaultRecordsCountPerPage}}"
@@ -39,12 +40,12 @@
                                 </button>
                             </td>
                             <td>
-                                <span class="ui-column-title">{{'Role' | localize}}</span>
+                                <span class="p-column-title">{{'Role' | localize}}</span>
                                 {{record.displayName}}
                             </td>
                             <td>
-                                <span class="ui-column-title">{{'AddedTime' | localize}}</span>
-                                {{record.addedTime | momentFormat:'L'}}
+                                <span class="p-column-title">{{'AddedTime' | localize}}</span>
+                                {{record.addedTime | luxonFormat:'F'}}
                             </td>
                         </tr>
                     </ng-template>

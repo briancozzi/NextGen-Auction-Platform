@@ -19,6 +19,8 @@ namespace NextGen.BiddingPlatform.Types
 
         public UserType()
         {
+            Name = "UserType";
+            
             Field(x => x.Id);
             Field(x => x.Name);
             Field(x => x.Surname);
@@ -39,6 +41,8 @@ namespace NextGen.BiddingPlatform.Types
         {
             public RoleType()
             {
+                Name = "UserRoleType";
+                
                 Field(x => x.Id);
                 Field(x => x.Name);
                 Field(x => x.DisplayName);
@@ -49,6 +53,8 @@ namespace NextGen.BiddingPlatform.Types
         {
             public OrganizationUnitType()
             {
+                Name = "UserOrganizationUnitType";
+                
                 Field(x => x.Id);
                 Field(x => x.Code);
                 Field(x => x.DisplayName);

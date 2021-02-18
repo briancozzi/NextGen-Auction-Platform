@@ -13,6 +13,7 @@
                 <div class="primeng-datatable-container"
                      [busyIf]="primengTableHelper.isLoading">
                     <p-table #dataTable
+                             sortMode="multiple"
                              (onLazyLoad)="getLinkedUsers($event)"
                              [value]="primengTableHelper.records"
                              rows="{{primengTableHelper.defaultRecordsCountPerPage}}"
@@ -41,7 +42,7 @@
                                     </button>
                                 </td>
                                 <td style="width: 65%">
-                                    <span class="ui-column-title"> {{'UserName' | localize}}</span>
+                                    <span class="p-column-title"> {{'UserName' | localize}}</span>
                                     {{getShownLinkedUserName(record)}}
                                 </td>
                                 <td style="width:15%">
@@ -70,7 +71,7 @@
                 <!--<Primeng-TurboTable-End>-->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default pull-right" (click)="close()">{{"Close" | localize}}</button>
+                <button type="button" class="btn btn-light-primary font-weight-bold pull-right" (click)="close()">{{"Close" | localize}}</button>
             </div>
         </div>
     </div>

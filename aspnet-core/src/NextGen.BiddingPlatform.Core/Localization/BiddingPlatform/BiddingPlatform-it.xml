@@ -241,7 +241,6 @@
     <text name="Language">Lingua</text>
     <text name="Flag">Bandiera</text>
     <text name="SetAsDefaultLanguage">Imposta come lingua di default</text>
-    <text name="InvlalidLanguageCode">Codice lingua non valido.</text>
     <text name="EditLanguage">Modifica lingua</text>
     <text name="ChangeTexts">Modifica testi.</text>
     <text name="TargetValue">Valore di destinazione</text>

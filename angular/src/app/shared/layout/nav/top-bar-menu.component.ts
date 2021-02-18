@@ -1,5 +1,5 @@
 import { PermissionCheckerService } from 'abp-ng2-module';
-import { Component, Injector, OnInit, ViewEncapsulation, Input, Renderer2 } from '@angular/core';
+import { Component, Injector, OnInit, ViewEncapsulation } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { AppMenu } from './app-menu';
@@ -8,6 +8,7 @@ import * as objectPath from 'object-path';
 import { filter } from 'rxjs/operators';
 import { MenuOptions } from '@metronic/app/core/_base/layout/directives/menu.directive';
 import { OffcanvasOptions } from '@metronic/app/core/_base/layout/directives/offcanvas.directive';
+import { ThemeAssetContributorFactory } from '@shared/helpers/ThemeAssetContributorFactory';
 
 @Component({
     templateUrl: './top-bar-menu.component.html',
@@ -16,71 +17,48 @@ import { OffcanvasOptions } from '@metronic/app/core/_base/layout/directives/off
 })
 export class TopBarMenuComponent extends AppComponentBase implements OnInit {
 
-    @Input() isTabMenuUsed?: boolean;
-
     menu: AppMenu = null;
     currentRouteUrl: any = '';
     menuDepth: 0;
+    menuWrapperStyle = '';
 
     menuOptions: MenuOptions = {
         submenu: {
             desktop: 'dropdown',
             tablet: 'accordion',
-            mobile: 'accordion'
+            mobile: 'accordion',
         },
+
         accordion: {
-            slideSpeed: 200, // accordion toggle slide speed in milliseconds
-            expandAll: false // allow having multiple expanded accordions in the menu
+            expandAll: false,
         }
     };
 
     offcanvasOptions: OffcanvasOptions = {
         overlay: true,
-        baseClass: 'kt-header-menu-wrapper',
+        baseClass: 'header-menu-wrapper',
         closeBy: 'kt_header_menu_mobile_close_btn',
-        toggleBy: {
-            target: 'kt_header_mobile_toggler',
-            state: 'kt-header-mobile__toolbar-toggler--active'
-        }
+        toggleBy: 'kt_header_mobile_toggle'
     };
 
     constructor(
         injector: Injector,
         private router: Router,
         public permission: PermissionCheckerService,
-        private _appNavigationService: AppNavigationService,
-        private render: Renderer2) {
+        private _appNavigationService: AppNavigationService) {
         super(injector);
     }
 
     ngOnInit() {
         this.menu = this._appNavigationService.getMenu();
         this.currentRouteUrl = this.router.url;
+        this.menuWrapperStyle = ThemeAssetContributorFactory.getCurrent().getMenuWrapperStyle();
 
         this.router.events
             .pipe(filter(event => event instanceof NavigationEnd))
             .subscribe(event => {
                 this.currentRouteUrl = this.router.url;
             });
-    }
-
-    /**
-	 * Use for fixed left aside menu, to show menu on mouseenter event.
-	 * @param e Event
-	 */
-    mouseEnter(e: Event) {
-        // check if the left aside menu is fixed
-        if (!document.body.classList.contains('kt-menu__item--hover')) {
-            this.render.addClass(document.body, 'kt-menu__item--hover');
-        }
-    }
-
-    /**
-     * Mouse Leave event
-     * @param event: MouseEvent
-     */
-    mouseLeave(event: MouseEvent) {
-        this.render.removeClass(event.target, 'kt-menu__item--hover');
     }
 
     showMenuItem(menuItem): boolean {
@@ -90,35 +68,30 @@ export class TopBarMenuComponent extends AppComponentBase implements OnInit {
     getItemCssClasses(item, parentItem, depth) {
         let isRootLevel = item && !parentItem;
 
-        let cssClasses = 'kt-menu__item kt-menu__item--rel';
+        let cssClasses = 'menu-item menu-item-rel';
 
-        if (objectPath.get(item, 'items.length') || this.isRootTabMenuItemWithoutChildren(item, isRootLevel)) {
-            cssClasses += ' kt-menu__item--submenu';
+        if (objectPath.get(item, 'items.length')) {
+            cssClasses += ' menu-item-submenu';
         }
 
         if (objectPath.get(item, 'icon-only')) {
-            cssClasses += ' kt-menu__item--icon-only';
+            cssClasses += ' menu-item-icon-only';
         }
 
         if (this.isMenuItemIsActive(item)) {
-            cssClasses += ' kt-menu__item--active';
+            cssClasses += ' menu-item-active';
         }
 
-        if (this.isTabMenuUsed && isRootLevel) {
-            cssClasses += ' kt-menu__item--tabs';
-        }
-
-        if (this.isTabMenuUsed && !isRootLevel && item.items.length) {
-            cssClasses += ' kt-menu__item--submenu kt-menu__item--rel';
+        if (item.items.length) {
+            cssClasses += ' menu-item-submenu menu-item-rel';
             if (depth && depth === 1) {
-                cssClasses += ' kt-menu__item--submenu-tabs kt-menu__item--open-dropdown';
+                cssClasses += ' menu-item-open-dropdown';
             }
-
-        } else if (!this.isTabMenuUsed && item.items.length) {
+        } else if (item.items.length) {
             if (depth && depth >= 1) {
-                cssClasses += ' kt-menu__item--submenu';
+                cssClasses += ' menu-item-submenu';
             } else {
-                cssClasses += ' kt-menu__item--rel';
+                cssClasses += ' menu-item-rel';
             }
         }
 
@@ -127,33 +100,18 @@ export class TopBarMenuComponent extends AppComponentBase implements OnInit {
 
     getAnchorItemCssClasses(item, parentItem): string {
         let isRootLevel = item && !parentItem;
-        let cssClasses = 'kt-menu__link';
+        let cssClasses = 'menu-link';
 
-        if ((this.isTabMenuUsed && isRootLevel) || item.items.length) {
-            cssClasses += ' kt-menu__toggle';
+        if (isRootLevel || item.items.length) {
+            cssClasses += ' menu-toggle';
         }
 
         return cssClasses;
     }
 
     getSubmenuCssClasses(item, parentItem, depth): string {
-        let cssClasses = 'kt-menu__submenu kt-menu__submenu--classic';
-
-        if (this.isTabMenuUsed) {
-            if (depth === 0) {
-                cssClasses += ' kt-menu__submenu--tabs';
-            }
-
-            cssClasses += ' kt-menu__submenu--' + (depth >= 2 ? 'right' : 'left');
-        } else {
-            cssClasses += ' kt-menu__submenu--' + (depth >= 1 ? 'right' : 'left');
-        }
-
-        return cssClasses;
-    }
-
-    isRootTabMenuItemWithoutChildren(item: any, isRootLevel: boolean): boolean {
-        return this.isTabMenuUsed && isRootLevel && !item.items.length;
+        let cssClasses = 'menu-submenu menu-submenu-classic';
+        return cssClasses += ' menu-submenu-' + (depth >= 1 ? 'right' : 'left');
     }
 
     isMenuItemIsActive(item): boolean {
@@ -181,15 +139,10 @@ export class TopBarMenuComponent extends AppComponentBase implements OnInit {
     }
 
     getItemAttrSubmenuToggle(menuItem, parentItem, depth) {
-        let isRootLevel = menuItem && !parentItem;
-        if (isRootLevel && this.isTabMenuUsed) {
-            return 'tab';
+        if (depth && depth >= 1) {
+            return 'hover';
         } else {
-            if (depth && depth >= 1) {
-                return 'hover';
-            } else {
-                return 'click';
-            }
+            return 'click';
         }
     }
 

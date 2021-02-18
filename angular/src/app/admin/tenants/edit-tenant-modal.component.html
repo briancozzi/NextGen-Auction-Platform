@@ -13,7 +13,7 @@
                     </h5>
                     <button type="button" class="close" (click)="close()" [attr.aria-label]="l('Close')"
                         [disabled]="saving">
-                        <span aria-hidden="true">&times;</span>
+                         <i aria-hidden="true" class="ki ki-close"></i>
                     </button>
                 </div>
 
@@ -42,18 +42,18 @@
                     <div class="form-group">
                         <label for="edition">{{"Edition" | localize}}</label>
                         <select id="edition" name="edition" class="form-control" [(ngModel)]="tenant.editionId"
-                            (change)="onEditionChange($event)">
+                            (change)="onEditionChange()">
                             <option *ngFor="let edition of editions" [value]="edition.value">{{edition.displayText}}
                             </option>
                         </select>
                     </div>
 
-                    <div [hidden]="!isSubscriptionFieldsVisible" class="kt-checkbox-list">
-                        <label class="kt-checkbox">
+                    <div [hidden]="!isSubscriptionFieldsVisible" class="checkbox-list">
+                        <label class="checkbox">
                             <input id="CreateTenant_IsUnlimited" type="checkbox" name="IsUnlimited"
                                 [(ngModel)]="isUnlimited" (ngModelChange)="onUnlimitedChange()" />
-                            {{"UnlimitedTimeSubscription" | localize}}
                             <span></span>
+                            {{"UnlimitedTimeSubscription" | localize}}
                         </label>
                     </div>
 
@@ -61,35 +61,35 @@
                         [ngClass]="{'has-error': !subscriptionEndDateUtcIsValid }">
                         <label for="SubscriptionEndDateUtc">{{"SubscriptionEndDateUtc" | localize}}</label>
                         <input id="SubscriptionEndDateUtc" type="datetime" #SubscriptionEndDateUtc
-                            name="SubscriptionEndDateUtc" class="form-control" bsDatepicker datePickerMomentModifier
+                            name="SubscriptionEndDateUtc" class="form-control" bsDatepicker datePickerLuxonModifier
                             (dateChange)="subscriptionEndDateChange($event)" [(date)]="tenant.subscriptionEndDateUtc"
                             [bsConfig]="{ adaptivePosition: true }" [required]="!isUnlimited" />
                     </div>
 
-                    <div [hidden]="isUnlimited ||!isSubscriptionFieldsVisible" class="kt-checkbox-list">
-                        <label class="kt-checkbox">
+                    <div [hidden]="isUnlimited ||!isSubscriptionFieldsVisible" class="checkbox-list">
+                        <label class="checkbox">
                             <input id="CreateTenant_IsInTrialPeriod" type="checkbox" name="IsInTrialPeriod"
                                 [disabled]="selectedEditionIsFree()" [(ngModel)]="tenant.isInTrialPeriod">
-                            {{"IsInTrialPeriod" | localize}}
                             <span></span>
+                            {{"IsInTrialPeriod" | localize}}
                         </label>
                     </div>
 
-                    <div class="kt-checkbox-list">
-                        <label class="kt-checkbox">
+                    <div class="checkbox-list">
+                        <label class="checkbox">
                             <input id="EditTenant_IsActive" type="checkbox" name="IsActive"
                                 [(ngModel)]="tenant.isActive">
-                            {{"Active" | localize}}
                             <span></span>
+                            {{"Active" | localize}}
                         </label>
                     </div>
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" [disabled]="saving" class="btn btn-secondary"
+                    <button type="button" [disabled]="saving" class="btn btn-light-primary font-weight-bold"
                         (click)="close()">{{"Cancel" | localize}}</button>
                     <button type="submit" [buttonBusy]="saving" [busyText]="l('SavingWithThreeDot')"
-                        class="btn btn-primary"
+                        class="btn btn-primary font-weight-bold"
                         [disabled]="!tenantEditForm.form.valid || saving || !subscriptionEndDateUtcIsValid"><i
                             class="fa fa-save"></i> <span>{{"Save" | localize}}</span></button>
                 </div>

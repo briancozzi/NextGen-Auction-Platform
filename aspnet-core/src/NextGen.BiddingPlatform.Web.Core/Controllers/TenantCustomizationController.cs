@@ -1,3 +1,4 @@
+using System;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Net;
@@ -64,7 +65,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                     throw new UserFriendlyException(L("File_Invalid_Type_Error"));
                 }
 
-                var logoObject = new BinaryObject(AbpSession.GetTenantId(), fileBytes);
+                var logoObject = new BinaryObject(AbpSession.GetTenantId(), fileBytes, $"Logo {DateTime.UtcNow}");
                 await _binaryObjectManager.SaveAsync(logoObject);
 
                 var tenant = await _tenantManager.GetByIdAsync(AbpSession.GetTenantId());
@@ -104,7 +105,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                     fileBytes = stream.GetAllBytes();
                 }
 
-                var cssFileObject = new BinaryObject(AbpSession.GetTenantId(), fileBytes);
+                var cssFileObject = new BinaryObject(AbpSession.GetTenantId(), fileBytes, $"Custom Css {cssFile.FileName} {DateTime.UtcNow}");
                 await _binaryObjectManager.SaveAsync(cssFileObject);
 
                 var tenant = await _tenantManager.GetByIdAsync(AbpSession.GetTenantId());

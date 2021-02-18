@@ -3,7 +3,7 @@ using Abp.Application.Features;
 using Abp.Auditing;
 using Abp.Authorization;
 using Abp.Authorization.Users;
-using Abp.DynamicEntityParameters;
+using Abp.DynamicEntityProperties;
 using Abp.EntityHistory;
 using Abp.Localization;
 using Abp.Notifications;
@@ -24,7 +24,7 @@ using NextGen.BiddingPlatform.Authorization.Users.Importing.Dto;
 using NextGen.BiddingPlatform.Authorization.Users.Profile.Dto;
 using NextGen.BiddingPlatform.Chat;
 using NextGen.BiddingPlatform.Chat.Dto;
-using NextGen.BiddingPlatform.DynamicEntityParameters.Dto;
+using NextGen.BiddingPlatform.DynamicEntityProperties.Dto;
 using NextGen.BiddingPlatform.Editions;
 using NextGen.BiddingPlatform.Editions.Dto;
 using NextGen.BiddingPlatform.Friendships;
@@ -74,6 +74,8 @@ namespace NextGen.BiddingPlatform
             configuration.CreateMap<RoleEditDto, Role>().ReverseMap();
             configuration.CreateMap<Role, RoleListDto>();
             configuration.CreateMap<UserRole, UserListRoleDto>();
+
+            
 
             //Edition
             configuration.CreateMap<EditionEditDto, SubscribableEdition>().ReverseMap();
@@ -148,17 +150,17 @@ namespace NextGen.BiddingPlatform
 
             configuration.CreateMap<WebhookSendAttempt, GetAllSendAttemptsOfWebhookEventOutput>();
 
-            configuration.CreateMap<DynamicParameter, DynamicParameterDto>().ReverseMap();
-            configuration.CreateMap<DynamicParameterValue, DynamicParameterValueDto>().ReverseMap();
-            configuration.CreateMap<EntityDynamicParameter, EntityDynamicParameterDto>()
-                .ForMember(dto => dto.DynamicParameterName,
-                    options => options.MapFrom(entity => entity.DynamicParameter.ParameterName));
-            configuration.CreateMap<EntityDynamicParameterDto, EntityDynamicParameter>();
+            configuration.CreateMap<DynamicProperty, DynamicPropertyDto>().ReverseMap();
+            configuration.CreateMap<DynamicPropertyValue, DynamicPropertyValueDto>().ReverseMap();
+            configuration.CreateMap<DynamicEntityProperty, DynamicEntityPropertyDto>()
+                .ForMember(dto => dto.DynamicPropertyName,
+                    options => options.MapFrom(entity => entity.DynamicProperty.DisplayName ?? entity.DynamicProperty.PropertyName));
+            configuration.CreateMap<DynamicEntityPropertyDto, DynamicEntityProperty>();
 
-            configuration.CreateMap<EntityDynamicParameterValue, EntityDynamicParameterValueDto>().ReverseMap();
+            configuration.CreateMap<DynamicEntityPropertyValue, DynamicEntityPropertyValueDto>().ReverseMap();
+            
             //User Delegations
             configuration.CreateMap<CreateUserDelegationDto, UserDelegation>();
-
 
             /* ADD YOUR OWN CUSTOM AUTOMAPPER MAPPINGS HERE */
         }

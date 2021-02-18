@@ -1,23 +1,20 @@
 import { AfterViewChecked, Component, ElementRef, EventEmitter, Injector, Output, ViewChild } from '@angular/core';
 import { AppConsts } from '@shared/AppConsts';
 import { AppComponentBase } from '@shared/common/app-component-base';
-import { CreateOrUpdateUserInput, OrganizationUnitDto, PasswordComplexitySetting, ProfileServiceProxy, UserEditDto, UserRoleDto, UserServiceProxy } from '@shared/service-proxies/service-proxies';
-import { ModalDirective } from 'ngx-bootstrap';
+import { CreateOrUpdateUserInput, OrganizationUnitDto, PasswordComplexitySetting, ProfileServiceProxy, UserEditDto, UserRoleDto, UserServiceProxy, GetUserForEditOutput } from '@shared/service-proxies/service-proxies';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { IOrganizationUnitsTreeComponentData, OrganizationUnitsTreeComponent } from '../shared/organization-unit-tree.component';
-import * as _ from 'lodash';
+import { map as _map, filter as _filter } from 'lodash-es';
 import { finalize } from 'rxjs/operators';
 
 @Component({
     selector: 'createOrEditUserModal',
     templateUrl: './create-or-edit-user-modal.component.html',
-    styles: [`.user-edit-dialog-profile-image {
-             margin-bottom: 20px;
-        }`
-    ]
+    styleUrls: ['create-or-edit-user-modal.component.less']
 })
 export class CreateOrEditUserModalComponent extends AppComponentBase {
 
-    @ViewChild('createOrEditModal', {static: true}) modal: ModalDirective;
+    @ViewChild('createOrEditModal', { static: true }) modal: ModalDirective;
     @ViewChild('organizationUnitTree') organizationUnitTree: OrganizationUnitsTreeComponent;
 
     @Output() modalSave: EventEmitter<any> = new EventEmitter<any>();
@@ -63,7 +60,7 @@ export class CreateOrEditUserModalComponent extends AppComponentBase {
             this.allOrganizationUnits = userResult.allOrganizationUnits;
             this.memberedOrganizationUnits = userResult.memberedOrganizationUnits;
 
-            this.getProfilePicture(userResult.profilePictureId);
+            this.getProfilePicture(userId);
 
             if (userId) {
                 this.active = true;
@@ -110,19 +107,19 @@ export class CreateOrEditUserModalComponent extends AppComponentBase {
         this.passwordComplexityInfo += '</ul>';
     }
 
-    getProfilePicture(profilePictureId: string): void {
-        if (!profilePictureId) {
+    getProfilePicture(userId: number): void {
+        if (!userId) {
             this.profilePicture = this.appRootUrl() + 'assets/common/images/default-profile-picture.png';
-        } else {
-            this._profileService.getProfilePictureById(profilePictureId).subscribe(result => {
-
-                if (result && result.profilePicture) {
-                    this.profilePicture = 'data:image/jpeg;base64,' + result.profilePicture;
-                } else {
-                    this.profilePicture = this.appRootUrl() + 'assets/common/images/default-profile-picture.png';
-                }
-            });
+            return;
         }
+
+        this._profileService.getProfilePictureByUser(userId).subscribe(result => {
+            if (result && result.profilePicture) {
+                this.profilePicture = 'data:image/jpeg;base64,' + result.profilePicture;
+            } else {
+                this.profilePicture = this.appRootUrl() + 'assets/common/images/default-profile-picture.png';
+            }
+        });
     }
 
     onShown(): void {
@@ -141,8 +138,8 @@ export class CreateOrEditUserModalComponent extends AppComponentBase {
         input.setRandomPassword = this.setRandomPassword;
         input.sendActivationEmail = this.sendActivationEmail;
         input.assignedRoleNames =
-            _.map(
-                _.filter(this.roles, { isAssigned: true, inheritedFromOrganizationUnit: false }), role => role.roleName
+            _map(
+                _filter(this.roles, { isAssigned: true, inheritedFromOrganizationUnit: false }), role => role.roleName
             );
 
         input.organizationUnits = this.organizationUnitTree.getSelectedOrganizations();
@@ -164,6 +161,14 @@ export class CreateOrEditUserModalComponent extends AppComponentBase {
     }
 
     getAssignedRoleCount(): number {
-        return _.filter(this.roles, { isAssigned: true }).length;
+        return _filter(this.roles, { isAssigned: true }).length;
     }
+
+    isSMTPSettingsProvided(): boolean {
+        return !(this.s('Abp.Net.Mail.DefaultFromAddress') === '' ||
+            this.s('Abp.Net.Mail.Smtp.Host') === '' ||
+            this.s('Abp.Net.Mail.Smtp.UserName') === '' ||
+            this.s('Abp.Net.Mail.Smtp.Password') === '');
+    }
+
 }

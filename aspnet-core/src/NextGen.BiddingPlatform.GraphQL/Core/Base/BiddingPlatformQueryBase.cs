@@ -6,6 +6,7 @@ using Abp.Authorization;
 using Abp.Dependency;
 using Abp.Domain.Uow;
 using AutoMapper;
+using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
@@ -41,13 +42,13 @@ namespace NextGen.BiddingPlatform.Core.Base
         }
 
         [UnitOfWork]
-        protected virtual async Task<TResult> InternalResolve(ResolveFieldContext<object> context)
+        protected virtual async Task<TResult> InternalResolve(IResolveFieldContext context)
         {
             //you can add your custom logic here before the original Resolve method.
             return await Resolve(context);
         }
 
-        protected abstract Task<TResult> Resolve(ResolveFieldContext<object> context);
+        public abstract Task<TResult> Resolve(IResolveFieldContext context);
 
         public FieldType GetFieldType()
         {

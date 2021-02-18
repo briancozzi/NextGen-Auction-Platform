@@ -1,7 +1,7 @@
 import { Component, OnInit, Injector } from '@angular/core';
 import { TenantDashboardServiceProxy } from '@shared/service-proxies/service-proxies';
 import { DashboardChartBase } from '../dashboard-chart-base';
-import { WidgetComponentBase } from '../widget-component-base';
+import { WidgetComponentBaseComponent } from '../widget-component-base';
 
 
 class DashboardTopStats extends DashboardChartBase {
@@ -30,7 +30,7 @@ class DashboardTopStats extends DashboardChartBase {
   templateUrl: './widget-top-stats.component.html',
   styleUrls: ['./widget-top-stats.component.css']
 })
-export class WidgetTopStatsComponent extends WidgetComponentBase implements OnInit {
+export class WidgetTopStatsComponent extends WidgetComponentBaseComponent implements OnInit {
 
   dashboardTopStats: DashboardTopStats;
 

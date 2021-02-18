@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Abp.AspNetCore.Mvc.Authorization;
@@ -48,7 +49,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                         fileBytes = stream.GetAllBytes();
                     }
 
-                    var fileObject = new BinaryObject(AbpSession.TenantId, fileBytes);
+                    var fileObject = new BinaryObject(AbpSession.TenantId, fileBytes, $"Demo ui, uploaded file {DateTime.UtcNow}");
                     await _binaryObjectManager.SaveAsync(fileObject);
 
                     filesOutput.Add(new UploadFileOutput

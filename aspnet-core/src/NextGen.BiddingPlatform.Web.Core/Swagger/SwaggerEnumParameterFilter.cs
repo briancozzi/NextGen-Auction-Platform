@@ -21,11 +21,11 @@ namespace NextGen.BiddingPlatform.Web.Swagger
             else if (type.IsArray || (type.IsGenericType && type.GetInterfaces().Contains(typeof(IEnumerable))))
             {
                 var itemType = type.GetElementType() ?? type.GenericTypeArguments.First();
-                AddEnumSpec(parameter, itemType, context);
+                AddEnumSpec(itemType, context);
             }
         }
 
-        private static void AddEnumSpec(OpenApiParameter parameter, Type type, ParameterFilterContext context)
+        private static void AddEnumSpec(Type type, ParameterFilterContext context)
         {
             var schema = context.SchemaRepository.Schemas.GetOrAdd($"#/definitions/{type.Name}", () =>
                 context.SchemaGenerator.GenerateSchema(type, context.SchemaRepository)
@@ -35,8 +35,6 @@ namespace NextGen.BiddingPlatform.Web.Swagger
             {
                 return;
             }
-
-            parameter.Schema = schema;
 
             var enumNames = new OpenApiArray();
             enumNames.AddRange(Enum.GetNames(type).Select(_ => new OpenApiString(_)));

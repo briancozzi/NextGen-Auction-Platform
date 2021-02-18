@@ -3,8 +3,8 @@ import { Component, EventEmitter, Injector, Output, ViewChild } from '@angular/c
 import { LinkedAccountService } from '@app/shared/layout/linked-account.service';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { LinkedUserDto, UnlinkUserInput, UserLinkServiceProxy } from '@shared/service-proxies/service-proxies';
-import { ModalDirective } from 'ngx-bootstrap';
-import { LazyLoadEvent } from 'primeng/public_api';
+import { ModalDirective } from 'ngx-bootstrap/modal';
+import { LazyLoadEvent } from 'primeng/api';
 import { Paginator } from 'primeng/paginator';
 import { Table } from 'primeng/table';
 import { LinkAccountModalComponent } from './link-account-modal.component';

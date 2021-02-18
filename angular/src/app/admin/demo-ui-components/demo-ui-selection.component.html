@@ -1,13 +1,13 @@
-<div class="kt-portlet">
-    <div class="kt-portlet__head">
-        <div class="kt-portlet__head-label">
-            <h3 class="kt-portlet__head-title">
-                Prime NG Autocomplete
-            </h3>
-        </div>
+<div class="card card-custom gutter-b">
+    <div class="card-header align-items-center border-0">
+        <h3 class="card-title align-items-start flex-column">
+            <span class="font-weight-bolder text-dark">
+                 {{"Prime NG Autocomplete" | localize}}
+            </span>
+        </h3>
     </div>
-    <div class="kt-portlet__body">
-        <form role="form" class="kt-form">
+    <div class="card-body">
+        <form role="form" class="form">
             <div class="form-group row">
                 <label for="SingleSelectInput" class="col-lg-12">Single select</label>
                 <div class="col-lg-10 col-md-9 col-sm-8">
@@ -24,7 +24,8 @@
                     </p-autoComplete>
                 </div>
                 <div class="col-lg-2 col-md-3 col-sm-4">
-                    <button class="btn btn-primary" (click)="submitSelectedCountry()" type="button">{{"Submit" | localize}}</button>
+                    <button class="btn btn-primary" (click)="submitSelectedCountry()"
+                            type="button">{{"Submit" | localize}}</button>
                 </div>
             </div>
             <div class="form-group row">
@@ -44,7 +45,8 @@
                     </p-autoComplete>
                 </div>
                 <div class="col-lg-2 col-md-3 col-sm-4">
-                    <button class="btn btn-primary" (click)="submitSelectedCountries()" type="button">{{"Submit" | localize}}</button>
+                    <button class="btn btn-primary" (click)="submitSelectedCountries()"
+                            type="button">{{"Submit" | localize}}</button>
                 </div>
             </div>
         </form>

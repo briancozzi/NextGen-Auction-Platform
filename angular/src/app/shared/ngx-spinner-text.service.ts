@@ -1,8 +1,16 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class NgxSpinnerTextService {
-  currentText = '';
+    private currentText = '';
+
+    public getText(): string {
+        return this.currentText;
+    }
+
+    public setText(text: string): void {
+        this.currentText = text;
+    }
 }

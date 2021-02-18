@@ -1,26 +1,29 @@
 import { Component, OnInit, ElementRef, ViewChild, Injector, OnDestroy } from '@angular/core';
 import { HostDashboardServiceProxy, GetEditionTenantStatisticsOutput } from '@shared/service-proxies/service-proxies';
-import * as moment from 'moment';
-import * as _ from 'lodash';
-import { WidgetComponentBase } from '../widget-component-base';
+import { DateTime } from 'luxon';
+import { filter as _filter } from 'lodash-es';
+import { WidgetComponentBaseComponent } from '../widget-component-base';
+import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 
 @Component({
   selector: 'app-widget-edition-statistics',
   templateUrl: './widget-edition-statistics.component.html',
   styleUrls: ['./widget-edition-statistics.component.css']
 })
-export class WidgetEditionStatisticsComponent extends WidgetComponentBase implements OnInit, OnDestroy {
+export class WidgetEditionStatisticsComponent extends WidgetComponentBaseComponent implements OnInit, OnDestroy {
 
   @ViewChild('EditionStatisticsChart', { static: true }) editionStatisticsChart: ElementRef;
 
-  selectedDateRange: moment.Moment[] = [moment().add(-7, 'days').startOf('day'), moment().endOf('day')];
+  selectedDateRange: DateTime[] = [this._dateTimeService.getStartOfDayMinusDays(7), this._dateTimeService.getEndOfDay()];
 
   editionStatisticsHasData = false;
   editionStatisticsData;
 
   constructor(
     injector: Injector,
-    private _hostDashboardServiceProxy: HostDashboardServiceProxy) {
+    private _hostDashboardServiceProxy: HostDashboardServiceProxy,
+    private _dateTimeService: DateTimeService
+  ) {
     super(injector);
   }
 
@@ -33,7 +36,7 @@ export class WidgetEditionStatisticsComponent extends WidgetComponentBase implem
     this._hostDashboardServiceProxy.getEditionTenantStatistics(this.selectedDateRange[0], this.selectedDateRange[1])
       .subscribe((editionTenantStatistics) => {
         this.editionStatisticsData = this.normalizeEditionStatisticsData(editionTenantStatistics);
-        this.editionStatisticsHasData = _.filter(this.editionStatisticsData, data => data.value > 0).length > 0;
+        this.editionStatisticsHasData = _filter(this.editionStatisticsData, data => data.value > 0).length > 0;
       });
   }
 

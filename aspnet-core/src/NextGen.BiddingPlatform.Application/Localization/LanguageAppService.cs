@@ -28,7 +28,7 @@ namespace NextGen.BiddingPlatform.Localization
         public LanguageAppService(
             IApplicationLanguageManager applicationLanguageManager,
             IApplicationLanguageTextManager applicationLanguageTextManager,
-            IRepository<ApplicationLanguage> languageRepository, 
+            IRepository<ApplicationLanguage> languageRepository,
             IApplicationCulturesProvider applicationCulturesProvider)
         {
             _applicationLanguageManager = applicationLanguageManager;
@@ -132,15 +132,14 @@ namespace NextGen.BiddingPlatform.Localization
             var baseCulture = CultureInfo.GetCultureInfo(input.BaseLanguageName);
             var targetCulture = CultureInfo.GetCultureInfo(input.TargetLanguageName);
 
-            var languageTexts = source
-                .GetAllStrings()
-                .Select(localizedString => new LanguageTextListDto
-                {
-                    Key = localizedString.Name,
-                    BaseValue = _applicationLanguageTextManager.GetStringOrNull(AbpSession.TenantId, source.Name, baseCulture, localizedString.Name),
-                    TargetValue = _applicationLanguageTextManager.GetStringOrNull(AbpSession.TenantId, source.Name, targetCulture, localizedString.Name, false)
-                })
-                .AsQueryable();
+            var allStrings = source.GetAllStrings();
+            var baseValues = _applicationLanguageTextManager.GetStringsOrNull(AbpSession.TenantId, source.Name,
+                baseCulture, allStrings.Select(x => x.Name).ToList());
+            var targetValues = _applicationLanguageTextManager.GetStringsOrNull(AbpSession.TenantId, source.Name,
+                targetCulture, allStrings.Select(x => x.Name).ToList());
+
+            var languageTexts = allStrings.Select((t, i) => new LanguageTextListDto
+                {Key = t.Name, BaseValue = baseValues[i], TargetValue = targetValues[i]}).AsQueryable();
 
             //Filters
             if (input.TargetValueFilter == "EMPTY")

@@ -14,6 +14,7 @@ using Abp.IO;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Abp.Runtime.Caching.Redis;
+using Abp.Timing;
 using Abp.Zero.Configuration;
 using Castle.Core.Internal;
 using Microsoft.AspNetCore.Hosting;
@@ -67,19 +68,21 @@ namespace NextGen.BiddingPlatform.Web
                     typeof(BiddingPlatformApplicationModule).GetAssembly()
                 );
 
-            Configuration.Caching.Configure(TwoFactorCodeCacheItem.CacheName, cache =>
-            {
-                cache.DefaultAbsoluteExpireTime = TimeSpan.FromMinutes(2);
-            });
+            Configuration.Caching.Configure(TwoFactorCodeCacheItem.CacheName,
+                cache =>
+                {
+                    cache.DefaultAbsoluteExpireTime = new DateTimeOffset(Clock.Now.AddMinutes(2));
+                });
 
-            if (_appConfiguration["Authentication:JwtBearer:IsEnabled"] != null && bool.Parse(_appConfiguration["Authentication:JwtBearer:IsEnabled"]))
+            if (_appConfiguration["Authentication:JwtBearer:IsEnabled"] != null &&
+                bool.Parse(_appConfiguration["Authentication:JwtBearer:IsEnabled"]))
             {
                 ConfigureTokenAuth();
             }
 
-            IocManager.Register<DashboardViewConfiguration>();
-
             Configuration.ReplaceService<IAppConfigurationAccessor, AppConfigurationAccessor>();
+
+            Configuration.ReplaceService<IAppConfigurationWriter, AppConfigurationWriter>();
 
             //Uncomment this line to use Hangfire instead of default background job manager (remember also to uncomment related lines in Startup.cs file(s)).
             //Configuration.BackgroundJobs.UseHangfire();
@@ -98,10 +101,13 @@ namespace NextGen.BiddingPlatform.Web
             IocManager.Register<TokenAuthConfiguration>();
             var tokenAuthConfig = IocManager.Resolve<TokenAuthConfiguration>();
 
-            tokenAuthConfig.SecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_appConfiguration["Authentication:JwtBearer:SecurityKey"]));
+            tokenAuthConfig.SecurityKey =
+                new SymmetricSecurityKey(
+                    Encoding.ASCII.GetBytes(_appConfiguration["Authentication:JwtBearer:SecurityKey"]));
             tokenAuthConfig.Issuer = _appConfiguration["Authentication:JwtBearer:Issuer"];
             tokenAuthConfig.Audience = _appConfiguration["Authentication:JwtBearer:Audience"];
-            tokenAuthConfig.SigningCredentials = new SigningCredentials(tokenAuthConfig.SecurityKey, SecurityAlgorithms.HmacSha256);
+            tokenAuthConfig.SigningCredentials =
+                new SigningCredentials(tokenAuthConfig.SecurityKey, SecurityAlgorithms.HmacSha256);
             tokenAuthConfig.AccessTokenExpiration = AppConsts.AccessTokenExpiration;
             tokenAuthConfig.RefreshTokenExpiration = AppConsts.RefreshTokenExpiration;
         }
@@ -123,7 +129,8 @@ namespace NextGen.BiddingPlatform.Web
         {
             var appFolders = IocManager.Resolve<AppFolders>();
 
-            appFolders.SampleProfileImagesFolder = Path.Combine(_env.WebRootPath, $"Common{Path.DirectorySeparatorChar}Images{Path.DirectorySeparatorChar}SampleProfilePics");
+            appFolders.SampleProfileImagesFolder = Path.Combine(_env.WebRootPath,
+                $"Common{Path.DirectorySeparatorChar}Images{Path.DirectorySeparatorChar}SampleProfilePics");
             appFolders.WebLogsFolder = Path.Combine(_env.ContentRootPath, $"App_Data{Path.DirectorySeparatorChar}Logs");
         }
     }

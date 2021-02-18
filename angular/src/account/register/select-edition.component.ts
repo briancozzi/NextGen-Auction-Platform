@@ -11,7 +11,7 @@ import {
     EditionPaymentType,
     SubscriptionStartType
 } from '@shared/service-proxies/service-proxies';
-import * as _ from 'lodash';
+import { filter as _filter } from 'lodash-es';
 import { EditionHelperService } from '@account/payment/edition-helper.service';
 
 @Component({
@@ -61,7 +61,7 @@ export class SelectEditionComponent extends AppComponentBase implements OnInit {
     }
 
     featureEnabledForEdition(feature: FlatFeatureSelectDto, edition: EditionWithFeaturesDto): boolean {
-        const featureValues = _.filter(edition.featureValues, { name: feature.name });
+        const featureValues = _filter(edition.featureValues, { name: feature.name });
         if (!featureValues || featureValues.length <= 0) {
             return false;
         }
@@ -71,7 +71,7 @@ export class SelectEditionComponent extends AppComponentBase implements OnInit {
     }
 
     getFeatureValueForEdition(feature: FlatFeatureSelectDto, edition: EditionWithFeaturesDto): string {
-        const featureValues = _.filter(edition.featureValues, { name: feature.name });
+        const featureValues = _filter(edition.featureValues, { name: feature.name });
         if (!featureValues || featureValues.length <= 0) {
             return '';
         }

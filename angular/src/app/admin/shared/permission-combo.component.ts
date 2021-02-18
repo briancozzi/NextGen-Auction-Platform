@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Injector, Input, OnInit, Output, ViewChild, forwardRef } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { FlatPermissionWithLevelDto, PermissionServiceProxy } from '@shared/service-proxies/service-proxies';
-import * as _ from 'lodash';
+import { forEach as _forEach } from 'lodash-es';
 import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -32,7 +32,7 @@ export class PermissionComboComponent extends AppComponentBase implements OnInit
 
     ngOnInit(): void {
         this._permissionService.getAllPermissions().subscribe(result => {
-            _.forEach(result.items, item => {
+            _forEach(result.items, item => {
                 item.displayName = Array(item.level + 1).join('---') + ' ' + item.displayName;
             });
 

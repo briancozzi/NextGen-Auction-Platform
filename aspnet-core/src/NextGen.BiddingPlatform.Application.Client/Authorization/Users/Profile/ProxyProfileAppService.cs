@@ -9,7 +9,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Profile
     {
         public async Task<CurrentUserProfileEditDto> GetCurrentUserProfileForEdit()
         {
-            return await ApiClient.GetAsync<CurrentUserProfileEditDto>(GetEndpoint(nameof(GetCurrentUserProfileForEdit)));
+            return await ApiClient.GetAsync<CurrentUserProfileEditDto>(
+                GetEndpoint(nameof(GetCurrentUserProfileForEdit)));
         }
 
         public async Task UpdateCurrentUserProfile(CurrentUserProfileEditDto input)
@@ -29,7 +30,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Profile
 
         public async Task<GetPasswordComplexitySettingOutput> GetPasswordComplexitySetting()
         {
-            return await ApiClient.GetAsync<GetPasswordComplexitySettingOutput>(GetEndpoint(nameof(GetPasswordComplexitySetting)));
+            return await ApiClient.GetAsync<GetPasswordComplexitySettingOutput>(
+                GetEndpoint(nameof(GetPasswordComplexitySetting)));
         }
 
         public async Task<GetProfilePictureOutput> GetProfilePicture()
@@ -37,15 +39,30 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Profile
             return await ApiClient.GetAsync<GetProfilePictureOutput>(GetEndpoint(nameof(GetProfilePicture)));
         }
 
+        public async Task<GetProfilePictureOutput> GetProfilePictureByUser(long userId)
+        {
+            return await ApiClient.GetAsync<GetProfilePictureOutput>(GetEndpoint(nameof(GetProfilePictureByUser)),
+                new {userId = userId});
+        }
+
+        public async Task<GetProfilePictureOutput> GetProfilePictureByUserName(string username)
+        {
+            return await ApiClient.GetAsync<GetProfilePictureOutput>(GetEndpoint(nameof(GetProfilePictureByUserName)),
+                new {username = username});
+        }
+
+        public async Task<GetProfilePictureOutput> GetFriendProfilePicture(GetFriendProfilePictureInput input)
+        {
+            return await ApiClient.GetAsync<GetProfilePictureOutput>(
+                GetEndpoint(nameof(GetFriendProfilePicture)),
+                input
+            );
+        }
+
         public async Task<GetProfilePictureOutput> GetProfilePictureById(Guid profilePictureId)
         {
             return await ApiClient.GetAsync<GetProfilePictureOutput>(GetEndpoint(nameof(GetProfilePictureById)),
-                new { profilePictureId = profilePictureId });
-        }
-
-        public async Task<GetProfilePictureOutput> GetFriendProfilePictureById(GetFriendProfilePictureByIdInput input)
-        {
-            return await ApiClient.GetAsync<GetProfilePictureOutput>(GetEndpoint(nameof(GetFriendProfilePictureById)), input);
+                new {profilePictureId = profilePictureId});
         }
 
         public async Task ChangeLanguage(ChangeUserLanguageDto input)
@@ -55,7 +72,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Profile
 
         public async Task<UpdateGoogleAuthenticatorKeyOutput> UpdateGoogleAuthenticatorKey()
         {
-            return await ApiClient.PutAsync<UpdateGoogleAuthenticatorKeyOutput>(GetEndpoint(nameof(UpdateGoogleAuthenticatorKey)));
+            return await ApiClient.PutAsync<UpdateGoogleAuthenticatorKeyOutput>(
+                GetEndpoint(nameof(UpdateGoogleAuthenticatorKey)));
         }
 
         public async Task SendVerificationSms(SendVerificationSmsInputDto input)

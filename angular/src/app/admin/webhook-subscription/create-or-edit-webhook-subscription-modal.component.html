@@ -10,7 +10,7 @@
                     </h4>
                     <button type="button" class="close" (click)="close()" [attr.aria-label]="l('Close')"
                         [disabled]="saving">
-                        <span aria-hidden="true">&times;</span>
+                         <i aria-hidden="true" class="ki ki-close"></i>
                     </button>
                 </div>
                 <div class="modal-body">
@@ -30,36 +30,21 @@
                             </p-autoComplete>
                         </div>
                         <div class="form-group mb-2">
-                            <label for="headers">{{"AdditionalWebhookHeaders" | localize}}</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" #additionalHeaderKey placeholder="{{'HeaderKey' | localize}}">
-                                <input type="text" class="form-control" #additionalHeaderValue placeholder="{{'HeaderValue' | localize}}">
-                                <div class="input-group-append">
-                                    <button id="Btn_AddNewHeader" class="btn btn-primary" (click)="addAdditionalHeader()"
-                                        type="button">{{ 'Add' | localize }}</button>
-                                </div>
-                            </div>
-
-                            <div id="additional-header-list" *ngIf="webhookSubscription.headers">
-                                <div *ngFor="let headerKey of objectKeys(webhookSubscription.headers)"
-                                    class="alert alert-elevate alert-light alert-bold m-1" role="alert" id="additional-header-{{headerKey}}">
-                                    <div class="alert-text"> "{{headerKey}}" :
-                                        "{{webhookSubscription.headers[headerKey]}}"</div>
-                                    <div class="alert-close">
-                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true" (click)="removeHeader(headerKey)"><i class="la la-close"></i></span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            <key-value-list-manager
+                                #headerKeyValueManager
+                                [header]="l('AdditionalWebhookHeaders')"
+                                [keyPlaceHolder]="l('HeaderKey')"
+                                [valuePlaceHolder]="l('HeaderValue')"
+                                [items]="headers"
+                            ></key-value-list-manager>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button [disabled]="saving" type="button" class="btn btn-default"
+                    <button [disabled]="saving" type="button" class="btn btn-light-primary font-weight-bold"
                         (click)="close()">{{"Cancel" | localize}}</button>
 
-                    <button type="button" class="btn btn-primary" (click)="save()"
+                    <button type="button" class="btn btn-primary font-weight-bold" (click)="save()"
                         [disabled]="!webhookSubscription.webhookUri || !webhooks || webhooks.length == 0"
                         [buttonBusy]="saving" [busyText]="l('SavingWithThreeDot')"><i class="fa fa-save"></i>
                         <span>{{"Save" | localize}}</span></button>

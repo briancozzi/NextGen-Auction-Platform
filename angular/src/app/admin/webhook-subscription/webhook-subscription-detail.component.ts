@@ -6,10 +6,10 @@ import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Paginator } from 'primeng/paginator';
 import { LazyLoadEvent } from 'primeng/api';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
+import { BreadcrumbItem } from '@app/shared/common/sub-header/sub-header.component';
 
 @Component({
-    selector: 'app-webhook-subscription',
     templateUrl: './webhook-subscription-detail.component.html',
     styleUrls: ['./webhook-subscription-detail.component.css'],
     animations: [appModuleAnimation()]
@@ -27,6 +27,11 @@ export class WebhookSubscriptionDetailComponent extends AppComponentBase impleme
 
     listMaxDataLength = 100;
     detailModalText = '';
+
+    breadcrumbs: BreadcrumbItem[] = [
+        new BreadcrumbItem(this.l('WebhookSubscriptions'), '/app/admin/webhook-subscriptions'),
+        new BreadcrumbItem(this.l('WebhookSubscriptionDetail')),
+    ];
 
     constructor(
         injector: Injector,

@@ -5,8 +5,10 @@ import { AppLocalizationService } from '@app/shared/common/localization/app-loca
 import { AppNavigationService } from '@app/shared/layout/nav/app-navigation.service';
 import { BiddingPlatformCommonModule } from '@shared/common/common.module';
 import { UtilsModule } from '@shared/utils/utils.module';
-import { ModalModule, TabsModule, BsDropdownModule, BsDatepickerConfig, BsDaterangepickerConfig } from 'ngx-bootstrap';
-import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { TabsModule } from 'ngx-bootstrap/tabs';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { BsDatepickerModule, BsDatepickerConfig, BsDaterangepickerConfig } from 'ngx-bootstrap/datepicker';
 import { PaginatorModule } from 'primeng/paginator';
 import { TableModule } from 'primeng/table';
 import { AppAuthService } from './auth/app-auth.service';
@@ -35,7 +37,7 @@ import { WidgetSubscriptionExpiringTenantsComponent } from './customizable-dashb
 import { WidgetTopStatsComponent } from './customizable-dashboard/widgets/widget-top-stats/widget-top-stats.component';
 import { FilterDateRangePickerComponent } from './customizable-dashboard/filters/filter-date-range-picker/filter-date-range-picker.component';
 import { AddWidgetModalComponent } from './customizable-dashboard/add-widget-modal/add-widget-modal.component';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { PieChartModule, AreaChartModule, LineChartModule, BarChartModule } from '@swimlane/ngx-charts';
 import { NgxBootstrapDatePickerConfigService } from 'assets/ngx-bootstrap/ngx-bootstrap-datepicker-config.service';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { CountoModule } from 'angular2-counto';
@@ -45,6 +47,9 @@ import { ComboboxInputTypeComponent } from './input-types/combobox-input-type/co
 import { CheckboxInputTypeComponent } from './input-types/checkbox-input-type/checkbox-input-type.component';
 import { MultipleSelectComboboxInputTypeComponent } from './input-types/multiple-select-combobox-input-type/multiple-select-combobox-input-type.component';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { PasswordInputWithShowButtonComponent } from './password-input-with-show-button/password-input-with-show-button.component';
+import { KeyValueListManagerComponent } from './key-value-list-manager/key-value-list-manager.component';
+import { SubHeaderComponent } from '@app/shared/common/sub-header/sub-header.component';
 
 @NgModule({
     imports: [
@@ -59,7 +64,10 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
         GridsterModule,
         TabsModule.forRoot(),
         BsDropdownModule.forRoot(),
-        NgxChartsModule,
+        PieChartModule,
+        AreaChartModule,
+        LineChartModule,
+        BarChartModule,
         BsDatepickerModule.forRoot(),
         PerfectScrollbarModule,
         CountoModule,
@@ -91,7 +99,10 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
         SingleLineStringInputTypeComponent,
         ComboboxInputTypeComponent,
         CheckboxInputTypeComponent,
-        MultipleSelectComboboxInputTypeComponent
+        MultipleSelectComboboxInputTypeComponent,
+        PasswordInputWithShowButtonComponent,
+        KeyValueListManagerComponent,
+        SubHeaderComponent
     ],
     exports: [
         TimeZoneComboComponent,
@@ -101,7 +112,9 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
         DateRangePickerInitialValueSetterDirective,
         DatePickerInitialValueSetterDirective,
         CustomizableDashboardComponent,
-        NgxChartsModule
+        PasswordInputWithShowButtonComponent,
+        KeyValueListManagerComponent,
+        SubHeaderComponent
     ],
     providers: [
         DateTimeService,

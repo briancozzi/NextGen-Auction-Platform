@@ -17,6 +17,8 @@ using NextGen.BiddingPlatform.MultiTenancy;
 using System.Net.Mail;
 using System.Web;
 using Abp.Runtime.Security;
+using Abp.Runtime.Session;
+using Abp.UI;
 using NextGen.BiddingPlatform.Net.Emailing;
 
 namespace NextGen.BiddingPlatform.Authorization.Users
@@ -34,6 +36,7 @@ namespace NextGen.BiddingPlatform.Authorization.Users
         private readonly ISettingManager _settingManager;
         private readonly EditionManager _editionManager;
         private readonly UserManager _userManager;
+        private readonly IAbpSession _abpSession;
 
         // used for styling action links on email messages.
         private string _emailButtonStyle =
@@ -48,7 +51,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users
             IUnitOfWorkManager unitOfWorkManager,
             ISettingManager settingManager,
             EditionManager editionManager,
-            UserManager userManager)
+            UserManager userManager,
+            IAbpSession abpSession)
         {
             _emailTemplateProvider = emailTemplateProvider;
             _emailSender = emailSender;
@@ -58,6 +62,7 @@ namespace NextGen.BiddingPlatform.Authorization.Users
             _settingManager = settingManager;
             _editionManager = editionManager;
             _userManager = userManager;
+            _abpSession = abpSession;
         }
 
         /// <summary>
@@ -71,6 +76,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users
         [UnitOfWork]
         public virtual async Task SendEmailActivationLinkAsync(User user, string link, string plainPassword = null)
         {
+            await CheckMailSettingsEmptyOrNull();
+            
             if (user.EmailConfirmationCode.IsNullOrEmpty())
             {
                 throw new Exception("EmailConfirmationCode should be set in order to send email activation link.");
@@ -123,6 +130,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users
         /// <param name="link">Reset link</param>
         public async Task SendPasswordResetLinkAsync(User user, string link = null)
         {
+            await CheckMailSettingsEmptyOrNull();
+            
             if (user.PasswordResetCode.IsNullOrEmpty())
             {
                 throw new Exception("PasswordResetCode should be set in order to send password reset link.");
@@ -171,6 +180,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users
         {
             try
             {
+                await CheckMailSettingsEmptyOrNull();
+                
                 var emailTemplate = GetTitleAndSubTitle(user.TenantId, L("NewChatMessageEmail_Title"), L("NewChatMessageEmail_SubTitle"));
                 var mailMessage = new StringBuilder();
 
@@ -195,6 +206,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users
                 {
                     using (_unitOfWorkManager.Current.SetTenantId(tenantId))
                     {
+                        await CheckMailSettingsEmptyOrNull();
+                        
                         var tenantAdmin = await _userManager.GetAdminAsync();
                         if (tenantAdmin == null || string.IsNullOrEmpty(tenantAdmin.EmailAddress))
                         {
@@ -227,6 +240,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users
                 {
                     using (_unitOfWorkManager.Current.SetTenantId(tenantId))
                     {
+                        await CheckMailSettingsEmptyOrNull();
+                        
                         var tenantAdmin = await _userManager.GetAdminAsync();
                         if (tenantAdmin == null || string.IsNullOrEmpty(tenantAdmin.EmailAddress))
                         {
@@ -256,6 +271,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users
         {
             try
             {
+                await CheckMailSettingsEmptyOrNull();
+                
                 var hostAdmin = await _userManager.GetAdminAsync();
                 if (hostAdmin == null || string.IsNullOrEmpty(hostAdmin.EmailAddress))
                 {
@@ -286,6 +303,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users
                 {
                     using (_unitOfWorkManager.Current.SetTenantId(tenantId))
                     {
+                        await CheckMailSettingsEmptyOrNull();
+                        
                         var tenantAdmin = await _userManager.GetAdminAsync();
                         if (tenantAdmin == null || string.IsNullOrEmpty(tenantAdmin.EmailAddress))
                         {
@@ -362,6 +381,33 @@ namespace NextGen.BiddingPlatform.Authorization.Users
             var query = link.Substring(link.IndexOf('?')).TrimStart('?');
 
             return basePath + "?" + encrptedParameterName + "=" + HttpUtility.UrlEncode(SimpleStringCipher.Instance.Encrypt(query));
+        }
+
+        private async Task CheckMailSettingsEmptyOrNull()
+        {
+#if DEBUG
+            return;
+#endif
+            if (
+                (await _settingManager.GetSettingValueAsync(EmailSettingNames.DefaultFromAddress)).IsNullOrEmpty() ||
+                (await _settingManager.GetSettingValueAsync(EmailSettingNames.Smtp.Host)).IsNullOrEmpty()
+            )
+            {
+                throw new UserFriendlyException(L("SMTPSettingsNotProvidedWarningText"));
+            }
+            
+            if ((await _settingManager.GetSettingValueAsync<bool>(EmailSettingNames.Smtp.UseDefaultCredentials)))
+            {
+                return;
+            }
+            
+            if (
+                (await _settingManager.GetSettingValueAsync(EmailSettingNames.Smtp.UserName)).IsNullOrEmpty() ||
+                (await _settingManager.GetSettingValueAsync(EmailSettingNames.Smtp.Password)).IsNullOrEmpty()
+            )
+            {
+                throw new UserFriendlyException(L("SMTPSettingsNotProvidedWarningText"));
+            }
         }
     }
 }

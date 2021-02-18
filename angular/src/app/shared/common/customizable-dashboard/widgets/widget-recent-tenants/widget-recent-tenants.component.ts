@@ -1,14 +1,14 @@
 import { Component, ViewChild, Injector } from '@angular/core';
 import { Table } from 'primeng/table';
 import { HostDashboardServiceProxy, GetRecentTenantsOutput } from '@shared/service-proxies/service-proxies';
-import { WidgetComponentBase } from '../widget-component-base';
+import { WidgetComponentBaseComponent } from '../widget-component-base';
 
 @Component({
   selector: 'app-widget-recent-tenants',
   templateUrl: './widget-recent-tenants.component.html',
   styleUrls: ['./widget-recent-tenants.component.css']
 })
-export class WidgetRecentTenantsComponent extends WidgetComponentBase {
+export class WidgetRecentTenantsComponent extends WidgetComponentBaseComponent {
   @ViewChild('RecentTenantsTable', { static: true }) recentTenantsTable: Table;
   constructor(injector: Injector,
     private _hostDashboardServiceProxy: HostDashboardServiceProxy) {
@@ -29,7 +29,7 @@ export class WidgetRecentTenantsComponent extends WidgetComponentBase {
 
   gotoAllRecentTenants(): void {
     window.open(abp.appPath + 'app/admin/tenants?' +
-      'creationDateStart=' + encodeURIComponent(this.recentTenantsData.tenantCreationStartDate.format()));
+      'creationDateStart=' + encodeURIComponent(this.recentTenantsData.tenantCreationStartDate.toString()));
   }
 
 }

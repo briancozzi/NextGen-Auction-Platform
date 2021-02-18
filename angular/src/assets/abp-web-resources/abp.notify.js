@@ -15,13 +15,13 @@ var abp = abp || {};
     /* NOTIFICATION *********************************************/
 
     var showNotification = function (type, message, title, options) {
-        var icon = options.imageClass ? '<i class="mr-2 kt-shape-font-color-1 ' + options.imageClass + '"></i>' : '';
+        var icon = options.imageClass ? '<i class="mr-2 text-white ' + options.imageClass + '"></i>' : '';
 
         if (title) {
-            options.title = icon + '<span class="kt-shape-font-color-1">' + title + '</span>';
+            options.title = icon + '<span class="text-white">' + title + '</span>';
         }
 
-        options.html = (title ? '' : icon) + '<span class="kt-shape-font-color-1">' + message + '</span>';
+        options.html = (title ? '' : icon) + '<span class="text-white">' + message + '</span>';
         var combinedOptions = Object.assign({}, defaultOptions, options);
         Swal.fire(combinedOptions);
     };

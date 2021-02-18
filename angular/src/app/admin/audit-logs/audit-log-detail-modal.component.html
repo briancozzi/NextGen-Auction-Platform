@@ -8,7 +8,7 @@
                         <span *ngIf="auditLog.userId">{{"AuditLogDetail" | localize}}</span>
                     </h4>
                     <button type="button" class="close" (click)="close()" [attr.aria-label]="l('Close')">
-                        <span aria-hidden="true">&times;</span>
+                        <i aria-hidden="true" class="ki ki-close"></i>
                     </button>
                 </div>
                 <div class="modal-body">
@@ -109,7 +109,7 @@
                                 <label class="col-lg-3 col-form-label">
                                     {{"Parameters" | localize}}:
                                 </label>
-                                <div class="col-lg-9 alert kt-alert kt-alert--default">
+                                <div class="col-lg-9 alert alert-light">
                                     <pre lang="js">{{getFormattedParameters()}}</pre>
                                 </div>
                             </div>
@@ -123,7 +123,7 @@
                                 <label class="col-lg-3 col-form-label">
                                     {{"None" | localize}}:
                                 </label>
-                                <div *ngIf="auditLog.customData" class="col-lg-9 alert kt-alert kt-alert--default">
+                                <div *ngIf="auditLog.customData" class="col-lg-9 alert alert-light">
                                     <pre>{{auditLog.customData}}</pre>
                                 </div>
                             </div>
@@ -135,9 +135,9 @@
                         <div class="col-md-12">
                             <div class="form-group row">
                                 <label *ngIf="!auditLog.exception" class="col-lg-12 col-form-label">
-                                    <i class="fa fa-check-circle kt-font-success"></i> {{"Success" | localize}}
+                                    <i class="fa fa-check-circle text-success"></i> {{"Success" | localize}}
                                 </label>
-                                <div *ngIf="auditLog.exception" class="col-lg-12 alert kt-alert kt-alert--default">
+                                <div *ngIf="auditLog.exception" class="col-lg-12 alert alert-light">
                                     <pre>{{auditLog.exception}}</pre>
                                 </div>
                             </div>
@@ -145,7 +145,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" (click)="close()">{{"Close" | localize}}</button>
+                    <button type="button" class="btn btn-light-primary font-weight-bold" (click)="close()">{{"Close" | localize}}</button>
                 </div>
             </form>
         </div>

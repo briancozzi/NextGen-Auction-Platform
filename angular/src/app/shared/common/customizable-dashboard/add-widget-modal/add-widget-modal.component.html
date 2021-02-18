@@ -8,7 +8,7 @@
                         <span>{{"AddWidget" | localize}}</span>
                     </h5>
                     <button type="button" class="close" [attr.aria-label]="l('Close')" (click)="close()">
-                        <span aria-hidden="true">&times;</span>
+                         <i aria-hidden="true" class="ki ki-close"></i>
                     </button>
                 </div>
                 <div class="modal-body">
@@ -22,9 +22,9 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" (click)="close()"
+                    <button type="button" class="btn btn-light-primary font-weight-bold" (click)="close()"
                         [disabled]="saving">{{"Cancel" | localize}}</button>
-                    <button type="submit" class="btn btn-primary" [disabled]="saving"><i class="fa fa-save"></i>
+                    <button type="submit" class="btn btn-primary font-weight-bold" [disabled]="saving"><i class="fa fa-save"></i>
                         <span>{{"Save" | localize}}</span></button>
                 </div>
             </form>

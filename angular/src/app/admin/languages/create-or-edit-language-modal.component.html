@@ -10,7 +10,7 @@
                     </h4>
                     <button type="button" class="close" (click)="close()" [attr.aria-label]="l('Close')"
                         [disabled]="saving">
-                        <span aria-hidden="true">&times;</span>
+                         <i aria-hidden="true" class="ki ki-close"></i>
                     </button>
                 </div>
                 <div class="modal-body">
@@ -32,19 +32,19 @@
                             </ng-template>
                         </p-dropdown>
                     </div>
-                    <div class="kt-checkbox-list">
-                        <label for="EditLanguage_IsEnabled" class="kt-checkbox">
+                    <div class="checkbox-list">
+                        <label for="EditLanguage_IsEnabled" class="checkbox">
                             <input id="EditLanguage_IsEnabled" type="checkbox" name="languageIsEnabled"
                                 [(ngModel)]="language.isEnabled">
-                            {{"IsEnabled" | localize}}
                             <span></span>
+                            {{"IsEnabled" | localize}}
                         </label>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button [disabled]="saving" type="button" class="btn btn-default"
+                    <button [disabled]="saving" type="button" class="btn btn-light-primary font-weight-bold"
                         (click)="close()">{{"Cancel" | localize}}</button>
-                    <button type="submit" class="btn btn-primary" [disabled]="!editForm.form.valid"
+                    <button type="submit" class="btn btn-primary font-weight-bold" [disabled]="!editForm.form.valid"
                         [buttonBusy]="saving" [busyText]="l('SavingWithThreeDot')"><i class="fa fa-save"></i>
                         <span>{{"Save" | localize}}</span></button>
                 </div>

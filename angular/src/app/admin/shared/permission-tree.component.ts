@@ -5,7 +5,7 @@ import { ArrayToTreeConverterService } from '@shared/utils/array-to-tree-convert
 import { TreeDataHelperService } from '@shared/utils/tree-data-helper.service';
 import { FlatPermissionDto } from '@shared/service-proxies/service-proxies';
 import { TreeNode } from 'primeng/api';
-import * as _ from 'lodash';
+import { forEach as _forEach, remove as _remove } from 'lodash-es';
 
 @Component({
     selector: 'permission-tree',
@@ -13,6 +13,7 @@ import * as _ from 'lodash';
 })
 export class PermissionTreeComponent extends AppComponentBase {
     @Input() singleSelect: boolean;
+    @Input() disableCascade: boolean;
 
     set editData(val: PermissionTreeEditModel) {
         this.setTreeData(val.permissions);
@@ -52,7 +53,7 @@ export class PermissionTreeComponent extends AppComponentBase {
 
     setSelectedNodes(grantedPermissionNames: string[]) {
         this.selectedPermissions = [];
-        _.forEach(grantedPermissionNames, permission => {
+        _forEach(grantedPermissionNames, permission => {
             let item = this._treeDataHelperService.findNode(this.treeData, { data: { name: permission } });
             if (item) {
                 this.selectedPermissions.push(item);
@@ -80,6 +81,10 @@ export class PermissionTreeComponent extends AppComponentBase {
             return;
         }
 
+        if (this.disableCascade) {
+            return;
+        }
+
         let parentNode = this._treeDataHelperService.findParent(this.treeData, { data: { name: event.node.data.name } });
 
         while (parentNode != null) {
@@ -89,9 +94,13 @@ export class PermissionTreeComponent extends AppComponentBase {
     }
 
     onNodeUnselect(event) {
+        if (this.disableCascade) {
+            return;
+        }
+
         let childrenNodes = this._treeDataHelperService.findChildren(this.treeData, { data: { name: event.node.data.name } });
         childrenNodes.push(event.node.data.name);
-        _.remove(this.selectedPermissions, x => childrenNodes.indexOf(x.data.name) !== -1);
+        _remove(this.selectedPermissions, x => childrenNodes.indexOf(x.data.name) !== -1);
     }
 
     filterPermissions(event): void {
@@ -99,7 +108,7 @@ export class PermissionTreeComponent extends AppComponentBase {
     }
 
     filterPermission(nodes, filterText): any {
-        _.forEach(nodes, node => {
+        _forEach(nodes, node => {
             if (node.data.displayName.toLowerCase().indexOf(filterText.toLowerCase()) >= 0) {
                 node.styleClass =
                     this.showParentNodes(node);

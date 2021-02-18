@@ -24,11 +24,11 @@ namespace NextGen.BiddingPlatform.DataExporting.Excel.NPOI
         {
             var file = new FileDto(fileName, MimeTypeNames.ApplicationVndOpenxmlformatsOfficedocumentSpreadsheetmlSheet);
             var workbook = new XSSFWorkbook();
-            
+
             creator(workbook);
-            
+
             Save(workbook, file);
-            
+
             return file;
         }
 
@@ -40,7 +40,7 @@ namespace NextGen.BiddingPlatform.DataExporting.Excel.NPOI
             }
 
             sheet.CreateRow(0);
-            
+
             for (var i = 0; i < headerTexts.Length; i++)
             {
                 AddHeader(sheet, i, headerTexts[i]);
@@ -53,9 +53,8 @@ namespace NextGen.BiddingPlatform.DataExporting.Excel.NPOI
             cell.SetCellValue(headerText);
             var cellStyle = sheet.Workbook.CreateCellStyle();
             var font = sheet.Workbook.CreateFont();
-            font.Boldweight = 12;
-            font.FontHeightInPoints = 12;
             font.IsBold = true;
+            font.FontHeightInPoints = 12;
             cellStyle.SetFont(font);
             cell.CellStyle = cellStyle;
         }
@@ -70,7 +69,7 @@ namespace NextGen.BiddingPlatform.DataExporting.Excel.NPOI
             for (var i = 1; i <= items.Count; i++)
             {
                 var row = sheet.CreateRow(i);
-                
+
                 for (var j = 0; j < propertySelectors.Length; j++)
                 {
                     var cell = row.CreateCell(j);
@@ -91,14 +90,14 @@ namespace NextGen.BiddingPlatform.DataExporting.Excel.NPOI
                 _tempFileCacheManager.SetFile(file.FileToken, stream.ToArray());
             }
         }
-        
+
         protected void SetCellDataFormat(ICell cell, string dataFormat)
         {
             if (cell == null)
             {
                 return;
             }
-            
+
             var dateStyle = cell.Sheet.Workbook.CreateCellStyle();
             var format = cell.Sheet.Workbook.CreateDataFormat();
             dateStyle.DataFormat = format.GetFormat(dataFormat);

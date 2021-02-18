@@ -9,8 +9,8 @@ var abp = abp || {};
 
         options = options || {};
         options.title = title;
-        options.type = type;
-        options.confirmButtonText = options.confirmButtonText || abp.localization.abpWeb('Ok');
+        options.icon = type;
+        options.confirmButtonText = options.confirmButtonText || abp.localization.localize('Ok', 'BiddingPlatform');
 
         if (options.isHtml) {
             options.html = message;
@@ -39,11 +39,11 @@ var abp = abp || {};
 
     abp.message.confirm = function (message, title, callback, options) {
         options = options || {};
-        options.title = title ? title : abp.localization.abpWeb('AreYouSure');
-        options.type = 'warning';
+        options.title = title ? title : abp.localization.localize('AreYouSure', 'BiddingPlatform');
+        options.icon = 'warning';
 
-        options.confirmButtonText = options.confirmButtonText || abp.localization.abpWeb('Yes');
-        options.cancelButtonText = options.cancelButtonText || abp.localization.abpWeb('Cancel');
+        options.confirmButtonText = options.confirmButtonText || abp.localization.localize('Yes', 'BiddingPlatform');
+        options.cancelButtonText = options.cancelButtonText || abp.localization.localize('Cancel', 'BiddingPlatform');
         options.showCancelButton = true;
 
         if (options.isHtml) {

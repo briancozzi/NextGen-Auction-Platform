@@ -5,8 +5,8 @@
     <RootNamespace>NextGen.BiddingPlatform</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Abp.Web.Common" Version="5.5.0" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
+    <PackageReference Include="Abp.Web.Common" Version="6.2.0" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NextGen.BiddingPlatform.Core.Shared\NextGen.BiddingPlatform.Core.Shared.csproj" />

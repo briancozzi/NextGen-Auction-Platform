@@ -32,9 +32,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Importing
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IAppNotifier _appNotifier;
         private readonly IBinaryObjectManager _binaryObjectManager;
-        private readonly ILocalizationSource _localizationSource;
         private readonly IObjectMapper _objectMapper;
-
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
         public UserManager UserManager { get; set; }
 
         public ImportUsersToExcelJob(
@@ -46,8 +45,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Importing
             IPasswordHasher<User> passwordHasher,
             IAppNotifier appNotifier,
             IBinaryObjectManager binaryObjectManager,
-            ILocalizationManager localizationManager,
-            IObjectMapper objectMapper)
+            IObjectMapper objectMapper,
+            IUnitOfWorkManager unitOfWorkManager)
         {
             _roleManager = roleManager;
             _userListExcelDataReader = userListExcelDataReader;
@@ -58,35 +57,41 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Importing
             _appNotifier = appNotifier;
             _binaryObjectManager = binaryObjectManager;
             _objectMapper = objectMapper;
-            _localizationSource = localizationManager.GetSource(BiddingPlatformConsts.LocalizationSourceName);
+            _unitOfWorkManager = unitOfWorkManager;
         }
 
-        [UnitOfWork]
         public override void Execute(ImportUsersFromExcelJobArgs args)
         {
-            using (CurrentUnitOfWork.SetTenantId(args.TenantId))
+            var users = GetUserListFromExcelOrNull(args);
+            if (users == null || !users.Any())
             {
-                var users = GetUserListFromExcelOrNull(args);
-                if (users == null || !users.Any())
-                {
-                    SendInvalidExcelNotification(args);
-                    return;
-                }
-
-                CreateUsers(args, users);
+                SendInvalidExcelNotification(args);
+                return;
             }
+
+            CreateUsers(args, users);
         }
 
         private List<ImportUserDto> GetUserListFromExcelOrNull(ImportUsersFromExcelJobArgs args)
         {
-            try
+            using (var uow = _unitOfWorkManager.Begin())
             {
-                var file = AsyncHelper.RunSync(() => _binaryObjectManager.GetOrNullAsync(args.BinaryObjectId));
-                return _userListExcelDataReader.GetUsersFromExcel(file.Bytes);
-            }
-            catch (Exception)
-            {
-                return null;
+                using (CurrentUnitOfWork.SetTenantId(args.TenantId))
+                {
+                    try
+                    {
+                        var file = AsyncHelper.RunSync(() => _binaryObjectManager.GetOrNullAsync(args.BinaryObjectId));
+                        return _userListExcelDataReader.GetUsersFromExcel(file.Bytes);
+                    }
+                    catch (Exception)
+                    {
+                        return null;
+                    }
+                    finally
+                    {
+                        uow.Complete();
+                    }
+                }
             }
         }
 
@@ -96,30 +101,46 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Importing
 
             foreach (var user in users)
             {
-                if (user.CanBeImported())
+                using (var uow = _unitOfWorkManager.Begin())
                 {
-                    try
+                    using (CurrentUnitOfWork.SetTenantId(args.TenantId))
                     {
-                        AsyncHelper.RunSync(() => CreateUserAsync(user));
+                        if (user.CanBeImported())
+                        {
+                            try
+                            {
+                                AsyncHelper.RunSync(() => CreateUserAsync(user));
+                            }
+                            catch (UserFriendlyException exception)
+                            {
+                                user.Exception = exception.Message;
+                                invalidUsers.Add(user);
+                            }
+                            catch (Exception exception)
+                            {
+                                user.Exception = exception.ToString();
+                                invalidUsers.Add(user);
+                            }
+                        }
+                        else
+                        {
+                            invalidUsers.Add(user);
+                        }
                     }
-                    catch (UserFriendlyException exception)
-                    {
-                        user.Exception = exception.Message;
-                        invalidUsers.Add(user);
-                    }
-                    catch (Exception exception)
-                    {
-                        user.Exception = exception.ToString();
-                        invalidUsers.Add(user);
-                    }
-                }
-                else
-                {
-                    invalidUsers.Add(user);
+
+                    uow.Complete();
                 }
             }
 
-            AsyncHelper.RunSync(() => ProcessImportUsersResultAsync(args, invalidUsers));
+            using (var uow = _unitOfWorkManager.Begin())
+            {
+                using (CurrentUnitOfWork.SetTenantId(args.TenantId))
+                {
+                    AsyncHelper.RunSync(() => ProcessImportUsersResultAsync(args, invalidUsers));
+                }
+
+                uow.Complete();
+            }
         }
 
         private async Task CreateUserAsync(ImportUserDto input)
@@ -159,7 +180,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Importing
             (await UserManager.CreateAsync(user)).CheckErrors();
         }
 
-        private async Task ProcessImportUsersResultAsync(ImportUsersFromExcelJobArgs args, List<ImportUserDto> invalidUsers)
+        private async Task ProcessImportUsersResultAsync(ImportUsersFromExcelJobArgs args,
+            List<ImportUserDto> invalidUsers)
         {
             if (invalidUsers.Any())
             {
@@ -170,24 +192,33 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Importing
             {
                 await _appNotifier.SendMessageAsync(
                     args.User,
-                    _localizationSource.GetString("AllUsersSuccessfullyImportedFromExcel"),
+                    new LocalizableString("AllUsersSuccessfullyImportedFromExcel", BiddingPlatformConsts.LocalizationSourceName),
+                    null,
                     Abp.Notifications.NotificationSeverity.Success);
             }
         }
 
         private void SendInvalidExcelNotification(ImportUsersFromExcelJobArgs args)
         {
-            AsyncHelper.RunSync(() => _appNotifier.SendMessageAsync(
-                args.User,
-                _localizationSource.GetString("FileCantBeConvertedToUserList"),
-                Abp.Notifications.NotificationSeverity.Warn));
+            using (var uow = _unitOfWorkManager.Begin())
+            {
+                using (CurrentUnitOfWork.SetTenantId(args.TenantId))
+                {
+                    AsyncHelper.RunSync(() => _appNotifier.SendMessageAsync(
+                        args.User,
+                        new LocalizableString("FileCantBeConvertedToUserList", BiddingPlatformConsts.LocalizationSourceName),
+                        null,
+                        Abp.Notifications.NotificationSeverity.Warn));
+                }
+                uow.Complete();
+            }
         }
 
         private string GetRoleNameFromDisplayName(string displayName, List<Role> roleList)
         {
             return roleList.FirstOrDefault(
-                        r => r.DisplayName?.ToLowerInvariant() == displayName?.ToLowerInvariant()
-                    )?.Name;
+                r => r.DisplayName?.ToLowerInvariant() == displayName?.ToLowerInvariant()
+            )?.Name;
         }
     }
 }

@@ -1,23 +1,30 @@
-import { Component, Injector, ViewChild, OnInit } from '@angular/core';
-import { appModuleAnimation } from '@shared/animations/routerTransition';
-import { AppComponentBase } from '@shared/common/app-component-base';
-import { RoleListDto, RoleServiceProxy, PermissionServiceProxy, FlatPermissionDto } from '@shared/service-proxies/service-proxies';
-import { Table } from 'primeng/table';
-import { CreateOrEditRoleModalComponent } from './create-or-edit-role-modal.component';
-import { EntityTypeHistoryModalComponent } from '@app/shared/common/entityHistory/entity-type-history-modal.component';
-import * as _ from 'lodash';
-import { finalize } from 'rxjs/operators';
-import { PermissionTreeModalComponent } from '../shared/permission-tree-modal.component';
+import {Component, Injector, ViewChild, OnInit} from '@angular/core';
+import {appModuleAnimation} from '@shared/animations/routerTransition';
+import {AppComponentBase} from '@shared/common/app-component-base';
+import {
+    RoleListDto,
+    RoleServiceProxy,
+    PermissionServiceProxy,
+    FlatPermissionDto,
+    GetRolesInput
+} from '@shared/service-proxies/service-proxies';
+import {Table} from 'primeng/table';
+import {CreateOrEditRoleModalComponent} from './create-or-edit-role-modal.component';
+import {EntityTypeHistoryModalComponent} from '@app/shared/common/entityHistory/entity-type-history-modal.component';
+import {filter as _filter} from 'lodash-es';
+import {finalize} from 'rxjs/operators';
+import {PermissionTreeModalComponent} from '../shared/permission-tree-modal.component';
+
 @Component({
     templateUrl: './roles.component.html',
     animations: [appModuleAnimation()]
 })
 export class RolesComponent extends AppComponentBase implements OnInit {
 
-    @ViewChild('createOrEditRoleModal', { static: true }) createOrEditRoleModal: CreateOrEditRoleModalComponent;
-    @ViewChild('entityTypeHistoryModal', { static: true }) entityTypeHistoryModal: EntityTypeHistoryModalComponent;
-    @ViewChild('dataTable', { static: true }) dataTable: Table;
-    @ViewChild('permissionFilterTreeModal', { static: true }) permissionFilterTreeModal: PermissionTreeModalComponent;
+    @ViewChild('createOrEditRoleModal', {static: true}) createOrEditRoleModal: CreateOrEditRoleModalComponent;
+    @ViewChild('entityTypeHistoryModal', {static: true}) entityTypeHistoryModal: EntityTypeHistoryModalComponent;
+    @ViewChild('dataTable', {static: true}) dataTable: Table;
+    @ViewChild('permissionFilterTreeModal', {static: true}) permissionFilterTreeModal: PermissionTreeModalComponent;
 
     _entityTypeFullName = 'NextGen.BiddingPlatform.Authorization.Roles.Role';
     entityHistoryEnabled = false;
@@ -35,14 +42,14 @@ export class RolesComponent extends AppComponentBase implements OnInit {
 
     private setIsEntityHistoryEnabled(): void {
         let customSettings = (abp as any).custom;
-        this.entityHistoryEnabled = customSettings.EntityHistory && customSettings.EntityHistory.isEnabled && _.filter(customSettings.EntityHistory.enabledEntities, entityType => entityType === this._entityTypeFullName).length === 1;
+        this.entityHistoryEnabled = customSettings.EntityHistory && customSettings.EntityHistory.isEnabled && _filter(customSettings.EntityHistory.enabledEntities, entityType => entityType === this._entityTypeFullName).length === 1;
     }
 
     getRoles(): void {
         this.primengTableHelper.showLoadingIndicator();
         let selectedPermissions = this.permissionFilterTreeModal.getSelectedPermissions();
 
-        this._roleService.getRoles(selectedPermissions)
+        this._roleService.getRoles(new GetRolesInput({permissions: selectedPermissions}))
             .pipe(finalize(() => this.primengTableHelper.hideLoadingIndicator()))
             .subscribe(result => {
                 this.primengTableHelper.records = result.items;

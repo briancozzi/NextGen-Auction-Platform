@@ -1,4 +1,4 @@
-import {CommonModule} from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
@@ -15,8 +15,12 @@ import { SmsVerificationModalComponent } from '@app/shared/layout/profile/sms-ve
 import { ServiceProxyModule } from '@shared/service-proxies/service-proxy.module';
 import { UtilsModule } from '@shared/utils/utils.module';
 import { FileUploadModule } from 'ng2-file-upload';
-import { ModalModule, TabsModule, TooltipModule, BsDropdownModule, PopoverModule } from 'ngx-bootstrap';
-import {BsDatepickerModule} from 'ngx-bootstrap/datepicker';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { TabsModule } from 'ngx-bootstrap/tabs';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { PopoverModule } from 'ngx-bootstrap/popover';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { FileUploadModule as PrimeNgFileUploadModule } from 'primeng/fileupload';
 import { PaginatorModule } from 'primeng/paginator';
 import { ProgressBarModule } from 'primeng/progressbar';
@@ -35,18 +39,20 @@ import { Theme7LayoutComponent } from './shared/layout/themes/theme7/theme7-layo
 import { Theme8LayoutComponent } from './shared/layout/themes/theme8/theme8-layout.component';
 import { Theme10LayoutComponent } from './shared/layout/themes/theme10/theme10-layout.component';
 import { Theme11LayoutComponent } from './shared/layout/themes/theme11/theme11-layout.component';
-import { Theme12LayoutComponent } from './shared/layout/themes/theme12/theme12-layout.component';
 import { AppCommonModule } from './shared/common/app-common.module';
 import { ChatBarComponent } from './shared/layout/chat/chat-bar.component';
 import { ThemeSelectionPanelComponent } from './shared/layout/theme-selection/theme-selection-panel.component';
 import { ChatFriendListItemComponent } from './shared/layout/chat/chat-friend-list-item.component';
 import { ChatMessageComponent } from './shared/layout/chat/chat-message.component';
 import { FooterComponent } from './shared/layout/footer.component';
-import { StackedFooterComponent } from './shared/layout/stacked-footer.component';
 import { LinkedAccountService } from './shared/layout/linked-account.service';
 import { SideBarMenuComponent } from './shared/layout/nav/side-bar-menu.component';
 import { TopBarMenuComponent } from './shared/layout/nav/top-bar-menu.component';
-import { TopBarComponent } from './shared/layout/topbar.component';
+import { QuickThemeSelectionComponent } from './shared/layout/topbar/quick-theme-selection.component';
+import { LanguageSwitchDropdownComponent } from './shared/layout/topbar/language-switch-dropdown.component';
+import { ChatToggleButtonComponent } from './shared/layout/topbar/chat-toggle-button.component';
+import { SubscriptionNotificationBarComponent } from './shared/layout/topbar/subscription-notification-bar.component';
+import { UserMenuComponent } from './shared/layout/topbar/user-menu.component';
 import { DefaultBrandComponent } from './shared/layout/themes/default/default-brand.component';
 import { Theme2BrandComponent } from './shared/layout/themes/theme2/theme2-brand.component';
 import { Theme3BrandComponent } from './shared/layout/themes/theme3/theme3-brand.component';
@@ -58,15 +64,13 @@ import { Theme8BrandComponent } from './shared/layout/themes/theme8/theme8-brand
 import { Theme9BrandComponent } from './shared/layout/themes/theme9/theme9-brand.component';
 import { Theme10BrandComponent } from './shared/layout/themes/theme10/theme10-brand.component';
 import { Theme11BrandComponent } from './shared/layout/themes/theme11/theme11-brand.component';
-import { Theme12BrandComponent } from './shared/layout/themes/theme12/theme12-brand.component';
 import { UserNotificationHelper } from './shared/layout/notifications/UserNotificationHelper';
 import { HeaderNotificationsComponent } from './shared/layout/notifications/header-notifications.component';
 import { NotificationSettingsModalComponent } from './shared/layout/notifications/notification-settings-modal.component';
 import { NotificationsComponent } from './shared/layout/notifications/notifications.component';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { TextMaskModule } from 'angular2-text-mask';
 import { ImageCropperModule } from 'ngx-image-cropper';
-import { ActiveDelegatedUsersComboComponent } from './shared/layout/active-delegated-users-combo.component';
+import { ActiveDelegatedUsersComboComponent } from './shared/layout/topbar/active-delegated-users-combo.component';
 
 // Metronic
 import { PerfectScrollbarModule, PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
@@ -98,13 +102,11 @@ import { AppBsModalModule } from '@shared/common/appBsModal/app-bs-modal.module'
         Theme9LayoutComponent,
         Theme10LayoutComponent,
         Theme11LayoutComponent,
-        Theme12LayoutComponent,
         HeaderNotificationsComponent,
         SideBarMenuComponent,
         TopBarMenuComponent,
         FooterComponent,
         ScrollTopComponent,
-        StackedFooterComponent,
         LoginAttemptsModalComponent,
         LinkedAccountsModalComponent,
         UserDelegationsModalComponent,
@@ -120,7 +122,11 @@ import { AppBsModalModule } from '@shared/common/appBsModal/app-bs-modal.module'
         ChatFriendListItemComponent,
         NotificationSettingsModalComponent,
         ChatMessageComponent,
-        TopBarComponent,
+        QuickThemeSelectionComponent,
+        LanguageSwitchDropdownComponent,
+        ChatToggleButtonComponent,
+        SubscriptionNotificationBarComponent,
+        UserMenuComponent,
         DefaultBrandComponent,
         Theme2BrandComponent,
         Theme3BrandComponent,
@@ -132,7 +138,6 @@ import { AppBsModalModule } from '@shared/common/appBsModal/app-bs-modal.module'
         Theme9BrandComponent,
         Theme10BrandComponent,
         Theme11BrandComponent,
-        Theme12BrandComponent,
         SessionTimeoutModalComponent,
         SessionTimeoutComponent,
         MenuSearchBarComponent,
@@ -160,7 +165,6 @@ import { AppBsModalModule } from '@shared/common/appBsModal/app-bs-modal.module'
         ProgressBarModule,
         PerfectScrollbarModule,
         CoreModule,
-        NgxChartsModule,
         TextMaskModule,
         ImageCropperModule,
         AutoCompleteModule,

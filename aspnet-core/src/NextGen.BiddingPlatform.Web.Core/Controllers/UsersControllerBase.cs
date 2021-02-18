@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Abp.IO.Extensions;
@@ -52,7 +53,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                 }
 
                 var tenantId = AbpSession.TenantId;
-                var fileObject = new BinaryObject(tenantId, fileBytes);
+                var fileObject = new BinaryObject(tenantId, fileBytes, $"{DateTime.UtcNow} import from excel file.");
 
                 await BinaryObjectManager.SaveAsync(fileObject);
 

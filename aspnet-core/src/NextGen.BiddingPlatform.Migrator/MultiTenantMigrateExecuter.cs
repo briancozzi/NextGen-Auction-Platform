@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Abp.Data;
 using Abp.Dependency;
 using Abp.Domain.Repositories;
@@ -7,6 +8,7 @@ using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.MultiTenancy;
 using Abp.Runtime.Security;
+using Microsoft.Extensions.Configuration;
 using NextGen.BiddingPlatform.EntityFrameworkCore;
 using NextGen.BiddingPlatform.Migrations.Seed;
 using NextGen.BiddingPlatform.MultiTenancy;
@@ -22,7 +24,7 @@ namespace NextGen.BiddingPlatform.Migrator
         private readonly IDbPerTenantConnectionStringResolver _connectionStringResolver;
 
         public MultiTenantMigrateExecuter(
-            AbpZeroDbMigrator migrator, 
+            AbpZeroDbMigrator migrator,
             IRepository<Tenant> tenantRepository,
             Log log,
             IDbPerTenantConnectionStringResolver connectionStringResolver)
@@ -34,7 +36,7 @@ namespace NextGen.BiddingPlatform.Migrator
             _connectionStringResolver = connectionStringResolver;
         }
 
-        public void Run(bool skipConnVerification)
+        public void Run(bool skipConnVerification, bool isDockerEnabled = false)
         {
             var hostConnStr = _connectionStringResolver.GetNameOrConnectionString(new ConnectionStringResolveArgs(MultiTenancySides.Host));
             if (hostConnStr.IsNullOrWhiteSpace())
@@ -42,9 +44,9 @@ namespace NextGen.BiddingPlatform.Migrator
                 Log.Write("Configuration file should contain a connection string named 'Default'");
                 return;
             }
-
             Log.Write("Host database: " + ConnectionStringHelper.GetConnectionString(hostConnStr));
-            if (!skipConnVerification)
+
+            if (!skipConnVerification && !isDockerEnabled)
             {
                 Log.Write("Continue to migration for this host database and all tenants..? (Y/N): ");
                 var command = Console.ReadLine();

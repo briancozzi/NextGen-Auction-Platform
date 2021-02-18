@@ -11,6 +11,7 @@ using Abp.Extensions;
 using Abp.Runtime.Caching;
 using Abp.Threading;
 using Abp.Runtime.Security;
+using Abp.Timing;
 using Microsoft.IdentityModel.Tokens;
 using NextGen.BiddingPlatform.Authorization.Users;
 using NextGen.BiddingPlatform.Authorization.Delegation;
@@ -36,7 +37,8 @@ namespace NextGen.BiddingPlatform.Web.Authentication.JwtBearer
             return _tokenHandler.CanReadToken(securityToken);
         }
 
-        public ClaimsPrincipal ValidateToken(string securityToken, TokenValidationParameters validationParameters, out SecurityToken validatedToken)
+        public ClaimsPrincipal ValidateToken(string securityToken, TokenValidationParameters validationParameters,
+            out SecurityToken validatedToken)
         {
             var cacheManager = IocManager.Instance.Resolve<ICacheManager>();
             var principal = _tokenHandler.ValidateToken(securityToken, validationParameters, out validatedToken);
@@ -63,9 +65,11 @@ namespace NextGen.BiddingPlatform.Web.Authentication.JwtBearer
             }
 
             var tokenAuthConfiguration = IocManager.Instance.Resolve<TokenAuthConfiguration>();
-            cacheManager
-                .GetCache(AppConsts.TokenValidityKey)
-                .Set(tokenValidityKeyClaim.Value, "", absoluteExpireTime: tokenAuthConfiguration.AccessTokenExpiration);
+
+            cacheManager.GetCache(AppConsts.TokenValidityKey).Set(
+                tokenValidityKeyClaim.Value, "",
+                absoluteExpireTime: new DateTimeOffset(Clock.Now.AddMinutes(tokenAuthConfiguration.AccessTokenExpiration.TotalMinutes))
+            );
 
             return principal;
         }
@@ -84,7 +88,8 @@ namespace NextGen.BiddingPlatform.Web.Authentication.JwtBearer
                         {
                             var userManagerObject = userManager.Object;
                             var user = userManagerObject.GetUser(userIdentifier);
-                            isValid = AsyncHelper.RunSync(() => userManagerObject.IsTokenValidityKeyValidAsync(user, tokenValidityKeyClaim.Value));
+                            isValid = AsyncHelper.RunSync(() =>
+                                userManagerObject.IsTokenValidityKeyValidAsync(user, tokenValidityKeyClaim.Value));
 
                             uow.Complete();
                         }
@@ -140,13 +145,15 @@ namespace NextGen.BiddingPlatform.Web.Authentication.JwtBearer
                 return;
             }
 
-            var impersonatorTenantId = impersonatorTenant == null ? null : impersonatorTenant.Value.IsNullOrEmpty() ? (int?)null : Convert.ToInt32(impersonatorTenant.Value);
+            var impersonatorTenantId = impersonatorTenant == null ? null :
+                impersonatorTenant.Value.IsNullOrEmpty() ? (int?) null : Convert.ToInt32(impersonatorTenant.Value);
             var sourceUserId = Convert.ToInt64(user.Value);
             var impersonatorUserId = Convert.ToInt64(impersonatorUser.Value);
 
             using (var _permissionChecker = IocManager.Instance.ResolveAsDisposable<PermissionChecker>())
             {
-                if (_permissionChecker.Object.IsGranted(new UserIdentifier(impersonatorTenantId, impersonatorUserId), AppPermissions.Pages_Administration_Users_Impersonation))
+                if (_permissionChecker.Object.IsGranted(new UserIdentifier(impersonatorTenantId, impersonatorUserId),
+                    AppPermissions.Pages_Administration_Users_Impersonation))
                 {
                     return;
                 }
@@ -154,7 +161,8 @@ namespace NextGen.BiddingPlatform.Web.Authentication.JwtBearer
 
             using (var userDelegationManager = IocManager.Instance.ResolveAsDisposable<IUserDelegationManager>())
             {
-                var hasActiveDelegation = userDelegationManager.Object.HasActiveDelegation(sourceUserId, impersonatorUserId);
+                var hasActiveDelegation =
+                    userDelegationManager.Object.HasActiveDelegation(sourceUserId, impersonatorUserId);
 
                 if (!hasActiveDelegation)
                 {

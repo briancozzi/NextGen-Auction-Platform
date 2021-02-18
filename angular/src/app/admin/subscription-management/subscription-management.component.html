@@ -1,20 +1,14 @@
 <div [@routerTransition]>
-    <div class="kt-content  kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor">
-        <div class="kt-subheader kt-grid__item">
-            <div [class]="containerClass">
-                <div class="kt-subheader__main">
-                    <h3 class="kt-subheader__title">
-                        <span>{{"Subscription" | localize}}</span>
-                    </h3>
-                </div>
-            </div>
-        </div>
-        <div [class]="containerClass + ' kt-grid__item kt-grid__item--fluid'">
-            <div class="kt-portlet">
-                <div class="kt-portlet__body">
+    <div class="content d-flex flex-column flex-column-fluid">
+        <sub-header [title]="'Subscription' | localize">
+        </sub-header>
+
+        <div [class]="containerClass">
+            <div class="card card-custom gutter-b">
+                <div class="card-body">
                     <tabset>
-                        <tab heading="{{'SubscriptionInformation' | localize}}">
-                            <form class="kt-form">
+                        <tab class="p-5" heading="{{'SubscriptionInformation' | localize}}">
+                            <form class="form">
                                 <input type="hidden" Name="PaymentPeriodType" value="@tenant.PaymentPeriodType" />
                                 <input type="hidden" Name="Gateway" value="@SubscriptionPaymentGatewayType.Paypal" />
 
@@ -25,9 +19,9 @@
                                         <p *ngIf="tenant.edition">
                                             {{tenant.edition.displayName}}
                                             <span *ngIf="tenant.edition.isFree"
-                                                class="kt-badge kt-badge--success kt-badge--inline">{{"Free" | localize}}</span>
+                                                class="label label-success label-inline">{{"Free" | localize}}</span>
                                             <span *ngIf="tenant.isInTrialPeriod"
-                                                class="kt-badge kt-badge--warning kt-badge--inline">{{"Trial" | localize}}</span>
+                                                class="label label-warning label-inline">{{"Trial" | localize}}</span>
                                     </div>
                                 </div>
 
@@ -92,9 +86,9 @@
 
                             </form>
                         </tab>
-                        <tab heading="{{'PaymentHistory' | localize}}">
+                        <tab class="p-5" heading="{{'PaymentHistory' | localize}}">
                             <div class="primeng-datatable-container" [busyIf]="primengTableHelper.isLoading">
-                                <p-table #dataTable (onLazyLoad)="getPaymentHistory($event)"
+                                <p-table #dataTable sortMode="multiple" (onLazyLoad)="getPaymentHistory($event)"
                                     [value]="primengTableHelper.records"
                                     rows="{{primengTableHelper.defaultRecordsCountPerPage}}" [paginator]="false"
                                     [lazy]="true" [scrollable]="true" ScrollWidth="100%"
@@ -141,42 +135,42 @@
                                                     (click)="createOrShowInvoice(record.id, record.invoiceNo)">{{'ShowInvoice' | localize}}</button>
                                             </td>
                                             <td style="width: 150px">
-                                                <span class="ui-column-title">{{'ProcessTime' | localize}}</span>
+                                                <span class="p-column-title">{{'ProcessTime' | localize}}</span>
                                                 <span
-                                                    *ngIf="record.creationTime">{{record.creationTime | momentFormat:'L'}}</span>
+                                                    *ngIf="record.creationTime">{{record.creationTime | luxonFormat:'F'}}</span>
                                                 <span *ngIf="!record.creationTime">-</span>
                                             </td>
                                             <td style="width: 150px">
-                                                <span class="ui-column-title">{{'Edition' | localize}}</span>
+                                                <span class="p-column-title">{{'Edition' | localize}}</span>
                                                 {{record.editionDisplayName}}
                                             </td>
                                             <td style="width: 150px">
-                                                <span class="ui-column-title">{{'Gateway' | localize}}</span>
+                                                <span class="p-column-title">{{'Gateway' | localize}}</span>
                                                 {{'SubscriptionPaymentGatewayType_' + record.gateway | localize}}
                                             </td>
                                             <td style="width: 100px">
-                                                <span class="ui-column-title">{{'Amount' | localize}}</span>
+                                                <span class="p-column-title">{{'Amount' | localize}}</span>
                                                 {{appSession.application.currencySign}}
                                                 {{record.amount | number : '1.2-2'}}
                                             </td>
                                             <td style="width: 150px">
-                                                <span class="ui-column-title">{{'Status' | localize}}</span>
+                                                <span class="p-column-title">{{'Status' | localize}}</span>
                                                 {{'SubscriptionPaymentStatus_' + record.status | localize}}
                                             </td>
                                             <td style="width: 150px">
-                                                <span class="ui-column-title">{{'Period' | localize}}</span>
+                                                <span class="p-column-title">{{'Period' | localize}}</span>
                                                 {{'PaymentPeriodType_' + record.paymentPeriodType | localize}}
                                             </td>
                                             <td style="width: 100px">
-                                                <span class="ui-column-title">{{'DayCount' | localize}}</span>
+                                                <span class="p-column-title">{{'DayCount' | localize}}</span>
                                                 {{record.dayCount}}
                                             </td>
                                             <td style="width: 250px;">
-                                                <span class="ui-column-title">{{'PaymentId' | localize}}</span>
+                                                <span class="p-column-title">{{'PaymentId' | localize}}</span>
                                                 {{record.paymentId}}
                                             </td>
                                             <td style="width: 150px">
-                                                <span class="ui-column-title">{{'InvoiceNo' | localize}}</span>
+                                                <span class="p-column-title">{{'InvoiceNo' | localize}}</span>
                                                 {{record.invoiceNo}}
                                             </td>
                                         </tr>

@@ -3,7 +3,7 @@ import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { CachingServiceProxy, EntityDtoOfString, WebLogServiceProxy } from '@shared/service-proxies/service-proxies';
 import { FileDownloadService } from '@shared/utils/file-download.service';
-import * as _ from 'lodash';
+import { escape as _escape } from 'lodash-es';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -70,23 +70,23 @@ export class MaintenanceComponent extends AppComponentBase implements OnInit {
     getLogClass(log: string): string {
 
         if (log.startsWith('DEBUG')) {
-            return 'kt-badge kt-badge--inline kt-badge--dark';
+            return 'label label-inline label-dark';
         }
 
         if (log.startsWith('INFO')) {
-            return 'kt-badge kt-badge--inline kt-badge--info';
+            return 'label label-inline label-info';
         }
 
         if (log.startsWith('WARN')) {
-            return 'kt-badge kt-badge--inline kt-badge--warning';
+            return 'label label-inline label-warning';
         }
 
         if (log.startsWith('ERROR')) {
-            return 'kt-badge kt-badge--inline kt-badge--danger';
+            return 'label label-inline label-danger';
         }
 
         if (log.startsWith('FATAL')) {
-            return 'kt-badge kt-badge--inline kt-badge--danger';
+            return 'label label-inline label-danger';
         }
 
         return '';
@@ -117,7 +117,7 @@ export class MaintenanceComponent extends AppComponentBase implements OnInit {
     }
 
     getRawLogContent(log: string): string {
-        return _.escape(log)
+        return _escape(log)
             .replace('DEBUG', '')
             .replace('INFO', '')
             .replace('WARN', '')

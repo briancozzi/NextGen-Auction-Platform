@@ -9,6 +9,7 @@ using Abp.Domain.Repositories;
 using Abp.Linq.Extensions;
 using Abp.Runtime.Session;
 using Abp.Timing;
+using Abp.UI;
 using Microsoft.EntityFrameworkCore;
 using NextGen.BiddingPlatform.Authorization.Delegation;
 using NextGen.BiddingPlatform.Authorization.Users.Delegation.Dto;
@@ -57,7 +58,7 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Delegation
         {
             if (input.TargetUserId == AbpSession.GetUserId())
             {
-                throw new Exception("You can't delegate authorization to yourself !");
+                throw new UserFriendlyException(L("SelfUserDelegationErrorMessage"));
             }
 
             CheckUserDelegationOperation();

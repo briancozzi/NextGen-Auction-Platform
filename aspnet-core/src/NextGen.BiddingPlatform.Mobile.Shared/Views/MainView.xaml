@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<MasterDetailPage xmlns="http://xamarin.com/schemas/2014/forms" 
+<FlyoutPage xmlns="http://xamarin.com/schemas/2014/forms" 
                   xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                   xmlns:base="clr-namespace:NextGen.BiddingPlatform.ViewModels.Base;assembly=NextGen.BiddingPlatform.Mobile.Shared"
                   xmlns:views="clr-namespace:NextGen.BiddingPlatform.Views;assembly=NextGen.BiddingPlatform.Mobile.Shared"
@@ -8,11 +8,11 @@
                   xmlns:controls="clr-namespace:NextGen.BiddingPlatform.Controls;assembly=NextGen.BiddingPlatform.Mobile.Shared"
                   xmlns:image="clr-namespace:ImageCircle.Forms.Plugin.Abstractions;assembly=ImageCircle.Forms.Plugin"
                   x:Class="NextGen.BiddingPlatform.Views.MainView"  
-                  MasterBehavior="Popover" 
+                  FlyoutLayoutBehavior="Popover" 
                   IsPresented="{Binding ShowMasterPage, Mode=TwoWay}"
                   base:ViewManager.AutoWireViewModel="true">
 
-    <MasterDetailPage.Master>
+    <FlyoutPage.Flyout>
         <ContentPage Title="BiddingPlatform" 
                      Icon="hamburger.png" 
                      BackgroundColor="{StaticResource MasterPageBackgroundColor}">
@@ -120,20 +120,20 @@
 
             </StackLayout>
         </ContentPage>
-    </MasterDetailPage.Master>
+    </FlyoutPage.Flyout>
 
-    <MasterDetailPage.Detail>
+    <FlyoutPage.Detail>
         <views:InitialView/>
-    </MasterDetailPage.Detail>
+    </FlyoutPage.Detail>
 
-    <MasterDetailPage.Behaviors>
+    <FlyoutPage.Behaviors>
         <behaviors:EventHandlerBehavior EventName="Appearing">
             <behaviors:ActionCollection>
                 <behaviors:InvokeCommandAction Command="{Binding PageAppearingCommand}" />
             </behaviors:ActionCollection>
         </behaviors:EventHandlerBehavior>
-    </MasterDetailPage.Behaviors>
+    </FlyoutPage.Behaviors>
 
-</MasterDetailPage>
+</FlyoutPage>
 
 

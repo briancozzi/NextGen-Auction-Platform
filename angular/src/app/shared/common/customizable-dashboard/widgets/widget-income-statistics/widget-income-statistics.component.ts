@@ -1,26 +1,28 @@
 import { Component, OnInit, OnDestroy, Injector } from '@angular/core';
 import { ChartDateInterval, HostDashboardServiceProxy } from '@shared/service-proxies/service-proxies';
-import * as moment from 'moment';
-import * as _ from 'lodash';
-import { WidgetComponentBase } from '../widget-component-base';
+import { DateTime } from 'luxon';
+import { filter as _filter } from 'lodash-es';
+import { WidgetComponentBaseComponent } from '../widget-component-base';
+import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 
 @Component({
   selector: 'app-widget-income-statistics',
   templateUrl: './widget-income-statistics.component.html',
   styleUrls: ['./widget-income-statistics.component.css']
 })
-export class WidgetIncomeStatisticsComponent extends WidgetComponentBase implements OnInit, OnDestroy {
+export class WidgetIncomeStatisticsComponent extends WidgetComponentBaseComponent implements OnInit, OnDestroy {
 
   selectedIncomeStatisticsDateInterval = ChartDateInterval.Daily;
   loadingIncomeStatistics = true;
 
-  selectedDateRange: moment.Moment[] = [moment().add(-7, 'days').startOf('day'), moment().endOf('day')];
+  selectedDateRange: DateTime[] = [this._dateTimeService.getStartOfDayMinusDays(7), this._dateTimeService.getEndOfDay()];
   incomeStatisticsData: any = [];
   incomeStatisticsHasData = false;
   appIncomeStatisticsDateInterval = ChartDateInterval;
 
   constructor(injector: Injector,
-    private _hostDashboardServiceProxy: HostDashboardServiceProxy
+    private _hostDashboardServiceProxy: HostDashboardServiceProxy,
+    private _dateTimeService: DateTimeService
   ) {
     super(injector);
   }
@@ -43,20 +45,20 @@ export class WidgetIncomeStatisticsComponent extends WidgetComponentBase impleme
     this.loadingIncomeStatistics = true;
     this._hostDashboardServiceProxy.getIncomeStatistics(
       this.selectedIncomeStatisticsDateInterval,
-      moment(this.selectedDateRange[0]),
-      moment(this.selectedDateRange[1]))
-      .subscribe(result => {
-        this.incomeStatisticsData = this.normalizeIncomeStatisticsData(result.incomeStatistics);
-        this.incomeStatisticsHasData = _.filter(this.incomeStatisticsData[0].series, data => data.value > 0).length > 0;
-        this.loadingIncomeStatistics = false;
-      });
+      this.selectedDateRange[0],
+      this.selectedDateRange[1]
+    ).subscribe(result => {
+      this.incomeStatisticsData = this.normalizeIncomeStatisticsData(result.incomeStatistics);
+      this.incomeStatisticsHasData = _filter(this.incomeStatisticsData[0].series, data => data.value > 0).length > 0;
+      this.loadingIncomeStatistics = false;
+    });
   }
 
   normalizeIncomeStatisticsData(data): any {
     const chartData = [];
     for (let i = 0; i < data.length; i++) {
       chartData.push({
-        'name': moment(moment(data[i].date).utc().valueOf()).format('L'),
+        'name': this._dateTimeService.formatISODateString(data[i].date, 'D'),
         'value': data[i].amount
       });
     }

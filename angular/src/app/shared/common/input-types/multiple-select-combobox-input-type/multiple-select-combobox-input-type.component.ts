@@ -9,7 +9,7 @@ export class MultipleSelectComboboxInputTypeComponent extends InputTypeComponent
   filteredValues: string[];
 
   constructor(
-    injector: Injector,
+    injector: Injector
   ) {
     super(injector);
   }

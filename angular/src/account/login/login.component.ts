@@ -6,7 +6,7 @@ import { AppComponentBase } from '@shared/common/app-component-base';
 import { SessionServiceProxy, UpdateUserSignInTokenOutput } from '@shared/service-proxies/service-proxies';
 import { UrlHelper } from 'shared/helpers/UrlHelper';
 import { ExternalLoginProvider, LoginService } from './login.service';
-import { ReCaptcha2Component } from 'ngx-captcha';
+import { ReCaptchaV3Service } from 'ngx-captcha';
 import { AppConsts } from '@shared/AppConsts';
 
 @Component({
@@ -15,19 +15,17 @@ import { AppConsts } from '@shared/AppConsts';
     styleUrls: ['./login.component.less']
 })
 export class LoginComponent extends AppComponentBase implements OnInit {
-    @ViewChild('recaptchaRef') recaptchaRef: ReCaptcha2Component;
-
     submitting = false;
     isMultiTenancyEnabled: boolean = this.multiTenancy.isEnabled;
     recaptchaSiteKey: string = AppConsts.recaptchaSiteKey;
-    captchaResponse?: string;
 
     constructor(
         injector: Injector,
         public loginService: LoginService,
         private _router: Router,
         private _sessionService: AbpSessionService,
-        private _sessionAppService: SessionServiceProxy
+        private _sessionAppService: SessionServiceProxy,
+        private _reCaptchaV3Service: ReCaptchaV3Service
     ) {
         super(injector);
     }
@@ -49,6 +47,7 @@ export class LoginComponent extends AppComponentBase implements OnInit {
     }
 
     ngOnInit(): void {
+        this.loginService.init();
         if (this._sessionService.userId > 0 && UrlHelper.getReturnUrl() && UrlHelper.getSingleSignIn()) {
             this._sessionAppService.updateUserSignInToken()
                 .subscribe((result: UpdateUserSignInTokenOutput) => {
@@ -62,33 +61,47 @@ export class LoginComponent extends AppComponentBase implements OnInit {
                 });
         }
 
+        this.handleExternalLoginCallbacks();
+    }
+
+    handleExternalLoginCallbacks(): void {
         let state = UrlHelper.getQueryParametersUsingHash().state;
+        let queryParameters = UrlHelper.getQueryParameters();
+
         if (state && state.indexOf('openIdConnect') >= 0) {
             this.loginService.openIdConnectLoginCallback({});
+        }
+
+        if (queryParameters.twitter && queryParameters.twitter === '1') {
+            let parameters = UrlHelper.getQueryParameters();
+            let token = parameters['oauth_token'];
+            let verifier = parameters['oauth_verifier'];
+            this.loginService.twitterLoginCallback(token, verifier);
         }
     }
 
     login(): void {
-        if (this.useCaptcha && !this.captchaResponse) {
-            this.message.warn(this.l('CaptchaCanNotBeEmpty'));
-            return;
+        let recaptchaCallback = (token: string) => {
+            this.showMainSpinner();
+
+            this.submitting = true;
+            this.loginService.authenticate(
+                () => {
+                    this.submitting = false;
+                    this.hideMainSpinner();
+                },
+                null,
+                token
+            );
+        };
+
+        if (this.useCaptcha) {
+            this._reCaptchaV3Service.execute(this.recaptchaSiteKey, 'login', (token) => {
+                recaptchaCallback(token);
+            });
+        } else {
+            recaptchaCallback(null);
         }
-
-        this.showMainSpinner();
-
-        this.submitting = true;
-        this.loginService.authenticate(
-            () => {
-                this.submitting = false;
-                this.hideMainSpinner();
-
-                if (this.recaptchaRef) {
-                    this.recaptchaRef.resetCaptcha();
-                }
-            },
-            null,
-            this.captchaResponse
-        );
     }
 
     externalLogin(provider: ExternalLoginProvider) {

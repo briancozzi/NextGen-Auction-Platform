@@ -1,19 +1,18 @@
 import { Injectable } from '@angular/core';
-import { TreeNode } from 'primeng/api';
-import * as _ from 'lodash';
+import { filter as _filter, forEach as _forEach } from 'lodash-es';
 
 @Injectable()
 export class TreeDataHelperService {
 
     findNode(data, selector): any {
-        let nodes = _.filter(data, selector);
+        let nodes = _filter(data, selector);
         if (nodes && nodes.length === 1) {
             return nodes[0];
         }
 
         let foundNode = null;
 
-        _.forEach(data, d => {
+        _forEach(data, d => {
             if (!foundNode) {
                 foundNode = this.findNode(d.children, selector);
             }
@@ -35,7 +34,7 @@ export class TreeDataHelperService {
         let traverseChildren = function (node) {
             let names = [];
             if (node.children) {
-                _.forEach(node.children, c => {
+                _forEach(node.children, c => {
                     names.push(c.data.name);
                     names = names.concat(traverseChildren(c));
                 });

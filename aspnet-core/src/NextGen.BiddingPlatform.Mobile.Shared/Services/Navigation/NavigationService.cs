@@ -78,9 +78,9 @@ namespace NextGen.BiddingPlatform.Services.Navigation
                 currentPage = currentPage.Navigation.NavigationStack.Last();
             }
 
-            if (!(currentPage is MasterDetailPage masterDetailPage))
+            if (!(currentPage is FlyoutPage masterDetailPage))
             {
-                throw new Exception($"Current MainPage is not a {typeof(MasterDetailPage)}!");
+                throw new Exception($"Current MainPage is not a {typeof(FlyoutPage)}!");
             }
 
             var newPage = await _pageService.CreatePage(viewType, navigationParameter);
@@ -100,7 +100,7 @@ namespace NextGen.BiddingPlatform.Services.Navigation
             if (_pageService.MainPage is NavigationPage navigationPage)
             {
                 var currentPage = navigationPage.Navigation.NavigationStack.Last();
-                if (currentPage is MasterDetailPage masterDetail && masterDetail.Detail is NavigationPage detailNavigationPage)
+                if (currentPage is FlyoutPage masterDetail && masterDetail.Detail is NavigationPage detailNavigationPage)
                 {
                     if (detailNavigationPage.Navigation.NavigationStack.Count > 1)
                     {
@@ -110,7 +110,7 @@ namespace NextGen.BiddingPlatform.Services.Navigation
 
                 return await navigationPage.Navigation.PopAsync();
             }
-            else if (_pageService.MainPage is MasterDetailPage masterDetail && masterDetail.Detail is NavigationPage detailNavigationPage)
+            else if (_pageService.MainPage is FlyoutPage masterDetail && masterDetail.Detail is NavigationPage detailNavigationPage)
             {
                 return await detailNavigationPage.Navigation.PopAsync();
             }

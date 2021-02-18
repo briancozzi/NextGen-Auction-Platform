@@ -1,84 +1,68 @@
-.cc-window {
-    background-color: #282a3a;
-}
-
-.cc-btn {
-    background-color: #5867dd;
-    border-color: #5867dd;
-    color: #ffffff;
-}
-
-.cc-message {
-    color: #fefefe;
-}
-
-body {
-    background-image: url(/assets/metronic/themes/theme8/images/bg/bg-2.jpg);
-}
-
-body .kt-header__topbar .subscription-warning {
-    padding-top: 14px;
-}
-
-body .kt-header__topbar .subscription-warning span {
+ul.menu-nav > li > a.menu-link > i.menu-link-icon {
+    margin-top: 15px;
     color: #fff;
 }
 
-body.kt-header--minimize .kt-header__topbar .subscription-warning span {
-    color: #000;
-}
-
-@media (max-width: 1024px) {
-    body .kt-body {
-        border-top-left-radius: 0px;
-        border-top-right-radius: 0px;
-    }
-}
-
-.kt-user-card .kt-user-card__name {
-    color: #6c7293 !important;
-}
-
-.kt-header__topbar .kt-header__topbar-item.kt-header__topbar-item--langs {
-    margin-right: 0;
-}
-
-.kt-footer .kt-footer__copyright {
+ul.menu-nav > li > a.menu-link > i.menu-hor-arrow {
+    margin-top: 18px !important;
     color: #fff;
+}
+
+.content {
+    padding: 0px;
+}
+
+.content > .container,
+.content > .container-fluid {
+    padding: 40px;
+}
+
+.subheader > .container {
+    padding: 0px;
 }
 
 .unread-notification-count {
     position: absolute;
-    top: 5px !important;
-    left: 27 !important;
-    right: 11px;
-    font-size: 1.2rem !important;
-    background-color: #ff0000 !important;
-    padding: 12px;
+    top: 5px;
+    left: 23px;
+  }
+
+  .unread-chat-message-count {
+    position: absolute;
+    top: -6px;
+    left: 13px;
+  }
+
+.menuSearchBarInput{
+  height: 50px;
 }
 
-.menuSearchBarContainer {
-    min-width: 150px !important;
+.unread-chat-message-count {
+    position: absolute;
+    top: -6px;
+    left: 13px;
 }
 
-@media (min-width: 1024px) {
-    .menuSearchBarContainer {
-        min-width: 150px !important;
-        margin-right: 14px
-    }
+.subscription-warning * {
+    color: #fff;
 }
 
-.menuSearchBarContainer .ui-autocomplete-panel {
-    margin-left: 14px
+.mobile-subscription-warning {
+    background-color: #f9f9fc;
 }
 
-@media (max-width: 1024px) {
-    .menuSearchBarContainer {
-        width: calc(100% - 20px);
-        margin-left: 15px;
-    }
+.menuSearchBarInput{
+    height: 50px;
+}
 
-    .menuSearchBarInput{
-        width: 214px;
-    }
+menu-search-bar {
+    min-width: 100px !important;
+}
+
+p-autoComplete{
+    padding: 10px;
+}
+
+.menuSearchBarContainer{
+    width: calc(100% - 20px);
 }

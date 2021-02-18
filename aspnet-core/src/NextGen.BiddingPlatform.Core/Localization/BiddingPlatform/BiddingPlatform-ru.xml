@@ -260,7 +260,6 @@
     <text name="Language">Язык</text>
     <text name="Flag">Флаг</text>
     <text name="SetAsDefaultLanguage">Назначить языком по умолчанию</text>
-    <text name="InvlalidLanguageCode">Неверный код языка.</text>
     <text name="EditLanguage">Изменить язык</text>
     <text name="ChangeTexts">Изменить тексты</text>
     <text name="TargetValue">Целевое значение</text>

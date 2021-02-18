@@ -5,6 +5,9 @@ import { UrlHelper } from '@shared/helpers/UrlHelper';
 import { DOCUMENT } from '@angular/common';
 import { LayoutRefService } from '@metronic/app/core/_base/layout/services/layout-ref.service';
 import { AppConsts } from '@shared/AppConsts';
+import { OffcanvasOptions } from '@metronic/app/core/_base/layout/directives/offcanvas.directive';
+import { ToggleOptions } from '@metronic/app/core/_base/layout/directives/toggle.directive';
+import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 
 @Component({
     templateUrl: './theme2-layout.component.html',
@@ -15,12 +18,26 @@ export class Theme2LayoutComponent extends ThemesLayoutBaseComponent implements 
 
     @ViewChild('ktHeader', {static: true}) ktHeader: ElementRef;
 
+    menuCanvasOptions: OffcanvasOptions = {
+        baseClass: 'aside',
+        overlay: true,
+        closeBy: 'kt_aside_close_btn',
+        toggleBy: 'kt_header_mobile_toggle'
+    };
+
+    userMenuToggleOptions: ToggleOptions = {
+        target: this.document.body,
+        targetState: 'topbar-mobile-on',
+        toggleState: 'active'
+    };
+
     constructor(
         injector: Injector,
         private layoutRefService: LayoutRefService,
-        @Inject(DOCUMENT) private document: Document
+        @Inject(DOCUMENT) private document: Document,
+        _dateTimeService: DateTimeService
     ) {
-        super(injector);
+        super(injector, _dateTimeService);
     }
 
     remoteServiceBaseUrl: string = AppConsts.remoteServiceBaseUrl;
@@ -34,7 +51,7 @@ export class Theme2LayoutComponent extends ThemesLayoutBaseComponent implements 
     }
 
     toggleLeftAside(): void {
-        this.document.body.classList.toggle('kt-header-menu-wrapper--on');
-        this.document.getElementById('kt_header_menu_wrapper').classList.toggle('kt-header-menu-wrapper--on');
+        this.document.body.classList.toggle('header-menu-wrapper-on');
+        this.document.getElementById('kt_header_menu_wrapper').classList.toggle('header-menu-wrapper-on');
     }
 }

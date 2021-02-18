@@ -1,15 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
+using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Mvc;
-using NextGen.BiddingPlatform.Web.Controllers;
 using NextGen.BiddingPlatform.Web.Models.Consent;
 
-namespace NextGen.BiddingPlatform.Web.Host.Controllers
+namespace NextGen.BiddingPlatform.Web.Controllers
 {
     public class ConsentController : BiddingPlatformControllerBase
     {
@@ -66,7 +67,10 @@ namespace NextGen.BiddingPlatform.Web.Host.Controllers
 
             if (model.Button == "no")
             {
-                grantedConsent = ConsentResponse.Denied;
+                grantedConsent = new ConsentResponse()
+                {
+                    Error = AuthorizationError.AccessDenied
+                };
             }
             else if (model.Button == "yes")
             {
@@ -81,7 +85,7 @@ namespace NextGen.BiddingPlatform.Web.Host.Controllers
                     grantedConsent = new ConsentResponse
                     {
                         RememberConsent = model.RememberConsent,
-                        ScopesConsented = scopes.ToArray()
+                        ScopesValuesConsented = scopes.ToArray()
                     };
                 }
                 else
@@ -122,16 +126,16 @@ namespace NextGen.BiddingPlatform.Web.Host.Controllers
                 return null;
             }
 
-            var client = await _clientStore.FindEnabledClientByIdAsync(request.ClientId);
+            var client = await _clientStore.FindEnabledClientByIdAsync(request.Client.ClientId);
             if (client == null)
             {
                 return null;
             }
 
-            var resources = await _resourceStore.FindEnabledResourcesByScopeAsync(request.ScopesRequested);
+            var resources = await _resourceStore.FindEnabledResourcesByScopeAsync(request.ValidatedResources.RawScopeValues);
             if (resources != null && (resources.IdentityResources.Any() || resources.ApiResources.Any()))
             {
-                return CreateConsentViewModel(returnUrl, client, resources, model);
+                return CreateConsentViewModel(returnUrl, client, resources, request, model);
             }
 
             return null;
@@ -140,7 +144,8 @@ namespace NextGen.BiddingPlatform.Web.Host.Controllers
         private ConsentViewModel CreateConsentViewModel(
             string returnUrl,
             Client client,
-            Resources resources,
+            IdentityServer4.Models.Resources resources,
+            AuthorizationRequest request,
             ConsentInputModel model = null)
         {
             var vm = new ConsentViewModel
@@ -155,14 +160,25 @@ namespace NextGen.BiddingPlatform.Web.Host.Controllers
             };
 
             vm.IdentityScopes = resources.IdentityResources.Select(x => CreateScopeViewModel(x, vm.ScopesConsented.Contains(x.Name) || model == null)).ToArray();
-            vm.ResourceScopes = resources.ApiResources.SelectMany(x => x.Scopes).Select(x => CreateScopeViewModel(x, vm.ScopesConsented.Contains(x.Name) || model == null)).ToArray();
-            if (ConsentOptions.EnableOfflineAccess && resources.OfflineAccess)
+            
+            var apiScopes = new List<ScopeViewModel>();
+            foreach(var parsedScope in request.ValidatedResources.ParsedScopes)
             {
-                vm.ResourceScopes = vm.ResourceScopes.Union(new [] {
-                    GetOfflineAccessScope(vm.ScopesConsented.Contains(IdentityServerConstants.StandardScopes.OfflineAccess) || model == null)
-                });
+                var apiScope = request.ValidatedResources.Resources.FindApiScope(parsedScope.ParsedName);
+                if (apiScope != null)
+                {
+                    var scopeVm = CreateScopeViewModel(parsedScope, apiScope, vm.ScopesConsented.Contains(parsedScope.RawValue) || model == null);
+                    apiScopes.Add(scopeVm);
+                }
+            }
+            
+            if (ConsentOptions.EnableOfflineAccess && request.ValidatedResources.Resources.OfflineAccess)
+            {
+                apiScopes.Add(GetOfflineAccessScope(vm.ScopesConsented.Contains(IdentityServer4.IdentityServerConstants.StandardScopes.OfflineAccess) || model == null));
             }
 
+            vm.ApiScopes = apiScopes;
+            
             return vm;
         }
 
@@ -179,16 +195,22 @@ namespace NextGen.BiddingPlatform.Web.Host.Controllers
             };
         }
 
-        public ScopeViewModel CreateScopeViewModel(Scope scope, bool check)
+        public ScopeViewModel CreateScopeViewModel(ParsedScopeValue parsedScopeValue, ApiScope apiScope, bool check)
         {
+            var displayName = apiScope.DisplayName ?? apiScope.Name;
+            if (!String.IsNullOrWhiteSpace(parsedScopeValue.ParsedParameter))
+            {
+                displayName += ":" + parsedScopeValue.ParsedParameter;
+            }
+
             return new ScopeViewModel
             {
-                Name = scope.Name,
-                DisplayName = scope.DisplayName,
-                Description = scope.Description,
-                Emphasize = scope.Emphasize,
-                Required = scope.Required,
-                Checked = check || scope.Required,
+                Name = parsedScopeValue.RawValue,
+                DisplayName = displayName,
+                Description = apiScope.Description,
+                Emphasize = apiScope.Emphasize,
+                Required = apiScope.Required,
+                Checked = check || apiScope.Required
             };
         }
 

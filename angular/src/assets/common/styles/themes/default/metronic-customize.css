@@ -1,59 +1,42 @@
-.kt-header-mobile .kt-header__brand-logo-default {
-  height: 52px !important;
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-.cc-window {
-  background-color: #282a3a;
-}
-
-.cc-btn {
-  background-color: #5867dd;
-  border-color: #5867dd;
-  color: #ffffff;
-}
-
-.cc-message {
-  color: #fefefe;
-}
-
-.kt-head--skin-dark {
-  background-color: #1a1a27;
-}
-
-body.kt-aside--static .kt-aside-menu {
-  margin-top: 75px;
-}
-
-.kt-header__topbar .subscription-warning {
-  padding-top: 23px;
+quick-theme-selection,
+language-switch-dropdown,
+header-notifications,
+chat-toggle-button,
+user-menu {
+    display: flex;
 }
 
 .unread-notification-count {
-  position: absolute;
-  top: 13px;
-  right: 3px;
+    position: absolute;
+    top: 5px;
+    left: 23px;
 }
 
-.menuSearchBarContainer {
-  width: calc(100% - 20px);
-  margin: 10px;
+.unread-chat-message-count {
+    position: absolute;
+    top: -6px;
+    left: 13px;
 }
 
-.menuSearchBarInput {
-  width: 214px !important;
+p-autoComplete{
+    padding: 10px;
 }
 
-.kt-aside-menu-dark .menuSearchBarInput {
-  background-color: rgb(18, 18, 30) !important;
-  border: 1px solid rgb(44, 45, 68) !important;
-  color: #9899ac !important;
+.menuSearchBarContainer{
+    width: calc(100% - 20px);
 }
-.kt-aside-menu-dark .menuSearchBarInput:focus {
-  border-color: #7380fc !important;
-  color: #fff !important;
+.mobile-subscription-warning{
+    background-color: #fff;
 }
-body.kt-aside--minimize .menuSearchBarContainer {
-  display: none;
+
+#kt_wrapper > ng-component {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+default-layout{
+    display: flex;
+    flex: 1;
+    flex-direction: column;
 }

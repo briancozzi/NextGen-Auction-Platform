@@ -29,8 +29,7 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
                     {
                         DesktopFixedHeader = await GetSettingValueAsync<bool>(AppSettings.UiManagement.Header.DesktopFixedHeader),
                         MobileFixedHeader = await GetSettingValueAsync<bool>(AppSettings.UiManagement.Header.MobileFixedHeader),
-                        MinimizeDesktopHeaderType = await GetSettingValueAsync(AppSettings.UiManagement.Header.MinimizeType),
-                        HeaderMenuArrows = await GetSettingValueAsync<bool>(AppSettings.UiManagement.Header.MenuArrows)
+                        MinimizeDesktopHeaderType = await GetSettingValueAsync(AppSettings.UiManagement.Header.MinimizeType)
                     },
                     Menu = new ThemeMenuSettingsDto()
                     {
@@ -43,7 +42,10 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
             settings.BaseSettings.Menu.Position = "top";
             settings.BaseSettings.Menu.AsideSkin = "dark";
             settings.BaseSettings.Header.HeaderSkin = "dark";
-
+            
+            settings.BaseSettings.SubHeader.TitleStlye = "text-white font-weight-bold my-2 mr-5";
+            settings.BaseSettings.SubHeader.ContainerStyle = "subheader py-2 py-lg-4 subheader-transparent";
+            
             settings.IsLeftMenuUsed = false;
             settings.IsTopMenuUsed = true;
             settings.IsTabMenuUsed = false;
@@ -59,7 +61,6 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
             await ChangeSettingForUserAsync(user, AppSettings.UiManagement.Header.DesktopFixedHeader, settings.Header.DesktopFixedHeader.ToString());
             await ChangeSettingForUserAsync(user, AppSettings.UiManagement.Header.MobileFixedHeader, settings.Header.MobileFixedHeader.ToString());
             await ChangeSettingForUserAsync(user, AppSettings.UiManagement.Header.MinimizeType, settings.Header.MinimizeDesktopHeaderType);
-            await ChangeSettingForUserAsync(user, AppSettings.UiManagement.Header.MenuArrows, settings.Header.HeaderMenuArrows.ToString());
             await ChangeSettingForUserAsync(user, AppSettings.UiManagement.SearchActive, settings.Menu.SearchActive.ToString());
         }
 
@@ -71,7 +72,6 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
             await ChangeSettingForTenantAsync(tenantId, AppSettings.UiManagement.Header.DesktopFixedHeader, settings.Header.DesktopFixedHeader.ToString());
             await ChangeSettingForTenantAsync(tenantId, AppSettings.UiManagement.Header.MobileFixedHeader, settings.Header.MobileFixedHeader.ToString());
             await ChangeSettingForTenantAsync(tenantId, AppSettings.UiManagement.Header.MinimizeType, settings.Header.MinimizeDesktopHeaderType);
-            await ChangeSettingForTenantAsync(tenantId, AppSettings.UiManagement.Header.MenuArrows, settings.Header.HeaderMenuArrows.ToString());
             await ChangeSettingForTenantAsync(tenantId, AppSettings.UiManagement.SearchActive, settings.Menu.SearchActive.ToString());
         }
 
@@ -83,7 +83,6 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
             await ChangeSettingForApplicationAsync(AppSettings.UiManagement.Header.DesktopFixedHeader, settings.Header.DesktopFixedHeader.ToString());
             await ChangeSettingForApplicationAsync(AppSettings.UiManagement.Header.MobileFixedHeader, settings.Header.MobileFixedHeader.ToString());
             await ChangeSettingForApplicationAsync(AppSettings.UiManagement.Header.MinimizeType, settings.Header.MinimizeDesktopHeaderType);
-            await ChangeSettingForApplicationAsync(AppSettings.UiManagement.Header.MenuArrows, settings.Header.HeaderMenuArrows.ToString());
             await ChangeSettingForApplicationAsync(AppSettings.UiManagement.SearchActive, settings.Menu.SearchActive.ToString());
         }
 
@@ -102,8 +101,7 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
                 {
                     DesktopFixedHeader = await GetSettingValueForApplicationAsync<bool>(AppSettings.UiManagement.Header.DesktopFixedHeader),
                     MobileFixedHeader = await GetSettingValueForApplicationAsync<bool>(AppSettings.UiManagement.Header.MobileFixedHeader),
-                    MinimizeDesktopHeaderType = await GetSettingValueForApplicationAsync(AppSettings.UiManagement.Header.MinimizeType),
-                    HeaderMenuArrows = await GetSettingValueForApplicationAsync<bool>(AppSettings.UiManagement.Header.MenuArrows)
+                    MinimizeDesktopHeaderType = await GetSettingValueForApplicationAsync(AppSettings.UiManagement.Header.MinimizeType)
                 },
                 Menu = new ThemeMenuSettingsDto()
                 {
@@ -127,8 +125,7 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
                 {
                     DesktopFixedHeader = await GetSettingValueForTenantAsync<bool>(AppSettings.UiManagement.Header.DesktopFixedHeader, tenantId),
                     MobileFixedHeader = await GetSettingValueForTenantAsync<bool>(AppSettings.UiManagement.Header.MobileFixedHeader, tenantId),
-                    MinimizeDesktopHeaderType = await GetSettingValueForTenantAsync(AppSettings.UiManagement.Header.MinimizeType, tenantId),
-                    HeaderMenuArrows = await GetSettingValueForTenantAsync<bool>(AppSettings.UiManagement.Header.MenuArrows, tenantId)
+                    MinimizeDesktopHeaderType = await GetSettingValueForTenantAsync(AppSettings.UiManagement.Header.MinimizeType, tenantId)
                 },
                 Menu = new ThemeMenuSettingsDto()
                 {

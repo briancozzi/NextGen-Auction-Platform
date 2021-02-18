@@ -1,16 +1,17 @@
 ﻿using Abp.Dependency;
-using GraphQL;
 using GraphQL.Types;
+using GraphQL.Utilities;
 using NextGen.BiddingPlatform.Queries.Container;
+using System;
 
 namespace NextGen.BiddingPlatform.Schemas
 {
     public class MainSchema : Schema, ITransientDependency
     {
-        public MainSchema(IDependencyResolver resolver) :
-            base(resolver)
+        public MainSchema(IServiceProvider provider) :
+            base(provider)
         {
-            Query = resolver.Resolve<QueryContainer>();
+            Query = provider.GetRequiredService<QueryContainer>();
         }
     }
 }

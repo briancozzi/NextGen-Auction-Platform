@@ -17,6 +17,8 @@ namespace NextGen.BiddingPlatform.Configuration.Tenants.Dto
         public bool IsCookieConsentEnabled { get; set; }
 
         public bool IsQuickThemeSelectEnabled { get; set; }
+        
+        public bool AllowUsingGravatarProfilePicture { get; set; }
 
         public SessionTimeOutSettingsEditDto SessionTimeOutSettings { get; set; }
     }

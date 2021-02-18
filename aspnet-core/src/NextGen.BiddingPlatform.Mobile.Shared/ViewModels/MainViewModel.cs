@@ -75,7 +75,7 @@ namespace NextGen.BiddingPlatform.ViewModels
             UserNameAndSurname = _applicationContext.LoginInfo.User.Name + " " + _applicationContext.LoginInfo.User.Surname;
             SetApplicationInfo();
             Photo = ImageSource.FromResource(AssetsHelper.ProfileImagePlaceholderNamespace);
-            await GetUserPhoto(_applicationContext.LoginInfo.User.ProfilePictureId);
+            await GetUserPhoto(_applicationContext.LoginInfo.User.Id);
             BuildMenuItems();
 
             _isInitialized = true;
@@ -131,14 +131,9 @@ namespace NextGen.BiddingPlatform.ViewModels
             }
         }
 
-        private async Task GetUserPhoto(string profilePictureId)
+        private async Task GetUserPhoto(long userId)
         {
-            if (!Guid.TryParse(profilePictureId, out var guid))
-            {
-                return;
-            }
-
-            var result = await _profileAppService.GetProfilePictureById(guid);
+            var result = await _profileAppService.GetProfilePictureByUser(userId);
             _profilePictureBytes = Convert.FromBase64String(result.ProfilePicture);
             Photo = ImageSource.FromStream(() => new MemoryStream(_profilePictureBytes));
         }

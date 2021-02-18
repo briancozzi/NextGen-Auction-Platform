@@ -1,9 +1,8 @@
 import { OnInit, Component, EventEmitter, Injector, Output, ViewChild } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
-import { HtmlHelper } from '@shared/helpers/HtmlHelper';
 import { ListResultDtoOfOrganizationUnitDto, MoveOrganizationUnitInput, OrganizationUnitDto, OrganizationUnitServiceProxy } from '@shared/service-proxies/service-proxies';
-import * as _ from 'lodash';
-import { Observable } from 'rxjs';
+import { filter as _filter, remove as _remove } from 'lodash-es';
+import { throwError  } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { IBasicOrganizationUnitInfo } from './basic-organization-unit-info';
 import { CreateOrEditUnitModalComponent } from './create-or-edit-unit-modal.component';
@@ -96,7 +95,7 @@ export class OrganizationTreeComponent extends AppComponentBase implements OnIni
                     this._organizationUnitService.moveOrganizationUnit(input)
                         .pipe(catchError(error => {
                             this.revertDragDrop();
-                            return Observable.throw(error);
+                            return throwError(error);
                         }))
                         .subscribe(() => {
                             this.notify.success(this.l('SuccessfullyMoved'));
@@ -162,7 +161,7 @@ export class OrganizationTreeComponent extends AppComponentBase implements OnIni
 
     private isEntityHistoryEnabled(): boolean {
         let customSettings = (abp as any).custom;
-        return customSettings.EntityHistory && customSettings.EntityHistory.isEnabled && _.filter(customSettings.EntityHistory.enabledEntities, entityType => entityType === this._entityTypeFullName).length === 1;
+        return customSettings.EntityHistory && customSettings.EntityHistory.isEnabled && _filter(customSettings.EntityHistory.enabledEntities, entityType => entityType === this._entityTypeFullName).length === 1;
     }
 
     private getContextMenuItems(): any[] {
@@ -201,6 +200,7 @@ export class OrganizationTreeComponent extends AppComponentBase implements OnIni
                                     this.notify.success(this.l('SuccessfullyDeleted'));
                                     this.selectedOu = null;
                                     this.reload();
+                                    this.ouSelected.emit(null);
                                 });
                             }
                         }
@@ -272,7 +272,7 @@ export class OrganizationTreeComponent extends AppComponentBase implements OnIni
         }
 
         if (!node.data.parentId) {
-            _.remove(this.treeData, {
+            _remove(this.treeData, {
                 data: {
                     id: id
                 }
@@ -284,7 +284,7 @@ export class OrganizationTreeComponent extends AppComponentBase implements OnIni
             return;
         }
 
-        _.remove(parentNode.children, {
+        _remove(parentNode.children, {
             data: {
                 id: id
             }

@@ -101,9 +101,16 @@ body.swal2-height-auto {
     margin-bottom: 4px !important;
 }
 
+.swal2-icon.swal2-info::before,
+.swal2-icon.swal2-warning::before,
+.swal2-icon.swal2-success::before,
+.swal2-icon.swal2-error::before {
+    content: "";
+}
+
 @keyframes glowing {
     0% {
-        opacity: .3;
+        opacity: 0.3;
     }
 
     50% {
@@ -111,7 +118,7 @@ body.swal2-height-auto {
     }
 
     100% {
-        opacity: .3;
+        opacity: 0.3;
     }
 }
 
@@ -145,7 +152,7 @@ body.swal2-height-auto {
     -webkit-animation: fa-spin 1s infinite linear;
     animation: fa-spin 1s infinite linear;
 }
-ngx-spinner .loading-text{
+ngx-spinner .loading-text {
     font-weight: bold;
     color: white;
     font-size: 1.3em;

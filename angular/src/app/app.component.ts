@@ -3,7 +3,6 @@ import { AppConsts } from '@shared/AppConsts';
 import { UrlHelper } from '@shared/helpers/UrlHelper';
 import { SubscriptionStartType } from '@shared/service-proxies/service-proxies';
 import { ChatSignalrService } from 'app/shared/layout/chat/chat-signalr.service';
-import * as moment from 'moment';
 import { AppComponentBase } from 'shared/common/app-component-base';
 import { SignalRHelper } from 'shared/helpers/SignalRHelper';
 import { LinkedAccountsModalComponent } from '@app/shared/layout/linked-accounts-modal.component';
@@ -14,6 +13,8 @@ import { ChangeProfilePictureModalComponent } from '@app/shared/layout/profile/c
 import { MySettingsModalComponent } from '@app/shared/layout/profile/my-settings-modal.component';
 import { NotificationSettingsModalComponent } from '@app/shared/layout/notifications/notification-settings-modal.component';
 import { UserNotificationHelper } from '@app/shared/layout/notifications/UserNotificationHelper';
+import { DateTime } from 'luxon';
+import { DateTimeService } from './shared/common/timing/date-time.service';
 
 @Component({
     templateUrl: './app.component.html',
@@ -39,7 +40,8 @@ export class AppComponent extends AppComponentBase implements OnInit {
     public constructor(
         injector: Injector,
         private _chatSignalrService: ChatSignalrService,
-        private _userNotificationHelper: UserNotificationHelper
+        private _userNotificationHelper: UserNotificationHelper,
+        private _dateTimeService: DateTimeService
     ) {
         super(injector);
     }
@@ -64,7 +66,9 @@ export class AppComponent extends AppComponentBase implements OnInit {
 
     subscriptionIsExpiringSoon(): boolean {
         if (this.appSession.tenant.subscriptionEndDateUtc) {
-            return moment().utc().add(AppConsts.subscriptionExpireNootifyDayCount, 'days') >= moment(this.appSession.tenant.subscriptionEndDateUtc);
+            let today = this._dateTimeService.getUTCDate();
+            let daysFromNow = this._dateTimeService.plusDays(today, AppConsts.subscriptionExpireNootifyDayCount);
+            return daysFromNow >= this.appSession.tenant.subscriptionEndDateUtc;
         }
 
         return false;

@@ -5,7 +5,7 @@ import { FlatFeatureDto, NameValueDto } from '@shared/service-proxies/service-pr
 import { ArrayToTreeConverterService } from '@shared/utils/array-to-tree-converter.service';
 import { TreeDataHelperService } from '@shared/utils/tree-data-helper.service';
 import { TreeNode } from 'primeng/api';
-import * as _ from 'lodash';
+import { find as _find, forEach as _forEach, filter as _filter, remove as _remove } from 'lodash-es';
 
 @Component({
     selector: 'feature-tree',
@@ -60,8 +60,8 @@ export class FeatureTreeComponent extends AppComponentBase {
 
     setSelectedNodes(val: FeatureTreeEditModel) {
         this.selectedFeatures = [];
-        _.forEach(val.features, feature => {
-            let items = _.filter(val.featureValues, { name: feature.name });
+        _forEach(val.features, feature => {
+            let items = _filter(val.featureValues, { name: feature.name });
             if (items && items.length === 1) {
                 let item = items[0];
                 this.setSelectedNode(item.name, item.value);
@@ -117,7 +117,7 @@ export class FeatureTreeComponent extends AppComponentBase {
     findFeatureByName(featureName: string): FlatFeatureDto {
         const self = this;
 
-        const feature = _.find(self._editData.features, f => f.name === featureName);
+        const feature = _find(self._editData.features, f => f.name === featureName);
 
         if (!feature) {
             abp.log.warn('Could not find a feature by name: ' + featureName);
@@ -133,7 +133,7 @@ export class FeatureTreeComponent extends AppComponentBase {
             return '';
         }
 
-        const featureValue = _.find(self._editData.featureValues, f => f.name === featureName);
+        const featureValue = _find(self._editData.featureValues, f => f.name === featureName);
         if (!featureValue) {
             return feature.defaultValue;
         }
@@ -194,7 +194,7 @@ export class FeatureTreeComponent extends AppComponentBase {
 
         let result = true;
 
-        _.forEach(this._editData.features, feature => {
+        _forEach(this._editData.features, feature => {
             let value = this.getFeatureValueByName(feature.name);
             if (!this.isFeatureValueValid(feature.name, value)) {
                 result = false;
@@ -205,7 +205,7 @@ export class FeatureTreeComponent extends AppComponentBase {
     }
 
     setFeatureValueByName(featureName: string, value: string): void {
-        const featureValue = _.find(this._editData.featureValues, f => f.name === featureName);
+        const featureValue = _find(this._editData.featureValues, f => f.name === featureName);
         if (!featureValue) {
             return;
         }
@@ -214,7 +214,7 @@ export class FeatureTreeComponent extends AppComponentBase {
     }
 
     isFeatureSelected(name: string): boolean {
-        let nodes = _.filter(this.selectedFeatures, { data: { name: name } });
+        let nodes = _filter(this.selectedFeatures, { data: { name: name } });
         return nodes && nodes.length === 1;
     }
 
@@ -245,7 +245,7 @@ export class FeatureTreeComponent extends AppComponentBase {
         let parentNode = this._treeDataHelperService.findParent(this.treeData, { data: { name: event.node.data.name } });
 
         while (parentNode != null) {
-            const isParentNodeAdded = _.find(this.selectedFeatures, f => f.data.name === parentNode.data.name);
+            const isParentNodeAdded = _find(this.selectedFeatures, f => f.data.name === parentNode.data.name);
             if (!isParentNodeAdded) {
                 this.selectedFeatures.push(parentNode);
             }
@@ -257,6 +257,6 @@ export class FeatureTreeComponent extends AppComponentBase {
     onNodeUnselect(event) {
         let childrenNodes = this._treeDataHelperService.findChildren(this.treeData, { data: { name: event.node.data.name } });
         childrenNodes.push(event.node.data.name);
-        _.remove(this.selectedFeatures, x => childrenNodes.indexOf(x.data.name) !== -1);
+        _remove(this.selectedFeatures, x => childrenNodes.indexOf(x.data.name) !== -1);
     }
 }

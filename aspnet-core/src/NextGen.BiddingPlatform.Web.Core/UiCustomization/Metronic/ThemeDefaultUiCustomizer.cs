@@ -39,7 +39,8 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
                         AllowAsideMinimizing = await GetSettingValueAsync<bool>(AppSettings.UiManagement.LeftAside.AllowAsideMinimizing),
                         DefaultMinimizedAside = await GetSettingValueAsync<bool>(AppSettings.UiManagement.LeftAside.DefaultMinimizedAside),
                         SubmenuToggle = await GetSettingValueAsync(AppSettings.UiManagement.LeftAside.SubmenuToggle),
-                        SearchActive = await GetSettingValueAsync<bool>(AppSettings.UiManagement.SearchActive)
+                        HoverableAside = await GetSettingValueAsync<bool>(AppSettings.UiManagement.LeftAside.HoverableAside),
+                        SearchActive = await GetSettingValueAsync<bool>(AppSettings.UiManagement.SearchActive),
                     },
                     Footer = new ThemeFooterSettingsDto
                     {
@@ -51,7 +52,10 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
             settings.BaseSettings.Theme = ThemeName;
             settings.BaseSettings.Layout.LayoutType = "fluid";
             settings.BaseSettings.Menu.Position = "left";
-
+            settings.BaseSettings.SubHeader.SubheaderSize = 5;
+            settings.BaseSettings.SubHeader.TitleStlye = "text-dark font-weight-bold mt-2 mb-2 mr-5";
+            settings.BaseSettings.SubHeader.ContainerStyle = "subheader py-2 py-lg-4 subheader-solid";
+            
             settings.IsLeftMenuUsed = true;
             settings.IsTopMenuUsed = false;
             settings.IsTabMenuUsed = false;
@@ -75,6 +79,7 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
             await ChangeSettingForUserAsync(user, AppSettings.UiManagement.LeftAside.AllowAsideMinimizing, settings.Menu.AllowAsideMinimizing.ToString());
             await ChangeSettingForUserAsync(user, AppSettings.UiManagement.LeftAside.DefaultMinimizedAside, settings.Menu.DefaultMinimizedAside.ToString());
             await ChangeSettingForUserAsync(user, AppSettings.UiManagement.LeftAside.SubmenuToggle, settings.Menu.SubmenuToggle);
+            await ChangeSettingForUserAsync(user, AppSettings.UiManagement.LeftAside.HoverableAside, settings.Menu.HoverableAside.ToString());
             await ChangeSettingForUserAsync(user, AppSettings.UiManagement.SearchActive, settings.Menu.SearchActive.ToString());
 
             await ChangeSettingForUserAsync(user, AppSettings.UiManagement.Footer.FixedFooter, settings.Footer.FixedFooter.ToString());
@@ -96,6 +101,7 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
             await ChangeSettingForTenantAsync(tenantId, AppSettings.UiManagement.LeftAside.AllowAsideMinimizing, settings.Menu.AllowAsideMinimizing.ToString());
             await ChangeSettingForTenantAsync(tenantId, AppSettings.UiManagement.LeftAside.DefaultMinimizedAside, settings.Menu.DefaultMinimizedAside.ToString());
             await ChangeSettingForTenantAsync(tenantId, AppSettings.UiManagement.LeftAside.SubmenuToggle, settings.Menu.SubmenuToggle);
+            await ChangeSettingForTenantAsync(tenantId, AppSettings.UiManagement.LeftAside.HoverableAside, settings.Menu.HoverableAside.ToString());
             await ChangeSettingForTenantAsync(tenantId, AppSettings.UiManagement.SearchActive, settings.Menu.SearchActive.ToString());
 
             await ChangeSettingForTenantAsync(tenantId, AppSettings.UiManagement.Footer.FixedFooter, settings.Footer.FixedFooter.ToString());
@@ -117,6 +123,7 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
             await ChangeSettingForApplicationAsync(AppSettings.UiManagement.LeftAside.AllowAsideMinimizing, settings.Menu.AllowAsideMinimizing.ToString());
             await ChangeSettingForApplicationAsync(AppSettings.UiManagement.LeftAside.DefaultMinimizedAside, settings.Menu.DefaultMinimizedAside.ToString());
             await ChangeSettingForApplicationAsync(AppSettings.UiManagement.LeftAside.SubmenuToggle, settings.Menu.SubmenuToggle);
+            await ChangeSettingForApplicationAsync(AppSettings.UiManagement.LeftAside.HoverableAside, settings.Menu.HoverableAside.ToString());
             await ChangeSettingForApplicationAsync(AppSettings.UiManagement.SearchActive, settings.Menu.SearchActive.ToString());
 
             await ChangeSettingForApplicationAsync(AppSettings.UiManagement.Footer.FixedFooter, settings.Footer.FixedFooter.ToString());
@@ -147,7 +154,8 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
                     AllowAsideMinimizing = await GetSettingValueForApplicationAsync<bool>(AppSettings.UiManagement.LeftAside.AllowAsideMinimizing),
                     DefaultMinimizedAside = await GetSettingValueForApplicationAsync<bool>(AppSettings.UiManagement.LeftAside.DefaultMinimizedAside),
                     SubmenuToggle = await GetSettingValueForApplicationAsync(AppSettings.UiManagement.LeftAside.SubmenuToggle),
-                    SearchActive = await GetSettingValueForApplicationAsync<bool>(AppSettings.UiManagement.SearchActive)
+                    HoverableAside = await GetSettingValueForApplicationAsync<bool>(AppSettings.UiManagement.LeftAside.HoverableAside),
+                    SearchActive = await GetSettingValueForApplicationAsync<bool>(AppSettings.UiManagement.SearchActive),
                 },
                 Footer = new ThemeFooterSettingsDto
                 {
@@ -181,6 +189,7 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
                     AllowAsideMinimizing = await GetSettingValueForTenantAsync<bool>(AppSettings.UiManagement.LeftAside.AllowAsideMinimizing, tenantId),
                     DefaultMinimizedAside = await GetSettingValueForTenantAsync<bool>(AppSettings.UiManagement.LeftAside.DefaultMinimizedAside, tenantId),
                     SubmenuToggle = await GetSettingValueForTenantAsync(AppSettings.UiManagement.LeftAside.SubmenuToggle, tenantId),
+                    HoverableAside = await GetSettingValueForTenantAsync<bool>(AppSettings.UiManagement.LeftAside.HoverableAside, tenantId),
                     SearchActive = await GetSettingValueForApplicationAsync<bool>(AppSettings.UiManagement.SearchActive)
                 },
                 Footer = new ThemeFooterSettingsDto

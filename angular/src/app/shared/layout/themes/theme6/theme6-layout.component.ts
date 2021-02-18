@@ -1,9 +1,11 @@
-import { Injector, ElementRef, Component, OnInit } from '@angular/core';
+import { Injector, ElementRef, Component, OnInit, Inject } from '@angular/core';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { ThemesLayoutBaseComponent } from '@app/shared/layout/themes/themes-layout-base.component';
 import { UrlHelper } from '@shared/helpers/UrlHelper';
 import { AppConsts } from '@shared/AppConsts';
-import { OffcanvasOptions } from '@metronic/app/core/_base/layout/directives/offcanvas.directive';
+import { ToggleOptions } from '@metronic/app/core/_base/layout/directives/toggle.directive';
+import { DOCUMENT } from '@angular/common';
+import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 
 @Component({
     templateUrl: './theme6-layout.component.html',
@@ -12,22 +14,20 @@ import { OffcanvasOptions } from '@metronic/app/core/_base/layout/directives/off
 })
 export class Theme6LayoutComponent extends ThemesLayoutBaseComponent implements OnInit {
 
-    menuCanvasOptions: OffcanvasOptions = {
-        baseClass: 'kt-aside',
-        overlay: true,
-        closeBy: 'kt_aside_close_btn',
-        toggleBy: {
-            target: 'kt_aside_mobile_toggler',
-            state: 'kt-header-mobile__toolbar-toggler--active'
-        }
+    userMenuToggleOptions: ToggleOptions = {
+        target: 'kt_aside',
+        targetState: 'aside-on',
+        toggleState: 'active'
     };
 
     remoteServiceBaseUrl: string = AppConsts.remoteServiceBaseUrl;
 
     constructor(
-        injector: Injector
+        injector: Injector,
+        @Inject(DOCUMENT) private document: Document,
+        _dateTimeService: DateTimeService
     ) {
-        super(injector);
+        super(injector, _dateTimeService);
     }
 
     ngOnInit() {

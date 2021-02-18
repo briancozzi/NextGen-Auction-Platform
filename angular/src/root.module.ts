@@ -22,8 +22,6 @@ import {
 } from '@shared/service-proxies/service-proxies';
 import { ServiceProxyModule } from '@shared/service-proxies/service-proxy.module';
 import * as localForage from 'localforage';
-import * as _ from 'lodash';
-import * as moment from 'moment';
 import { AppPreBootstrap } from './AppPreBootstrap';
 import { AppModule } from './app/app.module';
 import { RootRoutingModule } from './root-routing.module';
@@ -33,6 +31,7 @@ import { CookieConsentService } from '@shared/common/session/cookie-consent.serv
 import { NgxBootstrapDatePickerConfigService } from 'assets/ngx-bootstrap/ngx-bootstrap-datepicker-config.service';
 import { LocaleMappingService } from '@shared/locale-mapping.service';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
+import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 
 export function appInitializerFactory(
     injector: Injector,
@@ -46,10 +45,11 @@ export function appInitializerFactory(
             AppConsts.appBaseHref = getBaseHref(platformLocation);
             let appBaseUrl = getDocumentOrigin() + AppConsts.appBaseHref;
 
+            initializeLocalForage();
+
             AppPreBootstrap.run(appBaseUrl, () => {
 
                 handleLogoutRequest(injector.get(AppAuthService));
-                initializeLocalForage();
 
                 if (UrlHelper.isInstallUrl(location.href)) {
                     doConfigurationForInstallPage(injector);
@@ -104,9 +104,10 @@ function getDefaultThemeForInstallPage(): UiCustomizationSettingsDto {
 
 function setApplicationInfoForInstallPage(injector, theme: UiCustomizationSettingsDto) {
     let appSessionService: AppSessionService = injector.get(AppSessionService);
+    let dateTimeService: DateTimeService = injector.get(DateTimeService);
     appSessionService.theme = theme;
     appSessionService.application = new ApplicationInfoDto();
-    appSessionService.application.releaseDate = moment().startOf('day');
+    appSessionService.application.releaseDate = dateTimeService.getStartOfDay();
 
 }
 

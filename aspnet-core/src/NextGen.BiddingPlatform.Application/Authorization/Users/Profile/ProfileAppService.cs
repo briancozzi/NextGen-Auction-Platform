@@ -14,15 +14,14 @@ using Abp.Runtime.Session;
 using Abp.Timing;
 using Abp.UI;
 using Abp.Zero.Configuration;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using NextGen.BiddingPlatform.Authentication.TwoFactor.Google;
 using NextGen.BiddingPlatform.Authorization.Users.Dto;
 using NextGen.BiddingPlatform.Authorization.Users.Profile.Cache;
 using NextGen.BiddingPlatform.Authorization.Users.Profile.Dto;
+using NextGen.BiddingPlatform.Configuration;
 using NextGen.BiddingPlatform.Friendships;
 using NextGen.BiddingPlatform.Gdpr;
-using NextGen.BiddingPlatform.Identity;
 using NextGen.BiddingPlatform.Net.Sms;
 using NextGen.BiddingPlatform.Security;
 using NextGen.BiddingPlatform.Storage;
@@ -42,6 +41,7 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Profile
         private readonly ICacheManager _cacheManager;
         private readonly ITempFileCacheManager _tempFileCacheManager;
         private readonly IBackgroundJobManager _backgroundJobManager;
+        private readonly ProfileImageServiceFactory _profileImageServiceFactory;
 
         public ProfileAppService(
             IAppFolders appFolders,
@@ -52,7 +52,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Profile
             ISmsSender smsSender,
             ICacheManager cacheManager,
             ITempFileCacheManager tempFileCacheManager,
-            IBackgroundJobManager backgroundJobManager)
+            IBackgroundJobManager backgroundJobManager,
+            ProfileImageServiceFactory profileImageServiceFactory)
         {
             _binaryObjectManager = binaryObjectManager;
             _timeZoneService = timezoneService;
@@ -62,6 +63,7 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Profile
             _cacheManager = cacheManager;
             _tempFileCacheManager = tempFileCacheManager;
             _backgroundJobManager = backgroundJobManager;
+            _profileImageServiceFactory = profileImageServiceFactory;
         }
 
         [DisableAuditing]
@@ -80,7 +82,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Profile
             {
                 userProfileEditDto.Timezone = await SettingManager.GetSettingValueAsync(TimingSettingNames.TimeZone);
 
-                var defaultTimeZoneId = await _timeZoneService.GetDefaultTimezoneAsync(SettingScopes.User, AbpSession.TenantId);
+                var defaultTimeZoneId =
+                    await _timeZoneService.GetDefaultTimezoneAsync(SettingScopes.User, AbpSession.TenantId);
                 if (userProfileEditDto.Timezone == defaultTimeZoneId)
                 {
                     userProfileEditDto.Timezone = string.Empty;
@@ -104,7 +107,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Profile
 
             return new UpdateGoogleAuthenticatorKeyOutput
             {
-                QrCodeSetupImageUrl = _googleTwoFactorAuthenticateService.GenerateSetupCode("NextGen.BiddingPlatform",
+                QrCodeSetupImageUrl = _googleTwoFactorAuthenticateService.GenerateSetupCode(
+                    "NextGen.BiddingPlatform",
                     user.EmailAddress, user.GoogleAuthenticatorKey, 300, 300).QrCodeSetupImageUrl
             };
         }
@@ -113,7 +117,7 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Profile
         {
             var code = RandomHelper.GetRandom(100000, 999999).ToString();
             var cacheKey = AbpSession.ToUserIdentifier().ToString();
-            var cacheItem = new SmsVerificationCodeCacheItem { Code = code };
+            var cacheItem = new SmsVerificationCodeCacheItem {Code = code};
 
             _cacheManager.GetSmsVerificationCodeCache().Set(
                 cacheKey,
@@ -146,7 +150,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Profile
 
         public async Task PrepareCollectedData()
         {
-            await _backgroundJobManager.EnqueueAsync<UserCollectedDataPrepareJob, UserIdentifier>(AbpSession.ToUserIdentifier());
+            await _backgroundJobManager.EnqueueAsync<UserCollectedDataPrepareJob, UserIdentifier>(
+                AbpSession.ToUserIdentifier());
         }
 
         public async Task UpdateCurrentUserProfile(CurrentUserProfileEditDto input)
@@ -169,12 +174,15 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Profile
             {
                 if (input.Timezone.IsNullOrEmpty())
                 {
-                    var defaultValue = await _timeZoneService.GetDefaultTimezoneAsync(SettingScopes.User, AbpSession.TenantId);
-                    await SettingManager.ChangeSettingForUserAsync(AbpSession.ToUserIdentifier(), TimingSettingNames.TimeZone, defaultValue);
+                    var defaultValue =
+                        await _timeZoneService.GetDefaultTimezoneAsync(SettingScopes.User, AbpSession.TenantId);
+                    await SettingManager.ChangeSettingForUserAsync(AbpSession.ToUserIdentifier(),
+                        TimingSettingNames.TimeZone, defaultValue);
                 }
                 else
                 {
-                    await SettingManager.ChangeSettingForUserAsync(AbpSession.ToUserIdentifier(), TimingSettingNames.TimeZone, input.Timezone);
+                    await SettingManager.ChangeSettingForUserAsync(AbpSession.ToUserIdentifier(),
+                        TimingSettingNames.TimeZone, input.Timezone);
                 }
             }
         }
@@ -199,6 +207,23 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Profile
 
         public async Task UpdateProfilePicture(UpdateProfilePictureInput input)
         {
+            var allowToUseGravatar = await SettingManager.GetSettingValueAsync<bool>(AppSettings.UserManagement.AllowUsingGravatarProfilePicture);
+            if (!allowToUseGravatar)
+            {
+                input.UseGravatarProfilePicture = false;
+            }
+
+            await SettingManager.ChangeSettingForUserAsync(
+                AbpSession.ToUserIdentifier(),
+                AppSettings.UserManagement.UseGravatarProfilePicture,
+                input.UseGravatarProfilePicture.ToString().ToLowerInvariant()
+            );
+
+            if (input.UseGravatarProfilePicture)
+            {
+                return;
+            }
+
             byte[] byteArray;
 
             var imageBytes = _tempFileCacheManager.GetFile(input.FileToken);
@@ -223,7 +248,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Profile
 
             if (byteArray.Length > MaxProfilPictureBytes)
             {
-                throw new UserFriendlyException(L("ResizedProfilePicture_Warn_SizeLimit", AppConsts.ResizedMaxProfilPictureBytesUserFriendlyValue));
+                throw new UserFriendlyException(L("ResizedProfilePicture_Warn_SizeLimit",
+                    AppConsts.ResizedMaxProfilPictureBytesUserFriendlyValue));
             }
 
             var user = await UserManager.GetUserByIdAsync(AbpSession.GetUserId());
@@ -233,7 +259,7 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Profile
                 await _binaryObjectManager.DeleteAsync(user.ProfilePictureId.Value);
             }
 
-            var storedFile = new BinaryObject(AbpSession.TenantId, byteArray);
+            var storedFile = new BinaryObject(AbpSession.TenantId, byteArray, $"Profile picture of user {AbpSession.UserId}. {DateTime.UtcNow}");
             await _binaryObjectManager.SaveAsync(storedFile);
 
             user.ProfilePictureId = storedFile.Id;
@@ -244,11 +270,21 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Profile
         {
             var passwordComplexitySetting = new PasswordComplexitySetting
             {
-                RequireDigit = await SettingManager.GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement.PasswordComplexity.RequireDigit),
-                RequireLowercase = await SettingManager.GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement.PasswordComplexity.RequireLowercase),
-                RequireNonAlphanumeric = await SettingManager.GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement.PasswordComplexity.RequireNonAlphanumeric),
-                RequireUppercase = await SettingManager.GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement.PasswordComplexity.RequireUppercase),
-                RequiredLength = await SettingManager.GetSettingValueAsync<int>(AbpZeroSettingNames.UserManagement.PasswordComplexity.RequiredLength)
+                RequireDigit =
+                    await SettingManager.GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement
+                        .PasswordComplexity.RequireDigit),
+                RequireLowercase =
+                    await SettingManager.GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement
+                        .PasswordComplexity.RequireLowercase),
+                RequireNonAlphanumeric =
+                    await SettingManager.GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement
+                        .PasswordComplexity.RequireNonAlphanumeric),
+                RequireUppercase =
+                    await SettingManager.GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement
+                        .PasswordComplexity.RequireUppercase),
+                RequiredLength =
+                    await SettingManager.GetSettingValueAsync<int>(AbpZeroSettingNames.UserManagement.PasswordComplexity
+                        .RequiredLength)
             };
 
             return new GetPasswordComplexitySettingOutput
@@ -260,38 +296,63 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Profile
         [DisableAuditing]
         public async Task<GetProfilePictureOutput> GetProfilePicture()
         {
-            var user = await UserManager.GetUserByIdAsync(AbpSession.GetUserId());
-            if (user.ProfilePictureId == null)
+            using (var profileImageService = await _profileImageServiceFactory.Get(AbpSession.ToUserIdentifier()))
             {
-                return new GetProfilePictureOutput(string.Empty);
-            }
+                var profilePictureContent = await profileImageService.Object.GetProfilePictureContentForUser(
+                    AbpSession.ToUserIdentifier()
+                );
 
-            return await GetProfilePictureById(user.ProfilePictureId.Value);
-        }
-
-        public async Task<GetProfilePictureOutput> GetFriendProfilePictureById(GetFriendProfilePictureByIdInput input)
-        {
-            if (!input.ProfilePictureId.HasValue || await _friendshipManager.GetFriendshipOrNullAsync(AbpSession.ToUserIdentifier(), new UserIdentifier(input.TenantId, input.UserId)) == null)
-            {
-                return new GetProfilePictureOutput(string.Empty);
-            }
-
-            using (CurrentUnitOfWork.SetTenantId(input.TenantId))
-            {
-                var bytes = await GetProfilePictureByIdOrNull(input.ProfilePictureId.Value);
-                if (bytes == null)
-                {
-                    return new GetProfilePictureOutput(string.Empty);
-                }
-
-                return new GetProfilePictureOutput(Convert.ToBase64String(bytes));
+                return new GetProfilePictureOutput(profilePictureContent);
             }
         }
 
         [AbpAllowAnonymous]
-        public async Task<GetProfilePictureOutput> GetProfilePictureById(Guid profilePictureId)
+        public async Task<GetProfilePictureOutput> GetProfilePictureByUserName(string username)
         {
-            return await GetProfilePictureByIdInternal(profilePictureId);
+            var user = await UserManager.FindByNameAsync(username);
+            if (user == null)
+            {
+                return new GetProfilePictureOutput(string.Empty);
+            }
+
+            var userIdentifier = new UserIdentifier(AbpSession.TenantId, user.Id);
+            using (var profileImageService = await _profileImageServiceFactory.Get(userIdentifier))
+            {
+                var profileImage = await profileImageService.Object.GetProfilePictureContentForUser(userIdentifier);
+                return new GetProfilePictureOutput(profileImage);
+            }
+        }
+
+        public async Task<GetProfilePictureOutput> GetFriendProfilePicture(GetFriendProfilePictureInput input)
+        {
+            var friendUserIdentifier = input.ToUserIdentifier();
+            var friendShip = await _friendshipManager.GetFriendshipOrNullAsync(
+                AbpSession.ToUserIdentifier(),
+                friendUserIdentifier
+            );
+
+            if (friendShip == null)
+            {
+                return new GetProfilePictureOutput(string.Empty);
+            }
+
+
+            using (var profileImageService = await _profileImageServiceFactory.Get(friendUserIdentifier))
+            {
+                var image = await profileImageService.Object.GetProfilePictureContentForUser(friendUserIdentifier);
+                return new GetProfilePictureOutput(image);
+            }
+        }
+
+        [AbpAllowAnonymous]
+        public async Task<GetProfilePictureOutput> GetProfilePictureByUser(long userId)
+        {
+            var userIdentifier = new UserIdentifier(AbpSession.TenantId, userId);
+            using (var profileImageService = await _profileImageServiceFactory.Get(userIdentifier))
+            {
+                var profileImage = await profileImageService.Object.GetProfilePictureContentForUser(userIdentifier);
+                return new GetProfilePictureOutput(profileImage);
+            }
         }
 
         public async Task ChangeLanguage(ChangeUserLanguageDto input)

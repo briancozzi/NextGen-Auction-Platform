@@ -1,6 +1,7 @@
 import { Component, Injector } from '@angular/core';
+import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 import { AppComponentBase } from '@shared/common/app-component-base';
-import * as moment from 'moment';
+import { DateTime } from 'luxon';
 
 @Component({
   selector: 'app-filter-date-range-picker',
@@ -10,8 +11,12 @@ import * as moment from 'moment';
 export class FilterDateRangePickerComponent extends AppComponentBase {
 
   date: Date;
-  selectedDateRange: moment.Moment[] = [moment().add(-7, 'days').startOf('day'), moment().endOf('day')];
-  constructor(injector: Injector) {
+  selectedDateRange: DateTime[] = [this._dateTimeService.getStartOfDayMinusDays(7), this._dateTimeService.getEndOfDay()];
+
+  constructor(
+    injector: Injector,
+    private _dateTimeService: DateTimeService
+    ) {
     super(injector);
   }
 

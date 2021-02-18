@@ -24,7 +24,7 @@
         "to": "en"
       }
     ],
-    "moment": [
+    "luxon": [
       {
         "from": "es-MX",
         "to": "es"

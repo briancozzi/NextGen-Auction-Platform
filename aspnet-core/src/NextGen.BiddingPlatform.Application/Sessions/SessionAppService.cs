@@ -11,6 +11,7 @@ using NextGen.BiddingPlatform.MultiTenancy.Payments;
 using NextGen.BiddingPlatform.Sessions.Dto;
 using NextGen.BiddingPlatform.UiCustomization;
 using NextGen.BiddingPlatform.Authorization.Delegation;
+using NextGen.BiddingPlatform.Authorization.Users;
 
 namespace NextGen.BiddingPlatform.Sessions
 {
@@ -58,10 +59,24 @@ namespace NextGen.BiddingPlatform.Sessions
                         .Include(t => t.Edition)
                         .FirstAsync(t => t.Id == AbpSession.GetTenantId()));
             }
+            
+            if (AbpSession.ImpersonatorTenantId.HasValue)
+            {
+                output.ImpersonatorTenant = ObjectMapper
+                    .Map<TenantLoginInfoDto>(await TenantManager
+                        .Tenants
+                        .Include(t => t.Edition)
+                        .FirstAsync(t => t.Id == AbpSession.ImpersonatorTenantId));
+            }
 
             if (AbpSession.UserId.HasValue)
             {
                 output.User = ObjectMapper.Map<UserLoginInfoDto>(await GetCurrentUserAsync());
+            }
+            
+            if (AbpSession.ImpersonatorUserId.HasValue)
+            {
+                output.ImpersonatorUser = ObjectMapper.Map<UserLoginInfoDto>(await GetImpersonatorUserAsync());
             }
 
             if (output.Tenant == null)
@@ -145,6 +160,20 @@ namespace NextGen.BiddingPlatform.Sessions
                     ? Convert.ToBase64String(Encoding.UTF8.GetBytes(user.TenantId.Value.ToString()))
                     : ""
             };
+        }
+        
+        protected virtual async Task<User> GetImpersonatorUserAsync()
+        {
+            using (CurrentUnitOfWork.SetTenantId(AbpSession.ImpersonatorTenantId))
+            {
+                var user = await UserManager.FindByIdAsync(AbpSession.ImpersonatorUserId.ToString());
+                if (user == null)
+                {
+                    throw new Exception("User not found!");
+                }
+
+                return user;
+            }
         }
     }
 }

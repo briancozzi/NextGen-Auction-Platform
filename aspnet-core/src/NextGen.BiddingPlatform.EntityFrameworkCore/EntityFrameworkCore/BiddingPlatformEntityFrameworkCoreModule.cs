@@ -1,7 +1,7 @@
 ﻿using Abp;
 using Abp.Dependency;
 using Abp.EntityFrameworkCore.Configuration;
-using Abp.IdentityServer4;
+using Abp.IdentityServer4vNext;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Abp.Zero.EntityFrameworkCore;
@@ -14,11 +14,11 @@ namespace NextGen.BiddingPlatform.EntityFrameworkCore
     [DependsOn(
         typeof(AbpZeroCoreEntityFrameworkCoreModule),
         typeof(BiddingPlatformCoreModule),
-        typeof(AbpZeroCoreIdentityServerEntityFrameworkCoreModule)
+        typeof(AbpZeroCoreIdentityServervNextEntityFrameworkCoreModule)
         )]
     public class BiddingPlatformEntityFrameworkCoreModule : AbpModule
     {
-        /* Used it tests to skip dbcontext registration, in order to use in-memory database of EF Core */
+        /* Used it tests to skip DbContext registration, in order to use in-memory database of EF Core */
         public bool SkipDbContextRegistration { get; set; }
 
         public bool SkipDbSeed { get; set; }

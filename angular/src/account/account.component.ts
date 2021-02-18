@@ -3,9 +3,10 @@ import { Router } from '@angular/router';
 import { AppConsts } from '@shared/AppConsts';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { AppUiCustomizationService } from '@shared/common/ui/app-ui-customization.service';
-import * as _ from 'lodash';
-import * as moment from 'moment';
+import { filter as _filter } from 'lodash-es';
 import { LoginService } from './login/login.service';
+import { DateTime } from 'luxon';
+import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 
 @Component({
     templateUrl: './account.component.html',
@@ -18,7 +19,7 @@ export class AccountComponent extends AppComponentBase implements OnInit {
 
     private viewContainerRef: ViewContainerRef;
 
-    currentYear: number = moment().year();
+    currentYear: number = this._dateTimeService.getYear();
     remoteServiceBaseUrl: string = AppConsts.remoteServiceBaseUrl;
     tenantChangeDisabledRoutes: string[] = [
         'select-edition',
@@ -41,6 +42,7 @@ export class AccountComponent extends AppComponentBase implements OnInit {
         private _router: Router,
         private _loginService: LoginService,
         private _uiCustomizationService: AppUiCustomizationService,
+        private _dateTimeService: DateTimeService,
         viewContainerRef: ViewContainerRef
     ) {
         super(injector);
@@ -54,7 +56,7 @@ export class AccountComponent extends AppComponentBase implements OnInit {
             return false;
         }
 
-        if (_.filter(this.tenantChangeDisabledRoutes, route => this._router.url.indexOf('/account/' + route) >= 0).length) {
+        if (_filter(this.tenantChangeDisabledRoutes, route => this._router.url.indexOf('/account/' + route) >= 0).length) {
             return false;
         }
 

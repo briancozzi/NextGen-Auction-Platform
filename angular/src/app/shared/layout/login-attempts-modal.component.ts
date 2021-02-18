@@ -2,8 +2,9 @@ import { Component, Injector, ViewChild } from '@angular/core';
 import { AppConsts } from '@shared/AppConsts';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { ProfileServiceProxy, UserLoginAttemptDto, UserLoginServiceProxy } from '@shared/service-proxies/service-proxies';
-import * as moment from 'moment';
-import { ModalDirective } from 'ngx-bootstrap';
+import { DateTime } from 'luxon';
+import { ModalDirective } from 'ngx-bootstrap/modal';
+import { DateTimeService } from '../common/timing/date-time.service';
 
 @Component({
     selector: 'loginAttemptsModal',
@@ -20,7 +21,8 @@ export class LoginAttemptsModalComponent extends AppComponentBase {
     constructor(
         injector: Injector,
         private _userLoginService: UserLoginServiceProxy,
-        private _profileService: ProfileServiceProxy
+        private _profileService: ProfileServiceProxy,
+        private _dateTimeService: DateTimeService
     ) {
         super(injector);
     }
@@ -52,6 +54,6 @@ export class LoginAttemptsModalComponent extends AppComponentBase {
     }
 
     getLoginAttemptTime(userLoginAttempt: UserLoginAttemptDto): string {
-        return moment(userLoginAttempt.creationTime).fromNow() + ' (' + moment(userLoginAttempt.creationTime).format('YYYY-MM-DD hh:mm:ss') + ')';
+        return this._dateTimeService.fromNow(userLoginAttempt.creationTime) + ' (' + this._dateTimeService.formatDate(userLoginAttempt.creationTime, 'yyyy-LL-dd hh:mm:ss') + ')';
     }
 }

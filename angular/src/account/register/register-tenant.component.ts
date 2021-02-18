@@ -17,14 +17,13 @@ import {
 import { RegisterTenantModel } from './register-tenant.model';
 import { TenantRegistrationHelperService } from './tenant-registration-helper.service';
 import { finalize, catchError } from 'rxjs/operators';
-import { ReCaptcha2Component } from 'ngx-captcha';
+import { ReCaptchaV3Service } from 'ngx-captcha';
 
 @Component({
     templateUrl: './register-tenant.component.html',
     animations: [accountModuleAnimation()]
 })
 export class RegisterTenantComponent extends AppComponentBase implements OnInit, AfterViewInit {
-    @ViewChild('recaptchaRef') recaptchaRef: ReCaptcha2Component;
     model: RegisterTenantModel = new RegisterTenantModel();
     passwordComplexitySetting: PasswordComplexitySetting = new PasswordComplexitySetting();
     subscriptionStartType = SubscriptionStartType;
@@ -43,7 +42,8 @@ export class RegisterTenantComponent extends AppComponentBase implements OnInit,
         private _router: Router,
         private _profileService: ProfileServiceProxy,
         private _tenantRegistrationHelper: TenantRegistrationHelperService,
-        private _activatedRoute: ActivatedRoute
+        private _activatedRoute: ActivatedRoute,
+        private _reCaptchaV3Service: ReCaptchaV3Service
     ) {
         super(injector);
     }
@@ -81,34 +81,37 @@ export class RegisterTenantComponent extends AppComponentBase implements OnInit,
     }
 
     save(): void {
-        if (this.useCaptcha && !this.model.captchaResponse) {
-            this.message.warn(this.l('CaptchaCanNotBeEmpty'));
-            return;
-        }
 
-        this.saving = true;
-        this._tenantRegistrationService.registerTenant(this.model)
-            .pipe(finalize(() => { this.saving = false; }))
-            .pipe(catchError((err, caught): any => {
-                this.recaptchaRef.resetCaptcha();
-            }))
-            .subscribe((result: RegisterTenantOutput) => {
-                this.notify.success(this.l('SuccessfullyRegistered'));
-                this._tenantRegistrationHelper.registrationResult = result;
+        let recaptchaCallback = (token: string) => {
+            this.saving = true;
+            this.model.captchaResponse = token;
+            this._tenantRegistrationService.registerTenant(this.model)
+                .pipe(finalize(() => { this.saving = false; }))
+                .subscribe((result: RegisterTenantOutput) => {
+                    this.notify.success(this.l('SuccessfullyRegistered'));
+                    this._tenantRegistrationHelper.registrationResult = result;
+                    if (parseInt(this.model.subscriptionStartType.toString()) === SubscriptionStartType.Paid) {
+                        this._router.navigate(['account/buy'],
+                            {
+                                queryParams: {
+                                    tenantId: result.tenantId,
+                                    editionId: this.model.editionId,
+                                    subscriptionStartType: this.model.subscriptionStartType,
+                                    editionPaymentType: this.editionPaymentType
+                                }
+                            });
+                    } else {
+                        this._router.navigate(['account/register-tenant-result']);
+                    }
+                });
+            };
 
-                if (parseInt(this.model.subscriptionStartType.toString()) === SubscriptionStartType.Paid) {
-                    this._router.navigate(['account/buy'],
-                        {
-                            queryParams: {
-                                tenantId: result.tenantId,
-                                editionId: this.model.editionId,
-                                subscriptionStartType: this.model.subscriptionStartType,
-                                editionPaymentType: this.editionPaymentType
-                            }
-                        });
-                } else {
-                    this._router.navigate(['account/register-tenant-result']);
-                }
+        if (this.useCaptcha) {
+            this._reCaptchaV3Service.execute(this.recaptchaSiteKey, 'register_tenant', (token) => {
+                recaptchaCallback(token);
             });
+        } else {
+            recaptchaCallback(null);
+        }
     }
 }

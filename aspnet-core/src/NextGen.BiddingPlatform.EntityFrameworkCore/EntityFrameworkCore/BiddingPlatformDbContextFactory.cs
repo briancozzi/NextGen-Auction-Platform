@@ -12,7 +12,10 @@ namespace NextGen.BiddingPlatform.EntityFrameworkCore
         public BiddingPlatformDbContext CreateDbContext(string[] args)
         {
             var builder = new DbContextOptionsBuilder<BiddingPlatformDbContext>();
-            var configuration = AppConfigurations.Get(WebContentDirectoryFinder.CalculateContentRootFolder(), addUserSecrets: true);
+            var configuration = AppConfigurations.Get(
+                WebContentDirectoryFinder.CalculateContentRootFolder(),
+                addUserSecrets: true
+            );
 
             BiddingPlatformDbContextConfigurer.Configure(builder, configuration.GetConnectionString(BiddingPlatformConsts.ConnectionStringName));
 

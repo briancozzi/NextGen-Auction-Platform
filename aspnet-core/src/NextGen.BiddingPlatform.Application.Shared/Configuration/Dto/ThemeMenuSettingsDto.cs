@@ -15,5 +15,9 @@ namespace NextGen.BiddingPlatform.Configuration.Dto
         public string SubmenuToggle { get; set; }
 
         public bool SearchActive { get; set; }
+        
+        public bool EnableSecondary { get; set; }
+        
+        public bool HoverableAside { get; set; }
     }
 }

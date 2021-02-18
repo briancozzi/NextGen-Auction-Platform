@@ -15,8 +15,9 @@ export class ThemeSelectionPanelComponent extends AppComponentBase implements On
 
     offcanvasOptions: OffcanvasOptions = {
         overlay: true,
-        baseClass: 'kt-demo-panel',
-        closeBy: 'kt-theme_selection_panel_close',
+        baseClass: 'offcanvas',
+        placement: 'right',
+        closeBy: 'kt_demo_panel_close',
         toggleBy: 'kt_theme_selection_panel_toggle'
     };
 

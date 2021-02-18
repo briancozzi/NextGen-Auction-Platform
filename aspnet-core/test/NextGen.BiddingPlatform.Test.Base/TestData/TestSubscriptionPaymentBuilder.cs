@@ -23,10 +23,10 @@ namespace NextGen.BiddingPlatform.Test.Base.TestData
 
         private void CreatePayments()
         {
-            var defaultEdition = _context.Editions.FirstOrDefault(e => e.Name == EditionManager.DefaultEditionName);
+            var defaultEdition = _context.Editions.First(e => e.Name == EditionManager.DefaultEditionName);
 
-            CreatePayment(1, defaultEdition.Id, _tenantId, 2, "147741");
-            CreatePayment(19, defaultEdition.Id, _tenantId, 29, "1477419");
+            CreatePayment(1, defaultEdition.Id, _tenantId, 1, "147741");
+            CreatePayment(19, defaultEdition.Id, _tenantId, 30, "1477419");
         }
 
         private void CreatePayment(decimal amount, int editionId, int tenantId, int dayCount, string paymentId)

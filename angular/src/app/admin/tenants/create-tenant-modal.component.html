@@ -12,7 +12,7 @@
                     </h5>
                     <button type="button" class="close" (click)="close()" [attr.aria-label]="l('Close')"
                         [disabled]="saving">
-                        <span aria-hidden="true">&times;</span>
+                         <i aria-hidden="true" class="ki ki-close"></i>
                     </button>
                 </div>
 
@@ -38,11 +38,11 @@
                         <validation-messages [formCtrl]="nameInput"></validation-messages>
                     </div>
 
-                    <div class="kt-checkbox-list">
-                        <label class="kt-checkbox">
+                    <div class="checkbox-list">
+                        <label class="checkbox">
                             <input id="CreateTenant_UseHostDb" type="checkbox" name="UseHostDb" [(ngModel)]="useHostDb">
-                            {{"UseHostDatabase" | localize}}
                             <span></span>
+                            {{"UseHostDatabase" | localize}}
                         </label>
                     </div>
 
@@ -63,12 +63,12 @@
                         <validation-messages [formCtrl]="adminEmailAddressInput"></validation-messages>
                     </div>
 
-                    <div class="kt-checkbox-list">
-                        <label class="kt-checkbox">
+                    <div class="checkbox-list">
+                        <label class="checkbox">
                             <input id="CreateTenant_SetRandomPassword" type="checkbox" name="SetRandomPassword"
                                 [(ngModel)]="setRandomPassword">
-                            {{"SetRandomPassword" | localize}}
                             <span></span>
+                            {{"SetRandomPassword" | localize}}
                         </label>
                     </div>
 
@@ -138,18 +138,18 @@
                     <div class="form-group">
                         <label for="edition">{{"Edition" | localize}}</label>
                         <select id="edition" name="edition" class="form-control" [(ngModel)]="tenant.editionId"
-                            (change)="onEditionChange($event)">
+                            (change)="onEditionChange()">
                             <option *ngFor="let edition of editions" [value]="edition.value">{{edition.displayText}}
                             </option>
                         </select>
                     </div>
 
-                    <div [hidden]="!isSubscriptionFieldsVisible" class="kt-checkbox-list">
-                        <label for="CreateTenant_IsUnlimited" class="kt-checkbox">
+                    <div [hidden]="!isSubscriptionFieldsVisible" class="checkbox-list">
+                        <label for="CreateTenant_IsUnlimited" class="checkbox">
                             <input id="CreateTenant_IsUnlimited" type="checkbox" name="IsUnlimited"
                                 [(ngModel)]="isUnlimited" (change)="onIsUnlimitedChange()"/>
-                            {{"UnlimitedTimeSubscription" | localize}}
                             <span></span>
+                            {{"UnlimitedTimeSubscription" | localize}}
                         </label>
                     </div>
 
@@ -157,50 +157,50 @@
                         [ngClass]="{'has-error': !subscriptionEndDateIsValid()}">
                         <label for="SubscriptionEndDate">{{"SubscriptionEndDate" | localize}}</label>
                         <input id="SubscriptionEndDate" type="text" #SubscriptionEndDateUtc
-                            name="SubscriptionEndDateUtc" class="form-control" 
-                            bsDatepicker 
-                            datePickerMomentModifier
+                            name="SubscriptionEndDateUtc" class="form-control"
+                            bsDatepicker
+                            datePickerLuxonModifier
                             [(date)]="tenant.subscriptionEndDateUtc"
                             [bsConfig]="{ adaptivePosition: true }"
                             autocomplete="new-password">
                     </div>
 
-                    <div [hidden]="isUnlimited ||!isSubscriptionFieldsVisible" class="kt-checkbox-list">
-                        <label for="CreateTenant_IsInTrialPeriod" class="kt-checkbox">
+                    <div [hidden]="isUnlimited ||!isSubscriptionFieldsVisible" class="checkbox-list">
+                        <label for="CreateTenant_IsInTrialPeriod" class="checkbox">
                             <input id="CreateTenant_IsInTrialPeriod" type="checkbox" name="IsInTrialPeriod"
                                 [disabled]="isSelectedEditionFree" [(ngModel)]="tenant.isInTrialPeriod">
-                            {{"IsInTrialPeriod" | localize}}
                             <span></span>
+                            {{"IsInTrialPeriod" | localize}}
                         </label>
                     </div>
 
-                    <div class="kt-checkbox-list">
-                        <label for="CreateTenant_ShouldChangePasswordOnNextLogin" class="kt-checkbox">
+                    <div class="checkbox-list">
+                        <label for="CreateTenant_ShouldChangePasswordOnNextLogin" class="checkbox">
                             <input id="CreateTenant_ShouldChangePasswordOnNextLogin" type="checkbox"
                                 name="ShouldChangePasswordOnNextLogin"
                                 [(ngModel)]="tenant.shouldChangePasswordOnNextLogin">
-                            {{"ShouldChangePasswordOnNextLogin" | localize}}
                             <span></span>
+                            {{"ShouldChangePasswordOnNextLogin" | localize}}
                         </label>
-                        <label for="CreateTenant_SendActivationEmail" class="kt-checkbox">
+                        <label for="CreateTenant_SendActivationEmail" class="checkbox">
                             <input id="CreateTenant_SendActivationEmail" type="checkbox" name="SendActivationEmail"
                                 [(ngModel)]="tenant.sendActivationEmail">
-                            {{"SendActivationEmail" | localize}}
                             <span></span>
+                            {{"SendActivationEmail" | localize}}
                         </label>
-                        <label for="CreateTenant_IsActive" class="kt-checkbox">
+                        <label for="CreateTenant_IsActive" class="checkbox">
                             <input id="CreateTenant_IsActive" type="checkbox" name="IsActive"
                                 [(ngModel)]="tenant.isActive">
-                            {{"Active" | localize}}
                             <span></span>
+                            {{"Active" | localize}}
                         </label>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" [disabled]="saving" class="btn btn-secondary"
+                    <button type="button" [disabled]="saving" class="btn btn-light-primary font-weight-bold"
                         (click)="close()">{{"Cancel" | localize}}</button>
                     <button type="submit" [buttonBusy]="saving" [busyText]="l('SavingWithThreeDot')"
-                        class="btn btn-primary"
+                        class="btn btn-primary font-weight-bold"
                         [disabled]="!tenantCreateForm.form.valid || saving || !subscriptionEndDateIsValid()"><i
                             class="fa fa-save"></i> <span>{{"Save" | localize}}</span></button>
                 </div>

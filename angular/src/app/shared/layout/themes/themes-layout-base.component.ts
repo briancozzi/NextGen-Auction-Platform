@@ -1,10 +1,11 @@
-import { Injector } from '@angular/core';
+import { Component, Injector, Inject } from '@angular/core';
+import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 import { AppConsts } from '@shared/AppConsts';
 import { AppComponentBase } from '@shared/common/app-component-base';
-import { TenantLoginInfoDto, EditionPaymentType, SubscriptionStartType } from '@shared/service-proxies/service-proxies';
-import * as moment from 'moment';
-import { ToggleOptions } from '@metronic/app/core/_base/layout/directives/toggle.directive';
+import { TenantLoginInfoDto, EditionPaymentType, SubscriptionStartType, SubscriptionPaymentType } from '@shared/service-proxies/service-proxies';
+import { DateTime } from 'luxon';
 
+@Component({ template: '' })
 export class ThemesLayoutBaseComponent extends AppComponentBase {
 
     tenant: TenantLoginInfoDto = new TenantLoginInfoDto();
@@ -14,25 +15,22 @@ export class ThemesLayoutBaseComponent extends AppComponentBase {
 
     defaultLogo = AppConsts.appBaseUrl + '/assets/common/images/app-logo-on-' + this.currentTheme.baseSettings.menu.asideSkin + '.svg';
 
-    userMenuToggleOptions: ToggleOptions = {
-        target: 'body',
-        targetState: 'kt-header__topbar--mobile-on',
-        togglerState: 'kt-header-mobile__toolbar-topbar-toggler--active'
-    };
-
     constructor(
-        injector: Injector
+        injector: Injector,
+        private _dateTimeService: DateTimeService
     ) {
         super(injector);
     }
 
     subscriptionStatusBarVisible(): boolean {
-        return this.appSession.tenantId > 0 && (this.appSession.tenant.isInTrialPeriod || this.subscriptionIsExpiringSoon());
+        return this.appSession.tenantId > 0 && this.appSession.tenant.subscriptionPaymentType !== SubscriptionPaymentType.RecurringAutomatic &&  (this.appSession.tenant.isInTrialPeriod || this.subscriptionIsExpiringSoon());
     }
 
     subscriptionIsExpiringSoon(): boolean {
         if (this.appSession.tenant.subscriptionEndDateUtc) {
-            return moment().utc().add(AppConsts.subscriptionExpireNootifyDayCount, 'days') >= moment(this.appSession.tenant.subscriptionEndDateUtc);
+            let today = this._dateTimeService.getUTCDate();
+            let daysFromNow = this._dateTimeService.plusDays(today, AppConsts.subscriptionExpireNootifyDayCount);
+            return daysFromNow >= this.appSession.tenant.subscriptionEndDateUtc;
         }
 
         return false;
@@ -43,7 +41,9 @@ export class ThemesLayoutBaseComponent extends AppComponentBase {
             return 0;
         }
 
-        return Math.round(moment.utc(this.appSession.tenant.subscriptionEndDateUtc).diff(moment().utc(), 'days', true));
+        let todayUTC = this._dateTimeService.getUTCDate();
+        let duration = this.appSession.tenant.subscriptionEndDateUtc.diff(todayUTC, 'days');
+        return Math.round(duration.days);
     }
 
     getTrialSubscriptionNotification(): string {
@@ -56,5 +56,9 @@ export class ThemesLayoutBaseComponent extends AppComponentBase {
 
     getExpireNotification(localizationKey: string): string {
         return this.l(localizationKey, this.getSubscriptionExpiringDayCount());
+    }
+
+    isMobileDevice(): boolean {
+        return KTUtil.isMobileDevice();
     }
 }

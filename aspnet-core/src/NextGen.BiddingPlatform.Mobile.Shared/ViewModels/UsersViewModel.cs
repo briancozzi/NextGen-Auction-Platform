@@ -151,7 +151,7 @@ namespace NextGen.BiddingPlatform.ViewModels
                 return;
             }
 
-            var photo = await FetchProfilePictureOrNullAsync(userListModel.ProfilePictureId.Value);
+            var photo = await FetchProfilePictureOrNullAsync(userListModel.Id);
             if (photo == null)
             {
                 userListModel.Photo = ImageSource.FromResource(AssetsHelper.ProfileImagePlaceholderNamespace);
@@ -161,9 +161,9 @@ namespace NextGen.BiddingPlatform.ViewModels
             userListModel.Photo = ImageSource.FromStream(() => new MemoryStream(photo));
         }
 
-        private async Task<byte[]> FetchProfilePictureOrNullAsync(Guid pictureId)
+        private async Task<byte[]> FetchProfilePictureOrNullAsync(long userId)
         {
-            var output = await _profileService.GetProfilePictureById(pictureId);
+            var output = await _profileService.GetProfilePictureByUser(userId);
 
             return string.IsNullOrEmpty(output.ProfilePicture)
                 ? null

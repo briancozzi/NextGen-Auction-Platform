@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
+using GraphQL;
 using GraphQL.Language.AST;
-using GraphQL.Types;
 
 namespace NextGen.BiddingPlatform.Core.Extensions
 {
     public static class ContextExtensions
     {
-        public static ResolveFieldContext<object> ContainsArgument<TArgType>(this ResolveFieldContext<object> context,
+        public static IResolveFieldContext ContainsArgument<TArgType>(this IResolveFieldContext context,
             string argumentName,
             Action<TArgType> argumentContainsAction)
         {
@@ -26,7 +26,7 @@ namespace NextGen.BiddingPlatform.Core.Extensions
         /// <param name="fieldSelector">The query of the field selector. For example items:organizationUnits:displayName</param>
         /// <param name="namespaceSeperator">The seperator character of the fieldSelector. Default is :</param>
         /// <returns></returns>
-        public static bool HasSelectionField(this ResolveFieldContext<object> context, string fieldSelector, char namespaceSeperator = ':')
+        public static bool HasSelectionField(this IResolveFieldContext context, string fieldSelector, char namespaceSeperator = ':')
         {
             if (string.IsNullOrWhiteSpace(fieldSelector))
             {

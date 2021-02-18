@@ -182,20 +182,23 @@ namespace NextGen.BiddingPlatform.MultiTenancy
                 {
                     editionWithFeatures = editionWithFeatures.Where(e => e.Edition.Id != currentEditionId).ToList();
 
-                    var currentEdition = (SubscribableEdition)(await _editionManager.GetByIdAsync(currentEditionId.Value));
-                    var lastPayment = await _subscriptionPaymentRepository.GetLastCompletedPaymentOrDefaultAsync(
-                        AbpSession.GetTenantId(),
-                        null,
-                        null);
-
-                    if (lastPayment != null)
+                    var currentEdition = (SubscribableEdition) (await _editionManager.GetByIdAsync(currentEditionId.Value));
+                    if (!currentEdition.IsFree)
                     {
-                        editionWithFeatures = editionWithFeatures
-                            .Where(e =>
-                                e.Edition.GetPaymentAmount(lastPayment.PaymentPeriodType) >
-                                currentEdition.GetPaymentAmount(lastPayment.PaymentPeriodType)
-                            )
-                            .ToList();
+                        var lastPayment = await _subscriptionPaymentRepository.GetLastCompletedPaymentOrDefaultAsync(
+                            AbpSession.GetTenantId(),
+                            null,
+                            null);
+
+                        if (lastPayment != null)
+                        {
+                            editionWithFeatures = editionWithFeatures
+                                .Where(e =>
+                                    e.Edition.GetPaymentAmount(lastPayment.PaymentPeriodType) >
+                                    currentEdition.GetPaymentAmount(lastPayment.PaymentPeriodType)
+                                )
+                                .ToList();
+                        }
                     }
                 }
             }
@@ -250,11 +253,6 @@ namespace NextGen.BiddingPlatform.MultiTenancy
 
         private bool UseCaptchaOnRegistration()
         {
-            if (DebugHelper.IsDebug)
-            {
-                return false;
-            }
-
             return SettingManager.GetSettingValueForApplication<bool>(AppSettings.TenantManagement.UseCaptchaOnRegistration);
         }
 

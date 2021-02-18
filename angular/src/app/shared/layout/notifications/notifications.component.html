@@ -1,33 +1,24 @@
 <div [@routerTransition]>
-    <div class="kt-content kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor">
-        <div class="kt-subheader kt-grid__item">
-            <div [class]="containerClass">
-                <div class="kt-subheader__main">
-                    <h3 class="kt-subheader__title">
-                        <span>{{"Notifications" | localize}}</span>
-                    </h3>
-                </div>
-                <div class="kt-subheader__toolbar">
-                    <div class="kt-subheader__wrapper">
-                        <button class="btn btn-success" (click)="openNotificationSettingsModal()"><i
-                                class="fa fa-cog"></i>
-                            {{"NotificationSettings" | localize}}</button>
-                        <button class="btn btn-primary" (click)="setAllNotificationsAsRead()"><i
-                                class="fa fa-check"></i>
-                            {{"SetAllAsRead" | localize}}</button>
-                    </div>
-                </div>
+    <div class="content d-flex flex-column flex-column-fluid">
+        <sub-header [title]="'Notifications' | localize">
+            <div role="actions">
+                <button class="btn btn-success" (click)="openNotificationSettingsModal()"><i
+                    class="fa fa-cog"></i>
+                {{"NotificationSettings" | localize}}</button>
+            <button class="btn btn-primary" (click)="setAllNotificationsAsRead()"><i
+                    class="fa fa-check"></i>
+                {{"SetAllAsRead" | localize}}</button>
             </div>
-        </div>
-        <div [class]="containerClass + ' kt-grid__item kt-grid__item--fluid'">
-            <div class="kt-portlet">
-                <div class="kt-portlet__body">
-                    <div class="kt-form">
+        </sub-header>
+        <div [class]="containerClass">
+            <div class="card card-custom">
+                <div class="card-body">
+                    <div class="form">
                         <div class="row mb-4">
                             <div class="col-xl-6">
                                 <input class="form-control" id="StartEndRange" name="StartEndRange"
                                     #drp="bsDaterangepicker" readonly="readonly" bsDaterangepicker
-                                    dateRangePickerMomentModifier [(date)]="dateRange">
+                                    dateRangePickerLuxonModifier [(date)]="dateRange">
                             </div>
                             <div class="col-xl-6">
                                 <div class="form-group">
@@ -60,13 +51,14 @@
                                 [lazy]="true" [responsive]="primengTableHelper.isResponsive">
                                 <ng-template pTemplate="header">
                                     <tr>
-                                        <th style="width:130px">
+                                        <th style="width:100px;text-align:center">
                                             {{'Actions' | localize}}
                                         </th>
+                                        <th style="width: 80px;text-align:center">{{'Severity' | localize}}</th>
                                         <th>
                                             {{'Notification' | localize}}
                                         </th>
-                                        <th>
+                                        <th style="width:200px;text-align:center">
                                             {{'CreationTime' | localize}}
                                         </th>
                                     </tr>
@@ -87,8 +79,14 @@
                                                 <i class="fa fa-times" [attr.aria-label]="l('Delete')"></i>
                                             </button>
                                         </td>
+                                        <td style="text-align: center;">
+                                            <i
+                                                class="{{record.formattedNotification.icon}} {{record.formattedNotification.iconFontClass}} fa-2x"></i>
+                                            <br>
+                                            {{getNotificationTextBySeverity(record.formattedNotification.severity)}}
+                                        </td>
                                         <td>
-                                            <span class="ui-column-title">{{'Notification' | localize}}</span>
+                                            <span class="p-column-title">{{'Notification' | localize}}</span>
                                             <a *ngIf="record.formattedNotification.url"
                                                 href="{{record.formattedNotification.url}}"
                                                 class="{{getRowClass(record)}}">{{truncateString(record.formattedNotification.text, 120)}}</a>
@@ -96,8 +94,8 @@
                                                 title="{{record.formattedNotification.text}}"
                                                 class="{{getRowClass(record)}}">{{truncateString(record.formattedNotification.text, 120)}}</span>
                                         </td>
-                                        <td>
-                                            <span title="{{record.notification.creationTime | momentFormat:'llll'}}"
+                                        <td style="text-align:center">
+                                            <span title="{{record.notification.creationTime | luxonFormat:'DDDD t'}}"
                                                 class="{{getRowClass(record)}}">
                                                 {{fromNow(record.notification.creationTime)}}
                                             </span>
@@ -125,4 +123,4 @@
             </div>
         </div>
     </div>
-</div>
+</div>  

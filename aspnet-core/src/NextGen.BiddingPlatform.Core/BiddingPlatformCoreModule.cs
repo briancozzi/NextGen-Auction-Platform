@@ -26,7 +26,7 @@ using NextGen.BiddingPlatform.Chat;
 using NextGen.BiddingPlatform.Configuration;
 using NextGen.BiddingPlatform.DashboardCustomization.Definitions;
 using NextGen.BiddingPlatform.Debugging;
-using NextGen.BiddingPlatform.DynamicEntityParameters;
+using NextGen.BiddingPlatform.DynamicEntityProperties;
 using NextGen.BiddingPlatform.Features;
 using NextGen.BiddingPlatform.Friendships;
 using NextGen.BiddingPlatform.Friendships.Cache;
@@ -86,7 +86,7 @@ namespace NextGen.BiddingPlatform
             //Configuration.ReplaceService<ISmsSender,TwilioSmsSender>();
 
             //Adding DynamicEntityParameters definition providers
-            Configuration.DynamicEntityParameters.Providers.Add<AppDynamicEntityParameterDefinitionProvider>();
+            Configuration.DynamicEntityProperties.Providers.Add<AppDynamicEntityPropertyDefinitionProvider>();
 
             // MailKit configuration
             Configuration.Modules.AbpMailKit().SecureSocketOption = SecureSocketOptions.Auto;

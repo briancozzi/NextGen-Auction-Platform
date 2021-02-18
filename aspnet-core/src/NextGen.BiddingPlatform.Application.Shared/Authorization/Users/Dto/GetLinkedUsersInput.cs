@@ -1,5 +1,6 @@
-﻿using Abp.Application.Services.Dto;
+using Abp.Application.Services.Dto;
 using Abp.Runtime.Validation;
+using NextGen.BiddingPlatform.Common;
 
 namespace NextGen.BiddingPlatform.Authorization.Users.Dto
 {
@@ -17,10 +18,16 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Dto
             {
                 Sorting = "TenancyName, Username";
             }
-            else if (Sorting == "userName DESC")
+
+            Sorting = DtoSortingHelper.ReplaceSorting(Sorting, s =>
             {
-                Sorting = "TenancyName DESC, UserName DESC";
-            }
+                if (s == "userName DESC")
+                {
+                    s = "TenancyName DESC, UserName DESC";
+                }
+
+                return s;
+            });
         }
     }
 }

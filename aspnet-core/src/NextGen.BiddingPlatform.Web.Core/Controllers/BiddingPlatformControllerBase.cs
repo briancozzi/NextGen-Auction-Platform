@@ -25,7 +25,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             var multiTenancyConfig = HttpContext.RequestServices.GetRequiredService<IMultiTenancyConfig>();
             Response.Cookies.Append(
                 multiTenancyConfig.TenantIdResolveKey,
-                tenantId?.ToString(),
+                tenantId?.ToString() ?? string.Empty,
                 new CookieOptions
                 {
                     Expires = DateTimeOffset.Now.AddYears(5),

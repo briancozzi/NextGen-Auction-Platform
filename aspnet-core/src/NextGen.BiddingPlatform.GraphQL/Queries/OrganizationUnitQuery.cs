@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Organizations;
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 using NextGen.BiddingPlatform.Authorization;
@@ -38,7 +39,7 @@ namespace NextGen.BiddingPlatform.Queries
         }
 
         [AbpAuthorize(AppPermissions.Pages_Administration_OrganizationUnits)]
-        protected override async Task<List<OrganizationUnitDto>> Resolve(ResolveFieldContext<object> context)
+        public override async Task<List<OrganizationUnitDto>> Resolve(IResolveFieldContext context)
         {
             var query = _organizationUnitRepository.GetAll().AsNoTracking();
 

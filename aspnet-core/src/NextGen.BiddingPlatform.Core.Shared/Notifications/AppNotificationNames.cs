@@ -5,6 +5,7 @@ namespace NextGen.BiddingPlatform.Notifications
     /// </summary>
     public static class AppNotificationNames
     {
+        public const string SimpleMessage = "App.SimpleMessage";
         public const string WelcomeToTheApplication = "App.WelcomeToTheApplication";
         public const string NewUserRegistered = "App.NewUserRegistered";
         public const string NewTenantRegistered = "App.NewTenantRegistered";

@@ -1,8 +1,9 @@
 import { Component, Injector, ViewChild } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { AuditLogServiceProxy, EntityChangeListDto, EntityPropertyChangeDto } from '@shared/service-proxies/service-proxies';
-import * as moment from 'moment';
-import { ModalDirective } from 'ngx-bootstrap';
+import { DateTime } from 'luxon';
+import { ModalDirective } from 'ngx-bootstrap/modal';
+import { DateTimeService } from '../timing/date-time.service';
 
 @Component({
     selector: 'entityChangeDetailModal',
@@ -18,7 +19,8 @@ export class EntityChangeDetailModalComponent extends AppComponentBase {
 
     constructor(
         injector: Injector,
-        private _auditLogService: AuditLogServiceProxy
+        private _auditLogService: AuditLogServiceProxy,
+        private _dateTimeService: DateTimeService
     ) {
         super(injector);
     }
@@ -29,7 +31,7 @@ export class EntityChangeDetailModalComponent extends AppComponentBase {
         }
         propertyChangeValue = propertyChangeValue.replace(/^['"]+/g, '').replace(/['"]+$/g, '');
         if (this.isDate(propertyChangeValue, propertyTypeFullName)) {
-            return moment(propertyChangeValue).format('YYYY-MM-DD HH:mm:ss');
+            return this._dateTimeService.formatDate(propertyChangeValue, 'yyyy-LL-dd HH:mm:ss');
         }
 
         if (propertyChangeValue === 'null') {

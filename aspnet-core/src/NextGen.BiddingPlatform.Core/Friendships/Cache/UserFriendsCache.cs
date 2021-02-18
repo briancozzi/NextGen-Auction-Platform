@@ -6,7 +6,6 @@ using System.Linq;
 using Abp.Dependency;
 using Abp.Domain.Uow;
 using Abp.MultiTenancy;
-using Abp.Threading;
 using NextGen.BiddingPlatform.Authorization.Users;
 
 namespace NextGen.BiddingPlatform.Friendships.Cache
@@ -17,7 +16,7 @@ namespace NextGen.BiddingPlatform.Friendships.Cache
         private readonly IRepository<Friendship, long> _friendshipRepository;
         private readonly IRepository<ChatMessage, long> _chatMessageRepository;
         private readonly ITenantCache _tenantCache;
-        private readonly UserManager _userManager;
+        private readonly UserStore _userStore;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
 
         private readonly object _syncObj = new object();
@@ -27,15 +26,15 @@ namespace NextGen.BiddingPlatform.Friendships.Cache
             IRepository<Friendship, long> friendshipRepository,
             IRepository<ChatMessage, long> chatMessageRepository,
             ITenantCache tenantCache,
-            UserManager userManager,
-            IUnitOfWorkManager unitOfWorkManager)
+            IUnitOfWorkManager unitOfWorkManager, 
+            UserStore userStore)
         {
             _cacheManager = cacheManager;
             _friendshipRepository = friendshipRepository;
             _chatMessageRepository = chatMessageRepository;
             _tenantCache = tenantCache;
-            _userManager = userManager;
             _unitOfWorkManager = unitOfWorkManager;
+            _userStore = userStore;
         }
 
         [UnitOfWork]
@@ -43,14 +42,16 @@ namespace NextGen.BiddingPlatform.Friendships.Cache
         {
             return _cacheManager
                 .GetCache(FriendCacheItem.CacheName)
-                .Get<string, UserWithFriendsCacheItem>(userIdentifier.ToUserIdentifierString(), f => GetUserFriendsCacheItemInternal(userIdentifier));
+                .AsTyped<string, UserWithFriendsCacheItem>()
+                .Get(userIdentifier.ToUserIdentifierString(), f => GetUserFriendsCacheItemInternal(userIdentifier));
         }
 
         public virtual UserWithFriendsCacheItem GetCacheItemOrNull(UserIdentifier userIdentifier)
         {
             return _cacheManager
                 .GetCache(FriendCacheItem.CacheName)
-                .GetOrDefault<string, UserWithFriendsCacheItem>(userIdentifier.ToUserIdentifierString());
+                .AsTyped<string, UserWithFriendsCacheItem>()
+                .GetOrDefault(userIdentifier.ToUserIdentifierString());
         }
 
         [UnitOfWork]
@@ -78,7 +79,7 @@ namespace NextGen.BiddingPlatform.Friendships.Cache
                 UpdateUserOnCache(userIdentifier, user);
             }
         }
-        
+
         [UnitOfWork]
         public virtual void IncreaseUnreadMessageCount(UserIdentifier userIdentifier, UserIdentifier friendIdentifier, int change)
         {
@@ -183,17 +184,16 @@ namespace NextGen.BiddingPlatform.Friendships.Cache
                         FriendUserName = friendship.FriendUserName,
                         FriendTenancyName = friendship.FriendTenancyName,
                         FriendProfilePictureId = friendship.FriendProfilePictureId,
-                        UnreadMessageCount =
-                            _chatMessageRepository.GetAll().Count(cm => cm.ReadState == ChatMessageReadState.Unread &&
+                        UnreadMessageCount = _chatMessageRepository.GetAll().Count(cm => cm.ReadState == ChatMessageReadState.Unread &&
                                                                cm.UserId == userIdentifier.UserId &&
                                                                cm.TenantId == userIdentifier.TenantId &&
                                                                cm.TargetUserId == friendship.FriendUserId &&
                                                                cm.TargetTenantId == friendship.FriendTenantId &&
                                                                cm.Side == ChatSide.Receiver)
                     }).ToList();
-
-                var user = AsyncHelper.RunSync(() => _userManager.FindByIdAsync(userIdentifier.UserId.ToString()));
-
+                
+                var user = _userStore.FindById(userIdentifier.UserId.ToString());
+                
                 return new UserWithFriendsCacheItem
                 {
                     TenantId = userIdentifier.TenantId,

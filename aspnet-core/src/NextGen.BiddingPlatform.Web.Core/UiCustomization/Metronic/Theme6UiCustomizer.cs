@@ -26,11 +26,6 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
                         DesktopFixedHeader = await GetSettingValueAsync<bool>(AppSettings.UiManagement.Header.DesktopFixedHeader),
                         MobileFixedHeader = await GetSettingValueAsync<bool>(AppSettings.UiManagement.Header.MobileFixedHeader)
                     },
-                    SubHeader = new ThemeSubHeaderSettingsDto
-                    {
-                        FixedSubHeader = await GetSettingValueAsync<bool>(AppSettings.UiManagement.SubHeader.Fixed),
-                        SubheaderStyle = await GetSettingValueAsync(AppSettings.UiManagement.SubHeader.Style)
-                    },
                     Footer = new ThemeFooterSettingsDto
                     {
                         FixedFooter = await GetSettingValueAsync<bool>(AppSettings.UiManagement.Footer.FixedFooter)
@@ -53,6 +48,10 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
             settings.BaseSettings.Menu.AllowAsideMinimizing = true;
             settings.BaseSettings.Menu.DefaultMinimizedAside = true;
 
+            settings.BaseSettings.SubHeader.SubheaderSize = 5;
+            settings.BaseSettings.SubHeader.TitleStlye = "text-dark font-weight-bold my-2 mr-5";
+            settings.BaseSettings.SubHeader.ContainerStyle = "subheader py-2 py-lg-4  subheader-transparent";
+            
             settings.IsLeftMenuUsed = true;
             settings.IsTopMenuUsed = false;
             settings.IsTabMenuUsed = false;

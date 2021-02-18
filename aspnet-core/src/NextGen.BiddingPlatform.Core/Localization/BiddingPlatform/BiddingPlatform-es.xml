@@ -260,7 +260,6 @@
     <text name="Language">Lenguaje</text>
     <text name="Flag">Marca</text>
     <text name="SetAsDefaultLanguage">Establecer como lenguaje predeterminado</text>
-    <text name="InvlalidLanguageCode">Código de lenguaje no válido.</text>
     <text name="EditLanguage">Editar lenguaje</text>
     <text name="ChangeTexts">Cambiar textos</text>
     <text name="TargetValue">Nuevo valor</text>

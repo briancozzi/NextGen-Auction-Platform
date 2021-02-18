@@ -7,6 +7,7 @@ using Abp.Extensions;
 using Abp.Threading;
 using NextGen.BiddingPlatform.Editions;
 using Stripe;
+using Stripe.Checkout;
 
 namespace NextGen.BiddingPlatform.MultiTenancy.Payments.Stripe
 {
@@ -75,7 +76,7 @@ namespace NextGen.BiddingPlatform.MultiTenancy.Payments.Stripe
                         Plan = newPlanId
                     }
                 },
-                Prorate = !isProrateCharged
+                ProrationBehavior = !isProrateCharged ? "always_invoice": "none"  
             });
 
             var lastRecurringPayment = await _subscriptionPaymentRepository.GetByGatewayAndPaymentIdAsync(SubscriptionPaymentGatewayType.Stripe, subscriptionId);
@@ -174,6 +175,23 @@ namespace NextGen.BiddingPlatform.MultiTenancy.Payments.Stripe
             }
         }
 
+        public async Task<StripeIdResponse> UpdateCustomerDescriptionAsync(string sessionId, string description)
+        {
+            var customerService = new CustomerService();
+            var sessionService = new SessionService();
+            var session = await sessionService.GetAsync(sessionId);
+            
+            var customer = await customerService.UpdateAsync(session.CustomerId, new CustomerUpdateOptions
+            {
+                Description = description
+            });
+
+            return new StripeIdResponse
+            {
+                Id = customer.Id
+            };
+        }
+        
         public void HandleEvent(RecurringPaymentsDisabledEventData eventData)
         {
             var subscriptionPayment = GetLastCompletedSubscriptionPayment(eventData.TenantId);

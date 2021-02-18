@@ -1,8 +1,7 @@
 import { Component, Injector, ViewChild, EventEmitter, Output, OnInit, Input } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { TreeNode } from 'primeng/api';
-import * as _ from 'lodash';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { PermissionTreeComponent } from './permission-tree.component';
 import { PermissionServiceProxy, FlatPermissionDto } from '@shared/service-proxies/service-proxies';
 
@@ -13,6 +12,7 @@ import { PermissionServiceProxy, FlatPermissionDto } from '@shared/service-proxi
 export class PermissionTreeModalComponent extends AppComponentBase implements OnInit {
     @Input() dontAddOpenerButton: boolean;
     @Input() singleSelect: boolean;
+    @Input() disableCascade: boolean;
     @Output() onModalclose = new EventEmitter<string[]>();
 
     @ViewChild('permissionTreeModal', { static: true }) permissionTreeModal: ModalDirective;

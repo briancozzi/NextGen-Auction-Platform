@@ -1,14 +1,14 @@
 import { Component, OnInit, ViewChild, Injector } from '@angular/core';
 import { Table } from 'primeng/table';
 import { HostDashboardServiceProxy, GetExpiringTenantsOutput } from '@shared/service-proxies/service-proxies';
-import { WidgetComponentBase } from '../widget-component-base';
+import { WidgetComponentBaseComponent } from '../widget-component-base';
 
 @Component({
   selector: 'app-widget-subscription-expiring-tenants',
   templateUrl: './widget-subscription-expiring-tenants.component.html',
   styleUrls: ['./widget-subscription-expiring-tenants.component.css']
 })
-export class WidgetSubscriptionExpiringTenantsComponent extends WidgetComponentBase implements OnInit {
+export class WidgetSubscriptionExpiringTenantsComponent extends WidgetComponentBaseComponent implements OnInit {
 
   @ViewChild('ExpiringTenantsTable', { static: true }) expiringTenantsTable: Table;
 
@@ -35,10 +35,10 @@ export class WidgetSubscriptionExpiringTenantsComponent extends WidgetComponentB
     const url = abp.appPath +
       'app/admin/tenants?' +
       'subscriptionEndDateStart=' +
-      encodeURIComponent(this.expiringTenantsData.subscriptionEndDateStart.format()) +
+      encodeURIComponent(this.expiringTenantsData.subscriptionEndDateStart.toString()) +
       '&' +
       'subscriptionEndDateEnd=' +
-      encodeURIComponent(this.expiringTenantsData.subscriptionEndDateEnd.format());
+      encodeURIComponent(this.expiringTenantsData.subscriptionEndDateEnd.toString());
 
     window.open(url);
   }

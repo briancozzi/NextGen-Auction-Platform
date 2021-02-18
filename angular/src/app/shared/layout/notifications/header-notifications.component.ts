@@ -1,19 +1,21 @@
-import { Component, Injector, OnInit, ViewEncapsulation, NgZone } from '@angular/core';
+import { Component, Injector, OnInit, ViewEncapsulation, NgZone, Input } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { NotificationServiceProxy, UserNotification } from '@shared/service-proxies/service-proxies';
 import { IFormattedUserNotification, UserNotificationHelper } from './UserNotificationHelper';
-import * as _ from 'lodash';
+import { forEach as _forEach  } from 'lodash-es';
 import { UrlHelper } from '@shared/helpers/UrlHelper';
 
 @Component({
     templateUrl: './header-notifications.component.html',
-    selector: '[headerNotifications]',
+    selector: 'header-notifications',
     encapsulation: ViewEncapsulation.None
 })
 export class HeaderNotificationsComponent extends AppComponentBase implements OnInit {
 
     notifications: IFormattedUserNotification[] = [];
     unreadNotificationCount = 0;
+    @Input() isDropup = false;
+    @Input() customStyle = 'btn btn-icon btn-dropdown btn-clean btn-lg mr-1';
 
     constructor(
         injector: Injector,
@@ -37,7 +39,7 @@ export class HeaderNotificationsComponent extends AppComponentBase implements On
         this._notificationService.getUserNotifications(undefined, undefined, undefined, 3, 0).subscribe(result => {
             this.unreadNotificationCount = result.unreadCount;
             this.notifications = [];
-            _.forEach(result.items, (item: UserNotification) => {
+            _forEach(result.items, (item: UserNotification) => {
                 this.notifications.push(this._userNotificationHelper.format(<any>item));
             });
         });
@@ -71,6 +73,7 @@ export class HeaderNotificationsComponent extends AppComponentBase implements On
             for (let i = 0; i < self.notifications.length; i++) {
                 if (self.notifications[i].userNotificationId === userNotificationId) {
                     self.notifications[i].state = 'READ';
+                    self.notifications[i].isUnread = false;
                 }
             }
 
@@ -93,7 +96,9 @@ export class HeaderNotificationsComponent extends AppComponentBase implements On
     }
 
     setNotificationAsRead(userNotification: IFormattedUserNotification): void {
-        this._userNotificationHelper.setAsRead(userNotification.userNotificationId);
+        if (userNotification.state !== 'READ') {
+            this._userNotificationHelper.setAsRead(userNotification.userNotificationId);
+        }
     }
 
     gotoUrl(url): void {

@@ -7,7 +7,6 @@ import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-webhook-subscription',
   templateUrl: './webhook-subscription.component.html',
   styleUrls: ['./webhook-subscription.component.css'],
   animations: [appModuleAnimation()]

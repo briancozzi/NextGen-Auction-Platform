@@ -1,25 +1,24 @@
-<div class="kt-portlet kt-portlet--height-fluid recent-tenants">
-    <div class="kt-portlet__head">
-        <div class="kt-portlet__head-label">
-            <h3 class="kt-portlet__head-title">
-                <i class="fas fa-user-plus kt-font-primary"></i>
-                <span
-                    class="caption-subject kt-font-primary">{{"RecentTenants" | localize}}</span><br />
-                <small>
-                    <span class="caption-helper" *ngIf="!loading">
-                        {{"RecentTenantsHelpText" | localize:recentTenantsData.recentTenantsDayCount : recentTenantsData.maxRecentTenantsShownCount}}
-                    </span>
+<div class="card card-custom h-100">
+    <div class="card-header align-items-center border-0">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="fas fa-user-plus text-primary"></i>
+            </span>
+            <h3 class="card-label text-primary">
+                {{"RecentTenants" | localize}}
+                <small class="text-muted" *ngIf="!loading">
+                    {{"RecentTenantsHelpText" | localize:recentTenantsData.recentTenantsDayCount : recentTenantsData.maxRecentTenantsShownCount}}
                 </small>
             </h3>
         </div>
     </div>
-    <div class="kt-portlet__body" >
-        <div class="scroller chart kt-scroll" [perfectScrollbar]>
+    <div class="card-body" [perfectScrollbar]>
+        <div class="scroller chart" [perfectScrollbar]>
             <div class="primeng-datatable-container recent-tenants-table" *ngIf="!loading"
-                [busyIf]="primengTableHelper.isLoading">
-                <p-table #RecentTenantsTable [value]="recentTenantsData.recentTenants" 
-                    rows="{{primengTableHelper.defaultRecordsCountPerPage}}" [paginator]="false"
-                    [lazy]="false" [responsive]="primengTableHelper.isResponsive">
+                 [busyIf]="primengTableHelper.isLoading">
+                <p-table #RecentTenantsTable [value]="recentTenantsData.recentTenants"
+                         rows="{{primengTableHelper.defaultRecordsCountPerPage}}" [paginator]="false"
+                         [lazy]="false" [responsive]="primengTableHelper.isResponsive">
                     <ng-template pTemplate="header">
                         <tr>
                             <th>{{'TenantName' | localize}}</th>
@@ -29,13 +28,13 @@
                     <ng-template pTemplate="body" let-record="$implicit">
                         <tr>
                             <td>
-                                <span class="ui-column-title">{{'TenantName' | localize}}</span>
+                                <span class="p-column-title">{{'TenantName' | localize}}</span>
                                 {{record.name}}
                             </td>
                             <td>
                                 <span
-                                    class="ui-column-title">{{'CreationTime' | localize}}</span>
-                                {{ record.creationTime | momentFormat:'L LT'}}
+                                    class="p-column-title">{{'CreationTime' | localize}}</span>
+                                {{ record.creationTime | luxonFormat:'F'}}
                             </td>
                         </tr>
                     </ng-template>
@@ -48,7 +47,7 @@
         <div class="scroller-footer">
             <div class="btn-arrow-link pull-right">
                 <a href="javascript:;" class="see-all-recent-tenants"
-                    (click)="gotoAllRecentTenants()">{{"SeeAllRecords" | localize}}</a>
+                   (click)="gotoAllRecentTenants()">{{"SeeAllRecords" | localize}}</a>
                 <i class="icon-arrow-right"></i>
             </div>
         </div>

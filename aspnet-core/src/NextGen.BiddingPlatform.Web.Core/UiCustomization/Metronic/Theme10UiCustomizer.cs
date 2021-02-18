@@ -21,10 +21,6 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
             {
                 BaseSettings = new ThemeSettingsDto
                 {
-                    Layout = new ThemeLayoutSettingsDto
-                    {
-                        LayoutType = await GetSettingValueAsync(AppSettings.UiManagement.LayoutType)
-                    },
                     Header = new ThemeHeaderSettingsDto
                     {
                         DesktopFixedHeader = await GetSettingValueAsync<bool>(AppSettings.UiManagement.Header.DesktopFixedHeader),
@@ -38,10 +34,14 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
             };
 
             settings.BaseSettings.Theme = ThemeName;
+            settings.BaseSettings.Layout.LayoutType = "fluid";
             settings.BaseSettings.Header.DesktopFixedHeader = true;
             settings.BaseSettings.Menu.Position = "tab";
             settings.BaseSettings.Menu.AsideSkin = "dark";
 
+            settings.BaseSettings.SubHeader.SubheaderSize = 5;
+            settings.BaseSettings.SubHeader.TitleStlye = "text-dark font-weight-bold my-2 mr-5";
+            settings.BaseSettings.SubHeader.ContainerStyle = "subheader py-2 py-lg-4  subheader-transparent";
 
             settings.IsLeftMenuUsed = false;
             settings.IsTopMenuUsed = false;
@@ -53,8 +53,7 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
         public async Task UpdateUserUiManagementSettingsAsync(UserIdentifier user, ThemeSettingsDto settings)
         {
             await SettingManager.ChangeSettingForUserAsync(user, AppSettings.UiManagement.Theme, ThemeName);
-
-            await ChangeSettingForUserAsync(user, AppSettings.UiManagement.LayoutType, settings.Layout.LayoutType);
+            
             await ChangeSettingForUserAsync(user, AppSettings.UiManagement.Header.DesktopFixedHeader, settings.Header.DesktopFixedHeader.ToString());
             await ChangeSettingForUserAsync(user, AppSettings.UiManagement.Header.MobileFixedHeader, settings.Header.MobileFixedHeader.ToString());
             await ChangeSettingForUserAsync(user, AppSettings.UiManagement.SearchActive, settings.Menu.SearchActive.ToString());
@@ -64,7 +63,6 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
         {
             await SettingManager.ChangeSettingForTenantAsync(tenantId, AppSettings.UiManagement.Theme, ThemeName);
 
-            await ChangeSettingForTenantAsync(tenantId, AppSettings.UiManagement.LayoutType, settings.Layout.LayoutType);
             await ChangeSettingForTenantAsync(tenantId, AppSettings.UiManagement.Header.DesktopFixedHeader, settings.Header.DesktopFixedHeader.ToString());
             await ChangeSettingForTenantAsync(tenantId, AppSettings.UiManagement.Header.MobileFixedHeader, settings.Header.MobileFixedHeader.ToString());
             await ChangeSettingForTenantAsync(tenantId, AppSettings.UiManagement.SearchActive, settings.Menu.SearchActive.ToString());
@@ -73,8 +71,7 @@ namespace NextGen.BiddingPlatform.Web.UiCustomization.Metronic
         public async Task UpdateApplicationUiManagementSettingsAsync(ThemeSettingsDto settings)
         {
             await SettingManager.ChangeSettingForApplicationAsync(AppSettings.UiManagement.Theme, ThemeName);
-
-            await ChangeSettingForApplicationAsync(AppSettings.UiManagement.LayoutType, settings.Layout.LayoutType);
+            
             await ChangeSettingForApplicationAsync(AppSettings.UiManagement.Header.DesktopFixedHeader, settings.Header.DesktopFixedHeader.ToString());
             await ChangeSettingForApplicationAsync(AppSettings.UiManagement.Header.MobileFixedHeader, settings.Header.MobileFixedHeader.ToString());
             await ChangeSettingForApplicationAsync(AppSettings.UiManagement.SearchActive, settings.Menu.SearchActive.ToString());

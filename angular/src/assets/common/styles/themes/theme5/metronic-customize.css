@@ -1,62 +1,31 @@
-.kt-header-mobile .kt-header__brand-logo-default {
-  height: 52px !important;
-  padding-top: 10px;
-  padding-bottom: 10px;
+theme5-layout {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
 }
 
-.cc-window {
-  background-color: #282a3a;
-}
-
-.cc-btn {
-  background-color: #5867dd;
-  border-color: #5867dd;
-  color: #ffffff;
-}
-
-.cc-message {
-  color: #fefefe;
-}
-
-.kt-header__topbar-user span.kt-header__topbar-username {
-  display: none !important;
-}
-
-body ul.kt-menu__nav li.kt-menu__item--here .kt-menu__hor-arrow,
-body ul.kt-menu__nav li:not(.kt-menu__item--active):hover .kt-menu__hor-arrow {
-  color: #3d94fb !important;
-}
-
-body .mobile-subscription-warning {
-  background-color: transparent !important;
+#kt_wrapper > ng-component {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
 }
 
 .unread-notification-count {
-  position: absolute;
-  top: -4px;
-  font-size: 1.0rem !important;
+    position: absolute;
+    top: 2px;
+    left: 19px;
 }
 
-.kt-footer__copyright {
-  display: inline-block;
-  margin-left: 10px !important;
+.unread-chat-message-count {
+    position: absolute;
+    top: -6px;
+    left: 13px;
 }
 
-@media (max-width: 1024px) {
-  .menuSearchBarContainer {
+p-autoComplete{
+    padding: 10px;
+}
+
+.menuSearchBarContainer{
     width: calc(100% - 20px);
-    margin: 0 10px 10px 10px;
-  }
-
-  .menuSearchBarInput {
-    width: 214px;
-  }
-}
-
-.menuSearchBarContainer {
-  margin-right: 14px;
-}
-
-.menuSearchBarContainer .ui-autocomplete-panel {
-  margin-left: 14px;
 }

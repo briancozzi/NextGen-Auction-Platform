@@ -9,12 +9,12 @@
                     </h5>
                     <button type="button" class="close" (click)="close()" [attr.aria-label]="l('Close')"
                         [disabled]="saving">
-                        <span aria-hidden="true">&times;</span>
+                         <i aria-hidden="true" class="ki ki-close"></i>
                     </button>
                 </div>
                 <div class="modal-body">
                     <tabset>
-                        <tab heading="{{'EditionProperties' | localize}}">
+                        <tab heading="{{'EditionProperties' | localize}}" class="p-5">
                             <div class="form-group">
                                 <label for="EditionDisplayName">{{"EditionName" | localize}} *</label>
                                 <input id="EditionDisplayName" #editionNameInput="ngModel" class="form-control"
@@ -24,18 +24,18 @@
                             </div>
 
                             <label>{{"SubscriptionPrice" | localize}}</label>
-                            <div class="kt-radio-inline">
-                                <label for="EditEdition_IsFree" class="kt-radio">
+                            <div class="radio-inline">
+                                <label for="EditEdition_IsFree" class="radio">
                                     <input id="EditEdition_IsFree" name="SubscriptionPrice" [(ngModel)]="isFree"
                                         (ngModelChange)="resetPrices($event)" [value]="true" type="radio">
-                                    {{"Free" | localize}}
                                     <span></span>
+                                    {{"Free" | localize}}
                                 </label>
-                                <label for="EditEdition_IsPaid" class="kt-radio">
+                                <label for="EditEdition_IsPaid" class="radio">
                                     <input id="EditEdition_IsPaid" name="SubscriptionPrice" [(ngModel)]="isFree"
                                         [value]="false" type="radio">
-                                    {{"Paid" | localize}}
                                     <span></span>
+                                    {{"Paid" | localize}}
                                 </label>
                             </div>
                             <div class="row" *ngIf="!isFree">
@@ -71,7 +71,7 @@
                                             <validation-messages [formCtrl]="weeklyPriceInput"></validation-messages>
                                         </div>
                                     </div>
-    
+
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="MonthlyPrice">{{"MonthlyPrice" | localize}}</label>
@@ -106,12 +106,12 @@
                                 </div>
                             </div>
                             <div [hidden]="isFree" class="paid-features">
-                                <div class="kt-checkbox-list">
-                                    <label for="EditEdition_IsTrialActive" class="kt-checkbox">
+                                <div class="checkbox-list">
+                                    <label for="EditEdition_IsTrialActive" class="checkbox">
                                         <input id="EditEdition_IsTrialActive" type="checkbox" name="isTrialActive"
                                             [(ngModel)]="isTrialActive" />
-                                        {{"IsTrialActive" | localize}}
                                         <span></span>
+                                        {{"IsTrialActive" | localize}}
                                     </label>
                                 </div>
                                 <div class="form-group trial-day-count" *ngIf="isTrialActive">
@@ -122,12 +122,12 @@
                                         [ngClass]="{'edited':edition.edition.trialDayCount}">
                                     <validation-messages [formCtrl]="trialDayCountInput"></validation-messages>
                                 </div>
-                                <div class="kt-checkbox-list">
-                                    <label for="EditEdition_IsWaitingDayActive" class="kt-checkbox">
+                                <div class="checkbox-list">
+                                    <label for="EditEdition_IsWaitingDayActive" class="checkbox">
                                         <input id="EditEdition_IsWaitingDayActive" type="checkbox"
                                             name="IsWaitingDayActive" [(ngModel)]="isWaitingDayActive" />
-                                        {{"WaitAfterSubscriptionExpireDate" | localize}}
                                         <span></span>
+                                        {{"WaitAfterSubscriptionExpireDate" | localize}}
                                     </label>
                                 </div>
                                 <div class="form-group waiting-day-after-expire" *ngIf="isWaitingDayActive">
@@ -140,20 +140,20 @@
                                     <validation-messages [formCtrl]="waitingDayAfterExpireInput"></validation-messages>
                                 </div>
                                 <label>{{"WhatWillDoneAfterSubscriptionExpiry" | localize}}</label>
-                                <div class="kt-radio-inline">
-                                    <label for="EditEdition_ExpireAction_DeactiveUser" class="kt-radio">
+                                <div class="radio-inline">
+                                    <label for="EditEdition_ExpireAction_DeactiveUser" class="radio">
                                         <input id="EditEdition_ExpireAction_DeactiveUser" name="ExpireAction"
                                             [(ngModel)]="expireAction" [value]="expireActionEnum.DeactiveTenant"
                                             (ngModelChange)="removeExpiringEdition($event)" type="radio">
-                                        {{"DeactiveTenant" | localize}}
                                         <span></span>
+                                        {{"DeactiveTenant" | localize}}
                                     </label>
-                                    <label for="EditEdition_ExpireAction_AssignEdition" class="kt-radio">
+                                    <label for="EditEdition_ExpireAction_AssignEdition" class="radio">
                                         <input id="EditEdition_ExpireAction_AssignEdition" name="ExpireAction"
                                             [(ngModel)]="expireAction" [value]="expireActionEnum.AssignToAnotherEdition"
                                             type="radio">
-                                        {{"AssignToAnotherEdition" | localize}}
                                         <span></span>
+                                        {{"AssignToAnotherEdition" | localize}}
                                     </label>
                                 </div>
                                 <div class="form-group edition-list"
@@ -167,15 +167,15 @@
                                 </div>
                             </div>
                         </tab>
-                        <tab heading="{{'Features' | localize}}">
+                        <tab heading="{{'Features' | localize}}" class="p-5">
                             <feature-tree #featureTree></feature-tree>
                         </tab>
                     </tabset>
                 </div>
                 <div class="modal-footer">
-                    <button [disabled]="saving" type="button" class="btn btn-secondary"
+                    <button [disabled]="saving" type="button" class="btn btn-light-primary font-weight-bold"
                         (click)="close()">{{"Cancel" | localize}}</button>
-                    <button type="submit" class="btn btn-primary" [disabled]="!editionForm.form.valid"
+                    <button type="submit" class="btn btn-primary font-weight-bold" [disabled]="!editionForm.form.valid"
                         [buttonBusy]="saving" [busyText]="l('SavingWithThreeDot')"><i class="fa fa-save"></i>
                         <span>{{"Save" | localize}}</span></button>
                 </div>

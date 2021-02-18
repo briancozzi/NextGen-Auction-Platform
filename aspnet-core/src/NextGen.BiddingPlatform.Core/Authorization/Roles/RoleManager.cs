@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,7 +24,7 @@ namespace NextGen.BiddingPlatform.Authorization.Roles
     public class RoleManager : AbpRoleManager<Role, User>
     {
         private readonly ILocalizationManager _localizationManager;
-        
+
         public RoleManager(
             RoleStore store,
             IEnumerable<IRoleValidator<Role>> roleValidators,
@@ -61,12 +61,12 @@ namespace NextGen.BiddingPlatform.Authorization.Roles
             return base.SetGrantedPermissionsAsync(role, permissions);
         }
 
-        public virtual async Task<Role> GetRoleByIdAsync(long userId)
+        public virtual async Task<Role> GetRoleByIdAsync(long roleId)
         {
-            var role = await FindByIdAsync(userId.ToString());
+            var role = await FindByIdAsync(roleId.ToString());
             if (role == null)
             {
-                throw new ApplicationException("There is no user with id: " + userId);
+                throw new ApplicationException("There is no role with id: " + roleId);
             }
 
             return role;

@@ -260,7 +260,6 @@
     <text name="Language">Idioma</text>
     <text name="Flag">Bandera</text>
     <text name="SetAsDefaultLanguage">Establecer como idioma default</text>
-    <text name="InvlalidLanguageCode">Código de idioma inválido.</text>
     <text name="EditLanguage">Editar idioma</text>
     <text name="ChangeTexts">Cambiar textos</text>
     <text name="TargetValue">Valor destino</text>

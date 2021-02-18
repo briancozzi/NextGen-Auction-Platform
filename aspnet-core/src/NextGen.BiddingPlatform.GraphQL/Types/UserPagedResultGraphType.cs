@@ -8,6 +8,8 @@ namespace NextGen.BiddingPlatform.Types
     {
         public UserPagedResultGraphType()
         {
+            Name = "UserPagedResultGraphType";
+            
             Field(x => x.TotalCount);
             Field(x => x.Items, type: typeof(ListGraphType<UserType>));
         }

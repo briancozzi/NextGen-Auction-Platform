@@ -421,8 +421,8 @@ namespace NextGen.BiddingPlatform.Tests.MultiTenancy
 
             var result = await _paymentAppService.GetPaymentHistory(new GetPaymentHistoryInput());
             result.Items.Count.ShouldBe(2);
-            result.Items[0].DayCount.ShouldBe(2);
-            result.Items[1].DayCount.ShouldBe(29);
+            result.Items[0].DayCount.ShouldBe(1);
+            result.Items[1].DayCount.ShouldBe(30);
         }
 
         private async Task CreateUpdateTenant(PaymentPeriodType paymentPeriodType, EditionPaymentType editionPaymentType, DateTime? subscriptionEndDate, DateTime updatedSubscriptionEndDate)

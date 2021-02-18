@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Abp.AspNetZeroCore.Net;
 using Abp.Extensions;
 using Abp.IO.Extensions;
@@ -10,6 +11,7 @@ using Abp.UI;
 using Abp.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NextGen.BiddingPlatform.Authorization.Users.Profile;
 using NextGen.BiddingPlatform.Authorization.Users.Profile.Dto;
 using NextGen.BiddingPlatform.Dto;
 using NextGen.BiddingPlatform.Storage;
@@ -20,12 +22,16 @@ namespace NextGen.BiddingPlatform.Web.Controllers
     public abstract class ProfileControllerBase : BiddingPlatformControllerBase
     {
         private readonly ITempFileCacheManager _tempFileCacheManager;
-
+        private readonly IProfileAppService _profileAppService;
+        
         private const int MaxProfilePictureSize = 5242880; //5MB
 
-        protected ProfileControllerBase(ITempFileCacheManager tempFileCacheManager)
+        protected ProfileControllerBase(
+            ITempFileCacheManager tempFileCacheManager, 
+            IProfileAppService profileAppService)
         {
             _tempFileCacheManager = tempFileCacheManager;
+            _profileAppService = profileAppService;
         }
 
         public UploadProfilePictureOutput UploadProfilePicture(FileDto input)
@@ -82,12 +88,20 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             return GetDefaultProfilePictureInternal();
         }
 
+        public async Task<FileResult> GetProfilePictureByUser(long userId)
+        {
+            var output = await _profileAppService.GetProfilePictureByUser(userId);
+            if (output.ProfilePicture.IsNullOrEmpty())
+            {
+                return GetDefaultProfilePictureInternal();
+            }
+
+            return File(Convert.FromBase64String(output.ProfilePicture), MimeTypeNames.ImageJpeg);
+        }
+        
         protected FileResult GetDefaultProfilePictureInternal()
         {
-            return File(
-                @"Common\Images\default-profile-picture.png",
-                MimeTypeNames.ImagePng
-            );
+            return File(Path.Combine("Common", "Images", "default-profile-picture.png"), MimeTypeNames.ImagePng);
         }
     }
 }

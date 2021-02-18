@@ -1,9 +1,11 @@
-import { Injector, ElementRef, Component, ViewChild, OnInit, AfterViewInit } from '@angular/core';
+import { Injector, ElementRef, Component, ViewChild, OnInit, AfterViewInit, Inject } from '@angular/core';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { UrlHelper } from '@shared/helpers/UrlHelper';
 import { ThemesLayoutBaseComponent } from '@app/shared/layout/themes/themes-layout-base.component';
 import { LayoutRefService } from '@metronic/app/core/_base/layout/services/layout-ref.service';
 import { AppConsts } from '@shared/AppConsts';
+import { ToggleOptions } from '@metronic/app/core/_base/layout/directives/toggle.directive';
+import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 
 @Component({
     templateUrl: './theme10-layout.component.html',
@@ -14,13 +16,20 @@ export class Theme10LayoutComponent extends ThemesLayoutBaseComponent implements
 
     @ViewChild('ktHeader', { static: true }) ktHeader: ElementRef;
 
+    userMenuToggleOptions: ToggleOptions = {
+        target: 'kt_aside',
+        targetState: 'aside-on',
+        toggleState: 'active'
+    };
+
     remoteServiceBaseUrl: string = AppConsts.remoteServiceBaseUrl;
 
     constructor(
         injector: Injector,
-        private layoutRefService: LayoutRefService
+        private layoutRefService: LayoutRefService,
+       _dateTimeService: DateTimeService
     ) {
-        super(injector);
+        super(injector, _dateTimeService);
     }
 
     ngOnInit() {

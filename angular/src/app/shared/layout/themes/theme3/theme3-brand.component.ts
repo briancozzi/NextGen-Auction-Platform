@@ -12,7 +12,7 @@ import { DOCUMENT } from '@angular/common';
 })
 export class Theme3BrandComponent extends AppComponentBase {
 
-    defaultLogo = AppConsts.appBaseUrl + '/assets/common/images/app-logo-on-' + this.currentTheme.baseSettings.menu.asideSkin + '.svg';
+    defaultLogo = AppConsts.appBaseUrl + '/assets/common/images/app-logo-on-light-sm.svg';
     remoteServiceBaseUrl: string = AppConsts.remoteServiceBaseUrl;
 
     constructor(
@@ -23,10 +23,10 @@ export class Theme3BrandComponent extends AppComponentBase {
     }
 
     clickTopbarToggle(): void {
-        this.document.body.classList.toggle('m-topbar--on');
+        this.document.body.classList.toggle('topbar-mobile-on');
     }
 
     clickLeftAsideHideToggle(): void {
-        this.document.body.classList.toggle('m-aside-left--hide');
+        this.document.body.classList.toggle('header-menu-wrapper-on');
     }
 }

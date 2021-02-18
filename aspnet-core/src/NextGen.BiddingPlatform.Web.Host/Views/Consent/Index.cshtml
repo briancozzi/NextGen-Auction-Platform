@@ -46,7 +46,7 @@
             </div>
         }
 
-        @if (Model.ResourceScopes.Any())
+        @if (Model.ApiScopes.Any())
         {
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -54,7 +54,7 @@
                     @L("ApplicationAccess")
                 </div>
                 <ul class="list-group">
-                    @foreach (var scope in Model.ResourceScopes)
+                    @foreach (var scope in Model.ApiScopes)
                     {
                         @await Html.PartialAsync("_ScopeListItem", scope)
                     }

@@ -5,18 +5,22 @@ using Abp.AspNetZeroCore.Web.Authentication.External.Facebook;
 using Abp.AspNetZeroCore.Web.Authentication.External.Google;
 using Abp.AspNetZeroCore.Web.Authentication.External.Microsoft;
 using Abp.AspNetZeroCore.Web.Authentication.External.OpenIdConnect;
+using Abp.AspNetZeroCore.Web.Authentication.External.Twitter;
 using Abp.AspNetZeroCore.Web.Authentication.External.WsFederation;
 using Abp.Configuration.Startup;
 using Abp.Dependency;
+using Abp.Extensions;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Abp.Threading.BackgroundWorkers;
+using Abp.Timing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using NextGen.BiddingPlatform.Auditing;
 using NextGen.BiddingPlatform.Configuration;
 using NextGen.BiddingPlatform.EntityFrameworkCore;
 using NextGen.BiddingPlatform.MultiTenancy;
+using NextGen.BiddingPlatform.Web.Startup.ExternalLoginInfoProviders;
 
 namespace NextGen.BiddingPlatform.Web.Startup
 {
@@ -37,7 +41,8 @@ namespace NextGen.BiddingPlatform.Web.Startup
 
         public override void PreInitialize()
         {
-            Configuration.Modules.AbpWebCommon().MultiTenancy.DomainFormat = _appConfiguration["App:ServerRootAddress"] ?? "https://localhost:44301/";
+            Configuration.Modules.AbpWebCommon().MultiTenancy.DomainFormat =
+                _appConfiguration["App:ServerRootAddress"] ?? "https://localhost:44301/";
             Configuration.Modules.AspNetZero().LicenseCode = _appConfiguration["AbpZeroLicenseCode"];
         }
 
@@ -77,82 +82,123 @@ namespace NextGen.BiddingPlatform.Web.Startup
 
             if (bool.Parse(_appConfiguration["Authentication:OpenId:IsEnabled"]))
             {
-                var jsonClaimMappings = new List<JsonClaimMap>();
-                _appConfiguration.GetSection("Authentication:OpenId:ClaimsMapping").Bind(jsonClaimMappings);
+                if (bool.Parse(_appConfiguration["Authentication:AllowSocialLoginSettingsPerTenant"]))
+                {
+                    externalAuthConfiguration.ExternalLoginInfoProviders.Add(
+                        IocManager.Resolve<TenantBasedOpenIdConnectExternalLoginInfoProvider>());
+                }
+                else
+                {
+                    var jsonClaimMappings = new List<JsonClaimMap>();
+                    _appConfiguration.GetSection("Authentication:OpenId:ClaimsMapping").Bind(jsonClaimMappings);
 
-                externalAuthConfiguration.Providers.Add(
-                    new ExternalLoginProviderInfo(
-                        OpenIdConnectAuthProviderApi.Name,
-                        _appConfiguration["Authentication:OpenId:ClientId"],
-                        _appConfiguration["Authentication:OpenId:ClientSecret"],
-                        typeof(OpenIdConnectAuthProviderApi),
-                        new Dictionary<string, string>
-                        {
-                            {"Authority", _appConfiguration["Authentication:OpenId:Authority"]},
-                            {"LoginUrl",_appConfiguration["Authentication:OpenId:LoginUrl"]},
-                            {"ValidateIssuer",_appConfiguration["Authentication:OpenId:ValidateIssuer"]}
-                        },
-                        jsonClaimMappings
-                    )
-                );
+                    externalAuthConfiguration.ExternalLoginInfoProviders.Add(
+                        new OpenIdConnectExternalLoginInfoProvider(
+                            _appConfiguration["Authentication:OpenId:ClientId"],
+                            _appConfiguration["Authentication:OpenId:ClientSecret"],
+                            _appConfiguration["Authentication:OpenId:Authority"],
+                            _appConfiguration["Authentication:OpenId:LoginUrl"],
+                            bool.Parse(_appConfiguration["Authentication:OpenId:ValidateIssuer"]),
+                            jsonClaimMappings
+                        )
+                    );
+                }
             }
 
             if (bool.Parse(_appConfiguration["Authentication:WsFederation:IsEnabled"]))
             {
-                externalAuthConfiguration.Providers.Add(
-                    new ExternalLoginProviderInfo(
-                        WsFederationAuthProviderApi.Name,
-                        _appConfiguration["Authentication:WsFederation:ClientId"],
-                        "",
-                        typeof(WsFederationAuthProviderApi),
-                        new Dictionary<string, string>
-                        {
-                            {"Tenant", _appConfiguration["Authentication:WsFederation:Tenant"]},
-                            {"MetaDataAddress", _appConfiguration["Authentication:WsFederation:MetaDataAddress"]},
-                            {"Authority", _appConfiguration["Authentication:WsFederation:Authority"]}
-                        })
-                );
+                if (bool.Parse(_appConfiguration["Authentication:AllowSocialLoginSettingsPerTenant"]))
+                {
+                    externalAuthConfiguration.ExternalLoginInfoProviders.Add(
+                        IocManager.Resolve<TenantBasedWsFederationExternalLoginInfoProvider>());
+                }
+                else
+                {
+                    var jsonClaimMappings = new List<JsonClaimMap>();
+                    _appConfiguration.GetSection("Authentication:WsFederation:ClaimsMapping").Bind(jsonClaimMappings);
+
+                    externalAuthConfiguration.ExternalLoginInfoProviders.Add(
+                        new WsFederationExternalLoginInfoProvider(
+                            _appConfiguration["Authentication:WsFederation:ClientId"],
+                            _appConfiguration["Authentication:WsFederation:Tenant"],
+                            _appConfiguration["Authentication:WsFederation:MetaDataAddress"],
+                            _appConfiguration["Authentication:WsFederation:Authority"],
+                            jsonClaimMappings
+                        )
+                    );
+                }
             }
 
             if (bool.Parse(_appConfiguration["Authentication:Facebook:IsEnabled"]))
             {
-                externalAuthConfiguration.Providers.Add(
-                    new ExternalLoginProviderInfo(
-                        FacebookAuthProviderApi.Name,
+                if (bool.Parse(_appConfiguration["Authentication:AllowSocialLoginSettingsPerTenant"]))
+                {
+                    externalAuthConfiguration.ExternalLoginInfoProviders.Add(
+                        IocManager.Resolve<TenantBasedFacebookExternalLoginInfoProvider>());
+                }
+                else
+                {
+                    externalAuthConfiguration.ExternalLoginInfoProviders.Add(new FacebookExternalLoginInfoProvider(
                         _appConfiguration["Authentication:Facebook:AppId"],
-                        _appConfiguration["Authentication:Facebook:AppSecret"],
-                        typeof(FacebookAuthProviderApi)
-                    )
-                );
+                        _appConfiguration["Authentication:Facebook:AppSecret"]
+                    ));
+                }
+            }
+
+            if (bool.Parse(_appConfiguration["Authentication:Twitter:IsEnabled"]))
+            {
+                if (bool.Parse(_appConfiguration["Authentication:AllowSocialLoginSettingsPerTenant"]))
+                {
+                    externalAuthConfiguration.ExternalLoginInfoProviders.Add(
+                        IocManager.Resolve<TenantBasedTwitterExternalLoginInfoProvider>());
+                }
+                else
+                {
+                    var twitterExternalLoginInfoProvider = new TwitterExternalLoginInfoProvider(
+                        _appConfiguration["Authentication:Twitter:ConsumerKey"],
+                        _appConfiguration["Authentication:Twitter:ConsumerSecret"],
+                        _appConfiguration["App:ClientRootAddress"].EnsureEndsWith('/') + "account/login"
+                    );
+
+                    externalAuthConfiguration.ExternalLoginInfoProviders.Add(twitterExternalLoginInfoProvider);
+                }
             }
 
             if (bool.Parse(_appConfiguration["Authentication:Google:IsEnabled"]))
             {
-                externalAuthConfiguration.Providers.Add(
-                    new ExternalLoginProviderInfo(
-                        GoogleAuthProviderApi.Name,
-                        _appConfiguration["Authentication:Google:ClientId"],
-                        _appConfiguration["Authentication:Google:ClientSecret"],
-                        typeof(GoogleAuthProviderApi),
-                        new Dictionary<string, string>
-                        {
-                            {"UserInfoEndpoint", _appConfiguration["Authentication:Google:UserInfoEndpoint"]}
-                        }
-                    )
-                );
+                if (bool.Parse(_appConfiguration["Authentication:AllowSocialLoginSettingsPerTenant"]))
+                {
+                    externalAuthConfiguration.ExternalLoginInfoProviders.Add(
+                        IocManager.Resolve<TenantBasedGoogleExternalLoginInfoProvider>());
+                }
+                else
+                {
+                    externalAuthConfiguration.ExternalLoginInfoProviders.Add(
+                        new GoogleExternalLoginInfoProvider(
+                            _appConfiguration["Authentication:Google:ClientId"],
+                            _appConfiguration["Authentication:Google:ClientSecret"],
+                            _appConfiguration["Authentication:Google:UserInfoEndpoint"]
+                        )
+                    );
+                }
             }
 
-            //not implemented yet. Will be implemented with https://github.com/aspnetzero/aspnet-zero-angular/issues/5
             if (bool.Parse(_appConfiguration["Authentication:Microsoft:IsEnabled"]))
             {
-                externalAuthConfiguration.Providers.Add(
-                    new ExternalLoginProviderInfo(
-                        MicrosoftAuthProviderApi.Name,
-                        _appConfiguration["Authentication:Microsoft:ConsumerKey"],
-                        _appConfiguration["Authentication:Microsoft:ConsumerSecret"],
-                        typeof(MicrosoftAuthProviderApi)
-                    )
-                );
+                if (bool.Parse(_appConfiguration["Authentication:AllowSocialLoginSettingsPerTenant"]))
+                {
+                    externalAuthConfiguration.ExternalLoginInfoProviders.Add(
+                        IocManager.Resolve<TenantBasedMicrosoftExternalLoginInfoProvider>());
+                }
+                else
+                {
+                    externalAuthConfiguration.ExternalLoginInfoProviders.Add(
+                        new MicrosoftExternalLoginInfoProvider(
+                            _appConfiguration["Authentication:Microsoft:ConsumerKey"],
+                            _appConfiguration["Authentication:Microsoft:ConsumerSecret"]
+                        )
+                    );
+                }
             }
         }
     }

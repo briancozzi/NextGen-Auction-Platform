@@ -1,6 +1,7 @@
 using System;
 using Abp.Extensions;
 using Abp.Runtime.Validation;
+using NextGen.BiddingPlatform.Common;
 using NextGen.BiddingPlatform.Dto;
 
 namespace NextGen.BiddingPlatform.Auditing.Dto
@@ -22,14 +23,19 @@ namespace NextGen.BiddingPlatform.Auditing.Dto
                 Sorting = "ChangeTime DESC";
             }
 
-            if (Sorting.IndexOf("UserName", StringComparison.OrdinalIgnoreCase) >= 0)
+            Sorting = DtoSortingHelper.ReplaceSorting(Sorting, s =>
             {
-                Sorting = "User." + Sorting;
-            }
-            else
-            {
-                Sorting = "EntityChange." + Sorting;
-            }
+                if (s.IndexOf("UserName", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    s = "User." + s;
+                }
+                else
+                {
+                    s = "EntityChange." + s;
+                }
+
+                return s;
+            });
         }
     }
 
@@ -46,14 +52,19 @@ namespace NextGen.BiddingPlatform.Auditing.Dto
                 Sorting = "ChangeTime DESC";
             }
 
-            if (Sorting.IndexOf("UserName", StringComparison.OrdinalIgnoreCase) >= 0)
+            Sorting = DtoSortingHelper.ReplaceSorting(Sorting, s =>
             {
-                Sorting = "User." + Sorting;
-            }
-            else
-            {
-                Sorting = "EntityChange." + Sorting;
-            }
+                if (s.IndexOf("UserName", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    s = "User." + s;
+                }
+                else
+                {
+                    s = "EntityChange." + s;
+                }
+
+                return s;
+            });
         }
     }
 }

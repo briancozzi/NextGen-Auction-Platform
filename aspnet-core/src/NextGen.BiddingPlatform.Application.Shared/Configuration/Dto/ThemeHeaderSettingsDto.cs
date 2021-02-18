@@ -9,7 +9,5 @@ namespace NextGen.BiddingPlatform.Configuration.Dto
         public string HeaderSkin { get; set; }
 
         public string MinimizeDesktopHeaderType { get; set; }
-
-        public bool HeaderMenuArrows { get; set; }
     }
 }

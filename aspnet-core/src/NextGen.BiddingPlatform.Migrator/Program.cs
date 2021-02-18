@@ -4,7 +4,6 @@ using Abp.Collections.Extensions;
 using Abp.Dependency;
 using Castle.Facilities.Logging;
 using Abp.Castle.Logging.Log4Net;
-using Abp.PlugIns;
 
 namespace NextGen.BiddingPlatform.Migrator
 {
@@ -15,6 +14,8 @@ namespace NextGen.BiddingPlatform.Migrator
         public static void Main(string[] args)
         {
             ParseArgs(args);
+
+            bool.TryParse(Environment.GetEnvironmentVariable("ASPNETCORE_Docker_Enabled"), out bool isDockerEnabled);
 
             using (var bootstrapper = AbpBootstrapper.Create<BiddingPlatformMigratorModule>())
             {
@@ -27,11 +28,11 @@ namespace NextGen.BiddingPlatform.Migrator
 
                 using (var migrateExecuter = bootstrapper.IocManager.ResolveAsDisposable<MultiTenantMigrateExecuter>())
                 {
-                    migrateExecuter.Object.Run(_skipConnVerification);
+                    migrateExecuter.Object.Run(_skipConnVerification, isDockerEnabled);
                 }
 
-                if (_skipConnVerification) return;
-                
+                if (_skipConnVerification || isDockerEnabled) return;
+
                 Console.WriteLine("Press ENTER to exit...");
                 Console.ReadLine();
             }

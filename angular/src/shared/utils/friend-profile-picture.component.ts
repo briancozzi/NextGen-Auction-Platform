@@ -9,7 +9,6 @@ import { ProfileServiceProxy } from '@shared/service-proxies/service-proxies';
 })
 export class FriendProfilePictureComponent implements AfterViewInit {
 
-    @Input() profilePictureId: string;
     @Input() userId: number;
     @Input() tenantId: number;
     @Input() cssClass = 'media-object';
@@ -26,19 +25,12 @@ export class FriendProfilePictureComponent implements AfterViewInit {
     }
 
     private setProfileImage(): void {
-        if (!this.profilePictureId) {
-            this.profilePictureId = undefined;
-        }
 
         if (!this.tenantId) {
             this.tenantId = undefined;
         }
 
-        if (!this.profilePictureId) {
-            return;
-        }
-
-        this._profileService.getFriendProfilePictureById(this.profilePictureId, this.userId, this.tenantId).subscribe((result) => {
+        this._profileService.getFriendProfilePicture(this.userId, this.tenantId).subscribe((result) => {
             if (result && result.profilePicture) {
                 this.profilePicture = 'data:image/jpeg;base64,' + result.profilePicture;
             }

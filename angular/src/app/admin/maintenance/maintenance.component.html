@@ -1,20 +1,13 @@
 <div [@routerTransition] (window:resize)="onResize($event)">
-    <div class="kt-content  kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor">
-        <div class="kt-subheader kt-grid__item">
-            <div [class]="containerClass">
-                <div class="kt-subheader__main">
-                    <h3 class="kt-subheader__title">
-                        <span>{{"Maintenance" | localize}}</span>
-                    </h3>
-                </div>
-            </div>
-        </div>
-        <div [class]="containerClass + ' kt-grid__item kt-grid__item--fluid'">
-            <div class="kt-portlet">
-                <div class="kt-portlet__body">
+    <div class="content d-flex flex-column flex-column-fluid">
+        <sub-header [title]="'Maintenance' | localize">
+        </sub-header>
+        <div [class]="containerClass">
+            <div class="card card-custom gutter-b">
+                <div class="card-body">
                     <tabset>
                         <tab heading=" {{'Caches' | localize}}">
-                            <div class="row mb-2">
+                            <div class="row m-3">
                                 <div class="col-xl-6">
                                     <p>{{"CachesHeaderInfo" | localize}}</p>
                                 </div>
@@ -43,7 +36,7 @@
                             </div>
                         </tab>
                         <tab heading="{{'WebSiteLogs' | localize}}">
-                            <div class="row mb-2">
+                            <div class="row m-3">
                                 <div class="col-xl-6">
                                     <p>{{"WebSiteLogsHeaderInfo" | localize}}</p>
                                 </div>

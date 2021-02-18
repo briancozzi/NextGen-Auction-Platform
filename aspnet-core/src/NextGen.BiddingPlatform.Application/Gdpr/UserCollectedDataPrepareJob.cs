@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -61,10 +62,11 @@ namespace NextGen.BiddingPlatform.Gdpr
                     }
 
                     var zipFile = new BinaryObject
-                    {
-                        TenantId = args.TenantId,
-                        Bytes = CompressFiles(files)
-                    };
+                    (
+                        args.TenantId,
+                        CompressFiles(files),
+                        $"{args.UserId} {DateTime.UtcNow} UserCollectedDataPrepareJob result"
+                    );
 
                     // Save zip file to object manager.
                     AsyncHelper.RunSync(() => _binaryObjectManager.SaveAsync(zipFile));

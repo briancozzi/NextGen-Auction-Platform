@@ -1,8 +1,8 @@
 import { Component, OnInit, Injector, OnDestroy } from '@angular/core';
-import * as _ from 'lodash';
+import { forEach as _forEach } from 'lodash-es';
 import { SalesSummaryDatePeriod, TenantDashboardServiceProxy } from '@shared/service-proxies/service-proxies';
 import { DashboardChartBase } from '../dashboard-chart-base';
-import { WidgetComponentBase } from '../widget-component-base';
+import { WidgetComponentBaseComponent } from '../widget-component-base';
 
 class SalesSummaryChart extends DashboardChartBase {
   totalSales = 0; totalSalesCounter = 0;
@@ -36,7 +36,7 @@ class SalesSummaryChart extends DashboardChartBase {
     let sales = [];
     let profit = [];
 
-    _.forEach(items, (item) => {
+    _forEach(items, (item) => {
 
       sales.push({
         'name': item['period'],
@@ -84,7 +84,7 @@ class SalesSummaryChart extends DashboardChartBase {
   templateUrl: './widget-sales-summary.component.html',
   styleUrls: ['./widget-sales-summary.component.css']
 })
-export class WidgetSalesSummaryComponent extends WidgetComponentBase implements OnInit, OnDestroy {
+export class WidgetSalesSummaryComponent extends WidgetComponentBaseComponent implements OnInit, OnDestroy {
 
   salesSummaryChart: SalesSummaryChart;
   appSalesSummaryDateInterval = SalesSummaryDatePeriod;

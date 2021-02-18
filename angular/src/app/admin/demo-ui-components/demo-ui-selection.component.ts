@@ -2,7 +2,7 @@ import { Component, Injector } from '@angular/core';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { DemoUiComponentsServiceProxy, NameValueOfString } from '@shared/service-proxies/service-proxies';
-import * as _ from 'lodash';
+import { forEach as _forEach } from 'lodash-es';
 
 @Component({
     selector: 'demo-ui-selection',
@@ -40,11 +40,11 @@ export class DemoUiSelectionComponent extends AppComponentBase {
             .subscribe((countries: NameValueOfString[]) => {
                 let message = '';
 
-                _.forEach(countries, item => {
+                _forEach(countries, item => {
                     message += `<div><strong>id</strong>: ${item.value} - <strong>name</strong>: ${item.name}</div>`;
                 });
 
-                this.message.info(message, this.l('PostedValue'), { isHtml: true});
+                this.message.info(message, this.l('PostedValue'), { isHtml: true });
             });
     }
 
@@ -54,11 +54,11 @@ export class DemoUiSelectionComponent extends AppComponentBase {
             .subscribe((countries: NameValueOfString[]) => {
                 let message = '';
 
-                _.forEach(countries, item => {
+                _forEach(countries, item => {
                     message += `<div><strong>id</strong>: ${item.value} - <strong>name</strong>: ${item.name}</div>`;
                 });
 
-                this.message.info(message, this.l('PostedValue'), { isHtml: true});
+                this.message.info(message, this.l('PostedValue'), { isHtml: true });
             });
     }
 }

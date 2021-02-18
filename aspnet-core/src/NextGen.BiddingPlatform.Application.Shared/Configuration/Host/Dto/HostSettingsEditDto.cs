@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using NextGen.BiddingPlatform.Configuration.Dto;
+using NextGen.BiddingPlatform.Configuration.Tenants.Dto;
 
 namespace NextGen.BiddingPlatform.Configuration.Host.Dto
 {
@@ -23,5 +24,7 @@ namespace NextGen.BiddingPlatform.Configuration.Host.Dto
         public HostBillingSettingsEditDto Billing { get; set; }
 
         public OtherSettingsEditDto OtherSettings { get; set; }
+
+        public ExternalLoginProviderSettingsEditDto ExternalLoginProviderSettings { get; set; }
     }
 }

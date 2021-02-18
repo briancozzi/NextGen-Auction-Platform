@@ -19,6 +19,7 @@ using Abp.Runtime.Session;
 using Abp.UI;
 using Abp.Zero.Configuration;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NextGen.BiddingPlatform.Authorization.Permissions;
 using NextGen.BiddingPlatform.Authorization.Permissions.Dto;
@@ -95,6 +96,7 @@ namespace NextGen.BiddingPlatform.Authorization.Users
             AppUrlService = NullAppUrlService.Instance;
         }
 
+        [HttpPost]
         public async Task<PagedResultDto<UserListDto>> GetUsers(GetUsersInput input)
         {
             var query = GetUsersFilteredQuery(input);
@@ -112,7 +114,7 @@ namespace NextGen.BiddingPlatform.Authorization.Users
             return new PagedResultDto<UserListDto>(
                 userCount,
                 userListDtos
-                );
+            );
         }
 
         public async Task<FileDto> GetUsersToExcel(GetUsersToExcelInput input)
@@ -159,8 +161,12 @@ namespace NextGen.BiddingPlatform.Authorization.Users
                 {
                     IsActive = true,
                     ShouldChangePasswordOnNextLogin = true,
-                    IsTwoFactorEnabled = await SettingManager.GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement.TwoFactorLogin.IsEnabled),
-                    IsLockoutEnabled = await SettingManager.GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement.UserLockOut.IsEnabled)
+                    IsTwoFactorEnabled =
+                        await SettingManager.GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement
+                            .TwoFactorLogin.IsEnabled),
+                    IsLockoutEnabled =
+                        await SettingManager.GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement.UserLockOut
+                            .IsEnabled)
                 };
 
                 foreach (var defaultRole in await _roleManager.Roles.Where(r => r.IsDefault).ToListAsync())
@@ -188,7 +194,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users
                 foreach (var userRoleDto in userRoleDtos)
                 {
                     userRoleDto.IsAssigned = await UserManager.IsInRoleAsync(user, userRoleDto.RoleName);
-                    userRoleDto.InheritedFromOrganizationUnit = allRolesOfUsersOrganizationUnits.Contains(userRoleDto.RoleName);
+                    userRoleDto.InheritedFromOrganizationUnit =
+                        allRolesOfUsersOrganizationUnits.Contains(userRoleDto.RoleName);
                 }
             }
 
@@ -198,11 +205,11 @@ namespace NextGen.BiddingPlatform.Authorization.Users
         private List<string> GetAllRoleNamesOfUsersOrganizationUnits(long userId)
         {
             return (from userOu in _userOrganizationUnitRepository.GetAll()
-                    join roleOu in _organizationUnitRoleRepository.GetAll() on userOu.OrganizationUnitId equals roleOu
-                        .OrganizationUnitId
-                    join userOuRoles in _roleRepository.GetAll() on roleOu.RoleId equals userOuRoles.Id
-                    where userOu.UserId == userId
-                    select userOuRoles.Name).ToList();
+                join roleOu in _organizationUnitRoleRepository.GetAll() on userOu.OrganizationUnitId equals roleOu
+                    .OrganizationUnitId
+                join userOuRoles in _roleRepository.GetAll() on roleOu.RoleId equals userOuRoles.Id
+                where userOu.UserId == userId
+                select userOuRoles.Name).ToList();
         }
 
         [AbpAuthorize(AppPermissions.Pages_Administration_Users_ChangePermissions)]
@@ -214,7 +221,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users
 
             return new GetUserPermissionsForEditOutput
             {
-                Permissions = ObjectMapper.Map<List<FlatPermissionDto>>(permissions).OrderBy(p => p.DisplayName).ToList(),
+                Permissions = ObjectMapper.Map<List<FlatPermissionDto>>(permissions).OrderBy(p => p.DisplayName)
+                    .ToList(),
                 GrantedPermissionNames = grantedPermissions.Select(p => p.Name).ToList()
             };
         }
@@ -230,7 +238,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users
         public async Task UpdateUserPermissions(UpdateUserPermissionsInput input)
         {
             var user = await UserManager.GetUserByIdAsync(input.Id);
-            var grantedPermissions = PermissionManager.GetPermissionsFromNamesByValidating(input.GrantedPermissionNames);
+            var grantedPermissions =
+                PermissionManager.GetPermissionsFromNamesByValidating(input.GrantedPermissionNames);
             await UserManager.SetGrantedPermissionsAsync(user, grantedPermissions);
         }
 
@@ -271,7 +280,7 @@ namespace NextGen.BiddingPlatform.Authorization.Users
             Debug.Assert(input.User.Id != null, "input.User.Id should be set.");
 
             var user = await UserManager.FindByIdAsync(input.User.Id.Value.ToString());
-            
+
             //Update user properties
             ObjectMapper.Map(input.User, user); //Passwords is not mapped (see mapping configuration)
 
@@ -412,7 +421,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users
         {
             var query = UserManager.Users
                 .WhereIf(input.Role.HasValue, u => u.Roles.Any(r => r.RoleId == input.Role.Value))
-                .WhereIf(input.OnlyLockedUsers, u => u.LockoutEndDateUtc.HasValue && u.LockoutEndDateUtc.Value > DateTime.UtcNow)
+                .WhereIf(input.OnlyLockedUsers,
+                    u => u.LockoutEndDateUtc.HasValue && u.LockoutEndDateUtc.Value > DateTime.UtcNow)
                 .WhereIf(
                     !input.Filter.IsNullOrWhiteSpace(),
                     u =>
@@ -431,22 +441,26 @@ namespace NextGen.BiddingPlatform.Authorization.Users
 
                 input.Permissions = input.Permissions.Where(p => !string.IsNullOrEmpty(p)).ToList();
 
-                query = from user in query
-                        join ur in _userRoleRepository.GetAll() on user.Id equals ur.UserId into urJoined
-                        from ur in urJoined.DefaultIfEmpty()
-                        join urr in _roleRepository.GetAll() on ur.RoleId equals urr.Id into urrJoined
-                        from urr in urrJoined.DefaultIfEmpty()
-                        join up in _userPermissionRepository.GetAll()
-                            .Where(userPermission => input.Permissions.Contains(userPermission.Name)) on user.Id equals up.UserId into upJoined
-                        from up in upJoined.DefaultIfEmpty()
-                        join rp in _rolePermissionRepository.GetAll()
-                            .Where(rolePermission => input.Permissions.Contains(rolePermission.Name)) on
-                            new { RoleId = ur == null ? 0 : ur.RoleId } equals new { rp.RoleId } into rpJoined
-                        from rp in rpJoined.DefaultIfEmpty()
-                        where (up != null && up.IsGranted) ||
-                              (up == null && rp != null && rp.IsGranted) ||
-                              (up == null && rp == null && staticRoleNames.Contains(urr.Name))
-                        select user;
+                var userIds = from user in query
+                    join ur in _userRoleRepository.GetAll() on user.Id equals ur.UserId into urJoined
+                    from ur in urJoined.DefaultIfEmpty()
+                    join urr in _roleRepository.GetAll() on ur.RoleId equals urr.Id into urrJoined
+                    from urr in urrJoined.DefaultIfEmpty()
+                    join up in _userPermissionRepository.GetAll()
+                        .Where(userPermission => input.Permissions.Contains(userPermission.Name)) on user.Id equals up.UserId into upJoined
+                    from up in upJoined.DefaultIfEmpty()
+                    join rp in _rolePermissionRepository.GetAll()
+                        .Where(rolePermission => input.Permissions.Contains(rolePermission.Name)) on
+                        new { RoleId = ur == null ? 0 : ur.RoleId } equals new { rp.RoleId } into rpJoined
+                    from rp in rpJoined.DefaultIfEmpty()
+                    where (up != null && up.IsGranted) ||
+                          (up == null && rp != null && rp.IsGranted) ||
+                          (up == null && rp == null && staticRoleNames.Contains(urr.Name))
+                    group user by user.Id
+                    into userGrouped
+                    select userGrouped.Key;
+
+                query = UserManager.Users.Where(e => userIds.Contains(e.Id));
             }
 
             return query;

@@ -2,7 +2,7 @@ import { Component, ViewEncapsulation, Injector, OnInit } from '@angular/core';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { ThemeSettingsDto, UiCustomizationSettingsServiceProxy } from '@shared/service-proxies/service-proxies';
-import * as _ from 'lodash';
+import { sortBy as _sortBy } from 'lodash-es';
 
 @Component({
     templateUrl: './ui-customization.component.html',
@@ -29,7 +29,7 @@ export class UiCustomizationComponent extends AppComponentBase implements OnInit
     ngOnInit(): void {
         this.currentThemeName = this.currentTheme.baseSettings.theme;
         this._uiCustomizationService.getUiManagementSettings().subscribe((settingsResult) => {
-            this.themeSettings = _.sortBy(settingsResult, setting => {
+            this.themeSettings = _sortBy(settingsResult, setting => {
                 return setting.theme === 'default' ? 0 : parseInt(setting.theme.replace('theme', ''));
             });
         });

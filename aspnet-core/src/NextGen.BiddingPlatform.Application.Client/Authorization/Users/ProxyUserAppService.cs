@@ -9,7 +9,7 @@ namespace NextGen.BiddingPlatform.Authorization.Users
     {
         public async Task<PagedResultDto<UserListDto>> GetUsers(GetUsersInput input)
         {
-            return await ApiClient.GetAsync<PagedResultDto<UserListDto>>(GetEndpoint(nameof(GetUsers)), input);
+            return await ApiClient.PostAsync<PagedResultDto<UserListDto>>(GetEndpoint(nameof(GetUsers)), input);
         }
 
         public async Task<FileDto> GetUsersToExcel(GetUsersToExcelInput input)

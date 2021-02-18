@@ -2,7 +2,7 @@ import { Component, EventEmitter, Injector, Output, ViewChild } from '@angular/c
 import { AppEditionExpireAction } from '@shared/AppEnums';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { ComboboxItemDto, CommonLookupServiceProxy, CreateEditionDto, EditionServiceProxy } from '@shared/service-proxies/service-proxies';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { FeatureTreeComponent } from '../shared/feature-tree.component';
 import { finalize } from 'rxjs/operators';
 import createNumberMask from 'text-mask-addons/dist/createNumberMask';

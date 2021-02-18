@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Injector, Output, ViewChild } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { FindOrganizationUnitRolesInput, NameValueDto, OrganizationUnitServiceProxy, RolesToOrganizationUnitInput } from '@shared/service-proxies/service-proxies';
-import * as _ from 'lodash';
-import { ModalDirective } from 'ngx-bootstrap';
-import { LazyLoadEvent } from 'primeng/public_api';
+import { map as _map } from 'lodash-es';
+import { ModalDirective } from 'ngx-bootstrap/modal';
+import { LazyLoadEvent } from 'primeng/api';
 import { Paginator } from 'primeng/paginator';
 import { Table } from 'primeng/table';
 import { IRolesWithOrganizationUnit } from './roles-with-organization-unit';
@@ -90,7 +90,7 @@ export class AddRoleModalComponent extends AppComponentBase {
     addRolesToOrganizationUnit(): void {
         const input = new RolesToOrganizationUnitInput();
         input.organizationUnitId = this.organizationUnitId;
-        input.roleIds = _.map(this.selectedRoles, selectedRole => Number(selectedRole.value));
+        input.roleIds = _map(this.selectedRoles, selectedRole => Number(selectedRole.value));
         this.saving = true;
         this._organizationUnitService
             .addRolesToOrganizationUnit(input)

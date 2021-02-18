@@ -1,21 +1,13 @@
 <div [@routerTransition]>
-    <div class="kt-content  kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor">
-        <div class="kt-subheader kt-grid__item">
-            <div [class]="containerClass">
-                <div class="kt-subheader__main">
-                    <h3 class="kt-subheader__title">
-                        <span>{{"AuditLogs" | localize}}</span>
-                    </h3>
-                </div>
-            </div>
-        </div>
-
-        <div [class]="containerClass + ' kt-grid__item kt-grid__item--fluid'">
-            <div class="kt-portlet">
-                <div class="kt-portlet__body">
+    <div class="content d-flex flex-column flex-column-fluid">
+        <sub-header [title]="'AuditLogs' | localize">
+        </sub-header>
+        <div [class]="containerClass">
+            <div class="card card-custom gutter-b">
+                <div class="card-body">
                     <tabset>
                         <tab heading="{{'OperationLogs' | localize}}">
-                            <div class="row mb-2">
+                            <div class="row m-2">
                                 <div class="col-sm-12 text-right">
                                     <button type="button" class="btn btn-success" (click)="exportToExcelAuditLogs()"><i
                                             class="far fa-file-excel"></i> {{"ExportToExcel" | localize}}</button>
@@ -24,7 +16,7 @@
                                 </div>
                             </div>
 
-                            <div class="kt-form">
+                            <div class="form">
                                 <form #auditFilterForm="ngForm" (ngSubmit)="getAuditLogs()">
                                     <div class="row align-items-center mb-2">
                                         <div class="col-md-6">
@@ -32,7 +24,7 @@
                                                 <label for="StartEndRange">{{"DateRange" | localize}}</label>
                                                 <input class="form-control" id="StartEndRange" name="StartEndRange"
                                                     #drp="bsDaterangepicker" readonly="readonly" bsDaterangepicker
-                                                    dateRangePickerMomentModifier [(date)]="dateRange" />
+                                                    dateRangePickerLuxonModifier [(date)]="dateRange" />
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -114,7 +106,7 @@
                                 <!--<Primeng-TurboTable-Start>-->
                                 <div class="primeng-datatable-container"
                                     [busyIf]="primengTableHelperAuditLogs.isLoading">
-                                    <p-table #dataTableAuditLogs (onLazyLoad)="getAuditLogs($event)"
+                                    <p-table #dataTableAuditLogs sortMode="multiple" (onLazyLoad)="getAuditLogs($event)"
                                         [value]="primengTableHelperAuditLogs.records"
                                         rows="{{primengTableHelperAuditLogs.defaultRecordsCountPerPage}}"
                                         [paginator]="false" [lazy]="true" scrollable="true" ScrollWidth="100%"
@@ -166,42 +158,43 @@
                                                 <td style="width: 75px">
                                                     <div class="text-center">
                                                         <i *ngIf="record.exception"
-                                                            class="fa fa-exclamation-triangle kt-font-warning"></i>
+                                                            class="fa fa-exclamation-triangle text-warning"></i>
                                                         <i *ngIf="!record.exception"
-                                                            class="fa fa-check-circle kt-font-success"></i>
+                                                            class="fa fa-check-circle text-success"></i>
                                                     </div>
                                                 </td>
                                                 <td style="width: 150px">
-                                                    <span class="ui-column-title">{{'UserName' | localize}}</span>
+                                                    <span class="p-column-title">{{'UserName' | localize}}</span>
                                                     {{record.userName}}
                                                 </td>
                                                 <td style="width: 250px">
-                                                    <span class="ui-column-title">{{'Service' | localize}}</span>
+                                                    <span class="p-column-title">{{'Service' | localize}}</span>
                                                     {{record.serviceName}}
                                                 </td>
                                                 <td style="width: 250px">
-                                                    <span class="ui-column-title">{{'Action' | localize}}</span>
+                                                    <span class="p-column-title">{{'Action' | localize}}</span>
                                                     {{record.methodName}}
                                                 </td>
                                                 <td style="width: 100px">
-                                                    <span class="ui-column-title">{{'Duration' | localize}}</span>
+                                                    {{record.executionDuration}}ms
+                                                    <span class="p-column-title">{{'Duration' | localize}}</span>
                                                 </td>
                                                 <td style="width: 150px">
-                                                    <span class="ui-column-title">{{'IpAddress' | localize}}</span>
+                                                    <span class="p-column-title">{{'IpAddress' | localize}}</span>
                                                     {{record.clientIpAddress}}
                                                 </td>
                                                 <td style="width: 150px">
-                                                    <span class="ui-column-title">{{'Client' | localize}}</span>
+                                                    <span class="p-column-title">{{'Client' | localize}}</span>
                                                     {{record.clientName}}
                                                 </td>
                                                 <td style="width: 150px">
-                                                    <span class="ui-column-title">{{'Browser' | localize}}</span>
+                                                    <span class="p-column-title">{{'Browser' | localize}}</span>
                                                     <span
                                                         title="{{record.browserInfo}}">{{truncateStringWithPostfix(record.browserInfo, 20)}}</span>
                                                 </td>
                                                 <td style="width: 150px">
-                                                    <span class="ui-column-title">{{'Time' | localize}}</span>
-                                                    {{ record.executionTime | momentFormat:'YYYY-MM-DD HH:mm:ss'}}
+                                                    <span class="p-column-title">{{'Time' | localize}}</span>
+                                                    {{ record.executionTime | luxonFormat:'yyyy-LL-dd HH:mm:ss'}}
                                                 </td>
                                             </tr>
                                         </ng-template>
@@ -225,7 +218,7 @@
                             </div>
                         </tab>
                         <tab heading="{{'ChangeLogs' | localize}}">
-                            <div class="row mb-2">
+                            <div class="row m-2">
                                 <div class="col-sm-12 text-right">
                                     <button type="button" class="btn btn-success"
                                         (click)="exportToExcelEntityChanges()"><i class="far fa-file-excel"></i>
@@ -234,7 +227,7 @@
                                             class="fa fa-sync"></i> {{"Refresh" | localize}}</button>
                                 </div>
                             </div>
-                            <div class="kt-form">
+                            <div class="form">
                                 <form #entityChangeFilterForm="ngForm" (ngSubmit)="getEntityChanges()">
                                     <div class="row align-items-center mb-2">
                                         <div class="col-md-6">
@@ -244,7 +237,7 @@
                                                 <input class="form-control" id="StartEndRangeEntityChange"
                                                     name="StartEndRangeEntityChange" readonly="readonly"
                                                     #drp="bsDaterangepicker" bsDaterangepicker
-                                                    dateRangePickerMomentModifier [(date)]="dateRange">
+                                                    dateRangePickerLuxonModifier [(date)]="dateRange">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -275,7 +268,7 @@
                                 <!--<Primeng-TurboTable-Start>-->
                                 <div class="primeng-datatable-container"
                                     [busyIf]="primengTableHelperEntityChanges.isLoading">
-                                    <p-table #dataTableEntityChanges (onLazyLoad)="getEntityChanges($event)"
+                                    <p-table #dataTableEntityChanges sortMode="multiple" (onLazyLoad)="getEntityChanges($event)"
                                         [value]="primengTableHelperEntityChanges.records"
                                         rows="{{primengTableHelperEntityChanges.defaultRecordsCountPerPage}}"
                                         [paginator]="false" [lazy]="true" scrollable="true" ScrollWidth="100%"
@@ -312,21 +305,21 @@
                                                     </div>
                                                 </td>
                                                 <td style="width: 150px">
-                                                    <span class="ui-column-title">{{'Action' | localize}}</span>
+                                                    <span class="p-column-title">{{'Action' | localize}}</span>
                                                     <span
                                                         title="{{record.changeTypeName}}">{{l(record.changeTypeName)}}</span>
                                                 </td>
                                                 <td style="width: 250px">
-                                                    <span class="ui-column-title">{{'Object' | localize}}</span>
+                                                    <span class="p-column-title">{{'Object' | localize}}</span>
                                                     {{record.entityTypeFullName}}
                                                 </td>
                                                 <td style="width: 150px">
-                                                    <span class="ui-column-title">{{'UserName' | localize}}</span>
+                                                    <span class="p-column-title">{{'UserName' | localize}}</span>
                                                     {{record.userName}}
                                                 </td>
                                                 <td style="width: 150px">
-                                                    <span class="ui-column-title">{{'Time' | localize}}</span>
-                                                    {{ record.changeTime | momentFormat:'YYYY-MM-DD HH:mm:ss'}}
+                                                    <span class="p-column-title">{{'Time' | localize}}</span>
+                                                    {{ record.changeTime | luxonFormat:'yyyy-LL-dd HH:mm:ss'}}
                                                 </td>
                                             </tr>
                                         </ng-template>

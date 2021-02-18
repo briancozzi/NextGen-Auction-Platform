@@ -1,8 +1,8 @@
 import { Component, Injector, ViewChild } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { GetNotificationSettingsOutput, NotificationServiceProxy, NotificationSubscriptionDto, UpdateNotificationSettingsInput } from '@shared/service-proxies/service-proxies';
-import * as _ from 'lodash';
-import { ModalDirective } from 'ngx-bootstrap';
+import { map as _map } from 'lodash-es';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -33,7 +33,7 @@ export class NotificationSettingsModalComponent extends AppComponentBase {
     save(): void {
         const input = new UpdateNotificationSettingsInput();
         input.receiveNotifications = this.settings.receiveNotifications;
-        input.notifications = _.map(this.settings.notifications,
+        input.notifications = _map(this.settings.notifications,
             (n) => {
                 let subscription = new NotificationSubscriptionDto();
                 subscription.name = n.name;

@@ -1,17 +1,17 @@
-<div class="kt-portlet">
-    <div class="kt-portlet__head">
-        <div class="kt-portlet__head-label">
-            <h3 class="kt-portlet__head-title">
-                    {{"OrganizationTree" | localize}}
-            </h3>
-        </div>
-        <div class="kt-portlet__head-toolbar">
+<div class="card card-custom gutter-b">
+    <div class="card-header align-items-center border-0">
+        <h3 class="card-title align-items-start flex-column">
+            <span class="font-weight-bolder text-dark">
+                 {{"OrganizationTree" | localize}}
+            </span>
+        </h3>
+        <div class="card-toolbar">
             <button *ngIf="'Pages.Administration.OrganizationUnits.ManageOrganizationTree' | permission" (click)="addUnit(null)" class="btn btn-primary">
                 <i class="fa fa-plus"></i> {{"AddRootUnit" | localize}}
             </button>
         </div>
     </div>
-    <div class="kt-portlet__body">
+    <div class="card-body">
         <p-tree [value]="treeData"
                 selectionMode="single"
                 [(selection)]="selectedOu"

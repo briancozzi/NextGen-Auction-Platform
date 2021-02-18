@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Conversion;
 using GraphQL.Execution;
-using GraphQL.Http;
+using GraphQL.NewtonsoftJson;
 using GraphQL.Types;
 using GraphQL.Validation;
 using GraphQL.Validation.Complexity;
@@ -47,7 +47,7 @@ namespace NextGen.BiddingPlatform.GraphQL.Tests
             string expectedResult,
             Inputs inputs = null,
             object root = null,
-            object userContext = null,
+            Dictionary<string, object> userContext = null,
             CancellationToken cancellationToken = default,
             IEnumerable<IValidationRule> rules = null)
         {
@@ -61,7 +61,7 @@ namespace NextGen.BiddingPlatform.GraphQL.Tests
             string expectedResult,
             Inputs inputs = null,
             object root = null,
-            object userContext = null,
+            Dictionary<string, object> userContext = null,
             CancellationToken cancellationToken = default,
             int expectedErrorCount = 0,
             bool renderErrors = false)
@@ -84,7 +84,7 @@ namespace NextGen.BiddingPlatform.GraphQL.Tests
             ExecutionResult expectedExecutionResult,
             Inputs inputs = null,
             object root = null,
-            object userContext = null,
+            Dictionary<string, object> userContext = null,
             CancellationToken cancellationToken = default,
             int expectedErrorCount = 0,
             bool renderErrors = false)
@@ -126,7 +126,7 @@ namespace NextGen.BiddingPlatform.GraphQL.Tests
             ExecutionResult expectedExecutionResult,
             Inputs inputs,
             object root,
-            object userContext = null,
+            Dictionary<string, object> userContext = null,
             CancellationToken cancellationToken = default,
             IEnumerable<IValidationRule> rules = null)
         {
@@ -139,7 +139,7 @@ namespace NextGen.BiddingPlatform.GraphQL.Tests
                 options.UserContext = userContext;
                 options.CancellationToken = cancellationToken;
                 options.ValidationRules = rules;
-                options.FieldNameConverter = new CamelCaseFieldNameConverter();
+                options.NameConverter = new CamelCaseNameConverter();
             });
 
             var actualResult = await Writer.WriteToStringAsync(executionResult);

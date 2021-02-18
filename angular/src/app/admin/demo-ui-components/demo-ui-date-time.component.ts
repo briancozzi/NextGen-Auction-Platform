@@ -1,8 +1,9 @@
 import { Component, ElementRef, Injector, ViewChild } from '@angular/core';
+import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { DemoUiComponentsServiceProxy } from '@shared/service-proxies/service-proxies';
-import * as moment from 'moment';
+import { DateTime } from 'luxon';
 
 @Component({
     selector: 'demo-ui-date-time',
@@ -15,12 +16,13 @@ export class DemoUiDateTimeComponent extends AppComponentBase {
     @ViewChild('SampleDatePicker', {static: true}) sampleDatePicker: ElementRef;
     @ViewChild('SampleDateTimePicker', {static: true}) sampleDateTimePicker: ElementRef;
 
-    sampleDate: moment.Moment;
-    sampleDateRange: moment.Moment[] = [moment().add(-7, 'days').endOf('day'), moment().startOf('day')];
+    sampleDate: DateTime;
+    sampleDateRange: DateTime[] = [this._dateTimeService.getStartOfDayMinusDays(7), this._dateTimeService.getStartOfDay()];
 
     constructor(
         injector: Injector,
-        private demoUiComponentsService: DemoUiComponentsServiceProxy
+        private demoUiComponentsService: DemoUiComponentsServiceProxy,
+        private _dateTimeService: DateTimeService
     ) {
         super(injector);
     }

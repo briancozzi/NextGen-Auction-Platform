@@ -1,10 +1,12 @@
+using System;
 using System.ComponentModel.DataAnnotations;
+using Abp.Extensions;
+using Abp.Runtime.Validation;
 
 namespace NextGen.BiddingPlatform.Authorization.Users.Profile.Dto
 {
-    public class UpdateProfilePictureInput
+    public class UpdateProfilePictureInput : ICustomValidate
     {
-        [Required]
         [MaxLength(400)]
         public string FileToken { get; set; }
 
@@ -15,5 +17,14 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Profile.Dto
         public int Width { get; set; }
 
         public int Height { get; set; }
+        
+        public bool UseGravatarProfilePicture { get; set; }
+        public void AddValidationErrors(CustomValidationContext context)
+        {
+            if (!UseGravatarProfilePicture && FileToken.IsNullOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(FileToken));
+            }
+        }
     }
 }

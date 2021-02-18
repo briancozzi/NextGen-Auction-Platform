@@ -1,10 +1,10 @@
 import { Component, ElementRef, EventEmitter, Injector, Output, ViewChild } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { ApplicationLanguageEditDto, CreateOrUpdateLanguageInput, LanguageServiceProxy } from '@shared/service-proxies/service-proxies';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { finalize } from 'rxjs/operators';
 import { SelectItem } from 'primeng/api';
-import * as _ from 'lodash';
+import { map as _map } from 'lodash-es';
 
 @Component({
     selector: 'createOrEditLanguageModal',
@@ -38,13 +38,13 @@ export class CreateOrEditLanguageModalComponent extends AppComponentBase {
         this._languageService.getLanguageForEdit(languageId).subscribe(result => {
             this.language = result.language;
 
-            this.languageNamesSelectItems = _.map(result.languageNames, function(language) {
+            this.languageNamesSelectItems = _map(result.languageNames, function (language) {
                 return {
                     label: language.displayText, value: language.value
                 };
             });
 
-            this.flagsSelectItems = _.map(result.flags, function(flag) {
+            this.flagsSelectItems = _map(result.flags, function (flag) {
                 return {
                     label: flag.displayText, value: flag.value
                 };

@@ -1,9 +1,9 @@
-import { PermissionCheckerService } from 'abp-ng2-module';
-import { AppSessionService } from '@shared/common/session/app-session.service';
+import {PermissionCheckerService} from 'abp-ng2-module';
+import {AppSessionService} from '@shared/common/session/app-session.service';
 
-import { Injectable } from '@angular/core';
-import { AppMenu } from './app-menu';
-import { AppMenuItem } from './app-menu-item';
+import {Injectable} from '@angular/core';
+import {AppMenu} from './app-menu';
+import {AppMenuItem} from './app-menu-item';
 
 @Injectable()
 export class AppNavigationService {
@@ -30,13 +30,10 @@ export class AppNavigationService {
                 new AppMenuItem('Maintenance', 'Pages.Administration.Host.Maintenance', 'flaticon-lock', '/app/admin/maintenance'),
                 new AppMenuItem('Subscription', 'Pages.Administration.Tenant.SubscriptionManagement', 'flaticon-refresh', '/app/admin/subscription-management'),
                 new AppMenuItem('VisualSettings', 'Pages.Administration.UiCustomization', 'flaticon-medical', '/app/admin/ui-customization'),
-                new AppMenuItem('Settings', 'Pages.Administration.Host.Settings', 'flaticon-settings', '/app/admin/hostSettings'),
-                new AppMenuItem('Settings', 'Pages.Administration.Tenant.Settings', 'flaticon-settings', '/app/admin/tenantSettings'),
                 new AppMenuItem('WebhookSubscriptions', 'Pages.Administration.WebhookSubscription', 'flaticon2-world', '/app/admin/webhook-subscriptions'),
-                new AppMenuItem('DynamicParameters', '', 'flaticon-interface-8', '', [], [
-                    new AppMenuItem('Definitions', 'Pages.Administration.DynamicParameters', '', '/app/admin/dynamic-parameter'),
-                    new AppMenuItem('EntityDynamicParameters', 'Pages.Administration.EntityDynamicParameters', '', '/app/admin/entity-dynamic-parameter'),
-                ])
+                new AppMenuItem('DynamicProperties', 'Pages.Administration.DynamicProperties', 'flaticon-interface-8', '/app/admin/dynamic-property'),
+                new AppMenuItem('Settings', 'Pages.Administration.Host.Settings', 'flaticon-settings', '/app/admin/hostSettings'),
+                new AppMenuItem('Settings', 'Pages.Administration.Tenant.Settings', 'flaticon-settings', '/app/admin/tenantSettings')
             ]),
             new AppMenuItem('DemoUiComponents', 'Pages.DemoUiComponents', 'flaticon-shapes', '/app/admin/demo-ui-components')
         ]);

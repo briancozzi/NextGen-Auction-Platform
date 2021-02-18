@@ -21,9 +21,11 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Profile
 
         Task<GetProfilePictureOutput> GetProfilePicture();
 
-        Task<GetProfilePictureOutput> GetProfilePictureById(Guid profilePictureId);
+        Task<GetProfilePictureOutput> GetProfilePictureByUser(long userId);
+        
+        Task<GetProfilePictureOutput> GetProfilePictureByUserName(string username);
 
-        Task<GetProfilePictureOutput> GetFriendProfilePictureById(GetFriendProfilePictureByIdInput input);
+        Task<GetProfilePictureOutput> GetFriendProfilePicture(GetFriendProfilePictureInput input);
 
         Task ChangeLanguage(ChangeUserLanguageDto input);
 

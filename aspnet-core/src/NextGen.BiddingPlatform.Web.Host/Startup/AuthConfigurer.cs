@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Abp.Runtime.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Logging;
@@ -88,11 +90,22 @@ namespace NextGen.BiddingPlatform.Web.Startup
                 return SetToken(context, allowAnonymousSignalRConnection);
             }
 
-            if (context.HttpContext.Request.Path.Value.Contains("/Chat/GetUploadedObject"))
+            List<string> urlsUsingEnchAuthToken = new List<string>()
             {
-                return SetToken(context, false);
-            }
+                "/Chat/GetUploadedObject?",
+                "/Profile/GetProfilePictureByUser?"
+            };
 
+            if (urlsUsingEnchAuthToken.Any(url => context.HttpContext.Request.GetDisplayUrl().Contains(url)))
+            {
+                if (context.HttpContext.Request.Headers.ContainsKey("authorization"))
+                {
+                    return Task.CompletedTask;
+                }
+                    
+                return SetToken(context, false);  
+            }
+            
             return Task.CompletedTask;
         }
 

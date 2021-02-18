@@ -1,68 +1,35 @@
-.kt-header-mobile .kt-header__brand-logo-default {
-    height: 52px !important;
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
-
-.cc-window {
-    background-color: #282a3a;
-}
-
-.cc-btn {
-    background-color: #5867dd;
-    border-color: #5867dd;
-    color: #ffffff;
-}
-
-.cc-message {
-    color: #fefefe;
-}
-
-.kt-subheader {
-    background-color: transparent !important;
-    padding: 25px 20px 0px 30px;
-}
-
-.kt-user-card .kt-user-card__name {
-    color: #6c7293 !important;
-}
-
-.kt-header__topbar .subscription-warning {
-    padding-top: 27px;
-}
-
-.kt-header__topbar .subscription-warning span {
-    color: #fff;
-}
-
-.mobile-subscription-warning {
-    background-color: transparent;
-}
-
-.mobile-subscription-warning span {
-    color: #000;
-}
-
-theme11-brand {
-    display: flex !important;
-}
-
-.unread-notification-count {
+.header .header-bottom{
+    height: auto;
+  }
+  
+  .unread-notification-count {
     position: absolute;
-    top: 14px;
-    right: 0px;
-    font-size: 1rem !important;
+    top: 2px;
+    left: 23px;
+  }
+  
+  .unread-chat-message-count {
+    position: absolute;
+    top: -6px;
+    left: 13px;
+  }
+
+  header-notifications .dropdown-menu{
+    top: 75px !important;
+  }
+  
+  @media(max-width: 768px){
+    header-notifications .dropdown-menu{
+      top: 49px !important;
+    } 
+  }menu-search-bar {
+    min-width: 100px !important;
 }
 
-.kt-aside--fixed #kt_aside_menu {
-    max-height: calc(100vh - 150px) !important;
+p-autoComplete{
+    padding: 10px;
 }
 
-.menuSearchBarContainer {
-    width: calc(100% - 20px);
-    margin: 10px;
-}
-
-.menuSearchBarInput {
+.menuSearchBarContainer{
     width: calc(100% - 20px);
 }

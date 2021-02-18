@@ -260,7 +260,6 @@
     <text name="Language">Ngôn ngữ</text>
     <text name="Flag">Cờ</text>
     <text name="SetAsDefaultLanguage">Đặt làm ngôn ngữ mặc định</text>
-    <text name="InvlalidLanguageCode">Mã ngôn ngữ không hợp lệ.</text>
     <text name="EditLanguage">Chỉnh sửa ngôn ngữ</text>
     <text name="ChangeTexts">Thay đổi văn bản</text>
     <text name="TargetValue">Giá trị của mục tiêu</text>

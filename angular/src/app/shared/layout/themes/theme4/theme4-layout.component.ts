@@ -1,9 +1,12 @@
-import { Injector, ElementRef, Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Injector, ElementRef, Component, OnInit, AfterViewInit, ViewChild, Inject } from '@angular/core';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { ThemesLayoutBaseComponent } from '@app/shared/layout/themes/themes-layout-base.component';
 import { UrlHelper } from '@shared/helpers/UrlHelper';
 import { LayoutRefService } from '@metronic/app/core/_base/layout/services/layout-ref.service';
 import { AppConsts } from '@shared/AppConsts';
+import { ToggleOptions } from '@metronic/app/core/_base/layout/directives/toggle.directive';
+import { daLocale } from 'ngx-bootstrap/chronos';
+import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 
 @Component({
     templateUrl: './theme4-layout.component.html',
@@ -16,11 +19,24 @@ export class Theme4LayoutComponent extends ThemesLayoutBaseComponent implements 
 
     remoteServiceBaseUrl: string = AppConsts.remoteServiceBaseUrl;
 
+    asideToggleOptions: ToggleOptions = {
+        target: 'kt_aside',
+        targetState: 'aside-on',
+        toggleState: 'active'
+    };
+
+    userMenuToggleOptions: ToggleOptions = {
+        target: 'kt_header',
+        targetState: 'topbar-mobile-on',
+        toggleState: 'active'
+    };
+
     constructor(
         injector: Injector,
-        private layoutRefService: LayoutRefService
+        private layoutRefService: LayoutRefService,
+        _dateTimeService: DateTimeService
     ) {
-        super(injector);
+        super(injector, _dateTimeService);
     }
 
     ngOnInit() {

@@ -1,8 +1,7 @@
 import { Component, OnInit, Injector } from '@angular/core';
 import { DashboardChartBase } from '../dashboard-chart-base';
 import { TenantDashboardServiceProxy } from '@shared/service-proxies/service-proxies';
-import { AppComponentBase } from '@shared/common/app-component-base';
-import { WidgetComponentBase } from '../widget-component-base';
+import { WidgetComponentBaseComponent } from '../widget-component-base';
 
 class MemberActivityTable extends DashboardChartBase {
 
@@ -32,7 +31,7 @@ class MemberActivityTable extends DashboardChartBase {
   templateUrl: './widget-member-activity.component.html',
   styleUrls: ['./widget-member-activity.component.css']
 })
-export class WidgetMemberActivityComponent extends WidgetComponentBase implements OnInit {
+export class WidgetMemberActivityComponent extends WidgetComponentBaseComponent implements OnInit {
 
   memberActivityTable: MemberActivityTable;
 

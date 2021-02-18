@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Abp.Runtime.Validation;
 using Abp.Timing;
+using NextGen.BiddingPlatform.Configuration.Dto;
 using NextGen.BiddingPlatform.Configuration.Host.Dto;
 
 namespace NextGen.BiddingPlatform.Configuration.Tenants.Dto
@@ -23,6 +24,8 @@ namespace NextGen.BiddingPlatform.Configuration.Tenants.Dto
         public TenantBillingSettingsEditDto Billing { get; set; }
 
         public TenantOtherSettingsEditDto OtherSettings { get; set; }
+
+        public ExternalLoginProviderSettingsEditDto ExternalLoginProviderSettings { get; set; }
 
         /// <summary>
         /// This validation is done for single-tenant applications.

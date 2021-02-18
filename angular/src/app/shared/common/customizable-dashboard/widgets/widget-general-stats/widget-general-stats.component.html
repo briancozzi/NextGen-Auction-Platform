@@ -1,17 +1,17 @@
-<div class="kt-portlet kt-portlet--height-fluid ">
-    <div class="kt-portlet__head">
-        <div class="kt-portlet__head-label">
-            <h3 class="kt-portlet__head-title">
-                General Stats
-            </h3>
-        </div>
-        <div class="kt-portlet__head-toolbar">
+<div class="card card-custom h-100">
+    <div class="card-header align-items-center border-0">
+        <h3 class="card-title align-items-start flex-column">
+            <span class="font-weight-bolder text-dark">
+                 General Stats
+            </span>
+        </h3>
+        <div class="card-toolbar">
             <a href="javascript:;" class="btn btn-primary" (click)="generalStatsPieChart.reload()">
                 <i class="fa fa-redo"></i> Refresh
             </a>
         </div>
     </div>
-    <div class="kt-portlet__body" [perfectScrollbar]>
+    <div class="card-body" [perfectScrollbar]>
         <div class="row" style="max-height: 200px">
             <ngx-charts-pie-grid [results]="generalStatsPieChart.data">
             </ngx-charts-pie-grid>

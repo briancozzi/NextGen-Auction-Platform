@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Abp.Localization;
@@ -39,8 +40,7 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Importing
                 user.Name = GetRequiredValueFromRowOrNull(worksheet, row, 1, nameof(user.Name), exceptionMessage);
                 user.Surname = GetRequiredValueFromRowOrNull(worksheet, row, 2, nameof(user.Surname), exceptionMessage);
                 user.EmailAddress = GetRequiredValueFromRowOrNull(worksheet, row, 3, nameof(user.EmailAddress), exceptionMessage);
-                worksheet.GetRow(row).Cells[4].SetCellType(CellType.String);
-                user.PhoneNumber = worksheet.GetRow(row).Cells[4]?.StringCellValue;
+                user.PhoneNumber = GetOptionalValueFromRowOrNull(worksheet, row, 4, exceptionMessage, CellType.String);
                 user.Password = GetRequiredValueFromRowOrNull(worksheet, row, 5, nameof(user.Password), exceptionMessage);
                 user.AssignedRoleNames = GetAssignedRoleNamesFromRow(worksheet, row, 6);
             }
@@ -52,9 +52,22 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Importing
             return user;
         }
 
-        private string GetRequiredValueFromRowOrNull(ISheet worksheet, int row, int column, string columnName, StringBuilder exceptionMessage)
+        private string GetRequiredValueFromRowOrNull(
+            ISheet worksheet, 
+            int row,
+            int column,
+            string columnName,
+            StringBuilder exceptionMessage,
+            CellType? cellType = null)
         {
-            var cellValue = worksheet.GetRow(row).Cells[column].StringCellValue;
+            var cell = worksheet.GetRow(row).GetCell(column);
+
+            if (cellType.HasValue)
+            {
+                cell.SetCellType(cellType.Value);
+            }
+            
+            var cellValue = cell.StringCellValue;
             if (cellValue != null && !string.IsNullOrWhiteSpace(cellValue))
             {
                 return cellValue;
@@ -64,9 +77,31 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Importing
             return null;
         }
 
+        private string GetOptionalValueFromRowOrNull(ISheet worksheet, int row, int column, StringBuilder exceptionMessage, CellType? cellType = null)
+        {
+            var cell = worksheet.GetRow(row).GetCell(column);
+            if (cell == null)
+            {
+                return string.Empty;
+            }
+
+            if (cellType != null)
+            {
+                cell.SetCellType(cellType.Value);
+            }
+            
+            var cellValue = worksheet.GetRow(row).GetCell(column).StringCellValue;
+            if (cellValue != null && !string.IsNullOrWhiteSpace(cellValue))
+            {
+                return cellValue;
+            }
+            
+            return String.Empty;
+        }
+        
         private string[] GetAssignedRoleNamesFromRow(ISheet worksheet, int row, int column)
         {
-            var cellValue = worksheet.GetRow(row).Cells[column].StringCellValue;
+            var cellValue = worksheet.GetRow(row).GetCell(column).StringCellValue;
             if (cellValue == null || string.IsNullOrWhiteSpace(cellValue))
             {
                 return new string[0];

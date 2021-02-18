@@ -4,7 +4,7 @@ import { OrganizationUnitDto } from '@shared/service-proxies/service-proxies';
 import { ArrayToTreeConverterService } from '@shared/utils/array-to-tree-converter.service';
 import { TreeDataHelperService } from '@shared/utils/tree-data-helper.service';
 import { TreeNode } from 'primeng/api';
-import * as _ from 'lodash';
+import { forEach as _forEach, remove as _remove } from 'lodash-es';
 
 export interface IOrganizationUnitsTreeComponentData {
     allOrganizationUnits: OrganizationUnitDto[];
@@ -72,7 +72,7 @@ export class OrganizationUnitsTreeComponent extends AppComponentBase {
 
     setSelectedNodes(selectedOrganizationUnits: string[]) {
         this.selectedOus = [];
-        _.forEach(selectedOrganizationUnits, ou => {
+        _forEach(selectedOrganizationUnits, ou => {
             let item = this._treeDataHelperService.findNode(this.treeData, { data: { code: ou } });
             if (item) {
                 this.selectedOus.push(item);
@@ -87,7 +87,7 @@ export class OrganizationUnitsTreeComponent extends AppComponentBase {
 
         let organizationIds = [];
 
-        _.forEach(this.selectedOus, ou => {
+        _forEach(this.selectedOus, ou => {
             organizationIds.push(ou.data.id);
         });
 
@@ -95,7 +95,7 @@ export class OrganizationUnitsTreeComponent extends AppComponentBase {
     }
 
     filterOrganizationUnit(nodes, filterText): any {
-        _.forEach(nodes, node => {
+        _forEach(nodes, node => {
             if (node.data.displayName.toLowerCase().indexOf(filterText.toLowerCase()) >= 0) {
                 node.styleClass =
                     this.showParentNodes(node);
@@ -138,6 +138,6 @@ export class OrganizationUnitsTreeComponent extends AppComponentBase {
     onNodeUnselect(event) {
         let childrenNodes = this._treeDataHelperService.findChildren(this.treeData, { data: { name: event.node.data.name } });
         childrenNodes.push(event.node.data.name);
-        _.remove(this.selectedOus, x => childrenNodes.indexOf(x.data.name) !== -1);
+        _remove(this.selectedOus, x => childrenNodes.indexOf(x.data.name) !== -1);
     }
 }

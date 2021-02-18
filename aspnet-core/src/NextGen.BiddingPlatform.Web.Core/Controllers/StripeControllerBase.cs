@@ -37,7 +37,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             {
                 var stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], _stripeConfiguration.WebhookSecret);
 
-                if (stripeEvent.Type == Events.InvoicePaymentSucceeded)
+                if (stripeEvent.Type == Events.InvoicePaid)
                 {
                     await HandleSubscriptionCyclePaymentAsync(stripeEvent);
                 }

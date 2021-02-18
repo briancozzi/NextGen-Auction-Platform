@@ -22,7 +22,6 @@ export class DemoUiEditorComponent extends AppComponentBase {
 
     // input mask - post
     submitValue(): void {
-
         this.demoUiComponentsService.sendAndGetValue(this.htmlEditorInput)
             .subscribe(data => {
                 this.message.info(data.output, this.l('PostedValue'), { isHtml: true });

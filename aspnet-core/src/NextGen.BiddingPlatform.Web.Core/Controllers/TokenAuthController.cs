@@ -38,7 +38,6 @@ using NextGen.BiddingPlatform.Web.Models.TokenAuth;
 using NextGen.BiddingPlatform.Authorization.Impersonation;
 using NextGen.BiddingPlatform.Authorization.Roles;
 using NextGen.BiddingPlatform.Configuration;
-using NextGen.BiddingPlatform.Debugging;
 using NextGen.BiddingPlatform.Identity;
 using NextGen.BiddingPlatform.Net.Sms;
 using NextGen.BiddingPlatform.Notifications;
@@ -99,7 +98,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             ExternalLoginInfoManagerFactory externalLoginInfoManagerFactory,
             ISettingManager settingManager,
             IJwtSecurityStampHandler securityStampHandler,
-            AbpUserClaimsPrincipalFactory<User, Role> claimsPrincipalFactory, 
+            AbpUserClaimsPrincipalFactory<User, Role> claimsPrincipalFactory,
             IUserDelegationManager userDelegationManager)
         {
             _logInManager = logInManager;
@@ -143,10 +142,12 @@ namespace NextGen.BiddingPlatform.Web.Controllers
 
             var returnUrl = model.ReturnUrl;
 
-            if (model.SingleSignIn.HasValue && model.SingleSignIn.Value && loginResult.Result == AbpLoginResultType.Success)
+            if (model.SingleSignIn.HasValue && model.SingleSignIn.Value &&
+                loginResult.Result == AbpLoginResultType.Success)
             {
                 loginResult.User.SetSignInToken();
-                returnUrl = AddSingleSignInParametersToReturnUrl(model.ReturnUrl, loginResult.User.SignInToken, loginResult.User.Id, loginResult.User.TenantId);
+                returnUrl = AddSingleSignInParametersToReturnUrl(model.ReturnUrl, loginResult.User.SignInToken,
+                    loginResult.User.Id, loginResult.User.TenantId);
             }
 
             //Password reset
@@ -194,19 +195,23 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             if (AllowOneConcurrentLoginPerUser())
             {
                 await _userManager.UpdateSecurityStampAsync(loginResult.User);
-                await _securityStampHandler.SetSecurityStampCacheItem(loginResult.User.TenantId, loginResult.User.Id, loginResult.User.SecurityStamp);
-                loginResult.Identity.ReplaceClaim(new Claim(AppConsts.SecurityStampKey, loginResult.User.SecurityStamp));
+                await _securityStampHandler.SetSecurityStampCacheItem(loginResult.User.TenantId, loginResult.User.Id,
+                    loginResult.User.SecurityStamp);
+                loginResult.Identity.ReplaceClaim(new Claim(AppConsts.SecurityStampKey,
+                    loginResult.User.SecurityStamp));
             }
 
-            var accessToken = CreateAccessToken(await CreateJwtClaims(loginResult.Identity, loginResult.User));
-            var refreshToken = CreateRefreshToken(await CreateJwtClaims(loginResult.Identity, loginResult.User, tokenType: TokenType.RefreshToken));
+            var refreshToken = CreateRefreshToken(await CreateJwtClaims(loginResult.Identity, loginResult.User,
+                tokenType: TokenType.RefreshToken));
+            var accessToken = CreateAccessToken(await CreateJwtClaims(loginResult.Identity, loginResult.User,
+                refreshTokenKey: refreshToken.key));
 
             return new AuthenticateResultModel
             {
                 AccessToken = accessToken,
-                ExpireInSeconds = (int)_configuration.AccessTokenExpiration.TotalSeconds,
-                RefreshToken = refreshToken,
-                RefreshTokenExpireInSeconds = (int)_configuration.RefreshTokenExpiration.TotalSeconds,
+                ExpireInSeconds = (int) _configuration.AccessTokenExpiration.TotalSeconds,
+                RefreshToken = refreshToken.token,
+                RefreshTokenExpireInSeconds = (int) _configuration.RefreshTokenExpiration.TotalSeconds,
                 EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
                 TwoFactorRememberClientToken = twoFactorRememberClientToken,
                 UserId = loginResult.User.Id,
@@ -229,7 +234,8 @@ namespace NextGen.BiddingPlatform.Web.Controllers
 
             try
             {
-                var user = _userManager.GetUser(UserIdentifier.Parse(principal.Claims.First(x => x.Type == AppConsts.UserIdentifier).Value));
+                var user = _userManager.GetUser(
+                    UserIdentifier.Parse(principal.Claims.First(x => x.Type == AppConsts.UserIdentifier).Value));
                 if (user == null)
                 {
                     throw new UserFriendlyException("Unknown user or user identifier");
@@ -239,7 +245,8 @@ namespace NextGen.BiddingPlatform.Web.Controllers
 
                 var accessToken = CreateAccessToken(await CreateJwtClaims(principal.Identity as ClaimsIdentity, user));
 
-                return await Task.FromResult(new RefreshTokenResult(accessToken, GetEncryptedAccessToken(accessToken), (int)_configuration.AccessTokenExpiration.TotalSeconds));
+                return await Task.FromResult(new RefreshTokenResult(accessToken, GetEncryptedAccessToken(accessToken),
+                    (int) _configuration.AccessTokenExpiration.TotalSeconds));
             }
             catch (UserFriendlyException)
             {
@@ -253,11 +260,6 @@ namespace NextGen.BiddingPlatform.Web.Controllers
 
         private bool UseCaptchaOnLogin()
         {
-            if (DebugHelper.IsDebug)
-            {
-                return false;
-            }
-
             return SettingManager.GetSettingValue<bool>(AppSettings.UserManagement.UseCaptchaOnLogin);
         }
 
@@ -269,14 +271,31 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             if (AbpSession.UserId != null)
             {
                 var tokenValidityKeyInClaims = User.Claims.First(c => c.Type == AppConsts.TokenValidityKey);
-                await _userManager.RemoveTokenValidityKeyAsync(_userManager.GetUser(AbpSession.ToUserIdentifier()), tokenValidityKeyInClaims.Value);
-                _cacheManager.GetCache(AppConsts.TokenValidityKey).Remove(tokenValidityKeyInClaims.Value);
-
+                await RemoveTokenAsync(tokenValidityKeyInClaims.Value);
+                
+                var refreshTokenValidityKeyInClaims = User.Claims.FirstOrDefault(c => c.Type == AppConsts.RefreshTokenValidityKey);
+                if (refreshTokenValidityKeyInClaims != null)
+                {
+                    await RemoveTokenAsync(refreshTokenValidityKeyInClaims.Value);    
+                }
+                
                 if (AllowOneConcurrentLoginPerUser())
                 {
-                    await _securityStampHandler.RemoveSecurityStampCacheItem(AbpSession.TenantId, AbpSession.GetUserId());
+                    await _securityStampHandler.RemoveSecurityStampCacheItem(
+                        AbpSession.TenantId,
+                        AbpSession.GetUserId()
+                    );
                 }
             }
+        }
+
+        private async Task RemoveTokenAsync(string tokenKey)
+        {
+            await _userManager.RemoveTokenValidityKeyAsync(
+                await _userManager.GetUserAsync(AbpSession.ToUserIdentifier()), tokenKey
+            );
+            
+            await _cacheManager.GetCache(AppConsts.TokenValidityKey).RemoveAsync(tokenKey);
         }
 
         [HttpPost]
@@ -313,9 +332,9 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             }
 
             _cacheManager.GetTwoFactorCodeCache().Set(
-                    cacheKey,
-                    cacheItem
-                );
+                cacheKey,
+                cacheItem
+            );
             _cacheManager.GetCache("ProviderCache").Set(
                 "Provider",
                 model.Provider
@@ -332,12 +351,13 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             {
                 AccessToken = accessToken,
                 EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
-                ExpireInSeconds = (int)_configuration.AccessTokenExpiration.TotalSeconds
+                ExpireInSeconds = (int) _configuration.AccessTokenExpiration.TotalSeconds
             };
         }
 
         [HttpPost]
-        public async Task<ImpersonatedAuthenticateResultModel> DelegatedImpersonatedAuthenticate(long userDelegationId, string impersonationToken)
+        public async Task<ImpersonatedAuthenticateResultModel> DelegatedImpersonatedAuthenticate(long userDelegationId,
+            string impersonationToken)
         {
             var result = await _impersonationManager.GetImpersonatedUserAndIdentity(impersonationToken);
             var userDelegation = await _userDelegationManager.GetAsync(userDelegationId);
@@ -346,15 +366,16 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             {
                 throw new UserFriendlyException("User delegation error...");
             }
-        
+
             var expiration = userDelegation.EndTime.Subtract(Clock.Now);
-            var accessToken = CreateAccessToken(await CreateJwtClaims(result.Identity, result.User, expiration), expiration);
+            var accessToken = CreateAccessToken(await CreateJwtClaims(result.Identity, result.User, expiration),
+                expiration);
 
             return new ImpersonatedAuthenticateResultModel
             {
                 AccessToken = accessToken,
                 EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
-                ExpireInSeconds = (int)expiration.TotalSeconds
+                ExpireInSeconds = (int) expiration.TotalSeconds
             };
         }
 
@@ -368,83 +389,102 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             {
                 AccessToken = accessToken,
                 EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
-                ExpireInSeconds = (int)_configuration.AccessTokenExpiration.TotalSeconds
+                ExpireInSeconds = (int) _configuration.AccessTokenExpiration.TotalSeconds
             };
         }
 
         [HttpGet]
         public List<ExternalLoginProviderInfoModel> GetExternalAuthenticationProviders()
         {
-            return ObjectMapper.Map<List<ExternalLoginProviderInfoModel>>(_externalAuthConfiguration.Providers);
+            var allProviders = _externalAuthConfiguration.ExternalLoginInfoProviders
+                .Select(infoProvider => infoProvider.GetExternalLoginInfo())
+                .Where(IsSchemeEnabledOnTenant)
+                .ToList();
+            return ObjectMapper.Map<List<ExternalLoginProviderInfoModel>>(allProviders);
+        }
+
+        private bool IsSchemeEnabledOnTenant(ExternalLoginProviderInfo scheme)
+        {
+            if (!AbpSession.TenantId.HasValue)
+            {
+                return true;
+            }
+
+            switch (scheme.Name)
+            {
+                case "OpenIdConnect":
+                    return !_settingManager.GetSettingValueForTenant<bool>(AppSettings.ExternalLoginProvider.Tenant.OpenIdConnect_IsDeactivated, AbpSession.GetTenantId());
+                case "Microsoft":
+                    return !_settingManager.GetSettingValueForTenant<bool>(AppSettings.ExternalLoginProvider.Tenant.Microsoft_IsDeactivated, AbpSession.GetTenantId());
+                case "Google":
+                    return !_settingManager.GetSettingValueForTenant<bool>(AppSettings.ExternalLoginProvider.Tenant.Google_IsDeactivated, AbpSession.GetTenantId());
+                case "Twitter":
+                    return !_settingManager.GetSettingValueForTenant<bool>(AppSettings.ExternalLoginProvider.Tenant.Twitter_IsDeactivated, AbpSession.GetTenantId());
+                case "Facebook":
+                    return !_settingManager.GetSettingValueForTenant<bool>(AppSettings.ExternalLoginProvider.Tenant.Facebook_IsDeactivated, AbpSession.GetTenantId());
+                case "WsFederation":
+                    return !_settingManager.GetSettingValueForTenant<bool>(AppSettings.ExternalLoginProvider.Tenant.WsFederation_IsDeactivated, AbpSession.GetTenantId());
+                default: return true;
+            }
         }
 
         [HttpPost]
-        public async Task<ExternalAuthenticateResultModel> ExternalAuthenticate([FromBody] ExternalAuthenticateModel model)
+        public async Task<ExternalAuthenticateResultModel> ExternalAuthenticate(
+            [FromBody] ExternalAuthenticateModel model)
         {
             var externalUser = await GetExternalUserInfo(model);
 
-            var loginResult = await _logInManager.LoginAsync(new UserLoginInfo(model.AuthProvider, model.ProviderKey, model.AuthProvider), GetTenancyNameOrNull());
+            var loginResult = await _logInManager.LoginAsync(
+                new UserLoginInfo(model.AuthProvider, externalUser.ProviderKey, model.AuthProvider), GetTenancyNameOrNull()
+            );
 
             switch (loginResult.Result)
             {
                 case AbpLoginResultType.Success:
+                {
+                    var refreshToken = CreateRefreshToken(await CreateJwtClaims(loginResult.Identity, loginResult.User,
+                        tokenType: TokenType.RefreshToken));
+                    var accessToken = CreateAccessToken(await CreateJwtClaims(loginResult.Identity, loginResult.User,
+                        refreshTokenKey: refreshToken.key));
+
+                    var returnUrl = model.ReturnUrl;
+
+                    if (model.SingleSignIn.HasValue && model.SingleSignIn.Value &&
+                        loginResult.Result == AbpLoginResultType.Success)
                     {
-                        var accessToken = CreateAccessToken(await CreateJwtClaims(loginResult.Identity, loginResult.User));
-                        var refreshToken = CreateRefreshToken(await CreateJwtClaims(loginResult.Identity, loginResult.User, tokenType: TokenType.RefreshToken));
-
-                        var returnUrl = model.ReturnUrl;
-
-                        if (model.SingleSignIn.HasValue && model.SingleSignIn.Value && loginResult.Result == AbpLoginResultType.Success)
-                        {
-                            loginResult.User.SetSignInToken();
-                            returnUrl = AddSingleSignInParametersToReturnUrl(model.ReturnUrl, loginResult.User.SignInToken, loginResult.User.Id, loginResult.User.TenantId);
-                        }
-
-                        return new ExternalAuthenticateResultModel
-                        {
-                            AccessToken = accessToken,
-                            EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
-                            ExpireInSeconds = (int)_configuration.AccessTokenExpiration.TotalSeconds,
-                            ReturnUrl = returnUrl,
-                            RefreshToken = refreshToken,
-                            RefreshTokenExpireInSeconds = (int)_configuration.RefreshTokenExpiration.TotalSeconds
-                        };
+                        loginResult.User.SetSignInToken();
+                        returnUrl = AddSingleSignInParametersToReturnUrl(model.ReturnUrl, loginResult.User.SignInToken,
+                            loginResult.User.Id, loginResult.User.TenantId);
                     }
+
+                    return new ExternalAuthenticateResultModel
+                    {
+                        AccessToken = accessToken,
+                        EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
+                        ExpireInSeconds = (int) _configuration.AccessTokenExpiration.TotalSeconds,
+                        ReturnUrl = returnUrl,
+                        RefreshToken = refreshToken.token,
+                        RefreshTokenExpireInSeconds = (int) _configuration.RefreshTokenExpiration.TotalSeconds
+                    };
+                }
                 case AbpLoginResultType.UnknownExternalLogin:
+                {
+                    var newUser = await RegisterExternalUserAsync(externalUser);
+                    if (!newUser.IsActive)
                     {
-                        var newUser = await RegisterExternalUserAsync(externalUser);
-                        if (!newUser.IsActive)
-                        {
-                            return new ExternalAuthenticateResultModel
-                            {
-                                WaitingForActivation = true
-                            };
-                        }
-
-                        //Try to login again with newly registered user!
-                        loginResult = await _logInManager.LoginAsync(new UserLoginInfo(model.AuthProvider, model.ProviderKey, model.AuthProvider), GetTenancyNameOrNull());
-                        if (loginResult.Result != AbpLoginResultType.Success)
-                        {
-                            throw _abpLoginResultTypeHelper.CreateExceptionForFailedLoginAttempt(
-                                loginResult.Result,
-                                model.ProviderKey,
-                                GetTenancyNameOrNull()
-                            );
-                        }
-
-                        var accessToken = CreateAccessToken(await CreateJwtClaims(loginResult.Identity, loginResult.User));
-                        var refreshToken = CreateRefreshToken(await CreateJwtClaims(loginResult.Identity, loginResult.User, tokenType: TokenType.RefreshToken));
-
                         return new ExternalAuthenticateResultModel
                         {
-                            AccessToken = accessToken,
-                            EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
-                            ExpireInSeconds = (int)_configuration.AccessTokenExpiration.TotalSeconds,
-                            RefreshToken = refreshToken,
-                            RefreshTokenExpireInSeconds = (int)_configuration.RefreshTokenExpiration.TotalSeconds
+                            WaitingForActivation = true
                         };
                     }
-                default:
+
+                    //Try to login again with newly registered user!
+                    loginResult = await _logInManager.LoginAsync(
+                        new UserLoginInfo(model.AuthProvider, model.ProviderKey, model.AuthProvider),
+                        GetTenancyNameOrNull()
+                    );
+                    
+                    if (loginResult.Result != AbpLoginResultType.Success)
                     {
                         throw _abpLoginResultTypeHelper.CreateExceptionForFailedLoginAttempt(
                             loginResult.Result,
@@ -452,6 +492,31 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                             GetTenancyNameOrNull()
                         );
                     }
+
+                    var refreshToken = CreateRefreshToken(await CreateJwtClaims(loginResult.Identity,
+                        loginResult.User, tokenType: TokenType.RefreshToken)
+                    );
+                    
+                    var accessToken = CreateAccessToken(await CreateJwtClaims(loginResult.Identity,
+                        loginResult.User, refreshTokenKey: refreshToken.key));
+
+                    return new ExternalAuthenticateResultModel
+                    {
+                        AccessToken = accessToken,
+                        EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
+                        ExpireInSeconds = (int) _configuration.AccessTokenExpiration.TotalSeconds,
+                        RefreshToken = refreshToken.token,
+                        RefreshTokenExpireInSeconds = (int) _configuration.RefreshTokenExpiration.TotalSeconds
+                    };
+                }
+                default:
+                {
+                    throw _abpLoginResultTypeHelper.CreateExceptionForFailedLoginAttempt(
+                        loginResult.Result,
+                        model.ProviderKey,
+                        GetTenancyNameOrNull()
+                    );
+                }
             }
         }
 
@@ -470,7 +535,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                 AbpSession.ToUserIdentifier(),
                 message,
                 severity.ToPascalCase().ToEnum<NotificationSeverity>()
-                );
+            );
 
             return Content("Sent notification: " + message);
         }
@@ -481,7 +546,8 @@ namespace NextGen.BiddingPlatform.Web.Controllers
         {
             string username;
 
-            using (var providerManager = _externalLoginInfoManagerFactory.GetExternalLoginInfoManager(externalLoginInfo.Provider))
+            using (var providerManager =
+                _externalLoginInfoManagerFactory.GetExternalLoginInfoManager(externalLoginInfo.Provider))
             {
                 username = providerManager.Object.GetUserNameFromExternalAuthUserInfo(externalLoginInfo);
             }
@@ -514,7 +580,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
         private async Task<ExternalAuthUserInfo> GetExternalUserInfo(ExternalAuthenticateModel model)
         {
             var userInfo = await _externalAuthManager.GetUserInfo(model.AuthProvider, model.ProviderAccessCode);
-            if (userInfo.ProviderKey != model.ProviderKey)
+            if (!ProviderKeysAreEqual(model, userInfo))
             {
                 throw new UserFriendlyException(L("CouldNotValidateExternalUser"));
             }
@@ -522,9 +588,21 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             return userInfo;
         }
 
-        private async Task<bool> IsTwoFactorAuthRequiredAsync(AbpLoginResult<Tenant, User> loginResult, AuthenticateModel authenticateModel)
+        private bool ProviderKeysAreEqual(ExternalAuthenticateModel model, ExternalAuthUserInfo userInfo)
         {
-            if (!await SettingManager.GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement.TwoFactorLogin.IsEnabled))
+            if (userInfo.ProviderKey == model.ProviderKey)
+            {
+                return true;
+            };
+
+            return userInfo.ProviderKey == model.ProviderKey.Replace("-", "").TrimStart('0');
+        }
+
+        private async Task<bool> IsTwoFactorAuthRequiredAsync(AbpLoginResult<Tenant, User> loginResult,
+            AuthenticateModel authenticateModel)
+        {
+            if (!await SettingManager.GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement.TwoFactorLogin
+                .IsEnabled))
             {
                 return false;
             }
@@ -547,9 +625,11 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             return true;
         }
 
-        private async Task<bool> TwoFactorClientRememberedAsync(UserIdentifier userIdentifier, AuthenticateModel authenticateModel)
+        private async Task<bool> TwoFactorClientRememberedAsync(UserIdentifier userIdentifier,
+            AuthenticateModel authenticateModel)
         {
-            if (!await SettingManager.GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement.TwoFactorLogin.IsRememberBrowserEnabled))
+            if (!await SettingManager.GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement.TwoFactorLogin
+                .IsRememberBrowserEnabled))
             {
                 return false;
             }
@@ -574,7 +654,8 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                     {
                         try
                         {
-                            var principal = validator.ValidateToken(authenticateModel.TwoFactorRememberClientToken, validationParameters, out _);
+                            var principal = validator.ValidateToken(authenticateModel.TwoFactorRememberClientToken,
+                                validationParameters, out _);
                             var useridentifierClaim = principal.FindFirst(c => c.Type == UserIdentifierClaimType);
                             if (useridentifierClaim == null)
                             {
@@ -608,7 +689,8 @@ namespace NextGen.BiddingPlatform.Web.Controllers
 
             if (provider == GoogleAuthenticatorProvider.Name)
             {
-                if (!await _googleAuthenticatorProvider.ValidateAsync("TwoFactor", authenticateModel.TwoFactorVerificationCode, _userManager, user))
+                if (!await _googleAuthenticatorProvider.ValidateAsync("TwoFactor",
+                    authenticateModel.TwoFactorVerificationCode, _userManager, user))
                 {
                     throw new UserFriendlyException(L("InvalidSecurityCode"));
                 }
@@ -623,7 +705,8 @@ namespace NextGen.BiddingPlatform.Web.Controllers
 
             if (authenticateModel.RememberClient)
             {
-                if (await SettingManager.GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement.TwoFactorLogin.IsRememberBrowserEnabled))
+                if (await SettingManager.GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement.TwoFactorLogin
+                    .IsRememberBrowserEnabled))
                 {
                     return CreateAccessToken(new[]
                         {
@@ -647,7 +730,8 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             return _tenantCache.GetOrNull(AbpSession.TenantId.Value)?.TenancyName;
         }
 
-        private async Task<AbpLoginResult<Tenant, User>> GetLoginResultAsync(string usernameOrEmailAddress, string password, string tenancyName)
+        private async Task<AbpLoginResult<Tenant, User>> GetLoginResultAsync(string usernameOrEmailAddress,
+            string password, string tenancyName)
         {
             var loginResult = await _logInManager.LoginAsync(usernameOrEmailAddress, password, tenancyName);
 
@@ -656,7 +740,8 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                 case AbpLoginResultType.Success:
                     return loginResult;
                 default:
-                    throw _abpLoginResultTypeHelper.CreateExceptionForFailedLoginAttempt(loginResult.Result, usernameOrEmailAddress, tenancyName);
+                    throw _abpLoginResultTypeHelper.CreateExceptionForFailedLoginAttempt(loginResult.Result,
+                        usernameOrEmailAddress, tenancyName);
             }
         }
 
@@ -665,9 +750,11 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             return CreateToken(claims, expiration ?? _configuration.AccessTokenExpiration);
         }
 
-        private string CreateRefreshToken(IEnumerable<Claim> claims)
+        private (string token, string key) CreateRefreshToken(IEnumerable<Claim> claims)
         {
-            return CreateToken(claims, AppConsts.RefreshTokenExpiration);
+            var claimsList = claims.ToList();
+            return (CreateToken(claimsList, AppConsts.RefreshTokenExpiration),
+                claimsList.First(c => c.Type == AppConsts.TokenValidityKey).Value);
         }
 
         private string CreateToken(IEnumerable<Claim> claims, TimeSpan? expiration = null)
@@ -680,9 +767,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                 claims: claims,
                 notBefore: now,
                 signingCredentials: _configuration.SigningCredentials,
-                expires: expiration == null ?
-                    (DateTime?)null :
-                    now.Add(expiration.Value)
+                expires: expiration == null ? (DateTime?) null : now.Add(expiration.Value)
             );
 
             return new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
@@ -693,7 +778,11 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             return SimpleStringCipher.Instance.Encrypt(accessToken, AppConsts.DefaultPassPhrase);
         }
 
-        private async Task<IEnumerable<Claim>> CreateJwtClaims(ClaimsIdentity identity, User user, TimeSpan? expiration = null, TokenType tokenType = TokenType.AccessToken)
+        private async Task<IEnumerable<Claim>> CreateJwtClaims(
+            ClaimsIdentity identity, User user,
+            TimeSpan? expiration = null, 
+            TokenType tokenType = TokenType.AccessToken, 
+            string refreshTokenKey = null)
         {
             var tokenValidityKey = Guid.NewGuid().ToString();
             var claims = identity.Claims.ToList();
@@ -707,11 +796,17 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             claims.AddRange(new[]
             {
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.Now.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
+                new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
+                    ClaimValueTypes.Integer64),
                 new Claim(AppConsts.TokenValidityKey, tokenValidityKey),
                 new Claim(AppConsts.UserIdentifier, user.ToUserIdentifier().ToUserIdentifierString()),
                 new Claim(AppConsts.TokenType, tokenType.To<int>().ToString())
-             });
+            });
+
+            if (!string.IsNullOrEmpty(refreshTokenKey))
+            {
+                claims.Add(new Claim(AppConsts.RefreshTokenValidityKey, refreshTokenKey));
+            }
 
             if (!expiration.HasValue)
             {
@@ -720,20 +815,23 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                     : _configuration.RefreshTokenExpiration;
             }
 
-            _cacheManager
+            var expirationDate = DateTime.UtcNow.Add(expiration.Value);
+
+            await _cacheManager
                 .GetCache(AppConsts.TokenValidityKey)
-                .Set(tokenValidityKey, "", absoluteExpireTime: expiration);
+                .SetAsync(tokenValidityKey, "", absoluteExpireTime: new DateTimeOffset(expirationDate));
 
             await _userManager.AddTokenValidityKeyAsync(
                 user,
                 tokenValidityKey,
-                DateTime.UtcNow.Add(expiration.Value)
+                expirationDate
             );
 
             return claims;
         }
 
-        private static string AddSingleSignInParametersToReturnUrl(string returnUrl, string signInToken, long userId, int? tenantId)
+        private static string AddSingleSignInParametersToReturnUrl(string returnUrl, string signInToken, long userId,
+            int? tenantId)
         {
             returnUrl += (returnUrl.Contains("?") ? "&" : "?") +
                          "accessToken=" + signInToken +
@@ -771,7 +869,8 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                     {
                         principal = validator.ValidateToken(refreshToken, validationParameters, out _);
 
-                        if (principal.Claims.FirstOrDefault(x => x.Type == AppConsts.TokenType)?.Value == TokenType.RefreshToken.To<int>().ToString())
+                        if (principal.Claims.FirstOrDefault(x => x.Type == AppConsts.TokenType)?.Value ==
+                            TokenType.RefreshToken.To<int>().ToString())
                         {
                             return true;
                         }
@@ -799,7 +898,8 @@ namespace NextGen.BiddingPlatform.Web.Controllers
         private async Task ValidateReCaptcha(string captchaResponse)
         {
             var requestUserAgent = Request.Headers["User-Agent"].ToString();
-            if (!requestUserAgent.IsNullOrWhiteSpace() && WebConsts.ReCaptchaIgnoreWhiteList.Contains(requestUserAgent.Trim()))
+            if (!requestUserAgent.IsNullOrWhiteSpace() &&
+                WebConsts.ReCaptchaIgnoreWhiteList.Contains(requestUserAgent.Trim()))
             {
                 return;
             }
