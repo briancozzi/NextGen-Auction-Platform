@@ -206,6 +206,7 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                 AuctionItemId = auctionItemId,
                 LastHistoryAmount = auctionItemHistoryDetails.Value,
                 AuctionItemHistory = await GetHistorbyAuctionItemId(auctionItemId, 10, 1),
+                TenantId = tenantId
             }, tenantId);
         }
         private async Task SaveSingleHistory(AuctionBidderHistoryDto auctionBidderHistory)
@@ -221,7 +222,8 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                 BidStatus = BiddingStatus.Pending.ToString(),
                 CreationTime = Clock.Now,
                 UniqueId = Guid.NewGuid(),
-                AuctionBidderId = auctionBidderHistory.AuctionBidderId.Value
+                AuctionBidderId = auctionBidderHistory.AuctionBidderId.Value,
+                 
             });
             await CurrentUnitOfWork.SaveChangesAsync();
             var auctionItemHistoryDetails = await GetAuctionItemHistoryCount(auctionItem.Id);
@@ -236,6 +238,7 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                 AuctionItemId = auctionBidderHistory.AuctionItemId,
                 LastHistoryAmount = auctionItemHistoryDetails.Value,
                 AuctionItemHistory = await GetHistorbyAuctionItemId(auctionBidderHistory.AuctionItemId, 10, 1),
+                TenantId = tenantId
             },
             auctionBidderHistory.TenantId);
         }
