@@ -1,0 +1,41 @@
+<div appBsModal #editModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editModal"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form #itemCreateForm="ngForm" role="form" novalidate class="form-validation" *ngIf="active"
+                (submit)="save()">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <span>{{"CreateCategory" | localize}}</span>
+                    </h5>
+                    <button type="button" class="close" (click)="close()" [attr.aria-label]="l('Close')"
+                        [disabled]="saving">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xl-12">
+                                <label for="categoryName">{{"CategoryName" | localize}} *</label>
+                                <input id="categoryName" #categoryNameInput="ngModel" class="form-control" type="text"
+                                    [ngClass]="{'edited':category.categoryName}" name="categoryName" [(ngModel)]="category.categoryName"
+                                    required maxlength="64">
+                                <validation-messages [formCtrl]="categoryNameInput"></validation-messages>
+                            </div>
+                        
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" [disabled]="saving" class="btn btn-secondary"
+                        (click)="close()">{{l("Cancel")}}</button>
+                    <button [disabled]="!itemCreateForm.form.valid" type="submit" [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')" class="btn btn-primary"><i class="fa fa-save"></i>
+                        <span>{{l("Update")}}</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

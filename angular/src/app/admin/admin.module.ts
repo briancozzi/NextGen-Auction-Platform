@@ -9,6 +9,7 @@ import { FileUploadModule } from 'ng2-file-upload';
 import { ModalModule, PopoverModule, TabsModule, TooltipModule, BsDropdownModule } from 'ngx-bootstrap';
 import { BsDatepickerConfig, BsDaterangepickerConfig, BsLocaleService } from 'ngx-bootstrap/datepicker';
 import {BsDatepickerModule} from 'ngx-bootstrap/datepicker';
+import { TimepickerConfig,TimepickerModule } from 'ngx-bootstrap/timepicker';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { EditorModule } from 'primeng/editor';
 import { FileUploadModule as PrimeNgFileUploadModule } from 'primeng/fileupload';
@@ -101,7 +102,27 @@ import { EntityDynamicParameterComponent } from './dynamic-entity-parameters/ent
 import { CreateEntityDynamicParameterModalComponent } from './dynamic-entity-parameters/entity-dynamic-parameter/create-entity-dynamic-parameter-modal.component';
 import { EntityDynamicParameterValueComponent } from './dynamic-entity-parameters/entity-dynamic-parameter/entity-dynamic-parameter-value/entity-dynamic-parameter-value.component';
 import { ManageEntityDynamicParameterValuesModalComponent } from './dynamic-entity-parameters/entity-dynamic-parameter/entity-dynamic-parameter-value/manage-entity-dynamic-parameter-values-modal.component';
-
+import { StatesComponent } from './parameter/states/states.component';
+import {CreateStateModalComponent} from './parameter/states/create-states-modal.component';
+import{EditStateModalComponent} from './parameter/states/edit-states-modal.component';
+import { AccountsComponent } from './accounts/accounts.component';
+import{CreateAccountsModalComponent} from './accounts/create-accounts-modal.component';
+import{EditAccountsModalComponent} from './accounts/edit-accounts-modal.component';
+import { AccountEventsComponent } from './account-events/account-events.component';
+import{CreateEventsModalComponent} from './account-events/create-events-modal.component';
+import{EditEventsModalComponent} from './account-events/edit-events-modal.component';
+import { AuctionsComponent } from './auctions/auctions.component';
+import{ CreateAuctionComponent} from './auctions/create-auction.component';
+import{EditAuctionComponent} from './auctions/edit-auction.component';
+import { ItemsComponent } from './items/items.component';
+import { CreateItemModalComponent } from './items/create-item-modal.component';
+import { EditItemModalComponent } from './items/edit-item-modal.component';
+import { AuctionItemsComponent } from './auction-items/auction-items.component';
+import { EditAuctionItemsComponent } from './auction-items/edit-auction-items.component';
+import { CreateAuctionItemsComponent } from './auction-items/create-auction-items.component';
+import { CategoryComponent } from './category/category.component';
+import { CreateCategoryModalComponent } from './category/create-category-modal.component';
+import { EditCategoryModalComponent } from './category/edit-category-modal.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     // suppressScrollX: true
@@ -119,6 +140,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         PopoverModule.forRoot(),
         BsDropdownModule.forRoot(),
         BsDatepickerModule.forRoot(),
+        TimepickerModule.forRoot(),
         AdminRoutingModule,
         UtilsModule,
         AppCommonModule,
@@ -212,7 +234,29 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         EntityDynamicParameterComponent,
         CreateEntityDynamicParameterModalComponent,
         EntityDynamicParameterValueComponent,
-        ManageEntityDynamicParameterValuesModalComponent
+        ManageEntityDynamicParameterValuesModalComponent,
+        StatesComponent,
+        CreateStateModalComponent,
+        EditStateModalComponent,
+        AccountsComponent,
+        CreateAccountsModalComponent,
+        EditAccountsModalComponent,
+        AccountEventsComponent,
+        CreateEventsModalComponent,
+        EditEventsModalComponent,
+        AuctionsComponent,
+        CreateAuctionComponent,
+        EditAuctionComponent,
+        ItemsComponent,
+        CreateItemModalComponent,
+        EditItemModalComponent,
+        AuctionItemsComponent,
+        EditAuctionItemsComponent,
+        CreateAuctionItemsComponent,
+        CategoryComponent,
+        CreateCategoryModalComponent,
+        EditCategoryModalComponent,
+
     ],
     exports: [
         AddMemberModalComponent,

@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using NextGen.BiddingPlatform.Configuration;
 using NextGen.BiddingPlatform.Identity;
 using NextGen.BiddingPlatform.Web.HealthCheck;
+using NextGen.BiddingPlatform.Web.Public.Notification;
 
 namespace NextGen.BiddingPlatform.Web.Public.Startup
 {
@@ -36,10 +37,12 @@ namespace NextGen.BiddingPlatform.Web.Public.Startup
             services.AddControllersWithViews(options =>
             {
                 options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-            }).AddNewtonsoftJson();
+            }).AddNewtonsoftJson().AddRazorRuntimeCompilation();
 
             IdentityRegistrar.Register(services);
             services.AddSignalR();
+            services.AddSingleton<INotificationManager, NotificationManager>();
+            services.AddSingleton<IConnectionManager, ConnectionManager>();
 
             if (bool.Parse(_appConfiguration["HealthChecks:HealthChecksEnabled"]))
             {
@@ -92,7 +95,7 @@ namespace NextGen.BiddingPlatform.Web.Public.Startup
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<AbpCommonHub>("/signalr");
-
+                endpoints.MapHub<BidHub>("/signalr-BidHub");
                 endpoints.MapControllerRoute("defaultWithArea", "{area}/{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });

@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'GibsonSemiBold';
+    src: url('fonts/GibsonSemiBold.eot');
+    src: url('fonts/GibsonSemiBold.eot') format('embedded-opentype'),
+         url('fonts/GibsonSemiBold.woff2') format('woff2'),
+         url('fonts/GibsonSemiBold.woff') format('woff'),
+         url('fonts/GibsonSemiBold.ttf') format('truetype'),
+         url('fonts/GibsonSemiBold.svg#GibsonSemiBold') format('svg');
+}

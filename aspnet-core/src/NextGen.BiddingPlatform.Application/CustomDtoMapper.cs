@@ -11,6 +11,10 @@ using Abp.Organizations;
 using Abp.UI.Inputs;
 using Abp.Webhooks;
 using AutoMapper;
+using NextGen.BiddingPlatform.AppAccount.Dto;
+using NextGen.BiddingPlatform.AppAccountEvent.Dto;
+using NextGen.BiddingPlatform.Auction.Dto;
+using NextGen.BiddingPlatform.AuctionItem.Dto;
 using NextGen.BiddingPlatform.Auditing.Dto;
 using NextGen.BiddingPlatform.Authorization.Accounts.Dto;
 using NextGen.BiddingPlatform.Authorization.Delegation;
@@ -22,14 +26,20 @@ using NextGen.BiddingPlatform.Authorization.Users.Delegation.Dto;
 using NextGen.BiddingPlatform.Authorization.Users.Dto;
 using NextGen.BiddingPlatform.Authorization.Users.Importing.Dto;
 using NextGen.BiddingPlatform.Authorization.Users.Profile.Dto;
+using NextGen.BiddingPlatform.CardDetail.Dto;
+using NextGen.BiddingPlatform.Category.Dto;
 using NextGen.BiddingPlatform.Chat;
 using NextGen.BiddingPlatform.Chat.Dto;
+using NextGen.BiddingPlatform.Core.AuctionItems;
+using NextGen.BiddingPlatform.Core.Categories;
+using NextGen.BiddingPlatform.Core.Items;
 using NextGen.BiddingPlatform.DynamicEntityParameters.Dto;
 using NextGen.BiddingPlatform.Editions;
 using NextGen.BiddingPlatform.Editions.Dto;
 using NextGen.BiddingPlatform.Friendships;
 using NextGen.BiddingPlatform.Friendships.Cache;
 using NextGen.BiddingPlatform.Friendships.Dto;
+using NextGen.BiddingPlatform.Items.Dto;
 using NextGen.BiddingPlatform.Localization.Dto;
 using NextGen.BiddingPlatform.MultiTenancy;
 using NextGen.BiddingPlatform.MultiTenancy.Dto;
@@ -39,6 +49,7 @@ using NextGen.BiddingPlatform.MultiTenancy.Payments.Dto;
 using NextGen.BiddingPlatform.Notifications.Dto;
 using NextGen.BiddingPlatform.Organizations.Dto;
 using NextGen.BiddingPlatform.Sessions.Dto;
+using NextGen.BiddingPlatform.State.Dto;
 using NextGen.BiddingPlatform.WebHooks.Dto;
 
 namespace NextGen.BiddingPlatform
@@ -161,6 +172,85 @@ namespace NextGen.BiddingPlatform
 
 
             /* ADD YOUR OWN CUSTOM AUTOMAPPER MAPPINGS HERE */
+            //Country
+            configuration.CreateMap<Country.Dto.CreateCountryDto, Country.Country>().ReverseMap();
+            configuration.CreateMap<Country.Dto.CountryDto, Country.Country>().ReverseMap();
+            configuration.CreateMap<Country.Country, Country.Dto.CountryListDto>();
+
+            //State
+            configuration.CreateMap<CreateStateDto, Core.State.State>().ReverseMap();
+            configuration.CreateMap<Core.State.State, StateDto>()
+                .ForMember(x => x.CountryName, option => option.MapFrom(x => x.Country.CountryName))
+                .ForMember(x => x.CountryUniqueId, option => option.MapFrom(x => x.Country.UniqueId)).ReverseMap();
+            configuration.CreateMap<UpdateStateDto, Core.State.State>().ReverseMap();
+            configuration.CreateMap<Core.State.State, StateListDto>()
+                .ForMember(x => x.CountryName, option => option.MapFrom(c => c.Country.CountryName))
+                .ForMember(x => x.CountryUniqueId, option => option.MapFrom(c => c.Country.UniqueId));
+
+            //AppAccount
+            configuration.CreateMap<CreateAppAccountDto, Core.AppAccounts.AppAccount>().ReverseMap();
+            configuration.CreateMap<Core.AppAccounts.AppAccount, AppAccountDto>().ReverseMap();
+            configuration.CreateMap<Core.AppAccounts.AppAccount, AppAccountListDto>()
+                .ForMember(x => x.FirstName, option => option.MapFrom(a => a.FirstName))
+                .ForMember(x => x.LastName, option => option.MapFrom(a => a.LastName));
+
+            //Address
+            configuration.CreateMap<Address.Dto.AddressDto, Core.Addresses.Address>().ReverseMap();
+            configuration.CreateMap<Core.Addresses.Address, Address.Dto.AddressDto>()
+                .ForMember(x => x.StateUniqueId, option => option.MapFrom(s => s.State.UniqueId))
+                .ForMember(x => x.CountryUniqueId, option => option.MapFrom(c => c.Country.UniqueId));
+
+            //AccountEvent
+            configuration.CreateMap<CreateAccountEventDto, Core.AppAccountEvents.Event>().ReverseMap();
+            configuration.CreateMap<UpdateAccountEventDto, Core.AppAccountEvents.Event>().ReverseMap();
+            configuration.CreateMap<Core.AppAccountEvents.Event, AccountEventDto>()
+                .ForMember(x => x.AppAccountUniqueId, option => option.MapFrom(a => a.AppAccount.UniqueId));
+            configuration.CreateMap<Core.AppAccountEvents.Event, AccountEventListDto>()
+                .ForMember(x => x.AppAccountUniqueId, option => option.MapFrom(a => a.AppAccount.UniqueId));
+
+            //Auction
+            configuration.CreateMap<Core.Auctions.Auction, AuctionListDto>()
+                .ForMember(x => x.AuctionType, option => option.MapFrom(au => au.AuctionType))
+                .ForMember(x => x.AccountUniqueId, option => option.MapFrom(ap => ap.AppAccount.UniqueId))
+                .ForMember(x => x.EventUniqueId, option => option.MapFrom(e => e.Event.UniqueId));
+            configuration.CreateMap<Core.Auctions.Auction, AuctionDto>()
+                .ForMember(x => x.AccountUniqueId, option => option.MapFrom(ap => ap.AppAccount.UniqueId))
+                .ForMember(x => x.EventUniqueId, option => option.MapFrom(e => e.Event.UniqueId));
+
+            configuration.CreateMap<Core.Auctions.Auction, UpdateAuctionDto>()
+               .ForMember(x => x.AccountUniqueId, option => option.MapFrom(ap => ap.AppAccount.UniqueId))
+               .ForMember(x => x.EventUniqueId, option => option.MapFrom(e => e.Event.UniqueId));
+
+
+            configuration.CreateMap<CreateAuctionDto, Core.Auctions.Auction>();
+            configuration.CreateMap<Core.Auctions.Auction, AuctionDto>();
+
+            //Category
+            configuration.CreateMap<Core.Categories.Category, CategoryListDto>();
+            configuration.CreateMap<Core.Categories.Category, GetCategoryDto>();
+            configuration.CreateMap<CategoryDto, Core.Categories.Category>().ReverseMap();
+
+            //item
+            configuration.CreateMap<ItemDto, Item>();
+            configuration.CreateMap<UpdateItemDto, Item>().ReverseMap();
+            configuration.CreateMap<ItemCategory.ItemCategory, GetCategoryDto>();
+            configuration.CreateMap<ItemGalleryDto, ItemGallery>().ReverseMap();
+            configuration.CreateMap<GetItemDto, Item>().ReverseMap();
+
+            //AuctionItem
+            configuration.CreateMap<Core.AuctionItems.AuctionItem, AuctionItemDto>()
+                .ForMember(x => x.AuctionId, option => option.MapFrom(a => a.Auction.UniqueId))
+                .ForMember(x => x.ItemId, option => option.MapFrom(i => i.Item.UniqueId)).ReverseMap();
+            configuration.CreateMap<Core.AuctionItems.AuctionItem, CreateAuctionItemDto>()
+                .ForMember(x => x.AuctionId, option => option.MapFrom(a => a.Auction.UniqueId))
+                .ForMember(x => x.ItemId, option => option.MapFrom(i => i.Item.UniqueId)).ReverseMap();
+
+            //CardDetail
+            configuration.CreateMap<CreateCardDetailDto, Core.CardDetails.CardDetail>();
+            configuration.CreateMap<Core.CardDetails.CardDetail, CreateCardDetailDto>()
+                .ForMember(x => x.FullName, option => option.MapFrom(x => x.User.FullName));
+            configuration.CreateMap<Core.CardDetails.CardDetail, CardDetailDto>()
+                .ForMember(x => x.FullName, option => option.MapFrom(x => x.User.FullName)).ReverseMap();
         }
     }
 }

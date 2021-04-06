@@ -70,13 +70,69 @@
         public const string Pages_Administration_EntityDynamicParameterValue_Create = "Pages.Administration.EntityDynamicParameterValue.Create";
         public const string Pages_Administration_EntityDynamicParameterValue_Edit = "Pages.Administration.EntityDynamicParameterValue.Edit";
         public const string Pages_Administration_EntityDynamicParameterValue_Delete = "Pages.Administration.EntityDynamicParameterValue.Delete";
-        //TENANT-SPECIFIC PERMISSIONS
 
+        //Country permission
+        public const string Pages_Administration_Country = "Pages.Administration.Country";
+        public const string Pages_Administration_Country_Create = "Pages.Administration.Country.Create";
+        public const string Pages_Administration_Country_Edit = "Pages.Administration.Country.Edit";
+        public const string Pages_Administration_Country_Delete = "Pages.Administration.Country.Delete";
+
+        //State Permission
+        public const string Pages_Administration_State = "Pages.Administration.State";
+        public const string Pages_Administration_State_Create = "Pages.Administration.State.Create";
+        public const string Pages_Administration_State_Edit = "Pages.Administration.State.Edit";
+        public const string Pages_Administration_State_Delete = "Pages.Administration.State.Delete";
+
+        //TENANT-SPECIFIC PERMISSIONS
         public const string Pages_Tenant_Dashboard = "Pages.Tenant.Dashboard";
 
         public const string Pages_Administration_Tenant_Settings = "Pages.Administration.Tenant.Settings";
 
         public const string Pages_Administration_Tenant_SubscriptionManagement = "Pages.Administration.Tenant.SubscriptionManagement";
+
+        //Account Permission
+        public const string Pages_Administration_Tenant_AppAccount = "Pages.Tenant.AppAccount";
+        public const string Pages_Administration_Tenant_AppAccount_All = "Pages.Tenant.AppAccount.All";
+        public const string Pages_Administration_Tenant_AppAccount_Assign = "Pages.Tenant.AppAccount.Assign";
+        public const string Pages_Administration_Tenant_AppAccount_Create = "Pages.Tenant.AppAccount.Create";
+        public const string Pages_Administration_Tenant_AppAccount_Edit = "Pages.Tenant.AppAccount.Edit";
+        public const string Pages_Administration_Tenant_AppAccount_Delete = "Pages.Tenant.AppAccount.Delete";
+        //Event Permission
+        public const string Pages_Administration_Tenant_Event = "Pages.Tenant.Event";
+        public const string Pages_Administration_Tenant_Event_All = "Pages.Tenant.Event.All";
+        public const string Pages_Administration_Tenant_Event_Assign = "Pages.Tenant.Event.Assign";
+        public const string Pages_Administration_Tenant_Event_Create = "Pages.Tenant.Event.Create";
+        public const string Pages_Administration_Tenant_Event_Edit = "Pages.Tenant.Event.Edit";
+        public const string Pages_Administration_Tenant_Event_Delete = "Pages.Tenant.Event.Delete";
+        //Auction Permission
+        public const string Pages_Administration_Tenant_Auction = "Pages.Tenant.Auction";
+        public const string Pages_Administration_Tenant_Auction_Create = "Pages.Tenant.Auction.Create";
+        public const string Pages_Administration_Tenant_Auction_Edit = "Pages.Tenant.Auction.Edit";
+        public const string Pages_Administration_Tenant_Auction_Delete = "Pages.Tenant.Auction.Delete";
+
+        //items permission
+        public const string Pages_Administration_Tenant_Item = "Pages.Tenant.Item";
+        public const string Pages_Administration_Tenant_Item_Create = "Pages.Tenant.Item.Create";
+        public const string Pages_Administration_Tenant_Item_Edit = "Pages.Tenant.Item.Edit";
+        public const string Pages_Administration_Tenant_Item_Delete = "Pages.Tenant.Item.Delete";
+
+        //category permission
+        public const string Pages_Administration_Tenant_Category = "Pages.Tenant.Category";
+        public const string Pages_Administration_Tenant_Category_Create = "Pages.Tenant.Category.Create";
+        public const string Pages_Administration_Tenant_Category_Edit = "Pages.Tenant.Category.Edit";
+        public const string Pages_Administration_Tenant_Category_Delete = "Pages.Tenant.Category.Delete";
+
+        //auction items
+        public const string Pages_Administration_Tenant_AuctionItem = "Pages.Tenant.AuctionItem";
+        public const string Pages_Administration_Tenant_AuctionItem_Create = "Pages.Tenant.AuctionItem.Create";
+        public const string Pages_Administration_Tenant_AuctionItem_Edit = "Pages.Tenant.AuctionItem.Edit";
+        public const string Pages_Administration_Tenant_AuctionItem_Delete = "Pages.Tenant.AuctionItem.Delete";
+
+        //Auction Permission
+        public const string Pages_Administration_Tenant_AuctionHistory = "Pages.Tenant.AuctionHistory";
+        //public const string Pages_Administration_Tenant_AuctionHistory_Create = "Pages.Tenant.Auction.Create";
+        //public const string Pages_Administration_Tenant_AuctionHistory_Edit = "Pages.Tenant.Auction.Edit";
+        public const string Pages_Administration_Tenant_AuctionHistory_Delete = "Pages.Tenant.AuctionHistory.Delete";
 
         //HOST-SPECIFIC PERMISSIONS
 

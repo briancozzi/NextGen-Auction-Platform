@@ -38,24 +38,39 @@ using NextGen.BiddingPlatform.Configure;
 using NextGen.BiddingPlatform.Schemas;
 using NextGen.BiddingPlatform.Web.HealthCheck;
 using HealthChecksUISettings = HealthChecks.UI.Configuration.Settings;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using Abp.Timing;
+using NextGen.BiddingPlatform.RabbitMQ;
+using NextGen.BiddingPlatform.BackgroundService.RabbitMqService;
 
 namespace NextGen.BiddingPlatform.Web.Startup
 {
     public class Startup
     {
         private const string DefaultCorsPolicyName = "localhost";
-
+        public CorsPolicy Policy { get; set; }
         private readonly IConfigurationRoot _appConfiguration;
         private readonly IWebHostEnvironment _hostingEnvironment;
 
         public Startup(IWebHostEnvironment env)
         {
             _hostingEnvironment = env;
+            Clock.Provider = ClockProviders.Utc;
             _appConfiguration = env.GetAppConfiguration();
         }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            Policy = new CorsPolicy();
+            var corsURLs = _appConfiguration["App:CorsOrigins"]
+                                .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                                .Select(o => o.RemovePostFix("/"))
+                                .ToList();
+
+            foreach (var url in corsURLs)
+                Policy.Origins.Add(url);
+
+            services.Configure<RabbitMqSettings>(_appConfiguration.GetSection("RabbitMQ"));
             //MVC
             services.AddControllersWithViews(options =>
             {
@@ -87,6 +102,8 @@ namespace NextGen.BiddingPlatform.Web.Startup
 
             IdentityRegistrar.Register(services);
             AuthConfigurer.Configure(services, _appConfiguration);
+
+            services.AddScoped<IRabbitMqService, RabbitMqService>();
 
             //Identity server
             if (bool.Parse(_appConfiguration["IdentityServer:IsEnabled"]))
@@ -166,9 +183,34 @@ namespace NextGen.BiddingPlatform.Web.Startup
             });
         }
 
+        private bool IsOriginAllowed(CorsPolicy policy, string origin)
+        {
+            if (string.IsNullOrEmpty(origin))
+            {
+
+                return false;
+            }
+
+
+            if (policy.AllowAnyOrigin || policy.IsOriginAllowed(origin))
+            {
+
+                return true;
+            }
+
+            foreach (var policyOrigin in policy.Origins)
+            {
+                if (origin.ToLower().Contains(policyOrigin.ToLower()))
+                    return true;
+            }
+
+            return false;
+        }
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             //Initializes ABP framework.
+
             app.UseAbp(options =>
             {
                 options.UseAbpRequestLocalization = false; //used below: UseAbpRequestLocalization
@@ -184,7 +226,34 @@ namespace NextGen.BiddingPlatform.Web.Startup
                 app.UseExceptionHandler("/Error");
             }
 
-            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = context =>
+                {
+                    if (context.File.Name.ToLower().EndsWith(".json") || context.File.Name.ToLower().EndsWith(".png")
+                    || context.File.Name.ToLower().EndsWith(".jpg") || context.File.Name.ToLower().EndsWith(".jpeg"))
+                    {
+                        var origin = context.Context.Request.Headers["Referer"];
+                        var requestHeaders = context.Context.Request.Headers;
+
+                        var isOptionsRequest = string.Equals(context.Context.Request.Method, CorsConstants.PreflightHttpMethod, StringComparison.OrdinalIgnoreCase);
+                        var isPreflightRequest = isOptionsRequest && requestHeaders.ContainsKey(CorsConstants.AccessControlRequestMethod);
+
+                        var corsResult = new CorsResult
+                        {
+                            IsPreflightRequest = isPreflightRequest,
+                            IsOriginAllowed = IsOriginAllowed(Policy, origin),
+                        };
+
+                        if (!corsResult.IsOriginAllowed)
+                        {
+                            context.Context.Response.StatusCode = 204;
+                        }
+                    }
+
+                }
+            });
+
             app.UseRouting();
 
             app.UseCors(DefaultCorsPolicyName); //Enable CORS!

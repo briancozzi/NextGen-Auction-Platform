@@ -1,0 +1,56 @@
+<div appBsModal #createModal="bs-modal" (onShown)="onShown()" class="modal fade" tabindex="-1" role="dialog"
+    aria-labelledby="createModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form #stateCreateForm="ngForm" role="form" novalidate class="form-validation" *ngIf="active"
+            (submit)="save()">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <span>{{"CreateNewState" | localize}}</span>
+                </h5>
+                <button type="button" class="close" (click)="close()" [attr.aria-label]="l('Close')"
+                    [disabled]="saving">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-group">
+                    <label
+                        for="CountryCombobox">{{"CountryName" | localize}}</label>
+                    <select #CountryCombobox name="countryName"
+                        class="form-control bs-select" [(ngModel)]="state.countryUniqueId" required>
+                        <option *ngFor="let country of countryList" [value]="country.uniqueId"
+                            >{{country.countryName}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="stateCode">{{"StateCode" | localize}} *</label>
+                    <input id="stateCode" #StateCodeInput="ngModel" class="form-control" type="text"
+                        [ngClass]="{'edited':state.stateCode}" name="StateCode"
+                        [(ngModel)]="state.stateCode" #countryCode="ngModel" required maxlength="64"
+                        pattern="^[a-zA-Z][a-zA-Z0-9_-]{1,}$">
+                    <validation-messages [formCtrl]="stateCodeInput"></validation-messages>
+                </div>
+                <div>
+                </div>
+
+                <div class="form-group">
+                    <label for="stateName">{{"StateName" | localize}} *</label>
+                    <input id="stateName" #stateNameInput="ngModel" type="text" name="stateName" class="form-control"
+                        [ngClass]="{'edited':state.stateName}" [(ngModel)]="state.stateName" required maxlength="128">
+                    <validation-messages [formCtrl]="stateNameInput"></validation-messages>
+                </div>
+               
+            </div>
+            <div class="modal-footer">
+                <button type="button" [disabled]="saving" class="btn btn-secondary"
+                    (click)="close()">{{l("Cancel")}}</button>
+                <button type="submit" [buttonBusy]="saving" [busyText]="l('SavingWithThreeDot')"
+                    class="btn btn-primary" [disabled]="!stateCreateForm.form.valid"><i
+                        class="fa fa-save"></i> <span>{{l("Save")}}</span></button>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>

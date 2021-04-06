@@ -6,12 +6,13 @@ using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Localization;
 using Abp.Webhooks;
+using Microsoft.AspNetCore.Authorization;
 using NextGen.BiddingPlatform.Authorization;
 using NextGen.BiddingPlatform.WebHooks.Dto;
 
 namespace NextGen.BiddingPlatform.WebHooks
 {
-    [AbpAuthorize(AppPermissions.Pages_Administration_WebhookSubscription)]
+    //[AbpAuthorize(AppPermissions.Pages_Administration_WebhookSubscription)]
     public class WebhookSubscriptionAppService : BiddingPlatformAppServiceBase, IWebhookSubscriptionAppService
     {
         private readonly IWebhookSubscriptionManager _webHookSubscriptionManager;
@@ -41,6 +42,13 @@ namespace NextGen.BiddingPlatform.WebHooks
         public async Task<ListResultDto<GetAllSubscriptionsOutput>> GetAllSubscriptions()
         {
             var subscriptions = await _webHookSubscriptionManager.GetAllSubscriptionsAsync(AbpSession.TenantId);
+            return new ListResultDto<GetAllSubscriptionsOutput>(
+                ObjectMapper.Map<List<GetAllSubscriptionsOutput>>(subscriptions)
+                );
+        }
+        public async Task<ListResultDto<GetAllSubscriptionsOutput>> GetTenantsAllSubscriptions(int? tenantId)
+        {
+            var subscriptions = await _webHookSubscriptionManager.GetAllSubscriptionsAsync(tenantId);
             return new ListResultDto<GetAllSubscriptionsOutput>(
                 ObjectMapper.Map<List<GetAllSubscriptionsOutput>>(subscriptions)
                 );
@@ -84,9 +92,14 @@ namespace NextGen.BiddingPlatform.WebHooks
             await _webHookSubscriptionManager.ActivateWebhookSubscriptionAsync(input.SubscriptionId, input.IsActive);
         }
 
+        [AllowAnonymous]
         public async Task<bool> IsSubscribed(string webhookName)
         {
             return await _webHookSubscriptionManager.IsSubscribedAsync(AbpSession.TenantId, webhookName);
+        }
+        public async Task<bool> IsWebhookSubscribed(int? tenentId, string webhookName)
+        {
+            return await _webHookSubscriptionManager.IsSubscribedAsync(tenentId, webhookName);
         }
 
         public async Task<ListResultDto<GetAllSubscriptionsOutput>> GetAllSubscriptionsIfFeaturesGranted(string webhookName)

@@ -1,4 +1,4 @@
-import { PermissionCheckerService } from 'abp-ng2-module';
+﻿import { PermissionCheckerService } from 'abp-ng2-module';
 import { AppSessionService } from '@shared/common/session/app-session.service';
 
 import { Injectable } from '@angular/core';
@@ -21,6 +21,19 @@ export class AppNavigationService {
             new AppMenuItem('Dashboard', 'Pages.Tenant.Dashboard', 'flaticon-line-graph', '/app/main/dashboard'),
             new AppMenuItem('Tenants', 'Pages.Tenants', 'flaticon-list-3', '/app/admin/tenants'),
             new AppMenuItem('Editions', 'Pages.Editions', 'flaticon-app', '/app/admin/editions'),
+
+            //custom menus
+            new AppMenuItem('Accounts','Pages.Tenant.AppAccount','flaticon-app','/app/admin/accounts'),
+            new AppMenuItem("Events",'Pages.Tenant.Event','flaticon-app','/app/admin/events'),
+            new AppMenuItem("Auctions",'Pages.Tenant.Auction',"flaticon-app","/app/admin/auctions"),
+            new AppMenuItem("Items",'Pages.Tenant.Item',"flaticon-app","/app/admin/items"),
+            new AppMenuItem("Category",'Pages.Tenant.Category',"flaticon-app","/app/admin/category"),
+            new AppMenuItem("Auction Items",'Pages.Tenant.AuctionItem',"flaticon-app","/app/admin/auction-items"),
+            new AppMenuItem('Parameter','','flaticon-interface-8','',[],[
+                new AppMenuItem('Countries','Pages.Administration.Country','flaticon-app','/app/main/country'),
+                new AppMenuItem('States','Pages.Administration.State', 'flaticon-app','/app/admin/states')
+            ]),
+            //
             new AppMenuItem('Administration', '', 'flaticon-interface-8', '', [], [
                 new AppMenuItem('OrganizationUnits', 'Pages.Administration.OrganizationUnits', 'flaticon-map', '/app/admin/organization-units'),
                 new AppMenuItem('Roles', 'Pages.Administration.Roles', 'flaticon-suitcase', '/app/admin/roles'),
@@ -36,7 +49,8 @@ export class AppNavigationService {
                 new AppMenuItem('DynamicParameters', '', 'flaticon-interface-8', '', [], [
                     new AppMenuItem('Definitions', 'Pages.Administration.DynamicParameters', '', '/app/admin/dynamic-parameter'),
                     new AppMenuItem('EntityDynamicParameters', 'Pages.Administration.EntityDynamicParameters', '', '/app/admin/entity-dynamic-parameter'),
-                ])
+                ]),
+                
             ]),
             new AppMenuItem('DemoUiComponents', 'Pages.DemoUiComponents', 'flaticon-shapes', '/app/admin/demo-ui-components')
         ]);

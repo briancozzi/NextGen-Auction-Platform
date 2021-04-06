@@ -1,0 +1,128 @@
+﻿@using Microsoft.AspNetCore.Hosting
+@using NextGen.BiddingPlatform.Configuration
+@using Microsoft.Extensions.Configuration
+@inject IWebHostEnvironment env
+@{
+    var appConfiguration = env.GetAppConfiguration();
+    var apiServerPath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:ApiWebSiteRootAddress", string.Empty);
+    var webSitePath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:WebSiteRootAddress", string.Empty);
+}
+<div class="inner-wrapper">
+    <div class="content-wrapper have-sidename pt-80">
+
+        <div class="container position-relative">
+            <div class="side-name v-center">
+                Silent Auctions
+            </div>
+            <div class="event-details">
+                <div class="row col-gap-20 align-items-center">
+                    <div class="col-lg-8 col-md-7">
+                        <div class="golf-event closed bg-transparent box-shadow-n">
+
+                            <div class="event-slider slick-instance slider-loader" data-slick='{"slidesToShow": 1, "slidesToScroll": 1, "fade": true, "arrows": true, "infinite": false, "dots": false, "autoplay": true}'>
+                                <div class="image">
+                                    <img src="" alt="" id="itemImage">
+                                    <div class="numeric">123</div>
+                                    <a href="#" class="wishlist"></a>
+                                    <div class="event-close"><span>CLOSED</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-5">
+                        <div class="golf-event details">
+                            <div class="desc border-bottom-0 mb-0 pb-0">
+                                <input type="hidden" id="auctionItemId" value="@ViewBag.AuctionItemId" />
+                                <input type="hidden" id="itemStatus" value="@ViewBag.ItemStatus" />
+                                <p class="name"></p>
+                                <ul>
+                                    <li>
+                                        Last Bid:
+                                        <span id="lastBidAmount">$0.0</span>
+                                    </li>
+                                    <li>
+                                        FMV:
+                                        <span id="fmvValue">$0.0</span>
+                                    </li>
+                                </ul>
+                                <ul>
+                                    <li>
+                                        # of Bids:
+                                        <span id="totalBids">0</span>
+                                    </li>
+                                    <li>
+                                        # of Watchers:
+                                        <span>5</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="desc mt-0 b bid">
+                                <h5>BIDDING CLOSED</h5>
+                                <div class="sold-price">
+                                    The item is sold for a bid of <span class="price">0.0</span> to <span class="green" id="lastBidWinner"></span>
+                                </div>
+
+                                <div class="button-row">
+                                    <a href="#" class="btn btn-primary">VIEW OTHER ITEMS</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row col-gap-20 mt-20">
+                <div class="col-lg-8 col-md-7">
+                    <div class="card">
+                        <div class="inner pb-0">
+                            <div class="card-heading">
+                                Item Description
+                            </div>
+                            <p class="desc" id="itemDescription">
+                            </p>
+                            <div class="share-wrapper">
+                                <div class="text">
+                                    Share this:
+                                </div>
+                                <ul>
+                                    <li>
+                                        <a href="#" class="fb"></a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="twitter"></a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="o-social"></a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="share"></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-5">
+                    <div class="card">
+                        <div class="inner pb-0 pl-0 pr-0" id="itemHistories">
+                            <div class="card-heading d-flex pl-10 pr-10">
+                                Item History
+                                <a href="#" class="add-item">
+                                    <img src="~/auction/images/plus-icon.png" alt="">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    <script>
+        var ApiServerPath = "@apiServerPath";
+        var WebSiteUrl = "@webSitePath";
+    </script>
+    <script src="~/auction/js/getproductdetails.js"></script>
+}

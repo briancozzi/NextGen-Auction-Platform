@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using NextGen.BiddingPlatform.AuctionHistory.Dto;
 using NextGen.BiddingPlatform.Caching.Dto;
 
 namespace NextGen.BiddingPlatform.Caching
@@ -12,5 +14,9 @@ namespace NextGen.BiddingPlatform.Caching
         Task ClearCache(EntityDto<string> input);
 
         Task ClearAllCaches();
+        Task SetWinnerCache(AuctionItemWinnerDto winnerDto);
+        AuctionItemWinnerDto GetWinnerCache(string auctinItemId);
+        List<AuctionBidderHistoryDto> GetHistoryCache();
+        Task SetHistoryCache(List<AuctionBidderHistoryDto> data);
     }
 }

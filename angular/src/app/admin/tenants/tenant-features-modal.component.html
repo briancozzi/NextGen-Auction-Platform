@@ -1,7 +1,6 @@
 <div appBsModal #tenantFeaturesModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="tenantFeaturesModal"
      aria-hidden="true" [config]="{backdrop: 'static'}">
     <div class="modal-dialog modal-lg">
-
         <div class="modal-content">
 
             <form #editTenantFeaturesForm="ngForm" name="editTenantFeaturesForm" role="form" novalidate class="form-validation" (submit)="save()" *ngIf="active">

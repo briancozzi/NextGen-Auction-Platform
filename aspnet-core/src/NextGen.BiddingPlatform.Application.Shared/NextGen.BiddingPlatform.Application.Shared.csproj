@@ -11,4 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\NextGen.BiddingPlatform.Core.Shared\NextGen.BiddingPlatform.Core.Shared.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AuctionUserInvitations\Dto\" />
+  </ItemGroup>
 </Project>

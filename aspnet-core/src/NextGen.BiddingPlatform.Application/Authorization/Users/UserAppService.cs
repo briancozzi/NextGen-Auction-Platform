@@ -133,7 +133,24 @@ namespace NextGen.BiddingPlatform.Authorization.Users
         public async Task<GetUserForEditOutput> GetUserForEdit(NullableIdDto<long> input)
         {
             //Getting all available roles
-            var userRoleDtos = await _roleManager.Roles
+            var currUser = GetCurrUser();
+            UserRoleDto[] userRoleDtos;
+            if (currUser.AppAccountId.HasValue)
+            {
+                List<string> roleNames = new List<string> { StaticRoleNames.Tenants.Admin, StaticRoleNames.Tenants.User };
+                userRoleDtos = await _roleManager.Roles.Where(x => !roleNames.Contains(x.Name))
+               .OrderBy(r => r.DisplayName)
+               .Select(r => new UserRoleDto
+               {
+                   RoleId = r.Id,
+                   RoleName = r.Name,
+                   RoleDisplayName = r.DisplayName
+               })
+               .ToArrayAsync();
+            }
+            else
+            {
+                userRoleDtos = await _roleManager.Roles
                 .OrderBy(r => r.DisplayName)
                 .Select(r => new UserRoleDto
                 {
@@ -142,6 +159,7 @@ namespace NextGen.BiddingPlatform.Authorization.Users
                     RoleDisplayName = r.DisplayName
                 })
                 .ToArrayAsync();
+            }
 
             var allOrganizationUnits = await _organizationUnitRepository.GetAllListAsync();
 
@@ -236,6 +254,10 @@ namespace NextGen.BiddingPlatform.Authorization.Users
 
         public async Task CreateOrUpdateUser(CreateOrUpdateUserInput input)
         {
+            var currUser = GetCurrUser();
+            if (currUser.AppAccountId.HasValue)
+                input.User.AppAccountId = currUser.AppAccountId;
+
             if (input.User.Id.HasValue)
             {
                 await UpdateUserAsync(input);
@@ -271,7 +293,7 @@ namespace NextGen.BiddingPlatform.Authorization.Users
             Debug.Assert(input.User.Id != null, "input.User.Id should be set.");
 
             var user = await UserManager.FindByIdAsync(input.User.Id.Value.ToString());
-            
+
             //Update user properties
             ObjectMapper.Map(input.User, user); //Passwords is not mapped (see mapping configuration)
 
@@ -410,17 +432,23 @@ namespace NextGen.BiddingPlatform.Authorization.Users
 
         private IQueryable<User> GetUsersFilteredQuery(IGetUsersInput input)
         {
-            var query = UserManager.Users
-                .WhereIf(input.Role.HasValue, u => u.Roles.Any(r => r.RoleId == input.Role.Value))
-                .WhereIf(input.OnlyLockedUsers, u => u.LockoutEndDateUtc.HasValue && u.LockoutEndDateUtc.Value > DateTime.UtcNow)
-                .WhereIf(
-                    !input.Filter.IsNullOrWhiteSpace(),
-                    u =>
-                        u.Name.Contains(input.Filter) ||
-                        u.Surname.Contains(input.Filter) ||
-                        u.UserName.Contains(input.Filter) ||
-                        u.EmailAddress.Contains(input.Filter)
-                );
+            var currUser = GetCurrUser();
+
+            var query = UserManager.Users;
+            if (currUser.AppAccountId.HasValue)
+                query = query.Where(x => x.AppAccountId == currUser.AppAccountId.Value);
+
+            query = query
+               .WhereIf(input.Role.HasValue, u => u.Roles.Any(r => r.RoleId == input.Role.Value))
+               .WhereIf(input.OnlyLockedUsers, u => u.LockoutEndDateUtc.HasValue && u.LockoutEndDateUtc.Value > DateTime.UtcNow)
+               .WhereIf(
+                   !input.Filter.IsNullOrWhiteSpace(),
+                   u =>
+                       u.Name.Contains(input.Filter) ||
+                       u.Surname.Contains(input.Filter) ||
+                       u.UserName.Contains(input.Filter) ||
+                       u.EmailAddress.Contains(input.Filter)
+               );
 
             if (input.Permissions != null && input.Permissions.Any(p => !p.IsNullOrWhiteSpace()))
             {
@@ -450,6 +478,12 @@ namespace NextGen.BiddingPlatform.Authorization.Users
             }
 
             return query;
+        }
+
+        public UserEditDto GetCurrUser()
+        {
+            var user = UserManager.GetUserById(AbpSession.UserId.Value);
+            return ObjectMapper.Map<UserEditDto>(user);
         }
     }
 }

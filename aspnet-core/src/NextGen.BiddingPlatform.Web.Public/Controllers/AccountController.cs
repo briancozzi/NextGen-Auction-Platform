@@ -105,5 +105,10 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
             var base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
             return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
         }
+
+        public async Task<IActionResult> NewLogin()
+        {
+            return View();
+        }
     }
 }

@@ -1,11 +1,93 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <localizationDictionary culture="en">
   <texts>
+
+
+    <!--Custom Changes start from here -->
+    <text name="CategoryName">Category Name</text>
+    <text name="CreateCategory">Create Category</text>
+    <text name="SearchCategory">Search Category</text>
+    <text name="EditCategory">Edit Category</text>
+
+    <!--Category-->
+    <text name="Categories">Categories</text>
+    <text name="DeleteCategory">Delete Category</text>
+
+    <!-- Auction Items-->
+    <text name="AuctionItems">Auction Items</text>
+    <text name="CreateAuctionItem">Create Auction Item</text>
+    <text name="EditAuctionItem">Edit Auction Item</text>
+    <text name="DeleteAuctionItem">Delete Auction Item</text>
+
+    <text name="Country">Country</text>
+    <text name="CreateNewCountry">Create New Country</text>
+    <text name="EditingCountry">Edit Country</text>
+    <text name="DeletingCountry">Delete Country</text>
+    <text name="CountryName">Country Name</text>
+    <text name="Countries">Countries</text>
+    <text name="CreateState">Create New State</text>
+    <text name="EditState">Edit State</text>
+    <text name="DeleteState">Delete State</text>
+    <text name="AppAccounts">Accounts</text>
+    <text name="SearchAccounts">Search Account</text>
+    <text name="Logo">Logo</text>
+    <text name="AllAppAccount">All Accounts</text>
+    <text name="AssignAppAccount">Assign Accounts</text>
+    <text name="CreateAppAccount">Create New Account</text>
+    <text name="EditAppAccount">Edit Account</text>
+    <text name="DeleteAppAccount">Delete Account</text>
+    <text name="Events">Events</text>
+    <text name="AllEvents">All Accounts</text>
+    <text name="AssignEvents">Assign Events</text>
+    <text name="CreateEvent">Create New Event</text>
+    <text name="EditEvent">Edit Event</text>
+    <text name="DeleteEvent">Delete Event</text>
+    <text name="Auctions">Auctions</text>
+    <text name="CreateAuction">Create New Auction</text>
+    <text name="EditAuction">Edit Auction</text>
+    <text name="DeleteAuction">Delete Auction</text>
+    <text name="FirstName">First Name</text>
+    <text name="LastName">Last Name</text>
+    <text name="Address1">Address1</text>
+    <text name="Address2">Address2</text>
+    <text name="ZipCode">Zip Code</text>
+    <text name="EventName">Event Name</text>
+    <text name="EventStartTime">Event Start Time</text>
+    <text name="EventEndTime">Event End Time</text>
+    <text name="EventUrl">Event Url</text>
+    <text name="SearchEvents">Search Events</text>
+    <text name="CreateItem">Create Item</text>
+    <text name="EditItem">Edit Item</text>
+    <text name="Description">Description</text>
+    <text name="FairMarketValue_FMV">Fair Market Value</text>
+    <text name="StartingBidValue">Starting Bid Value</text>
+    <text name="BidStepIncrementValue">Bid Step Increment Value</text>
+    <text name="AcquisitionValue">Acquisition Value</text>
+    <text name="BuyNowPrice">Buy Now Price</text>
+    <text name="ItemCertificateNotes">Certificate Notes</text>
+    <text name="MainImage">Main Image</text>
+    <text name="AdditionalImages">Additional Images</text>
+    <text name="ItemNumber">Item Number</text>
+    <text name="Items">Items</text>
+    <text name="SearchItems">Search Items</text>
+    <text name="ItemName">Item Name</text>
+    <text name="ItemStatus">Item Status</text>
+    <text name="ProcurementState">Procurement State</text>
+    <text name="Visibility">Visibility</text>
+    <text name="VideoLink">Video Link</text>
+    <text name="DeleteItem">Delete Item {0}</text>
+
+    <text name="AuctionHistory">Auction History</text>
+    <text name="DeleteAuctionHistory">Delete Auction History</text>
+    <!-- Custom Changes end here-->
+
     <text name="HomePage">Home page</text>
     <text name="AboutUs">About us</text>
     <text name="Administration">Administration</text>
     <text name="Roles">Roles</text>
     <text name="Users">Users</text>
+    <text name="CompanyEvents">Company Events</text>
+    <text name="CreateCompanyNewEvent">Add New Event</text>
     <text name="InvalidFormMessage">Your form is invalid. Please check and correct it.</text>
     <text name="InvalidUserNameOrPassword">Invalid user name or password</text>
     <text name="ThereIsNoTenantDefinedWithName{0}">There is no tenant defined with name {0}</text>
@@ -257,6 +339,14 @@
     <text name="EditingLanguage">Editing language</text>
     <text name="DeletingLanguages">Deleting language</text>
     <text name="ChangingTexts">Changing texts</text>
+    <text name="StateNameOrStateCode">State name or state code</text>
+    <text name="StateCode">State code</text>
+    <text name="States">States</text>
+    <text name="State">State</text>
+    <text name="StateName">State name</text>
+    <text name="CreateNewState">Create new state</text>
+    <text name="EditingState">Editing state</text>
+    <text name="DeletingState">Deleting state</text>
     <text name="SuccessfullySaved">Successfully saved.</text>
     <text name="Language">Language</text>
     <text name="Flag">Flag</text>

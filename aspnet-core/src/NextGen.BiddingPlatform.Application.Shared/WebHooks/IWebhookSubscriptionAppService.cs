@@ -30,5 +30,9 @@ namespace NextGen.BiddingPlatform.WebHooks
         Task<ListResultDto<GetAllSubscriptionsOutput>> GetAllSubscriptionsIfFeaturesGranted(string webhookName);
 
         Task<ListResultDto<GetAllAvailableWebhooksOutput>> GetAllAvailableWebhooks();
+
+        //Custom Methods
+        Task<ListResultDto<GetAllSubscriptionsOutput>> GetTenantsAllSubscriptions(int? tenantId);
+        Task<bool> IsWebhookSubscribed(int? tenentId, string webhookName);
     }
 }

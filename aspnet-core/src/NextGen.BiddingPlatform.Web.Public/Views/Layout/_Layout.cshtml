@@ -6,12 +6,13 @@
 @using CultureHelper = NextGen.BiddingPlatform.Localization.CultureHelper
 @inject AppTimes AppTimes
 @inject IAbpAntiForgeryManager AbpAntiForgeryManager
+@model HeaderViewModel
 @{
     Layout = null;
     AbpAntiForgeryManager.SetCookie(Context);
 }
 <!DOCTYPE html>
-<html lang="en" @(CultureHelper.IsRtl ? "dir=\"rtl\"" : "" )>
+<html lang="en" @(CultureHelper.IsRtl ? "dir=\"rtl\"" : "")>
 <head>
     <meta charset="utf-8">
     <title>BiddingPlatform</title>
@@ -19,33 +20,40 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-    @* Fill these meta tags upon your project specification *@
     <meta content="BiddingPlatform" name="description">
     <meta content="BiddingPlatform" name="keywords">
     <meta content="BiddingPlatform" name="author">
 
-    @* You can enable and fill these lines according to documentation on http://ogp.me/
-        <meta property="og:site_name" content="-CUSTOMER VALUE-">
-        <meta property="og:title" content="-CUSTOMER VALUE-">
-        <meta property="og:description" content="-CUSTOMER VALUE-">
-        <meta property="og:type" content="website">
-        <meta property="og:image" content="-CUSTOMER VALUE-">
-        <meta property="og:url" content="-CUSTOMER VALUE-">*@
+
 
     <link rel="shortcut icon" href="~/favicon.ico">
 
-    <link rel="stylesheet" href="~/fonts/fonts-open-sans.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/fonts/fonts-ptsans-narrow.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/fonts/fonts-sourcesans-pro.css" asp-append-version="true" />
-
-    <link rel="stylesheet" href="~/view-resources/Views/_Bundles/frontend-libs@(CultureHelper.IsRtl ? "-rtl" : "").min.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/view-resources/Views/_Bundles/frontend-metronic@(CultureHelper.IsRtl ? "-rtl" : "").min.css" asp-append-version="true" />
-
-    @await RenderSectionAsync("Styles", false)
-
-    <link rel="stylesheet" href="~/Common/_Bundles/common-styles.min.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/view-resources/Views/Layout/layout.min.css" asp-append-version="true" />
-
+    <link href="//db.onlinewebfonts.com/c/433bde376659d1de239a57ec0e97722d?family=Veneer" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link href="~/auction/css/main.css" rel="stylesheet" />
+    <link href="~/auction/css/bootstrap-select.css" rel="stylesheet">
+    <link href="~/auction/css/bootstrap-datetimepicker.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-touchspin/4.2.5/jquery.bootstrap-touchspin.min.css">
+    <link href="~/auction/css/slick.css" rel="stylesheet">
+    <link href="~/auction/css/main.css" type="text/css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.4.0.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tooltip.js/dist/umd/tooltip.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="~/auction/js/moment.min.js"></script>
+    <script type="text/javascript" src="~/auction/js/jquery.plugin.js"></script>
+    <script type="text/javascript" src="~/auction/js/jquery.countdown.js"></script>
+    <script src="~/auction/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="~/auction/js/bootstrap-select.js"></script>
+    <script src="~/auction/js/slick.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-touchspin/4.2.5/jquery.bootstrap-touchspin.min.js"></script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script src="~/mustache.js"></script>
+    <script src="~/auction/js/custom.js"></script>
+    <script src="~/auction/js/custom-countdown.js"></script>
     <script type="text/javascript">
         @* This is used to get the application's root path from javascript.
         It's useful if you're running application in a virtual directory under IIS. *@
@@ -53,34 +61,18 @@
     </script>
 
 </head>
-<body class="corporate">
-
-    @await Component.InvokeAsync(typeof(HeaderViewComponent), new { currentPageName = ViewBag.CurrentPageName })
-
-    <div class="main">
-        <div class="container">
-            @RenderBody()
-        </div>
+<body>
+    <div class="wrapper mp-pusher">
+        @await Component.InvokeAsync(typeof(HeaderViewComponent), new { currentPageName = ViewBag.CurrentPageName })
+        @RenderBody()
+        @await Html.PartialAsync("~/Views/Layout/_Footer.cshtml")
+        <div id="pageTemplates"></div>
     </div>
-
-    @await Html.PartialAsync("~/Views/Layout/_Footer.cshtml")
-
-    <script src="~/view-resources/Views/_Bundles/frontend-libs.min.js" asp-append-version="true"></script>
-
-    <script type="text/javascript">
-        abp.localization.defaultSourceName = '@LocalizationSourceName';
-        abp.security.antiForgery.tokenCookieName = "Public-XSRF-TOKEN";
-        abp.security.antiForgery.tokenHeaderName = "Public-X-XSRF-TOKEN";
-    </script>
-
-    <!-- Dynamic scripts of ABP system (They are created on runtime and can not be bundled) -->
-    <script src="~/AbpScripts/GetScripts?_v=@AppTimes.StartupTime.Ticks" type="text/javascript"></script>
-
-    <script src="~/view-resources/Views/_Bundles/frontend-metronic.min.js" asp-append-version="true"></script>
-
+    @await Html.PartialAsync("~/Views/Home/_AuctionItemTemplate.cshtml")
+    @await Html.PartialAsync("~/Views/Home/_AuctionHistoryTemplate.cshtml")
     <script type="text/javascript">
         $(function () {
-            Layout.init();
+            //Layout.init();
         });
     </script>
 

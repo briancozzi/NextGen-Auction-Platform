@@ -10,7 +10,6 @@ namespace NextGen.BiddingPlatform.WebHooks
     public class WebhookEventAppService : BiddingPlatformAppServiceBase, IWebhookEventAppService
     {
         private readonly IWebhookEventStore _webhookEventStore;
-
         public WebhookEventAppService(IWebhookEventStore webhookEventStore)
         {
             _webhookEventStore = webhookEventStore;

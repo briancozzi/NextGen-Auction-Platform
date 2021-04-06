@@ -14,6 +14,7 @@ using Abp.IO;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Abp.Runtime.Caching.Redis;
+using Abp.Threading.BackgroundWorkers;
 using Abp.Zero.Configuration;
 using Castle.Core.Internal;
 using Microsoft.AspNetCore.Hosting;
@@ -23,6 +24,7 @@ using Microsoft.IdentityModel.Tokens;
 using NextGen.BiddingPlatform.Chat;
 using NextGen.BiddingPlatform.Configuration;
 using NextGen.BiddingPlatform.EntityFrameworkCore;
+using NextGen.BiddingPlatform.HostingServices;
 using NextGen.BiddingPlatform.Startup;
 using NextGen.BiddingPlatform.Web.Authentication.JwtBearer;
 using NextGen.BiddingPlatform.Web.Authentication.TwoFactor;
@@ -86,11 +88,15 @@ namespace NextGen.BiddingPlatform.Web
 
             //Uncomment this line to use Redis cache instead of in-memory cache.
             //See app.config for Redis configuration and connection string
-            //Configuration.Caching.UseRedis(options =>
-            //{
-            //    options.ConnectionString = _appConfiguration["Abp:RedisCache:ConnectionString"];
-            //    options.DatabaseId = _appConfiguration.GetValue<int>("Abp:RedisCache:DatabaseId");
-            //});
+            var enabledQueue = _appConfiguration["EnabledQueue"];
+            if (enabledQueue?.ToLower() == "redis" && !string.IsNullOrEmpty(_appConfiguration["Abp:RedisCache:ConnectionString"]))
+            {
+                Configuration.Caching.UseRedis(options =>
+                {
+                    options.ConnectionString = Convert.ToString(_appConfiguration["Abp:RedisCache:ConnectionString"]);
+                    options.DatabaseId = Convert.ToInt32(_appConfiguration.GetValue<int>("Abp:RedisCache:DatabaseId"));
+                });
+            }
         }
 
         private void ConfigureTokenAuth()
@@ -117,6 +123,13 @@ namespace NextGen.BiddingPlatform.Web
 
             IocManager.Resolve<ApplicationPartManager>()
                 .AddApplicationPartsIfNotAddedBefore(typeof(BiddingPlatformWebCoreModule).Assembly);
+
+            var _enabledQueue = _appConfiguration["EnabledQueue"];
+            if (_enabledQueue == "redis")
+            {
+                var workManager = IocManager.Resolve<IBackgroundWorkerManager>();
+                workManager.Add(IocManager.Resolve<BackgroundRedisCacheWorker>());
+            }
         }
 
         private void SetAppFolders()

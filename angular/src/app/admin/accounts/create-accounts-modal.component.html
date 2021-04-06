@@ -1,0 +1,151 @@
+<div appBsModal #createModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="createModal"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form #accountCreateForm="ngForm" role="form" novalidate class="form-validation" *ngIf="active"
+                (submit)="save()">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <span>{{"CreateAppAccount" | localize}}</span>
+                    </h5>
+                    <button type="button" class="close" (click)="close()" [attr.aria-label]="l('Close')"
+                        [disabled]="saving">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xl-6">
+                                <label for="firstName">{{"FirstName" | localize}} *</label>
+                                <input id="firstName" #firstNameInput="ngModel" class="form-control" type="text"
+                                    [ngClass]="{'edited':account.firstName}" name="firstName"
+                                    [(ngModel)]="account.firstName" #firstName="ngModel" required maxlength="64">
+                                <validation-messages [formCtrl]="firstNameInput"></validation-messages>
+                            </div>
+                            <div class="col-xl-6">
+                                <label for="lastName">{{"LastName" | localize}} *</label>
+                                <input id="lastName" #lastNameInput="ngModel" class="form-control" type="text"
+                                    [ngClass]="{'edited':account.lastName}" name="lastName"
+                                    [(ngModel)]="account.lastName" #lastName="ngModel" required maxlength="64">
+                                <validation-messages [formCtrl]="lastNameInput"></validation-messages>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xl-6">
+                                <label for="email">{{"Email" | localize}} *</label>
+                                <input id="email" #emailInput="ngModel" class="form-control" type="text"
+                                    [ngClass]="{'edited':account.email}" name="email" [(ngModel)]="account.email"
+                                    #email="ngModel" required maxlength="256"
+                                    pattern="^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$">
+                                <validation-messages [formCtrl]="emailInput"></validation-messages>
+                            </div>
+                            <div class="col-xl-6">
+                                <label for="phoneNo">{{"PhoneNumber" | localize}} *</label>
+                                <input id="phoneNo" #phoneNoInput="ngModel" class="form-control" type="text"
+                                    [ngClass]="{'edited':account.phoneNo}" name="phoneNo" [(ngModel)]="account.phoneNo"
+                                    #phoneNo="ngModel" required maxlength="10" pattern="^[0-9]\d*$">
+                                <validation-messages [formCtrl]="phoneNoInput"></validation-messages>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="form-group">
+                        <div class="row">
+                            <div class="col-xl-12">
+                                <label for="userlist">{{"User" | localize}} *</label>
+                                <select #userlist name="userlist" multiple [(ngModel)]="account.users"
+                                    class="form-control bs-select" required>
+                                    <option value="" [selected]="isSelected">--Select User--</option>
+                                    <option *ngFor="let user of userList" [value]="user.id">
+                                        {{user.name}}</option>
+                                </select>
+                                <validation-messages [formCtrl]="userlist"></validation-messages>
+                            </div>
+                        </div>
+                    </div> -->
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xl-6">
+                                <label for="address.address1">{{"Address1" | localize}} *</label>
+                                <input id="address.address1" #address1Input="ngModel" class="form-control" type="text"
+                                    [ngClass]="{'edited':account.address.address1}" name="address.address1"
+                                    [(ngModel)]="account.address.address1" #address.address1="ngModel" required
+                                    maxlength="64">
+                                <validation-messages [formCtrl]="address1Input"></validation-messages>
+                            </div>
+                            <div class="col-xl-6">
+                                <label for="address2">{{"Address2" | localize}}</label>
+                                <input id="address2" #address2Input="ngModel" class="form-control" type="text"
+                                    [ngClass]="{'edited':account.address.address2}" name="address2"
+                                    [(ngModel)]="account.address.address2" #address1="ngModel" maxlength="64">
+                                <validation-messages [formCtrl]="address2Input"></validation-messages>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xl-6">
+                                <label for="CountryCombobox">{{"CountryName" | localize}} *</label>
+                                <select #CountryCombobox name="countryName" class="form-control bs-select"
+                                    [(ngModel)]="account.address.countryUniqueId"
+                                    (change)="loadStateList($event.target.value)" required>
+                                    <option value="" [selected]="isSelected">--Select Country--</option>
+                                    <option *ngFor="let country of countryList" [value]="country.countryUniqueId">
+                                        {{country.countryName}}</option>
+                                </select>
+                                <validation-messages [formCtrl]="CountryCombobox"></validation-messages>
+                            </div>
+                            <div class="col-xl-6">
+                                <label for="StateCombobox">{{"StateName" | localize}} *</label>
+                                <select #StateCombobox name="stateName" [disabled]="stateDropdown"
+                                    class="form-control bs-select" [(ngModel)]="account.address.stateUniqueId" required>
+                                    <option value="" [selected]="isSelected">--Select State--</option>
+                                    <option *ngFor="let state of stateList.states" [value]="state.stateUniqueId">
+                                        {{state.stateName}}
+                                    </option>
+                                </select>
+                                <validation-messages [formCtrl]="StateCombobox"></validation-messages>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xl-6">
+                                <label for="city">{{"City" | localize}} *</label>
+                                <input id="city" #cityInput="ngModel" class="form-control" type="text"
+                                    [ngClass]="{'edited':account.address.city}" name="city"
+                                    [(ngModel)]="account.address.city" #address1="ngModel" required maxlength="64">
+                                <validation-messages [formCtrl]="cityInput"></validation-messages>
+                            </div>
+                            <div class="col-xl-6">
+                                <label for="zipCode">{{"ZipCode" | localize}} *</label>
+                                <input id="zipCode" #zipCodeInput="ngModel" class="form-control" type="text"
+                                    [ngClass]="{'edited':account.address.zipCode}" name="zipCode"
+                                    [(ngModel)]="account.address.zipCode" #address1="ngModel" required maxlength="10"
+                                    pattern="^[0-9]\d*$">
+                                <validation-messages [formCtrl]="zipCodeInput"></validation-messages>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="logo">{{"Logo" | localize}}</label>
+                        <input id="logo" #inputFile type="file" ng2FileSelect [uploader]="logoUploader"
+                            class="col-lg-12" />
+                        <span class="form-text text-muted col-lg-12">{{"UploadLogo_Info" | localize}}</span>
+                    </div>
+                    <button class="btn btn-default" type="button" (click)="clearLogo()">{{"Clear" | localize}}</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" [disabled]="saving" class="btn btn-secondary"
+                        (click)="close()">{{l("Cancel")}}</button>
+                    <button [disabled]="!accountCreateForm.form.valid" type="submit" [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')" class="btn btn-primary"><i class="fa fa-save"></i>
+                        <span>{{l("Save")}}</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

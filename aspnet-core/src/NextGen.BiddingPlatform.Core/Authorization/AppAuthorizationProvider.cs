@@ -89,6 +89,8 @@ namespace NextGen.BiddingPlatform.Authorization
             entityDynamicParameterValues.CreateChildPermission(AppPermissions.Pages_Administration_EntityDynamicParameterValue_Edit, L("EditingEntityDynamicParameterValue"));
             entityDynamicParameterValues.CreateChildPermission(AppPermissions.Pages_Administration_EntityDynamicParameterValue_Delete, L("DeletingEntityDynamicParameterValue"));
 
+
+
             //TENANT-SPECIFIC PERMISSIONS
 
             pages.CreateChildPermission(AppPermissions.Pages_Tenant_Dashboard, L("Dashboard"), multiTenancySides: MultiTenancySides.Tenant);
@@ -96,7 +98,59 @@ namespace NextGen.BiddingPlatform.Authorization
             administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Settings, L("Settings"), multiTenancySides: MultiTenancySides.Tenant);
             administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_SubscriptionManagement, L("Subscription"), multiTenancySides: MultiTenancySides.Tenant);
 
+            //Change Added by ALPESH
+            //account permissions
+            var appAccountPermisson = administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AppAccount, L("AppAccounts"), multiTenancySides: MultiTenancySides.Tenant);
+            appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AppAccount_All, L("AllAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
+            appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AppAccount_Assign, L("AssignAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
+            appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AppAccount_Create, L("CreateAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
+            appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AppAccount_Edit, L("EditAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
+            appAccountPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AppAccount_Delete, L("DeleteAppAccount"), multiTenancySides: MultiTenancySides.Tenant);
+            //event permissions
+            var accountEventPermisson = administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Event, L("Events"), multiTenancySides: MultiTenancySides.Tenant);
+            accountEventPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Event_All, L("AllEvents"), multiTenancySides: MultiTenancySides.Tenant);
+            accountEventPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Event_Assign, L("AssignEvents"), multiTenancySides: MultiTenancySides.Tenant);
+            accountEventPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Event_Create, L("CreateEvent"), multiTenancySides: MultiTenancySides.Tenant);
+            accountEventPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Event_Edit, L("EditEvent"), multiTenancySides: MultiTenancySides.Tenant);
+            accountEventPermisson.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Event_Delete, L("DeleteEvent"), multiTenancySides: MultiTenancySides.Tenant);
+            //auction permission
+            var auctionPermission = administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Auction, L("Auctions"), multiTenancySides: MultiTenancySides.Tenant);
+            auctionPermission.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Auction_Create, L("CreateAuction"), multiTenancySides: MultiTenancySides.Tenant);
+            auctionPermission.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Auction_Edit, L("EditAuction"), multiTenancySides: MultiTenancySides.Tenant);
+            auctionPermission.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Auction_Delete, L("DeleteAuction"), multiTenancySides: MultiTenancySides.Tenant);
+            //Auction bidder permission
+            var auctionHistoryPermission = administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AuctionHistory, L("AuctionHistory"), multiTenancySides: MultiTenancySides.Tenant);
+            auctionHistoryPermission.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AuctionHistory_Delete, L("DeleteAuctionHistory"), multiTenancySides: MultiTenancySides.Tenant);
+
+            //items permission
+            var itemPermissions = administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Item, L("Items"), multiTenancySides: MultiTenancySides.Tenant);
+            itemPermissions.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Item_Create, L("CreateItem"), multiTenancySides: MultiTenancySides.Tenant);
+            itemPermissions.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Item_Edit, L("EditItem"), multiTenancySides: MultiTenancySides.Tenant);
+            itemPermissions.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Item_Delete, L("DeleteItem"), multiTenancySides: MultiTenancySides.Tenant);
+
+            //category permission
+            var categoryPermissions = administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Category, L("Categories"), multiTenancySides: MultiTenancySides.Tenant);
+            categoryPermissions.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Category_Create, L("CreateCategory"), multiTenancySides: MultiTenancySides.Tenant);
+            categoryPermissions.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Category_Edit, L("EditCategory"), multiTenancySides: MultiTenancySides.Tenant);
+            categoryPermissions.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_Category_Delete, L("DeleteCategory"), multiTenancySides: MultiTenancySides.Tenant);
+
+            //auction item permission
+            var auctionItemPermissions = administration.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AuctionItem, L("AuctionItems"), multiTenancySides: MultiTenancySides.Tenant);
+            auctionItemPermissions.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AuctionItem_Create, L("CreateAuctionItem"), multiTenancySides: MultiTenancySides.Tenant);
+            auctionItemPermissions.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AuctionItem_Edit, L("EditAuctionItem"), multiTenancySides: MultiTenancySides.Tenant);
+            auctionItemPermissions.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AuctionItem_Delete, L("DeleteAuctionItem"), multiTenancySides: MultiTenancySides.Tenant);
+
+
             //HOST-SPECIFIC PERMISSIONS
+            var country = administration.CreateChildPermission(AppPermissions.Pages_Administration_Country, L("Country"), multiTenancySides: MultiTenancySides.Host);
+            country.CreateChildPermission(AppPermissions.Pages_Administration_Country_Create, L("CreateNewCountry"), multiTenancySides: MultiTenancySides.Host);
+            country.CreateChildPermission(AppPermissions.Pages_Administration_Country_Edit, L("EditingCountry"), multiTenancySides: MultiTenancySides.Host);
+            country.CreateChildPermission(AppPermissions.Pages_Administration_Country_Delete, L("DeletingCountry"), multiTenancySides: MultiTenancySides.Host);
+
+            var statePermission = administration.CreateChildPermission(AppPermissions.Pages_Administration_State, L("State"), multiTenancySides: MultiTenancySides.Host);
+            statePermission.CreateChildPermission(AppPermissions.Pages_Administration_State_Create, L("CreateState"), multiTenancySides: MultiTenancySides.Host);
+            statePermission.CreateChildPermission(AppPermissions.Pages_Administration_State_Edit, L("EditState"), multiTenancySides: MultiTenancySides.Host);
+            statePermission.CreateChildPermission(AppPermissions.Pages_Administration_State_Delete, L("DeleteState"), multiTenancySides: MultiTenancySides.Host);
 
             var editions = pages.CreateChildPermission(AppPermissions.Pages_Editions, L("Editions"), multiTenancySides: MultiTenancySides.Host);
             editions.CreateChildPermission(AppPermissions.Pages_Editions_Create, L("CreatingNewEdition"), multiTenancySides: MultiTenancySides.Host);

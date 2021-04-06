@@ -4,15 +4,23 @@ import { FormsModule } from '@angular/forms';
 import { AppCommonModule } from '@app/shared/common/app-common.module';
 import { UtilsModule } from '@shared/utils/utils.module';
 import { CountoModule } from 'angular2-counto';
-import { ModalModule, TabsModule, TooltipModule, BsDropdownModule, PopoverModule } from 'ngx-bootstrap';
+import { ModalModule, TabsModule, TooltipModule, BsDropdownModule, PopoverModule,BsModalRef } from 'ngx-bootstrap';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { MainRoutingModule } from './main-routing.module';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { AppBsModalModule } from '@shared/common/appBsModal/app-bs-modal.module';
 
 import { BsDatepickerConfig, BsDaterangepickerConfig, BsLocaleService } from 'ngx-bootstrap/datepicker';
 import {BsDatepickerModule} from 'ngx-bootstrap/datepicker';
 import { NgxBootstrapDatePickerConfigService } from 'assets/ngx-bootstrap/ngx-bootstrap-datepicker-config.service';
+import { CompanyeventsComponent } from './companyevents/companyevents.component';
+import { CreateEventModalComponent } from './companyevents/create-event-modal.component';
 
+import {CountryComponent} from './country/country.component';
+import { CreateCountryModalComponent } from './country/create-country-modal.component';
+import { EditCountryModalComponent } from './country/edit-country-modal.component';
+
+import { TableModule } from 'primeng/table';
 NgxBootstrapDatePickerConfigService.registerNgxBootstrapDatePickerLocales();
 
 @NgModule({
@@ -29,12 +37,20 @@ NgxBootstrapDatePickerConfigService.registerNgxBootstrapDatePickerLocales();
         NgxChartsModule,
         BsDatepickerModule.forRoot(),
         BsDropdownModule.forRoot(),
-        PopoverModule.forRoot()
+        PopoverModule.forRoot(),
+        AppBsModalModule,
+        TableModule
     ],
     declarations: [
-        DashboardComponent
+        DashboardComponent,
+        CompanyeventsComponent,
+        CreateEventModalComponent,
+        CountryComponent,
+        CreateCountryModalComponent,
+        EditCountryModalComponent
     ],
     providers: [
+        BsModalRef,
         { provide: BsDatepickerConfig, useFactory: NgxBootstrapDatePickerConfigService.getDatepickerConfig },
         { provide: BsDaterangepickerConfig, useFactory: NgxBootstrapDatePickerConfigService.getDaterangepickerConfig },
         { provide: BsLocaleService, useFactory: NgxBootstrapDatePickerConfigService.getDatepickerLocale }

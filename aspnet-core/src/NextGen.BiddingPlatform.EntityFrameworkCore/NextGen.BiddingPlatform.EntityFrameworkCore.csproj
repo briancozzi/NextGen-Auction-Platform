@@ -11,6 +11,30 @@
   <ItemGroup>
     <Compile Remove="Migrations\20200305145558_Add_Dynamic_Entity_Parameters.cs" />
     <Compile Remove="Migrations\20200305145558_Add_Dynamic_Entity_Parameters.Designer.cs" />
+    <Compile Remove="Migrations\20200422101919_Add_AppAccount_and_Address_entities.cs" />
+    <Compile Remove="Migrations\20200422101919_Add_AppAccount_and_Address_entities.Designer.cs" />
+    <Compile Remove="Migrations\20200422103354_Add_AppAccount_and_Address_entities.cs" />
+    <Compile Remove="Migrations\20200422103354_Add_AppAccount_and_Address_entities.Designer.cs" />
+    <Compile Remove="Migrations\20200422104907_add_AppAccount_and_Address_Entity.cs" />
+    <Compile Remove="Migrations\20200422104907_add_AppAccount_and_Address_Entity.Designer.cs" />
+    <Compile Remove="Migrations\20200422111039_add_AppAccount_and_Address_Entity.cs" />
+    <Compile Remove="Migrations\20200422111039_add_AppAccount_and_Address_Entity.Designer.cs" />
+    <Compile Remove="Migrations\20200422114836_ADD_AppAccount_Entity.cs" />
+    <Compile Remove="Migrations\20200422114836_ADD_AppAccount_Entity.Designer.cs" />
+    <Compile Remove="Migrations\20200501104524_update_event_entity.cs" />
+    <Compile Remove="Migrations\20200501104524_update_event_entity.Designer.cs" />
+    <Compile Remove="Migrations\20200501125307_Update_Account_Event_Entity.cs" />
+    <Compile Remove="Migrations\20200501125307_Update_Account_Event_Entity.Designer.cs" />
+    <Compile Remove="Migrations\20200501130441_Update_Account_Event_Entity.cs" />
+    <Compile Remove="Migrations\20200501130441_Update_Account_Event_Entity.Designer.cs" />
+    <Compile Remove="Migrations\20200501131807_Update_Account_Event_Entity.cs" />
+    <Compile Remove="Migrations\20200501131807_Update_Account_Event_Entity.Designer.cs" />
+    <Compile Remove="Migrations\20200501133029_Update_Account_Event_Entity.cs" />
+    <Compile Remove="Migrations\20200501133029_Update_Account_Event_Entity.Designer.cs" />
+    <Compile Remove="Migrations\20200501134117_Event_Entity_Update.cs" />
+    <Compile Remove="Migrations\20200501134117_Event_Entity_Update.Designer.cs" />
+    <Compile Remove="Migrations\20210119080237_added_appaccountid_to_user.cs" />
+    <Compile Remove="Migrations\20210119080237_added_appaccountid_to_user.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.3" />

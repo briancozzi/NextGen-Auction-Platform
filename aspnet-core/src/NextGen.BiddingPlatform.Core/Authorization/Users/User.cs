@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using Abp.Auditing;
 using Abp.Authorization.Users;
 using Abp.Extensions;
@@ -25,7 +26,10 @@ namespace NextGen.BiddingPlatform.Authorization.Users
         public List<UserOrganizationUnit> OrganizationUnits { get; set; }
 
         //Can add application specific user properties here
+        public int? AppAccountId { get; set; }
 
+        [ForeignKey("AppAccountId")]
+        public Core.AppAccounts.AppAccount AppAccount { get; set; }
         public User()
         {
             IsLockoutEnabled = true;

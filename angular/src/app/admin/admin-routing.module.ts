@@ -24,8 +24,17 @@ import { DynamicParameterComponent } from './dynamic-entity-parameters/dynamic-p
 import { DynamicParameterDetailComponent } from './dynamic-entity-parameters/dynamic-parameter/dynamic-parameter-detail.component';
 import { EntityDynamicParameterComponent } from './dynamic-entity-parameters/entity-dynamic-parameter/entity-dynamic-parameter.component';
 import { EntityDynamicParameterValueComponent } from './dynamic-entity-parameters/entity-dynamic-parameter/entity-dynamic-parameter-value/entity-dynamic-parameter-value.component';
-
-
+import { StatesComponent } from './parameter/states/states.component';
+import { AccountsComponent } from "./accounts/accounts.component";
+import { AccountEventsComponent } from './account-events/account-events.component';
+import { AuctionsComponent } from './auctions/auctions.component';
+import { ItemsComponent } from './items/items.component';
+import { CreateAuctionComponent } from './auctions/create-auction.component';
+import { EditAuctionComponent } from './auctions/edit-auction.component';
+import { AuctionItemsComponent } from './auction-items/auction-items.component';
+import { CreateAuctionItemsComponent } from './auction-items/create-auction-items.component';
+import { EditAuctionItemsComponent } from './auction-items/edit-auction-items.component';
+import { CategoryComponent } from './category/category.component'
 @NgModule({
     imports: [
         RouterModule.forChild([
@@ -56,6 +65,18 @@ import { EntityDynamicParameterValueComponent } from './dynamic-entity-parameter
                     { path: 'dynamic-parameter-detail', component: DynamicParameterDetailComponent, data: { permission: 'Pages.Administration.DynamicParameters' } },
                     { path: 'entity-dynamic-parameter', component: EntityDynamicParameterComponent, data: { permission: 'Pages.Administration.EntityDynamicParameters' } },
                     { path: 'entity-dynamic-parameter-value/manage-all/:entityFullName/:rowId', component: EntityDynamicParameterValueComponent, data: { permission: 'Pages.Administration.EntityDynamicParameters' } },
+                    { path: 'states', component: StatesComponent },
+                    { path: 'accounts', component: AccountsComponent },
+                    { path: 'events', component: AccountEventsComponent },
+                    { path: 'auctions', component: AuctionsComponent },
+                    { path: 'auctions/edit-auction', component: EditAuctionComponent},
+                    { path: 'auctions/create-auction', component: CreateAuctionComponent},
+                    { path: 'auction-items', component:AuctionItemsComponent},
+                    { path: 'auction-items/create-auction-items', component:CreateAuctionItemsComponent},
+                    { path: 'auction-items/edit-auction-items', component:EditAuctionItemsComponent},
+                    { path: 'category', component:CategoryComponent},
+
+                    { path: 'items', component: ItemsComponent },
                     { path: '', redirectTo: 'hostDashboard', pathMatch: 'full' },
                     { path: '**', redirectTo: 'hostDashboard' }
                 ]
