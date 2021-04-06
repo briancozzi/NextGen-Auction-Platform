@@ -76,42 +76,49 @@ namespace NextGen.BiddingPlatform.AppAccount
         [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_AppAccount, AppPermissions.Pages_Administration_Tenant_AppAccount_Create, RequireAllPermissions = true)]
         public async Task<CreateAppAccountDto> Create(CreateAppAccountDto input)
         {
-            var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.CountryUniqueId);
-            var state = await _stateRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.StateUniqueId);
-            if (country == null || state == null)
-                throw new UserFriendlyException("Country or State not found");
-
-            if (!AbpSession.TenantId.HasValue)
-                throw new UserFriendlyException("You are not Authorized user.");
-
-            var account = ObjectMapper.Map<Core.AppAccounts.AppAccount>(input);
-            account.UniqueId = Guid.NewGuid();
-            account.Address.UniqueId = Guid.NewGuid();
-            account.Address.StateId = state.Id;
-            account.Address.CountryId = country.Id;
-            account.TenantId = AbpSession.TenantId.Value;
-
-            var appAccount = await _accountRepository.InsertAsync(account);
-
-            await CurrentUnitOfWork.SaveChangesAsync();
-            await _userAppService.CreateOrUpdateUser(new Authorization.Users.Dto.CreateOrUpdateUserInput
+            try
             {
-                User = new Authorization.Users.Dto.UserEditDto
+                var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.CountryUniqueId);
+                var state = await _stateRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.StateUniqueId);
+                if (country == null || state == null)
+                    throw new UserFriendlyException("Country or State not found");
+
+                if (!AbpSession.TenantId.HasValue)
+                    throw new UserFriendlyException("You are not Authorized user.");
+
+                var account = ObjectMapper.Map<Core.AppAccounts.AppAccount>(input);
+                account.UniqueId = Guid.NewGuid();
+                account.Address.UniqueId = Guid.NewGuid();
+                account.Address.StateId = state.Id;
+                account.Address.CountryId = country.Id;
+                account.TenantId = AbpSession.TenantId.Value;
+
+                var appAccount = await _accountRepository.InsertAsync(account);
+
+                await CurrentUnitOfWork.SaveChangesAsync();
+                await _userAppService.CreateOrUpdateUser(new Authorization.Users.Dto.CreateOrUpdateUserInput
                 {
-                    EmailAddress = input.Email,
-                    IsActive = true,
-                    Name = input.FirstName,
-                    PhoneNumber = input.PhoneNo,
-                    Surname = input.LastName,
-                    Password = "123qwe",
-                    ShouldChangePasswordOnNextLogin = true,
-                    UserName = input.Email,
-                    AppAccountId = appAccount.Id
-                },
-                SetRandomPassword = false,
-                AssignedRoleNames = new List<string>() { StaticRoleNames.Tenants.AccountAdmin }.ToArray()
-            });
-            return input;
+                    User = new Authorization.Users.Dto.UserEditDto
+                    {
+                        EmailAddress = input.Email,
+                        IsActive = true,
+                        Name = input.FirstName,
+                        PhoneNumber = input.PhoneNo,
+                        Surname = input.LastName,
+                        Password = "123qwe",
+                        ShouldChangePasswordOnNextLogin = true,
+                        UserName = input.Email,
+                        AppAccountId = appAccount.Id
+                    },
+                    SetRandomPassword = false,
+                    AssignedRoleNames = new List<string>() { StaticRoleNames.Tenants.AccountAdmin }.ToArray()
+                });
+                return input;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_AppAccount, AppPermissions.Pages_Administration_Tenant_AppAccount_Edit, RequireAllPermissions = true)]

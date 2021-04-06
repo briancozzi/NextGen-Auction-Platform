@@ -37,7 +37,6 @@ export class ItemsComponent extends AppComponentBase {
     this.createItemModal.show();
   }
   getItems(event?: LazyLoadEvent): void {
-    debugger;
     this.primengTableHelper.showLoadingIndicator();
     this._itemService.getItemsWithFilter(
     this.filters.filterText,

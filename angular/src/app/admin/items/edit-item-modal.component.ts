@@ -88,7 +88,6 @@ export class EditItemModalComponent extends AppComponentBase {
     );
   }
   show(ItemId?: string): void {
-    debugger;
     this.active = true;
     this.item = new UpdateItemDto();
     forkJoin([

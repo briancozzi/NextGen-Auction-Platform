@@ -4,12 +4,13 @@ import * as _ from 'lodash';
 import { ModalDirective } from 'ngx-bootstrap';
 import { finalize } from 'rxjs/operators';
 import {
-  ItemServiceProxy, ItemDto, CategoryServiceProxy,AppAccountServiceProxy
+  ItemServiceProxy, ItemDto, CategoryServiceProxy,AppAccountServiceProxy, ListDto, Dropdowns
 } from '@shared/service-proxies/service-proxies';
 import { AppConsts } from '@shared/AppConsts';
 import { FileUploader, FileUploaderOptions, FileLikeObject } from 'ng2-file-upload';
 import { IAjaxResponse, TokenService } from 'abp-ng2-module';
 import { forkJoin } from "rxjs";
+import { Dropdown } from 'primeng/dropdown';
 
 @Component({
   selector: 'createItemModal',
@@ -29,7 +30,7 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
   uploadedFiles: any[] = [];
   logo: string;
   isSelected = true;
-  dropdowns: any;
+  dropdowns : Dropdowns = new Dropdowns();
   AdditionalFiles: string;
   fileList: FileList;
   categoryList = [];
@@ -106,13 +107,12 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
     this.modal.show();
   }
   init(): void {
-    debugger;
     forkJoin([
       this._itemService.getDropdowns(),
       this._categoryService.getAllCategory(),
       this._accountService.getAllAccount()
     ]).subscribe(result => {
-      this.dropdowns = result[0];
+      this.dropdowns = result[0]
       this.categoryList = result[1].items;
       this.accountList = result[2].items;
     });
