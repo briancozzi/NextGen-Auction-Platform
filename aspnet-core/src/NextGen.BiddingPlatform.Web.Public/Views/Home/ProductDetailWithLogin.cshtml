@@ -192,6 +192,8 @@
                 //    $("#bidderNameFromDb").text(auctionHistoryDto.bidderName);
                 //}
                 $("#lastBidAmount").text("$" + auctionHistoryDto.lastHistoryAmount.toFixed(2));
+                $("#minimumBidValue").text("$" + auctionHistoryDto.nextBidValue.toFixed(2));
+                $("#bidNowBtn").attr("data-minimumBidAmount", auctionHistoryDto.nextBidValue.toFixed(2));
                 ClearHistoryAndAppendNew(auctionHistoryDto.auctionItemHistory);
             }
         });

@@ -198,6 +198,9 @@ namespace NextGen.BiddingPlatform.AuctionHistory
             var auctionItemHistoryDetails = await GetAuctionItemHistoryCount(auctionItem.Id);
             //if we want to send webhook to specific tenant then we have optional parameter TenantId with PublishAsync Method
             //if we will not pass the TenantId parameter then it will pick the subscriptions of the host
+            var history = await GetHistorbyAuctionItemId(auctionItemId, 10, 1);
+            var nextBidValue = history.OrderByDescending(s => s.BiddingDate).FirstOrDefault()?.BidAmount ?? 0;
+
             await _webHookPublisher.PublishAsync(AppWebHookNames.TestAuctionHistoryWebhook, new GetAuctionBidderHistoryDto
             {
                 //AuctionBidderId = auctionBidderHistory.AuctionBidderId.Value,
@@ -205,7 +208,8 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                 HistoryCount = auctionItemHistoryDetails.Key,
                 AuctionItemId = auctionItemId,
                 LastHistoryAmount = auctionItemHistoryDetails.Value,
-                AuctionItemHistory = await GetHistorbyAuctionItemId(auctionItemId, 10, 1),
+                AuctionItemHistory = history,
+                NextBidValue = Helper.Helper.GetNextBidAmount(nextBidValue),
                 TenantId = tenantId
             }, tenantId);
         }
@@ -230,6 +234,8 @@ namespace NextGen.BiddingPlatform.AuctionHistory
             //if we want to send webhook to specific tenant then we have optional parameter TenantId with PublishAsync Method
             //if we will not pass the TenantId parameter then it will pick the subscriptions of the host
             var tenantId = auctionBidderHistory.TenantId;
+            var history = await GetHistorbyAuctionItemId(auctionBidderHistory.AuctionItemId, 10, 1);
+            var nextBidValue = history.OrderByDescending(s => s.BiddingDate).FirstOrDefault()?.BidAmount ?? 0;
             await _webHookPublisher.PublishAsync(AppWebHookNames.TestAuctionHistoryWebhook, new GetAuctionBidderHistoryDto
             {
                 // AuctionBidderId = auctionBidderHistory.AuctionBidderId.Value,
@@ -237,7 +243,8 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                 HistoryCount = auctionItemHistoryDetails.Key,
                 AuctionItemId = auctionBidderHistory.AuctionItemId,
                 LastHistoryAmount = auctionItemHistoryDetails.Value,
-                AuctionItemHistory = await GetHistorbyAuctionItemId(auctionBidderHistory.AuctionItemId, 10, 1),
+                AuctionItemHistory = history,
+                NextBidValue = Helper.Helper.GetNextBidAmount(nextBidValue),
                 TenantId = tenantId
             },
             auctionBidderHistory.TenantId);
@@ -288,13 +295,17 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                 await _cacheService.SetWinnerCache(new AuctionItemWinnerDto { AuctionItemId = auctionBidderHistory.AuctionItemId, AuctionBidderId = auctionBidder.Id, BidAmount = auctionBidderHistory.BidAmount, UserId = auctionBidderHistory.UserId });
 
             var auctionHistory = await GetHistorbyAuctionItemId(auctionBidderHistory.AuctionItemId, 10, 1);
+            var nextBidValue = auctionHistory.OrderByDescending(s => s.BiddingDate).FirstOrDefault()?.BidAmount ?? 0;
+
             await _webHookPublisher.PublishAsync(AppWebHookNames.TestAuctionHistoryWebhook, new GetAuctionBidderHistoryDto
             {
                 HistoryCount = auctionItemHistoryDetails.Key,
                 AuctionItemId = auctionBidderHistory.AuctionItemId,
                 LastHistoryAmount = auctionItemHistoryDetails.Value,
-                AuctionItemHistory = auctionHistory
-            });
+                AuctionItemHistory = auctionHistory,
+                TenantId = auctionBidderHistory.TenantId,
+                NextBidValue = nextBidValue
+            }, auctionBidderHistory.TenantId);
 
             return new GetAuctionBidderHistoryDto
             {

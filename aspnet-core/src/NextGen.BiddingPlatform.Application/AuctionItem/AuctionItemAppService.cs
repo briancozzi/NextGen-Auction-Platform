@@ -197,7 +197,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
                     RemainingTime = (output.Auction.AuctionEndDateTime - output.Auction.AuctionStartDateTime).Hours + ":" + (output.Auction.AuctionEndDateTime - output.Auction.AuctionStartDateTime).Seconds,
                     TotalBidCount = output.AuctionHistories.Count,
                     ItemDescription = output.Item.Description,
-                    BidStepIncrementValue = output.Item.BidStepIncrementValue,
+                    //BidStepIncrementValue = output.Item.BidStepIncrementValue,
                     AuctionItemHistories = output.AuctionHistories.OrderByDescending(x => x.CreationTime).Take(10).Select(s => new AuctionItemHistoryDto
                     {
                         BidderName = s.AuctionBidder.BidderName,
@@ -211,6 +211,9 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 };
                 result.LastBidAmount = result.AuctionItemHistories.OrderByDescending(x => x.BidDate).FirstOrDefault()?.BidAmount ?? 0;
                 result.LastBidWinnerName = result.AuctionItemHistories.OrderByDescending(x => x.BidDate).FirstOrDefault()?.BidderName ?? string.Empty;
+
+                //var totalBidAmount = result.AuctionItemHistories.Sum(x => x.BidAmount);
+                result.BidStepIncrementValue = Helper.Helper.GetNextBidAmount(result.LastBidAmount);
                 //var currntUseid = 3;
                 if (userId > 0)
                 {

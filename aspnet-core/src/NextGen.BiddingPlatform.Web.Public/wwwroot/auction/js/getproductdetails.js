@@ -11,6 +11,7 @@ function GetAuctionItem() {
         cache: false,
         dataType: "json",
         success: function (response) {
+            debugger;
             if (response != null || response != undefined) {
                 var data = response.result;
                 $(".name").text(data.itemName);
