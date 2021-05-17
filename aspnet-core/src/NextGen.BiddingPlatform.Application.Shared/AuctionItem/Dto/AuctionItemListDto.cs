@@ -28,5 +28,16 @@ namespace NextGen.BiddingPlatform.AuctionItem.Dto
         public double LastBidAmount { get; set; }
         public int TotalBidCount { get; set; }
         public bool IsClosedItemStatus { get; set; }
+
+        public bool IsDaysGreaterThan1
+        {
+            get
+            {
+                if (RemainingDays == "0" || RemainingDays == "1")
+                    return false;
+                else
+                    return true;
+            }
+        }
     }
 }

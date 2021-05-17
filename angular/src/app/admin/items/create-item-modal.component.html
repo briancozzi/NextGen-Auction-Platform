@@ -1,5 +1,5 @@
 <div appBsModal #createModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="createModal"
-    aria-hidden="true">
+    aria-hidden="true" [config]="{backdrop: 'static', keyboard: !saving}">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <form #itemCreateForm="ngForm" role="form" novalidate class="form-validation" *ngIf="active"
@@ -17,43 +17,122 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <div class="row">
-                            <div class="col-xl-6">
+                            <div class="col-md-6">
+                                <label for="itemNumber">{{"ItemNumber" | localize}} *</label>
+                                <input id="itemNumber" #itemNumberInput="ngModel" class="form-control" type="number"
+                                    [ngClass]="{'edited':item.itemNumber}" name="itemNumber"
+                                    [(ngModel)]="item.itemNumber" required maxlength="64" min="0" disabled="disabled">
+                                <validation-messages [formCtrl]="itemNumberInput"></validation-messages>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="col-xl-6">
+                                    <label for="categories">{{"Category" | localize}} *</label>
+                                    <select #categoryBox name="item.categoryId" class="form-control bs-select"
+                                        [(ngModel)]="item.categoryId"  required>
+                                        <option value="" [selected]="isSelected">--Select Category--</option>
+                                        <option *ngFor="let category of categoryList" [value]="category.id">
+                                            {{category.categoryName}}</option>
+                                    </select>
+                                    <validation-messages [formCtrl]="categoryBox"></validation-messages>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
                                 <label for="itemName">{{"ItemName" | localize}} *</label>
                                 <input id="itemName" #itemNameInput="ngModel" class="form-control" type="text"
                                     [ngClass]="{'edited':item.itemName}" name="itemName" [(ngModel)]="item.itemName"
                                     required maxlength="64">
                                 <validation-messages [formCtrl]="itemNameInput"></validation-messages>
                             </div>
-                            <div class="col-xl-6">
-                                <label for="itemNumber">{{"ItemNumber" | localize}} *</label>
-                                <input id="itemNumber" #itemNumberInput="ngModel" class="form-control" type="number"
-                                    [ngClass]="{'edited':item.itemNumber}" name="itemNumber"
-                                    [(ngModel)]="item.itemNumber" required maxlength="64" min="0">
-                                <validation-messages [formCtrl]="itemNumberInput"></validation-messages>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label for="description">{{"Item Description" | localize}} *</label>
+                                <textarea #descriptionInput="ngModel" name="description" class="form-control"
+                                    id="description" rows="3" [(ngModel)]="item.description"></textarea>
+                                <validation-messages [formCtrl]="descriptionInput"></validation-messages>
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="row">
-                            <div class="col-xl-6">
-                                <label for="description">{{"Description" | localize}} *</label>
-                                <textarea #descriptionInput="ngModel" name="description" class="form-control"
-                                    id="description" rows="3" [(ngModel)]="item.description"></textarea>
-                                <validation-messages [formCtrl]="descriptionInput"></validation-messages>
-                            </div>
-                            <div class="col-xl-6">
-                                <label for="categories">{{"Category" | localize}} *</label>
-                                <select #categoryBox name="categories" multiple class="form-control bs-select"
-                                    [(ngModel)]="item.categories" required>
-                                    <option value="" [selected]="isSelected">--Select Category--</option>
-                                    <option *ngFor="let category of categoryList" [value]="category.id">
-                                        {{category.categoryName}}</option>
+                            <div class="col-md-12">
+                                <label for="procurementState">{{"ProcurementState" | localize}} *</label>
+                                <select #procurementStateBox="ngModel" name="procurementState"
+                                    class="form-control bs-select" [(ngModel)]="item.procurementState" required>
+                                    <option value="" [selected]="isSelected">--Select Procurement State--</option>
+                                    <option *ngFor="let pro of dropdowns.procurementStates" [value]="pro.id">
+                                        {{pro.name}}</option>
                                 </select>
-                                <validation-messages [formCtrl]="categoryBox"></validation-messages>
+                                <validation-messages [formCtrl]="procurementStateBox"></validation-messages>
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label for="donatedBy">{{"Donated By" | localize}}</label>
+                                <input id="donatedBy" #donatedByInput="ngModel" class="form-control" type="text"
+                                    [ngClass]="{'edited':item.donatedBy}" name="donatedBy"
+                                    [(ngModel)]="item.donatedBy" maxlength="64" min="0">
+                                <validation-messages [formCtrl]="donatedByInput"></validation-messages>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="startingBidValue">{{"Starting Bid (Price)" | localize}} *</label>
+                                <input id="startingBidValue" #startingBidValueInput="ngModel" class="form-control"
+                                    type="text" [ngClass]="{'edited':item.startingBidValue}" name="startingBidValue"
+                                    [(ngModel)]="item.startingBidValue" required>
+                                <validation-messages [formCtrl]="startingBidValueInput"></validation-messages>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="expense">{{"Expense" | localize}} *</label>
+                                <input id="expense" #expenseInput="ngModel" class="form-control"
+                                    type="text" [ngClass]="{'edited':item.expense}" name="expense"
+                                    [(ngModel)]="item.expense" required>
+                                <validation-messages [formCtrl]="expenseInput"></validation-messages>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="fairMarketValue_FMV">{{"Fair Market Value (FMV)" | localize}} *</label>
+                                <input id="fairMarketValue_FMV" #fairMarketValue_FMVInput="ngModel" class="form-control"
+                                    type="text" [ngClass]="{'edited':item.fairMarketValue_FMV}"
+                                    name="fairMarketValue_FMV" [(ngModel)]="item.fairMarketValue_FMV" required>
+                                <validation-messages [formCtrl]="fairMarketValue_FMVInput"></validation-messages>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="kt-radio-inline">
+                                    <label for="Show_Item" class="kt-radio">
+                                        <input id="Show_Item" name="isHide" [(ngModel)]="item.isHide"
+                                            [value]="true" type="radio">
+                                        {{"Show Item" | localize}}
+                                        <span></span>
+                                    </label>
+                                    <label for="Hide_Item" class="kt-radio">
+                                        <input id="Hide_Item" name="isHide" [(ngModel)]="item.isHide"
+                                            [value]="false" type="radio">
+                                        {{"Hide Item" | localize}}
+                                        <span></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- <div class="form-group">
                         <div class="row">
                             <div class="col-xl-6">
                                 <label for="account">{{"Account" | localize}} *</label>
@@ -76,16 +155,7 @@
                     </div>
                     <div class="form-group">
                         <div class="row">
-                            <div class="col-xl-4">
-                                <label for="procurementState">{{"ProcurementState" | localize}} *</label>
-                                <select #procurementStateBox="ngModel" name="procurementState" class="form-control bs-select"
-                                    [(ngModel)]="item.procurementState" required>
-                                    <option value="" [selected]="isSelected">--Select Procurement State--</option>
-                                    <option *ngFor="let pro of dropdowns.procurementStates" [value]="pro.id">
-                                        {{pro.name}}</option>
-                                </select>
-                                <validation-messages [formCtrl]="procurementStateBox"></validation-messages>
-                            </div>
+                           
                             <div class="col-xl-4">
                                 <label for="itemStatus">{{"ItemStatus" | localize}} *</label>
                                 <select #itemStatusBox name="itemStatus" class="form-control bs-select"
@@ -118,13 +188,7 @@
                                     name="fairMarketValue_FMV" [(ngModel)]="item.fairMarketValue_FMV" required>
                                 <validation-messages [formCtrl]="fairMarketValue_FMVInput"></validation-messages>
                             </div>
-                            <div class="col-xl-6">
-                                <label for="startingBidValue">{{"StartingBidValue" | localize}} *</label>
-                                <input id="startingBidValue" #startingBidValueInput="ngModel" class="form-control"
-                                    type="text" [ngClass]="{'edited':item.startingBidValue}" name="startingBidValue"
-                                    [(ngModel)]="item.startingBidValue" required>
-                                <validation-messages [formCtrl]="startingBidValueInput"></validation-messages>
-                            </div>
+                            
                         </div>
                     </div>
                     <div class="form-group">
@@ -144,12 +208,12 @@
                                 <validation-messages [formCtrl]="acquisitionValueInput"></validation-messages>
                             </div>
                         </div>
-                    </div>
-                  
+                    </div> -->
+
 
                     <div class="form-group">
                         <label for="logo">{{"MainImage" | localize}}</label>
-                        <input type="file" #inputFile  ng2FileSelect [uploader]="logoUploader" class="col-xl-12" />
+                        <input type="file" #inputFile ng2FileSelect [uploader]="logoUploader" class="col-xl-12" />
                     </div>
                     <button class="btn btn-default" type="button" (click)="clearLogo()">{{"Clear" | localize}}</button>
                     <!-- <div class="form-group">

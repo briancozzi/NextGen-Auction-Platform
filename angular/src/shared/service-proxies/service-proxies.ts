@@ -9582,6 +9582,57 @@ export class ItemServiceProxy {
     }
 
     /**
+     * @return Success
+     */
+    getNextItemNumber(): Observable<number> {
+        let url_ = this.baseUrl + "/api/services/app/Item/GetNextItemNumber";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetNextItemNumber(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetNextItemNumber(<any>response_);
+                } catch (e) {
+                    return <Observable<number>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<number>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetNextItemNumber(response: HttpResponseBase): Observable<number> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<number>(<any>null);
+    }
+
+    /**
      * @param search (optional) 
      * @param sorting (optional) 
      * @param maxResultCount (optional) 
@@ -17204,6 +17255,57 @@ export class UserServiceProxy {
         }
         return _observableOf<void>(<any>null);
     }
+
+    /**
+     * @return Success
+     */
+    getCurrUser(): Observable<UserEditDto> {
+        let url_ = this.baseUrl + "/api/services/app/User/GetCurrUser";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetCurrUser(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetCurrUser(<any>response_);
+                } catch (e) {
+                    return <Observable<UserEditDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<UserEditDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetCurrUser(response: HttpResponseBase): Observable<UserEditDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UserEditDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<UserEditDto>(<any>null);
+    }
 }
 
 @Injectable()
@@ -20945,6 +21047,7 @@ export class GetAuctionBidderHistoryDto implements IGetAuctionBidderHistoryDto {
     lastHistoryAmount!: number;
     tenantId!: number | undefined;
     userId!: number;
+    nextBidValue!: number;
     auctionItemHistory!: GetAuctionHistoryByAuctionIdDto[] | undefined;
 
     constructor(data?: IGetAuctionBidderHistoryDto) {
@@ -20965,6 +21068,7 @@ export class GetAuctionBidderHistoryDto implements IGetAuctionBidderHistoryDto {
             this.lastHistoryAmount = _data["lastHistoryAmount"];
             this.tenantId = _data["tenantId"];
             this.userId = _data["userId"];
+            this.nextBidValue = _data["nextBidValue"];
             if (Array.isArray(_data["auctionItemHistory"])) {
                 this.auctionItemHistory = [] as any;
                 for (let item of _data["auctionItemHistory"])
@@ -20989,6 +21093,7 @@ export class GetAuctionBidderHistoryDto implements IGetAuctionBidderHistoryDto {
         data["lastHistoryAmount"] = this.lastHistoryAmount;
         data["tenantId"] = this.tenantId;
         data["userId"] = this.userId;
+        data["nextBidValue"] = this.nextBidValue;
         if (Array.isArray(this.auctionItemHistory)) {
             data["auctionItemHistory"] = [];
             for (let item of this.auctionItemHistory)
@@ -21006,6 +21111,7 @@ export interface IGetAuctionBidderHistoryDto {
     lastHistoryAmount: number;
     tenantId: number | undefined;
     userId: number;
+    nextBidValue: number;
     auctionItemHistory: GetAuctionHistoryByAuctionIdDto[] | undefined;
 }
 
@@ -27190,6 +27296,10 @@ export class UpdateItemDto implements IUpdateItemDto {
     thumbnailImage!: string | undefined;
     videoLink!: string | undefined;
     isActive!: boolean;
+    categoryId!: number;
+    donatedBy!: string | undefined;
+    expense!: number;
+    isHide!: boolean;
     itemImages!: ItemGalleryDto[] | undefined;
     categories!: number[] | undefined;
 
@@ -27222,6 +27332,10 @@ export class UpdateItemDto implements IUpdateItemDto {
             this.thumbnailImage = _data["thumbnailImage"];
             this.videoLink = _data["videoLink"];
             this.isActive = _data["isActive"];
+            this.categoryId = _data["categoryId"];
+            this.donatedBy = _data["donatedBy"];
+            this.expense = _data["expense"];
+            this.isHide = _data["isHide"];
             if (Array.isArray(_data["itemImages"])) {
                 this.itemImages = [] as any;
                 for (let item of _data["itemImages"])
@@ -27262,6 +27376,10 @@ export class UpdateItemDto implements IUpdateItemDto {
         data["thumbnailImage"] = this.thumbnailImage;
         data["videoLink"] = this.videoLink;
         data["isActive"] = this.isActive;
+        data["categoryId"] = this.categoryId;
+        data["donatedBy"] = this.donatedBy;
+        data["expense"] = this.expense;
+        data["isHide"] = this.isHide;
         if (Array.isArray(this.itemImages)) {
             data["itemImages"] = [];
             for (let item of this.itemImages)
@@ -27295,6 +27413,10 @@ export interface IUpdateItemDto {
     thumbnailImage: string | undefined;
     videoLink: string | undefined;
     isActive: boolean;
+    categoryId: number;
+    donatedBy: string | undefined;
+    expense: number;
+    isHide: boolean;
     itemImages: ItemGalleryDto[] | undefined;
     categories: number[] | undefined;
 }
@@ -27317,6 +27439,10 @@ export class ItemDto implements IItemDto {
     thumbnailImage!: string | undefined;
     videoLink!: string | undefined;
     isActive!: boolean;
+    categoryId!: number;
+    donatedBy!: string | undefined;
+    expense!: number;
+    isHide!: boolean;
     itemImages!: ItemGalleryDto[] | undefined;
     categories!: number[] | undefined;
 
@@ -27348,6 +27474,10 @@ export class ItemDto implements IItemDto {
             this.thumbnailImage = _data["thumbnailImage"];
             this.videoLink = _data["videoLink"];
             this.isActive = _data["isActive"];
+            this.categoryId = _data["categoryId"];
+            this.donatedBy = _data["donatedBy"];
+            this.expense = _data["expense"];
+            this.isHide = _data["isHide"];
             if (Array.isArray(_data["itemImages"])) {
                 this.itemImages = [] as any;
                 for (let item of _data["itemImages"])
@@ -27387,6 +27517,10 @@ export class ItemDto implements IItemDto {
         data["thumbnailImage"] = this.thumbnailImage;
         data["videoLink"] = this.videoLink;
         data["isActive"] = this.isActive;
+        data["categoryId"] = this.categoryId;
+        data["donatedBy"] = this.donatedBy;
+        data["expense"] = this.expense;
+        data["isHide"] = this.isHide;
         if (Array.isArray(this.itemImages)) {
             data["itemImages"] = [];
             for (let item of this.itemImages)
@@ -27419,6 +27553,10 @@ export interface IItemDto {
     thumbnailImage: string | undefined;
     videoLink: string | undefined;
     isActive: boolean;
+    categoryId: number;
+    donatedBy: string | undefined;
+    expense: number;
+    isHide: boolean;
     itemImages: ItemGalleryDto[] | undefined;
     categories: number[] | undefined;
 }
@@ -34002,6 +34140,7 @@ export class UserEditDto implements IUserEditDto {
     shouldChangePasswordOnNextLogin!: boolean;
     isTwoFactorEnabled!: boolean;
     isLockoutEnabled!: boolean;
+    appAccountId!: number | undefined;
 
     constructor(data?: IUserEditDto) {
         if (data) {
@@ -34025,6 +34164,7 @@ export class UserEditDto implements IUserEditDto {
             this.shouldChangePasswordOnNextLogin = _data["shouldChangePasswordOnNextLogin"];
             this.isTwoFactorEnabled = _data["isTwoFactorEnabled"];
             this.isLockoutEnabled = _data["isLockoutEnabled"];
+            this.appAccountId = _data["appAccountId"];
         }
     }
 
@@ -34048,6 +34188,7 @@ export class UserEditDto implements IUserEditDto {
         data["shouldChangePasswordOnNextLogin"] = this.shouldChangePasswordOnNextLogin;
         data["isTwoFactorEnabled"] = this.isTwoFactorEnabled;
         data["isLockoutEnabled"] = this.isLockoutEnabled;
+        data["appAccountId"] = this.appAccountId;
         return data; 
     }
 }
@@ -34064,6 +34205,7 @@ export interface IUserEditDto {
     shouldChangePasswordOnNextLogin: boolean;
     isTwoFactorEnabled: boolean;
     isLockoutEnabled: boolean;
+    appAccountId: number | undefined;
 }
 
 export class UserRoleDto implements IUserRoleDto {

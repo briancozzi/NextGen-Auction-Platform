@@ -1,6 +1,7 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using NextGen.BiddingPlatform.Authorization.Users;
+using NextGen.BiddingPlatform.Core.Categories;
 using NextGen.BiddingPlatform.CustomInterface;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,7 @@ namespace NextGen.BiddingPlatform.Core.Items
         [Required]
         public double StartingBidValue { get; set; }
         [Required]
-        public double BidStepIncrementValue { get; set; }
+        public double? BidStepIncrementValue { get; set; }
         public double AcquisitionValue { get; set; }
         public double BuyNowPrice { get; set; } = 0;//we are just adding this property because in future if we have buy now button then we can use it
         public string ItemCertificateNotes { get; set; }
@@ -47,6 +48,16 @@ namespace NextGen.BiddingPlatform.Core.Items
         [ForeignKey("AppAccount")]
         public int AppAccountId { get; set; }
         public Core.AppAccounts.AppAccount AppAccount { get; set; }
+
+        //new fields
+        public int? CategoryId { get; set; }
+
+        [ForeignKey("CategoryId")]
+        public Category CategoryFk { get; set; }
+        public string DonatedBy { get; set; }
+        [Required]
+        public double Expense { get; set; }
+        public bool IsHide { get; set; }
 
         public ICollection<ItemGallery> ItemImages { get; set; }
         public ICollection<ItemCategory.ItemCategory> ItemCategories { get; set; }

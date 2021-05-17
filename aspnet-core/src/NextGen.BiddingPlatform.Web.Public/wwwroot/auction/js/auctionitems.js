@@ -46,9 +46,13 @@ function GetCategories() {
         }
     });
 }
-function GetAuctionItems() {
+function GetAuctionItems(categoryId, search) {
+    if (categoryId === undefined)
+        categoryId = 0;
+    if (search === undefined || search === "undefined")
+        search = "";
     $.ajax({
-        url: ApiServerPath + "/api/services/app/AuctionItem/GetAllAuctionItems",
+        url: ApiServerPath + "/api/services/app/AuctionItem/GetAllAuctionItems?categoryId=" + categoryId + "&search=" + search,
         type: "GET",
         cache: false,
         async: true,
@@ -58,6 +62,7 @@ function GetAuctionItems() {
             if (response != null || response != undefined) {
                 var data = response.result.items;
                 $("#itemCount").text('(' + data.length + ')');
+                $("#auctionItems").empty();
                 $.each(data, function (i, v) {
                     v.imageName = ApiServerPath + v.imageName;
                     var output = Mustache.render($("#auctionItemTemplate").html(), v);
@@ -70,6 +75,26 @@ function GetAuctionItems() {
         }
     });
 }
+
+$(document).on("click", "#categories li a", function () {
+    debugger;
+    var items = $(this).parents("ul").children("li");
+    $.each(items, function (i, v) {
+        $(this).find("a").removeClass("active");
+    })
+    var selectedVal = $(this).attr("data-value");
+    $(this).addClass("active");
+    var selectedText = $(this).text();
+    $("#selectedCategory").text(selectedText);
+    GetAuctionItems(selectedVal);
+});
+
+$(document).on("keyup", "#txtSearch", function () {
+    var searchTxt = $(this).val();
+    var categoryId = $("#categories li a.active").attr("data-value");
+    setTimeout(GetAuctionItems(categoryId, searchTxt), 3000);
+
+});
 //function GetTemplate() {
 //    var url = WebSiteUrl + "Home/GetAuctionItemTemplate";
 //    $.ajax({

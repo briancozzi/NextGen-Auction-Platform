@@ -14,9 +14,11 @@ using System.Linq.Dynamic.Core;
 using NextGen.BiddingPlatform.Enums;
 using NextGen.BiddingPlatform.Authorization.Users;
 using Abp.UI;
+using Abp.Authorization;
 
 namespace NextGen.BiddingPlatform.Items
 {
+    [AbpAuthorize]
     public class ItemAppService : BiddingPlatformAppServiceBase, IItemAppService
     {
         private readonly IRepository<Item> _itemRepository;
@@ -61,6 +63,16 @@ namespace NextGen.BiddingPlatform.Items
                 item.ItemStatusName = GetItemStatus(item.ItemStatus);
             }
             return items;
+        }
+
+        public async Task<long> GetNextItemNumber()
+        {
+            using (CurrentUnitOfWork.DisableFilter(Abp.Domain.Uow.AbpDataFilters.SoftDelete))
+            {
+                var totalItemsCount = await _itemRepository.GetAll().AsNoTracking().CountAsync();
+                return 100 + totalItemsCount;
+            }
+
         }
 
         public async Task<PagedResultDto<ItemListDto>> GetItemsWithFilter(ItemFilter input)
@@ -117,42 +129,61 @@ namespace NextGen.BiddingPlatform.Items
 
         public async Task CreateItem(ItemDto input)
         {
-            var account = await _appAccountRepository.FirstOrDefaultAsync(x => x.UniqueId == input.AppAccountUniqueId);
-            if (account == null)
-                throw new UserFriendlyException("AppAccount not found for given id");
-            if (input.Categories.Count() == 0)
-                throw new UserFriendlyException("Please select at least one category for item");
-
-            if (!AbpSession.TenantId.HasValue)
-                throw new UserFriendlyException("You are not authorized user");
-
-            var mappedItem = ObjectMapper.Map<Item>(input);
-            mappedItem.AppAccountId = account.Id;
-            mappedItem.UniqueId = Guid.NewGuid();
-            mappedItem.TenantId = AbpSession.TenantId.Value;
-            //add category to ItemCategory Table
-            foreach (var category in input.Categories)
+            try
             {
-                mappedItem.ItemCategories.Add(new ItemCategory.ItemCategory
-                {
-                    UniqueId = Guid.NewGuid(),
-                    CategoryId = category
-                });
-            }
-            //add images to ItemGallery Table
-            foreach (var image in input.ItemImages)
-            {
-                mappedItem.ItemImages.Add(new ItemGallery
-                {
-                    UniqueId = Guid.NewGuid(),
-                    ImageName = image.ImageName,
-                    Thumbnail = image.Thumbnail,
-                    Title = image.Title,
-                    Description = image.Description
-                });
-            }
 
-            await _itemRepository.InsertAsync(mappedItem);
+
+                //var account = await _appAccountRepository.FirstOrDefaultAsync(x => x.UniqueId == input.AppAccountUniqueId);
+                //if (account == null)
+                //    throw new UserFriendlyException("AppAccount not found for given id");
+
+                var currUser = await UserManager.Users.AsNoTracking().FirstOrDefaultAsync(s => s.Id == AbpSession.UserId);
+                if (currUser == null)
+                    throw new UserFriendlyException("User not found!!");
+
+                if (!currUser.AppAccountId.HasValue)
+                    throw new UserFriendlyException("Sorry you do not have permission to add items. Please contact your admin.");
+
+                //if (input.Categories.Count() == 0)
+                //    throw new UserFriendlyException("Please select at least one category for item");
+
+                if (!AbpSession.TenantId.HasValue)
+                    throw new UserFriendlyException("You are not authorized user");
+
+                var mappedItem = ObjectMapper.Map<Item>(input);
+                mappedItem.AppAccountId = currUser.AppAccountId.Value;
+                mappedItem.UniqueId = Guid.NewGuid();
+                mappedItem.TenantId = AbpSession.TenantId.Value;
+                //add category to ItemCategory Table
+                //foreach (var category in input.Categories)
+                //{
+                //    mappedItem.ItemCategories.Add(new ItemCategory.ItemCategory
+                //    {
+                //        UniqueId = Guid.NewGuid(),
+                //        CategoryId = category
+                //    });
+                //}
+                //add images to ItemGallery Table
+                foreach (var image in input.ItemImages)
+                {
+                    mappedItem.ItemImages.Add(new ItemGallery
+                    {
+                        UniqueId = Guid.NewGuid(),
+                        ImageName = image.ImageName,
+                        Thumbnail = image.Thumbnail,
+                        Title = image.Title,
+                        Description = image.Description
+                    });
+                }
+
+                await _itemRepository.InsertAsync(mappedItem);
+                await CurrentUnitOfWork.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
 
         public async Task UpdateItem(UpdateItemDto input)

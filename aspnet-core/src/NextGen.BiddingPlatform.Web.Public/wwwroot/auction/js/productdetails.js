@@ -20,6 +20,7 @@ function GetAuctionItem() {
                 $("#itemDescription").text(data.itemDescription);
                 var imageFullPath = ApiServerPath + data.imageName;
                 $("#itemImage").attr("src", imageFullPath);
+                $("#itemNo").text(data.itemNumber);
             }
         },
         error: function (xhr) {

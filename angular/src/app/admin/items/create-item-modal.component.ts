@@ -2,7 +2,7 @@ import { Component, EventEmitter, Injector, Output, ViewChild, OnInit, ElementRe
 import { AppComponentBase } from '@shared/common/app-component-base';
 import * as _ from 'lodash';
 import { ModalDirective } from 'ngx-bootstrap';
-import { finalize } from 'rxjs/operators';
+import { catchError, finalize } from 'rxjs/operators';
 import {
   ItemServiceProxy, ItemDto, CategoryServiceProxy,AppAccountServiceProxy, ListDto, Dropdowns
 } from '@shared/service-proxies/service-proxies';
@@ -92,10 +92,15 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
     this.logoUploader = this.createUploader(
       '/Items/UploadLogo',
       result => {
+        debugger;
         if (result.status) {
           this.notify.info(this.l('SavedSuccessfully'));
           this.close();
           this.modalSave.emit(null);
+        }
+        else{
+          this.notify.error(this.l('Error occured!!'));
+          this.saving = false;
         }
       }
     );
@@ -103,8 +108,14 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
   show() {
     this.active = true;
     this.init();
-    this.item = new ItemDto();
-    this.modal.show();
+    this._itemService.getNextItemNumber().subscribe(result =>{
+      this.item = new ItemDto();
+      this.item.itemNumber = result;
+      this.item.isHide = true;
+      
+      this.modal.show();
+    });
+   
   }
   init(): void {
     forkJoin([
@@ -131,6 +142,7 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
     }
   }
   CreateItem(): void {
+    
     this._itemService.createItem(this.item)
       .pipe(finalize(() => this.saving = false))
       .subscribe(() => {

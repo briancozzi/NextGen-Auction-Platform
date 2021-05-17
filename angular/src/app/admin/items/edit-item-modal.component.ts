@@ -7,7 +7,8 @@ import {
   ItemServiceProxy,
   CategoryServiceProxy,
   UpdateItemDto,
-  AppAccountServiceProxy
+  AppAccountServiceProxy,
+  ListDto
 
 } from '@shared/service-proxies/service-proxies';
 import { forkJoin } from "rxjs";
@@ -31,6 +32,7 @@ export class EditItemModalComponent extends AppComponentBase {
   saving = false;
   active = false;
   dropdowns: any;
+  procurementState :ListDto[] = []; 
   categoryList = [];
   accountList = [];
   isLogo = false;
@@ -96,9 +98,11 @@ export class EditItemModalComponent extends AppComponentBase {
       this._itemService.getDropdowns(),
       this._accountService.getAllAccount()
     ]).subscribe(allResults => {
+      debugger;
       this.item = allResults[0];
       this.categoryList = allResults[1].items;
       this.dropdowns = allResults[2];
+      this.procurementState = this.dropdowns.procurementStates;
       this.accountList = allResults[3].items;
       this.isLogo = true;
       this.modal.show();

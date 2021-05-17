@@ -13,7 +13,7 @@
             <div class="row">
                 <div class="col-md-6 search">
                     <form>
-                        <input type="text" class="form-control" placeholder="Search with name or item #">
+                        <input type="text" class="form-control" id="txtSearch" placeholder="Search with name or item #">
                         <a href="#" class="search-btn">
                             <img src="~/auction/images/svg/search-icon.svg" alt="">
                         </a>
@@ -23,12 +23,12 @@
 
                     <div class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            Categories:<span>All</span>
+                            Categories:<span id="selectedCategory">All</span>
                         </a>
                         <div class="dropdown-menu">
                             <ul id="categories">
                                 <li>Categories: <span>All</span></li>
-                                <li><a href="#">All</a></li>
+                                <li><a href="#" class="active">All</a></li>
                             </ul>
                             <a href="#" class="remove-dropdown">
                                 <img src="~/auction/images/svg/cross-icon.svg" alt="">
@@ -44,14 +44,14 @@
             </div>
         </div>
     </div>
-    <div class="page-name">
+    @*<div class="page-name">
         <div class="container position-relative">
             golf club
             <a href="#" class="remove-bar">
                 <img src="~/auction/images/svg/cross-icon.svg" alt="">
             </a>
         </div>
-    </div>
+    </div>*@
     <div class="content-wrapper have-sidename">
         <div class="container position-relative">
             <div class="side-name">

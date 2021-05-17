@@ -26,9 +26,7 @@ namespace NextGen.BiddingPlatform.Items.Dto
         public double FairMarketValue_FMV { get; set; }
         [Required]
         public double StartingBidValue { get; set; }
-        [Required]
         public double BidStepIncrementValue { get; set; }
-        [Required]
         public double AcquisitionValue { get; set; }
         public double BuyNowPrice { get; set; } = 0;//we are just adding this property because in future if we have buy now button then we can use it
         public string ItemCertificateNotes { get; set; }
@@ -38,6 +36,13 @@ namespace NextGen.BiddingPlatform.Items.Dto
         public string ThumbnailImage { get; set; }
         public string VideoLink { get; set; }
         public bool IsActive { get; set; } = true;
+
+        [Required]
+        public int? CategoryId { get; set; }
+        public string DonatedBy { get; set; }
+        [Required]
+        public double Expense { get; set; }
+        public bool IsHide { get; set; }
         public ICollection<ItemGalleryDto> ItemImages { get; set; }
         public ICollection<int> Categories { get; set; }
 

@@ -37,7 +37,7 @@ namespace NextGen.BiddingPlatform.Category
         [AllowAnonymous]
         public async Task<ListResultDto<CategoryListDto>> GetAllCategory()
         {
-            var categories = await _categoryRepository.GetAll()
+            var categories = await _categoryRepository.GetAll().AsNoTracking()
                                                       .Select(x => new CategoryListDto
                                                       {
                                                           Id = x.Id,
@@ -51,20 +51,20 @@ namespace NextGen.BiddingPlatform.Category
 
         public async Task<PagedResultDto<CategoryListDto>> GetCategoryWithFilter(CategoryFilter input)
         {
-            var query = _categoryRepository.GetAll()
-                                                     .Select(x => new CategoryListDto
-                                                     {
-                                                         Id = x.Id,
-                                                         UniqueId = x.UniqueId,
-                                                         CategoryName = x.CategoryName
-                                                     });
-                                                     
+            var query = _categoryRepository.GetAll().AsNoTracking()
+                                           .Select(x => new CategoryListDto
+                                           {
+                                               Id = x.Id,
+                                               UniqueId = x.UniqueId,
+                                               CategoryName = x.CategoryName
+                                           });
+
             var resultCount = await query.CountAsync();
 
             if (!string.IsNullOrWhiteSpace(input.Sorting))
                 query = query.OrderBy(input.Sorting);
 
-            var resultQuery = query.PageBy(input).ToList();
+            var resultQuery = await query.PageBy(input).ToListAsync();
 
             return new PagedResultDto<CategoryListDto>(resultCount, resultQuery);
         }

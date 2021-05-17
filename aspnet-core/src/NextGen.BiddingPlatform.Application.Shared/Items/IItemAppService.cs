@@ -11,6 +11,7 @@ namespace NextGen.BiddingPlatform.Items
     public interface IItemAppService : IApplicationService
     {
         Task<List<ItemListDto>> GetAllItems();
+        Task<long> GetNextItemNumber();
         Task<PagedResultDto<ItemListDto>> GetItemsWithFilter(ItemFilter input);
         Task<UpdateItemDto> GetItemById(Guid Id);
         Task CreateItem(ItemDto input);

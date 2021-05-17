@@ -39,6 +39,12 @@ namespace NextGen.BiddingPlatform.Items.Dto
         public string ThumbnailImage { get; set; }
         public string VideoLink { get; set; }
         public bool IsActive { get; set; } = true;
+        [Required]
+        public int? CategoryId { get; set; }
+        public string DonatedBy { get; set; }
+        [Required]
+        public double Expense { get; set; }
+        public bool IsHide { get; set; }
         public ICollection<ItemGalleryDto> ItemImages { get; set; }
         public ICollection<int> Categories { get; set; }
 
