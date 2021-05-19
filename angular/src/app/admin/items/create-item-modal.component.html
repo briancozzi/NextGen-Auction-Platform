@@ -213,14 +213,19 @@
 
                     <div class="form-group">
                         <label for="logo">{{"MainImage" | localize}}</label>
-                        <input type="file" #inputFile ng2FileSelect [uploader]="logoUploader" class="col-xl-12" />
+                        <!--ng2FileSelect [uploader]="logoUploader"  -->
+                        <input type="file" #inputFile  class="col-xl-12" (change)="onSelectedFile($event, true)" required/>
                     </div>
                     <button class="btn btn-default" type="button" (click)="clearLogo()">{{"Clear" | localize}}</button>
-                    <!-- <div class="form-group">
+                    <br/>
+                    <br/>
+                    
+                    <div class="form-group">
                         <label for="logoMultple">{{"AdditionalImages" | localize}}</label>
-                        <input type="file" multiple  (change)="getFiles($event)" class="col-xl-12" />
+                        <input type="file" multiple #inputMultiple   (change)="onSelectedFile($event, false)" class="col-xl-12" />
                     </div>
-                    <button class="btn btn-default" type="button" (click)="clearLogo()">{{"Clear" | localize}}</button> -->
+                    <!-- (click)="clearAdditionalImages()" -->
+                    <button class="btn btn-default" (click)="clearAddImg()" type="button" >{{"Clear" | localize}}</button>
                 </div>
                 <div class="modal-footer">
                     <button type="button" [disabled]="saving" class="btn btn-secondary"

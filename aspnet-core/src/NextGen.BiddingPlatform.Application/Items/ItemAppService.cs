@@ -122,6 +122,8 @@ namespace NextGen.BiddingPlatform.Items
                                                               .Select(x => x.CategoryId)
                                                               .ToListAsync();
 
+            
+
             mappedItem.Categories = itemCategories;
             mappedItem.AppAccountUniqueId = existingItem.AppAccount.UniqueId;
             return mappedItem;
@@ -131,8 +133,6 @@ namespace NextGen.BiddingPlatform.Items
         {
             try
             {
-
-
                 //var account = await _appAccountRepository.FirstOrDefaultAsync(x => x.UniqueId == input.AppAccountUniqueId);
                 //if (account == null)
                 //    throw new UserFriendlyException("AppAccount not found for given id");
@@ -164,6 +164,7 @@ namespace NextGen.BiddingPlatform.Items
                 //    });
                 //}
                 //add images to ItemGallery Table
+                mappedItem.ItemImages = new List<ItemGallery>();
                 foreach (var image in input.ItemImages)
                 {
                     mappedItem.ItemImages.Add(new ItemGallery
@@ -181,74 +182,82 @@ namespace NextGen.BiddingPlatform.Items
             }
             catch (Exception ex)
             {
-
                 throw;
             }
         }
 
         public async Task UpdateItem(UpdateItemDto input)
         {
-            var existingItem = await _itemRepository.FirstOrDefaultAsync(x => x.UniqueId == input.UniqueId);
-            if (existingItem == null)
-                throw new UserFriendlyException("Item not available for given id");
-
-            var account = await _appAccountRepository.FirstOrDefaultAsync(x => x.UniqueId == input.AppAccountUniqueId);
-            if (account == null)
-                throw new UserFriendlyException("AppAccount not found for given id");
-
-            if (input.Categories.Count() == 0)
-                throw new UserFriendlyException("Please select at least one category for item");
-
-            //first remove gallery
-            var itemImages = await _itemGalleryRepository.GetAllListAsync(x => x.ItemId == existingItem.Id);
-            if (itemImages.Count > 0)
-                await _itemGalleryRepository.DeleteAsync(x => x.ItemId == existingItem.Id);
-
-            //second remove categories
-            var itemCategories = await _itemCategoryRepository.GetAllListAsync(x => x.ItemId == existingItem.Id);
-            if (itemCategories.Count > 0)
-                await _itemCategoryRepository.DeleteAsync(x => x.ItemId == existingItem.Id);
-
-            //add category to ItemCategory Table
-            foreach (var category in input.Categories)
+            try
             {
-                existingItem.ItemCategories.Add(new ItemCategory.ItemCategory
+                var existingItem = await _itemRepository.FirstOrDefaultAsync(x => x.UniqueId == input.UniqueId);
+                if (existingItem == null)
+                    throw new UserFriendlyException("Item not available for given id");
+
+                var account = await _appAccountRepository.FirstOrDefaultAsync(x => x.UniqueId == input.AppAccountUniqueId);
+                if (account == null)
+                    throw new UserFriendlyException("AppAccount not found for given id");
+
+                //if (input.Categories.Count() == 0)
+                //    throw new UserFriendlyException("Please select at least one category for item");
+
+                //first remove gallery
+                var itemImages = await _itemGalleryRepository.GetAllListAsync(x => x.ItemId == existingItem.Id);
+                if (itemImages.Count > 0)
+                    await _itemGalleryRepository.DeleteAsync(x => x.ItemId == existingItem.Id);
+
+                //second remove categories
+                //var itemCategories = await _itemCategoryRepository.GetAllListAsync(x => x.ItemId == existingItem.Id);
+                //if (itemCategories.Count > 0)
+                //    await _itemCategoryRepository.DeleteAsync(x => x.ItemId == existingItem.Id);
+
+                //add category to ItemCategory Table
+                //foreach (var category in input.Categories)
+                //{
+                //    existingItem.ItemCategories.Add(new ItemCategory.ItemCategory
+                //    {
+                //        UniqueId = Guid.NewGuid(),
+                //        CategoryId = category
+                //    });
+                //}
+                //add images to ItemGallery Table
+                
+                foreach (var image in input.ItemImages)
                 {
-                    UniqueId = Guid.NewGuid(),
-                    CategoryId = category
-                });
+                    existingItem.ItemImages.Add(new ItemGallery
+                    {
+                        UniqueId = Guid.NewGuid(),
+                        ImageName = image.ImageName,
+                        Thumbnail = image.Thumbnail,
+                        Title = image.Title,
+                        Description = image.Description
+                    });
+                }
+                //update the properties
+                //existingItem.ItemType = input.ItemType;
+                existingItem.AppAccountId = account.Id;
+                existingItem.ItemNumber = input.ItemNumber;
+                existingItem.ItemName = input.ItemName;
+                existingItem.Description = input.Description;
+                existingItem.ProcurementState = input.ProcurementState;
+                existingItem.ItemStatus = input.ItemStatus;
+                existingItem.Visibility = input.Visibility;
+                existingItem.FairMarketValue_FMV = input.FairMarketValue_FMV;
+                existingItem.StartingBidValue = input.StartingBidValue;
+                existingItem.BidStepIncrementValue = input.BidStepIncrementValue;
+                existingItem.AcquisitionValue = input.AcquisitionValue;
+                existingItem.BuyNowPrice = input.BuyNowPrice;
+                existingItem.ItemCertificateNotes = input.ItemCertificateNotes;
+                existingItem.MainImageName = input.MainImageName;
+                existingItem.ThumbnailImage = input.ThumbnailImage;
+                existingItem.VideoLink = input.VideoLink;
+                await _itemRepository.UpdateAsync(existingItem);
+
             }
-            //add images to ItemGallery Table
-            foreach (var image in input.ItemImages)
+            catch (Exception ex)
             {
-                existingItem.ItemImages.Add(new ItemGallery
-                {
-                    UniqueId = Guid.NewGuid(),
-                    ImageName = image.ImageName,
-                    Thumbnail = image.Thumbnail,
-                    Title = image.Title,
-                    Description = image.Description
-                });
+                throw;
             }
-            //update the properties
-            //existingItem.ItemType = input.ItemType;
-            existingItem.AppAccountId = account.Id;
-            existingItem.ItemNumber = input.ItemNumber;
-            existingItem.ItemName = input.ItemName;
-            existingItem.Description = input.Description;
-            existingItem.ProcurementState = input.ProcurementState;
-            existingItem.ItemStatus = input.ItemStatus;
-            existingItem.Visibility = input.Visibility;
-            existingItem.FairMarketValue_FMV = input.FairMarketValue_FMV;
-            existingItem.StartingBidValue = input.StartingBidValue;
-            existingItem.BidStepIncrementValue = input.BidStepIncrementValue;
-            existingItem.AcquisitionValue = input.AcquisitionValue;
-            existingItem.BuyNowPrice = input.BuyNowPrice;
-            existingItem.ItemCertificateNotes = input.ItemCertificateNotes;
-            existingItem.MainImageName = input.MainImageName;
-            existingItem.ThumbnailImage = input.ThumbnailImage;
-            existingItem.VideoLink = input.VideoLink;
-            await _itemRepository.UpdateAsync(existingItem);
         }
 
         public async Task DeleteItem(Guid Id)

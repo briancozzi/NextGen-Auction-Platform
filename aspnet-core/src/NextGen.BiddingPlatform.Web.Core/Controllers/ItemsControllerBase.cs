@@ -44,11 +44,11 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                 else
                     await UpdateAccount();
 
-                return Json(new AjaxResponse(new { Status = true}));
+                return Json(new AjaxResponse(new { Status = true }));
             }
             catch (Exception ex)
             {
-                return Json(new AjaxResponse(new { Status = false}));
+                return Json(new AjaxResponse(new { Status = false }));
             }
         }
         public async Task CreateItem()
@@ -57,6 +57,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             ItemDto itemDto = JsonConvert.DeserializeObject<ItemDto>(formData);
             if (itemDto == null)
                 throw new Exception("Posted data is null. Please try again.");
+
 
             var uploadedImages = await UploadImages();
 
@@ -80,17 +81,21 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             if (updateItemDto == null)
                 throw new Exception("Posted data is null. Please try again.");
 
-            var uploadedImages = await UploadImages();
-
-            updateItemDto.MainImageName = uploadedImages.MainImageName;
-            updateItemDto.ThumbnailImage = uploadedImages.ThumbnailImage;
-            foreach (var item in uploadedImages.AdditionImages)
+            var uploadedFiles = Request.Form.Files.Count;
+            if (uploadedFiles > 0)
             {
-                updateItemDto.ItemImages.Add(new ItemGalleryDto
+                var uploadedImages = await UploadImages();
+
+                updateItemDto.MainImageName = uploadedImages.MainImageName;
+                updateItemDto.ThumbnailImage = uploadedImages.ThumbnailImage;
+                foreach (var item in uploadedImages.AdditionImages)
                 {
-                    ImageName = item.Logo,
-                    Thumbnail = item.ThumbnailImage,
-                });
+                    updateItemDto.ItemImages.Add(new ItemGalleryDto
+                    {
+                        ImageName = item.Logo,
+                        Thumbnail = item.ThumbnailImage,
+                    });
+                }
             }
 
             await _itemService.UpdateItem(updateItemDto);
@@ -99,25 +104,24 @@ namespace NextGen.BiddingPlatform.Web.Controllers
         {
             ItemImages images = new ItemImages();
 
-            IFormFile mainFile = Request.Form.Files.First();
-
+            var files = Request.Form.Files;
+            var mainFile = files.First();
             if (mainFile != null)
             {
                 var image = await Upload(mainFile);
                 images.MainImageName = image.Logo;
                 images.ThumbnailImage = image.ThumbnailImage;
             }
-            //var addtionFiles = Request.Form["AdditionalFile"];
-            //List<IFormFile> files = JsonConvert.DeserializeObject<List<IFormFile>>(addtionFiles);
 
-            //foreach (var logoFile in files)
-            //{
-            //    if (logoFile != null)
-            //    {
-            //        var additionalImage = await Upload(logoFile);
-            //        images.AdditionImages.Add(additionalImage);
-            //    }
-            //}
+            var additionalFiles = files.Skip(1);
+            foreach (var logoFile in additionalFiles)
+            {
+                if (logoFile != null)
+                {
+                    var additionalImage = await Upload(logoFile);
+                    images.AdditionImages.Add(additionalImage);
+                }
+            }
             return images;
         }
         private async Task<Logos> Upload(IFormFile file)
