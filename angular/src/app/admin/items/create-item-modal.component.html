@@ -28,7 +28,7 @@
                                 <div class="col-xl-6">
                                     <label for="categories">{{"Category" | localize}} *</label>
                                     <select #categoryBox name="item.categoryId" class="form-control bs-select"
-                                        [(ngModel)]="item.categoryId"  required>
+                                        [(ngModel)]="item.categoryId" required>
                                         <option value="" [selected]="isSelected">--Select Category--</option>
                                         <option *ngFor="let category of categoryList" [value]="category.id">
                                             {{category.categoryName}}</option>
@@ -78,8 +78,8 @@
                             <div class="col-md-12">
                                 <label for="donatedBy">{{"Donated By" | localize}}</label>
                                 <input id="donatedBy" #donatedByInput="ngModel" class="form-control" type="text"
-                                    [ngClass]="{'edited':item.donatedBy}" name="donatedBy"
-                                    [(ngModel)]="item.donatedBy" maxlength="64" min="0">
+                                    [ngClass]="{'edited':item.donatedBy}" name="donatedBy" [(ngModel)]="item.donatedBy"
+                                    maxlength="64" min="0">
                                 <validation-messages [formCtrl]="donatedByInput"></validation-messages>
                             </div>
                         </div>
@@ -96,9 +96,9 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="expense">{{"Expense" | localize}} *</label>
-                                <input id="expense" #expenseInput="ngModel" class="form-control"
-                                    type="text" [ngClass]="{'edited':item.expense}" name="expense"
-                                    [(ngModel)]="item.expense" required>
+                                <input id="expense" #expenseInput="ngModel" class="form-control" type="text"
+                                    [ngClass]="{'edited':item.expense}" name="expense" [(ngModel)]="item.expense"
+                                    required>
                                 <validation-messages [formCtrl]="expenseInput"></validation-messages>
                             </div>
                         </div>
@@ -116,14 +116,14 @@
                             <div class="col-md-6">
                                 <div class="kt-radio-inline">
                                     <label for="Show_Item" class="kt-radio">
-                                        <input id="Show_Item" name="isHide" [(ngModel)]="item.isHide"
-                                            [value]="true" type="radio">
+                                        <input id="Show_Item" name="isHide" [(ngModel)]="item.isHide" [value]="true"
+                                            type="radio">
                                         {{"Show Item" | localize}}
                                         <span></span>
                                     </label>
                                     <label for="Hide_Item" class="kt-radio">
-                                        <input id="Hide_Item" name="isHide" [(ngModel)]="item.isHide"
-                                            [value]="false" type="radio">
+                                        <input id="Hide_Item" name="isHide" [(ngModel)]="item.isHide" [value]="false"
+                                            type="radio">
                                         {{"Hide Item" | localize}}
                                         <span></span>
                                     </label>
@@ -214,18 +214,45 @@
                     <div class="form-group">
                         <label for="logo">{{"MainImage" | localize}}</label>
                         <!--ng2FileSelect [uploader]="logoUploader"  -->
-                        <input type="file" #inputFile  class="col-xl-12" (change)="onSelectedFile($event, true)" required/>
+                        <input type="file" #inputFile class="col-xl-12" (change)="onSelectedFile($event, true)"
+                            required />
                     </div>
                     <button class="btn btn-default" type="button" (click)="clearLogo()">{{"Clear" | localize}}</button>
-                    <br/>
-                    <br/>
-                    
-                    <div class="form-group">
-                        <label for="logoMultple">{{"AdditionalImages" | localize}}</label>
-                        <input type="file" multiple #inputMultiple   (change)="onSelectedFile($event, false)" class="col-xl-12" />
+                    <br />
+                    <br />
+                    <div class="row">
+                        <label for="logoMultple" class="col-xl-12">{{"AdditionalImages" | localize}}</label>
                     </div>
+                    <div class="row" style="border: 1px solid #ccc; padding-top: 20px;">
+                        <div class="form-group col-4">
+                            <input type="file" multiple #inputMultiple (change)="onSelectedFile($event, false)"
+                                class="col-xl-12" />
+                        </div>
+                        <div class="form-group col-4">
+                            <input type="file" multiple #inputMultiple (change)="onSelectedFile($event, false)"
+                                class="col-xl-12" />
+                        </div>
+                        <div class="form-group col-4">
+                            <input type="file" multiple #inputMultiple (change)="onSelectedFile($event, false)"
+                                class="col-xl-12" />
+                        </div>
+                        <div class="form-group col-4">
+                            <input type="file" multiple #inputMultiple (change)="onSelectedFile($event, false)"
+                                class="col-xl-12" />
+                        </div>
+                        <div class="form-group col-4">
+                            <input type="file" multiple #inputMultiple (change)="onSelectedFile($event, false)"
+                                class="col-xl-12" />
+                        </div>
+                        <div class="form-group col-4">
+                            <input type="file" multiple #inputMultiple (change)="onSelectedFile($event, false)"
+                                class="col-xl-12" />
+                        </div>
+                    </div>
+
                     <!-- (click)="clearAdditionalImages()" -->
-                    <button class="btn btn-default" (click)="clearAddImg()" type="button" >{{"Clear" | localize}}</button>
+                    <button class="btn btn-default" (click)="clearAddImg()" type="button">{{"Clear" |
+                        localize}}</button>
                 </div>
                 <div class="modal-footer">
                     <button type="button" [disabled]="saving" class="btn btn-secondary"

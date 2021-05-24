@@ -2489,10 +2489,18 @@ export class AuctionItemServiceProxy {
     }
 
     /**
+     * @param categoryId (optional) 
+     * @param search (optional) 
      * @return Success
      */
-    getAllAuctionItems(): Observable<ListResultDtoOfAuctionItemListDto> {
-        let url_ = this.baseUrl + "/api/services/app/AuctionItem/GetAllAuctionItems";
+    getAllAuctionItems(categoryId: number | undefined, search: string | null | undefined): Observable<ListResultDtoOfAuctionItemListDto> {
+        let url_ = this.baseUrl + "/api/services/app/AuctionItem/GetAllAuctionItems?";
+        if (categoryId === null)
+            throw new Error("The parameter 'categoryId' cannot be null.");
+        else if (categoryId !== undefined)
+            url_ += "categoryId=" + encodeURIComponent("" + categoryId) + "&"; 
+        if (search !== undefined)
+            url_ += "search=" + encodeURIComponent("" + search) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -21135,6 +21143,7 @@ export class AuctionItemListDto implements IAuctionItemListDto {
     lastBidAmount!: number;
     totalBidCount!: number;
     isClosedItemStatus!: boolean;
+    readonly isDaysGreaterThan1!: boolean;
 
     constructor(data?: IAuctionItemListDto) {
         if (data) {
@@ -21166,6 +21175,7 @@ export class AuctionItemListDto implements IAuctionItemListDto {
             this.lastBidAmount = _data["lastBidAmount"];
             this.totalBidCount = _data["totalBidCount"];
             this.isClosedItemStatus = _data["isClosedItemStatus"];
+            (<any>this).isDaysGreaterThan1 = _data["isDaysGreaterThan1"];
         }
     }
 
@@ -21197,6 +21207,7 @@ export class AuctionItemListDto implements IAuctionItemListDto {
         data["lastBidAmount"] = this.lastBidAmount;
         data["totalBidCount"] = this.totalBidCount;
         data["isClosedItemStatus"] = this.isClosedItemStatus;
+        data["isDaysGreaterThan1"] = this.isDaysGreaterThan1;
         return data; 
     }
 }
@@ -21221,6 +21232,7 @@ export interface IAuctionItemListDto {
     lastBidAmount: number;
     totalBidCount: number;
     isClosedItemStatus: boolean;
+    isDaysGreaterThan1: boolean;
 }
 
 export class ListResultDtoOfAuctionItemListDto implements IListResultDtoOfAuctionItemListDto {
