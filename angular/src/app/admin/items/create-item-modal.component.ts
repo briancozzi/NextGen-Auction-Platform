@@ -20,7 +20,12 @@ import { HttpClient } from '@angular/common/http';
 
 export class CreateItemModalComponent extends AppComponentBase implements OnInit {
   @ViewChild('inputFile') inputFile: ElementRef;
-  @ViewChild('inputMultiple') inputMultiple: ElementRef;
+  @ViewChild('input1') input1: ElementRef;
+  @ViewChild('input2') input2: ElementRef;
+  @ViewChild('input3') input3: ElementRef;
+  @ViewChild('input4') input4: ElementRef;
+  @ViewChild('input5') input5: ElementRef;
+  @ViewChild('input6') input6: ElementRef;
   @ViewChild('createModal', { static: true }) modal: ModalDirective;
   @Output() modalSave: EventEmitter<any> = new EventEmitter<any>();
 
@@ -38,7 +43,7 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
   categoryList = [];
   accountList = [];
   images: FileDto[] = [];
-  isMainFileAdded : boolean = false;
+  isMainFileAdded: boolean = false;
 
 
   constructor(
@@ -61,8 +66,25 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
     this.isMainFileAdded = false;
   }
 
-  clearAddImg() : void{
-    this.inputMultiple.nativeElement.value = '';
+  clearAddImg(inputType: number): void {
+    if (inputType === 1) {
+      this.input1.nativeElement.value = '';
+    }
+    else if (inputType === 2) {
+      this.input2.nativeElement.value = '';
+    }
+    else if (inputType === 3) {
+      this.input3.nativeElement.value = '';
+    }
+    else if (inputType === 4) {
+      this.input4.nativeElement.value = '';
+    }
+    else if (inputType === 5) {
+      this.input5.nativeElement.value = '';
+    }
+    else if (inputType === 6) {
+      this.input6.nativeElement.value = '';
+    }
   }
 
   createUploader(url: string, success?: (result: any) => void): FileUploader {
@@ -102,7 +124,7 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
     this.logoUploader = this.createUploader(
       '/Items/UploadLogo',
       result => {
-        debugger;
+        
         if (result.status) {
           this.notify.info(this.l('SavedSuccessfully'));
           this.close();
@@ -143,22 +165,20 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
     this.modal.hide();
   }
   save(): void {
-    let mainImages = this.images.filter(s=>s.isMainImg === true);
-    if(mainImages.length === 0)
-    {
+    let mainImages = this.images.filter(s => s.isMainImg === true);
+    if (mainImages.length === 0) {
       this.notify.error("Please upload main image");
       return;
     }
     this.saving = true;
     var formData = new FormData();
 
-    
-    for(var i = 0; i < mainImages.length; i++)
-    {
+
+    for (var i = 0; i < mainImages.length; i++) {
       formData.append("mainImage[]", mainImages[i].file);
     }
 
-    let additionalImages = this.images.filter(s=>s.isMainImg === false);
+    let additionalImages = this.images.filter(s => s.isMainImg === false);
     for (var x = 0; x < additionalImages.length; x++) {
       formData.append("additionalImages[]", additionalImages[x].file);
     }
@@ -194,7 +214,7 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
     var files = event.target.files;
     var myArray = [];
     var file = {};
-    debugger;
+    
     if (files.length > 6) {
       this.notify.error("You'll be able to select file upto 6.");
       event.target.value = "";
@@ -225,7 +245,7 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
       this.message.warn("You'll be able to select 6 additional images only.");
       return;
     }
-    
+
 
 
     //TODO - Convert images to base 64 and create Images object and upload to api
@@ -261,7 +281,7 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
         fileObj.isMainImg = isMainImg;
 
         if (isMainImg) {
-          this.images.splice(0,0,fileObj);
+          this.images.splice(0, 0, fileObj);
           this.isMainFileAdded = true;
         }
         else {

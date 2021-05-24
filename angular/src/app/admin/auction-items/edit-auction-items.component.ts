@@ -34,7 +34,7 @@ export class EditAuctionItemsComponent  extends AppComponentBase implements OnIn
    }
 
   show(auctionItemId):void{
-    debugger;
+  
     forkJoin([
       this._itemService.getItems(),
       this._auctionService.getAuctions(),

@@ -30,7 +30,7 @@ export class AuctionsComponent extends AppComponentBase {
   } = <any>{};
   
   getAuctions(event?: LazyLoadEvent): void {
-    debugger;
+    
     this.primengTableHelper.showLoadingIndicator();
       this._auctionService.getAllAuctionFilter(
         this.filters.filterText,

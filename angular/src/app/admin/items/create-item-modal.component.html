@@ -225,34 +225,34 @@
                     </div>
                     <div class="row" style="border: 1px solid #ccc; padding-top: 20px;">
                         <div class="form-group col-4">
-                            <input type="file" multiple #inputMultiple (change)="onSelectedFile($event, false)"
+                            <input type="file"  #input1 (change)="onSelectedFile($event, false)"
                                 class="col-xl-12" />
                         </div>
                         <div class="form-group col-4">
-                            <input type="file" multiple #inputMultiple (change)="onSelectedFile($event, false)"
+                            <input type="file"  #input2 (change)="onSelectedFile($event, false)"
                                 class="col-xl-12" />
                         </div>
                         <div class="form-group col-4">
-                            <input type="file" multiple #inputMultiple (change)="onSelectedFile($event, false)"
+                            <input type="file"  #input3 (change)="onSelectedFile($event, false)"
                                 class="col-xl-12" />
                         </div>
                         <div class="form-group col-4">
-                            <input type="file" multiple #inputMultiple (change)="onSelectedFile($event, false)"
+                            <input type="file"  #input4 (change)="onSelectedFile($event, false)"
                                 class="col-xl-12" />
                         </div>
                         <div class="form-group col-4">
-                            <input type="file" multiple #inputMultiple (change)="onSelectedFile($event, false)"
+                            <input type="file"  #input5 (change)="onSelectedFile($event, false)"
                                 class="col-xl-12" />
                         </div>
                         <div class="form-group col-4">
-                            <input type="file" multiple #inputMultiple (change)="onSelectedFile($event, false)"
+                            <input type="file"  #input6 (change)="onSelectedFile($event, false)"
                                 class="col-xl-12" />
                         </div>
                     </div>
 
                     <!-- (click)="clearAdditionalImages()" -->
-                    <button class="btn btn-default" (click)="clearAddImg()" type="button">{{"Clear" |
-                        localize}}</button>
+                    <!-- <button class="btn btn-default" (click)="clearAddImg()" type="button">{{"Clear" |
+                        localize}}</button> -->
                 </div>
                 <div class="modal-footer">
                     <button type="button" [disabled]="saving" class="btn btn-secondary"

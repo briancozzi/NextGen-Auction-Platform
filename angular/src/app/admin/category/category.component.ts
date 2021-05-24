@@ -51,7 +51,7 @@ export class CategoryComponent extends AppComponentBase{
     );
   }
   getCategory(event?: LazyLoadEvent): void {
-    debugger;
+    
     this.primengTableHelper.showLoadingIndicator();
     this._categoryService.getCategoryWithFilter(
     this.filters.filterText,

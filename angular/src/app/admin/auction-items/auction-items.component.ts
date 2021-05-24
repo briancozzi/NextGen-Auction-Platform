@@ -28,7 +28,7 @@ export class AuctionItemsComponent extends AppComponentBase {
   }
 
   getItems(event?: LazyLoadEvent): void {
-    debugger;
+    
     this.primengTableHelper.showLoadingIndicator();
     this._itemService.getAuctionItemsWithFilter(
     this.filters.filterText,
@@ -45,7 +45,7 @@ export class AuctionItemsComponent extends AppComponentBase {
     }
 
     deleteItem(item:AuctionItemListDto): void {
-      debugger;
+    
       this.message.confirm(
           this.l('DeleteItem', item.auctionItemId),
           this.l('AreYouSure'),
@@ -61,7 +61,7 @@ export class AuctionItemsComponent extends AppComponentBase {
     }
 
   createItem():void{
-    debugger;
+    
     this.createAuctionItem.show();
   }
 

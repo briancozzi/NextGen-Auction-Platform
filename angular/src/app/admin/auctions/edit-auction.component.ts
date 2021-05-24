@@ -51,7 +51,6 @@ export class EditAuctionComponent extends AppComponentBase implements OnInit {
     }
 
     ngOnInit (): void {
-        debugger;
         var AuctionId = this._activatedRoute.snapshot.queryParams['auctionId'];
         this.active = true;
         this.auction = new UpdateAuctionDto();

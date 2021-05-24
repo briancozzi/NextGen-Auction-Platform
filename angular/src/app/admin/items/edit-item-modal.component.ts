@@ -27,6 +27,13 @@ export class EditItemModalComponent extends AppComponentBase {
   @Output() modalSave: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('inputFile') inputFile: ElementRef;
 
+  @ViewChild('input1') input1: ElementRef;
+  @ViewChild('input2') input2: ElementRef;
+  @ViewChild('input3') input3: ElementRef;
+  @ViewChild('input4') input4: ElementRef;
+  @ViewChild('input5') input5: ElementRef;
+  @ViewChild('input6') input6: ElementRef;
+
   logoUploader: FileUploader;
   webHostUrl = AppConsts.remoteServiceBaseUrl;
   item: UpdateItemDto = new UpdateItemDto();
@@ -39,7 +46,9 @@ export class EditItemModalComponent extends AppComponentBase {
   isLogo = false;
   AdditionalFiles: string;;
   images: FileDto[] = [];
-  additionalImgs: string[] = [];
+  additionalImgs: AdditionalFiles[] = [];
+
+  removeImages: number[] = [];
 
   constructor(
     injector: Injector,
@@ -104,6 +113,8 @@ export class EditItemModalComponent extends AppComponentBase {
       this._itemService.getDropdowns(),
       this._accountService.getAllAccount()
     ]).subscribe(allResults => {
+      this.images = [];
+      this.removeImages = [];
 
       this.item = allResults[0];
       this.categoryList = allResults[1].items;
@@ -113,9 +124,17 @@ export class EditItemModalComponent extends AppComponentBase {
       this.isLogo = true;
       let additionalImages = this.item.itemImages;
       this.additionalImgs = [];
-      for (var i = 0; i < additionalImages.length; i++) {
-        let url = this.webHostUrl + additionalImages[i].thumbnail;
-        this.additionalImgs.push(url);
+      for (var i = 0; i < 6; i++) {
+        let addFilr = new AdditionalFiles();
+        let item = additionalImages[i];
+        if (item !== undefined) {
+          addFilr.filename = this.webHostUrl + additionalImages[i].thumbnail;
+          addFilr.id = additionalImages[i].id;
+        }
+        else {
+          addFilr.id = 0;
+        }
+        this.additionalImgs.push(addFilr);
       }
       this.modal.show();
     });
@@ -125,14 +144,20 @@ export class EditItemModalComponent extends AppComponentBase {
     this.isLogo = false;
     this.item.mainImageName = "";
   }
-
+  clearAddImg(imgId: number): void {
+    this.removeImages.push(imgId);
+    let img = this.additionalImgs.filter(s => s.id === imgId)[0];
+    if (img !== null) {
+      img.id = 0;
+    }
+  }
 
   close(): void {
     this.active = false;
     this.modal.hide();
   }
   save(): void {
-    debugger;
+    
     let mainImages = this.images.filter(s => s.isMainImg === true);
     if (!this.isLogo) {
       if (mainImages.length === 0) {
@@ -154,6 +179,11 @@ export class EditItemModalComponent extends AppComponentBase {
       formData.append("additionalImages[]", additionalImages[x].file);
     }
     formData.append("isCreated", "false");
+
+    
+    this.item.removeImageIds = [];
+    this.item.removeImageIds = this.removeImages;
+
     formData.append('updateItemDto', JSON.stringify(this.item));
     this.saving = true;
     var url = AppConsts.remoteServiceBaseUrl + '/Items/UploadLogo';
@@ -184,7 +214,7 @@ export class EditItemModalComponent extends AppComponentBase {
     var files = event.target.files;
     var myArray = [];
     var file = {};
-    debugger;
+    
     if (files.length > 6) {
       this.notify.error("You'll be able to select file upto 6.");
       event.target.value = "";
@@ -271,5 +301,9 @@ export class EditItemModalComponent extends AppComponentBase {
 export class FileDto {
   file: File;
   isMainImg: boolean;
+}
+export class AdditionalFiles {
+  filename: string;
+  id: number;
 }
 

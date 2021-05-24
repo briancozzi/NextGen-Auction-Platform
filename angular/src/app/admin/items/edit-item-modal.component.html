@@ -139,7 +139,8 @@
                             <img src="{{webHostUrl}}{{item.mainImageName}}" alt="logo" height="250" width="250" />
                         </div>
                         <div *ngIf="!isLogo">
-                            <input id="logo" #inputFile type="file" class="col-lg-12" (change)="onSelectedFile($event, true)" required />
+                            <input id="logo" #inputFile type="file" class="col-lg-12"
+                                (change)="onSelectedFile($event, true)" required />
                         </div>
                     </div>
                     <button class="btn btn-default" type="button" (click)="clearLogo()">{{"Clear" | localize}}</button>
@@ -147,13 +148,21 @@
                     <br />
                     <div class="form-group">
                         <label for="logoMultple">{{"AdditionalImages" | localize}}</label>
-                        <div *ngIf="additionalImgs.length > 0">
-                            <div *ngFor="let img of additionalImgs">
-                                <img src="{{img}}" alt="logo" height="150" width="150" />
+                        <div class="row" style="border: 1px solid #ccc; padding: 20px 0px;">
+                            <div *ngFor="let img of additionalImgs; let index=i" class="col-4">
+                                <div *ngIf="img.id > 0">
+                                    <img src="{{img.filename}}" alt="logo" style="max-width: 100%;" />
+                                    <button class="btn btn-default" (click)="clearAddImg(img.id)" type="button">{{"Clear" |
+                                        localize}}</button>
+                                </div>
+                                <div *ngIf="img.id === 0">
+                                    <input type="file" (change)="onSelectedFile($event, false)"/>
+                                </div>
                             </div>
+
                         </div>
                         <!-- <div *ngIf="additionalImgs.length === 0"> -->
-                            <input type="file" multiple (change)="onSelectedFile($event, false)" class="col-xl-12" />
+                        <!-- <input type="file" multiple (change)="onSelectedFile($event, false)" class="col-xl-12" /> -->
                         <!-- </div> -->
 
                     </div>

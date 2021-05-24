@@ -28,7 +28,7 @@ export class CreateCategoryModalComponent extends AppComponentBase implements On
     this.modal.hide();
   }
   save():void{
-      debugger;
+      
       this.saving = true;
       this._categoryService.create(this.category)
       .pipe(finalize(() => this.saving = false))

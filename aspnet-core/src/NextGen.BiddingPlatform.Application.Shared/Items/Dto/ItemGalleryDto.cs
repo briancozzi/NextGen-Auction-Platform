@@ -7,6 +7,7 @@ namespace NextGen.BiddingPlatform.Items.Dto
 {
     public class ItemGalleryDto
     {
+        public int Id { get; set; }
         [Required]
         public string ImageName { get; set; }
 
