@@ -14,6 +14,15 @@ function GetAuctionItem() {
             debugger;
             if (response != null || response != undefined) {
                 var data = response.result;
+
+
+                var endDate = new Date(Date.parse(data.auctionEndDateTime));
+
+                $('#defaultCountdown').countdown({
+                    until: endDate,
+                    layout: ' {dn} {dl} {hn} {hl} {sn} {sl} '
+                });
+
                 $(".name").text(data.itemName);
                 $("#lastBidAmount").text("$" + data.lastBidAmount.toFixed(2));
                 $("#lastBidWinner").text(data.lastBidWinnerName);
@@ -33,6 +42,34 @@ function GetAuctionItem() {
                 var itemHistories = data.auctionItemHistories;
                 $.each(itemHistories, function (i, v) {
                     CreateHistoryData(v);
+                });
+
+                //add user viewed item entry
+
+                var input = {
+                    userId: userId,
+                    auctionItemId: id
+                };
+                $.ajax({
+                    url: ApiServerPath + "/api/services/app/UserViewedItem/AddViewedItem",
+                    type: "POST",
+                    cache: false,
+                    async: true,
+                    data: JSON.stringify(input),
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (response) {
+                        debugger;
+                        if (response != null && response.success) {
+                            console.log("added item to viewed");
+                        }
+                        else {
+                            alert("error occured!!");
+                        }
+                    },
+                    error: function (xhr) {
+                        console.log(xhr.responseText + " " + xhr.status)
+                    }
                 });
             }
         },

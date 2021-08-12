@@ -3,7 +3,8 @@
     GetCategories();
     GetAuctionItems();
     //get auction item by id
-    $(document).on("click", ".golf-event .image, .golf-event .desc", function () {
+    //.golf-event.image,
+    $(document).on("click", ".golf-event .desc", function () {
         var isClosedAuction = $(this).parents(".golf-event").attr("data-is-closed-auction");
         var itemStatus = $(this).parents(".golf-event").attr("data-itemstatus");
         if (isClosedAuction == "true") {
@@ -23,6 +24,49 @@
             }
         }
     });
+
+    $(document).on("click", ".wishlist", function (e) {
+
+        if (UserId === "") {
+            alert("Please login first!!");
+            return false;
+        }
+
+        var itemId = $(this).parents(".golf-event").attr("data-id");
+        var isFavorite = $(this).hasClass("liked") ? false : true;
+        var currEle = this;
+        var input = {
+            userId: UserId,
+            itemId: itemId,
+            isFavorite: isFavorite
+        };
+        $.ajax({
+            url: ApiServerPath + "/api/services/app/UserFavoriteItem/SetItemAsFavoriteOrUnFavorite",
+            type: "POST",
+            cache: false,
+            async: true,
+            data: JSON.stringify(input),
+            contentType: "application/json",
+            dataType: "json",
+            success: function (response) {
+                if (response != null && response.success) {
+                    if (isFavorite) {
+                        $(currEle).addClass("liked");
+                    }
+                    else {
+                        $(currEle).removeClass("liked");
+                    }
+                }
+                else {
+                    alert("error occured!!");
+                }
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText + " " + xhr.status)
+            }
+        });
+    })
+
 });
 
 function GetCategories() {
@@ -61,13 +105,19 @@ function GetAuctionItems(categoryId, search) {
         success: function (response) {
             if (response != null || response != undefined) {
                 var data = response.result.items;
-                $("#itemCount").text('(' + data.length + ')');
+                var totalItems = 0;
+
                 $("#auctionItems").empty();
+                debugger;
                 $.each(data, function (i, v) {
-                    v.imageName = ApiServerPath + v.imageName;
-                    var output = Mustache.render($("#auctionItemTemplate").html(), v);
-                    $("#auctionItems").append(output);
+                    if (!v.isAuctionExpired) {
+                        v.imageName = ApiServerPath + v.imageName;
+                        var output = Mustache.render($("#auctionItemTemplate").html(), v);
+                        $("#auctionItems").append(output);
+                        totalItems += 1;
+                    }
                 });
+                $("#itemCount").text('(' + totalItems + ')');
             }
         },
         error: function (xhr) {

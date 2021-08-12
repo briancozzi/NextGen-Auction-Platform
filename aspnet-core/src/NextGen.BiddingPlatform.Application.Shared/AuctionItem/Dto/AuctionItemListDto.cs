@@ -39,5 +39,7 @@ namespace NextGen.BiddingPlatform.AuctionItem.Dto
                     return true;
             }
         }
+
+        public bool IsAuctionExpired { get; set; }
     }
 }

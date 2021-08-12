@@ -29,6 +29,8 @@ using NextGen.BiddingPlatform.MultiTenancy;
 using NextGen.BiddingPlatform.MultiTenancy.Accounting;
 using NextGen.BiddingPlatform.MultiTenancy.Payments;
 using NextGen.BiddingPlatform.Storage;
+using NextGen.BiddingPlatform.UserfavoriteItems;
+using NextGen.BiddingPlatform.UserViewedItems;
 using Toolbelt.ComponentModel.DataAnnotations;
 
 namespace NextGen.BiddingPlatform.EntityFrameworkCore
@@ -36,6 +38,9 @@ namespace NextGen.BiddingPlatform.EntityFrameworkCore
     public class BiddingPlatformDbContext : AbpZeroDbContext<Tenant, Role, User, BiddingPlatformDbContext>, IAbpPersistedGrantDbContext
     {
         /* Define an IDbSet for each entity of the application */
+
+        public virtual DbSet<UserViewedItem> UserViewedItems { get; set; }
+        public virtual DbSet<UserFavoriteItem> UserFavoriteItems { get; set; }
 
         public virtual DbSet<BinaryObject> BinaryObjects { get; set; }
 
@@ -54,7 +59,7 @@ namespace NextGen.BiddingPlatform.EntityFrameworkCore
         public virtual DbSet<SubscriptionPaymentExtensionData> SubscriptionPaymentExtensionDatas { get; set; }
 
         public virtual DbSet<UserDelegation> UserDelegations { get; set; }
-        public  virtual DbSet<Country.Country> Countries { get; set; }
+        public virtual DbSet<Country.Country> Countries { get; set; }
         public virtual DbSet<State> States { get; set; }
         public virtual DbSet<Core.AppAccounts.AppAccount> AppAccounts { get; set; }
         public virtual DbSet<Event> AppAccountEvents { get; set; }
@@ -84,6 +89,16 @@ namespace NextGen.BiddingPlatform.EntityFrameworkCore
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<UserViewedItem>(b =>
+            {
+                b.HasIndex(e => new { e.TenantId });
+            });
+
+            modelBuilder.Entity<UserFavoriteItem>(b =>
+            {
+                b.HasIndex(e => new { e.TenantId });
+            });
 
             modelBuilder.Entity<BinaryObject>(b =>
             {
