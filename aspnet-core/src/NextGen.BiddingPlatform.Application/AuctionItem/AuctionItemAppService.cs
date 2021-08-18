@@ -67,11 +67,13 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 FairMarketValue_FMV = s.Item.FairMarketValue_FMV,
                 ImageName = s.Item.MainImageName,
                 Thumbnail = s.Item.ThumbnailImage,
-                IsAuctionExpired = (s.Auction.AuctionEndDateTime - DateTime.Now).TotalHours <= 0,
-                RemainingDays = (s.Auction.AuctionEndDateTime - s.Auction.AuctionStartDateTime).TotalDays.ToString(),
-                RemainingTime = (s.Auction.AuctionEndDateTime - s.Auction.AuctionStartDateTime).TotalHours + ":" + (s.Auction.AuctionEndDateTime - s.Auction.AuctionStartDateTime).TotalMinutes,
+                IsAuctionExpired = (s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours <= 0,
+                RemainingDays = Convert.ToInt32((s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalDays).ToString(),
+                RemainingTime = Convert.ToInt32((s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours) + ":" + Convert.ToInt32((s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalMinutes),
                 LastBidAmount = s.AuctionHistories.OrderByDescending(x => x.CreationTime).FirstOrDefault().BidAmount,
-                IsClosedItemStatus = s.Item.ItemStatus == (int)ItemStatus.Closed
+                IsClosedItemStatus = s.Item.ItemStatus == (int)ItemStatus.Closed,
+                IsFavorite = "",
+                ActualItemId = s.ItemId
             }).ToListAsync();
 
             return new ListResultDto<AuctionItemListDto>(auctionItems);
@@ -160,8 +162,9 @@ namespace NextGen.BiddingPlatform.AuctionItem
                     FairMarketValue_FMV = output.Item.FairMarketValue_FMV,
                     ImageName = output.Item.MainImageName,
                     Thumbnail = output.Item.ThumbnailImage,
-                    RemainingDays = (output.Auction.AuctionEndDateTime - output.Auction.AuctionStartDateTime).TotalDays.ToString(),
-                    RemainingTime = (output.Auction.AuctionEndDateTime - output.Auction.AuctionStartDateTime).Hours + ":" + (output.Auction.AuctionEndDateTime - output.Auction.AuctionStartDateTime).Seconds,
+                    IsAuctionExpired = (output.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours <= 0,
+                    RemainingDays = Convert.ToInt32((output.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalDays).ToString(),
+                    RemainingTime = Convert.ToInt32((output.Auction.AuctionEndDateTime - DateTime.UtcNow).Hours) + ":" + Convert.ToInt32((output.Auction.AuctionEndDateTime - DateTime.UtcNow).Minutes),
                     LastBidAmount = lastBidAmount,
                     TotalBidCount = output.AuctionHistories.Count,
                     ItemDescription = output.Item.Description

@@ -5,6 +5,7 @@ using NextGen.BiddingPlatform.Core.Items;
 using NextGen.BiddingPlatform.UserfavoriteItems.Dto;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -48,9 +49,16 @@ namespace NextGen.BiddingPlatform.UserfavoriteItems
             }
         }
 
-        public async Task GetUserFavoriteItems()
+        public async Task<List<GetUserFavoriteItemDto>> GetUserFavoriteItems(long userId)
         {
-            var userFavoriteItems = await _userFavoriteItemRepository.GetAll().AsNoTracking().Include(s => s.ItemFk).ToListAsync();
+            var userFavoriteItems = await _userFavoriteItemRepository.GetAll()
+                            .AsNoTracking().Include(s => s.ItemFk).Where(s => s.UserId == userId).Select(s => new GetUserFavoriteItemDto
+                            {
+                                UserId = s.UserId,
+                                ItemId = s.ItemId
+                            }).ToListAsync();
+
+            return userFavoriteItems;
         }
     }
 }

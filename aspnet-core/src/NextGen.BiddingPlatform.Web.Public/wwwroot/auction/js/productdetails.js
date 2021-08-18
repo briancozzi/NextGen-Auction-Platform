@@ -15,10 +15,20 @@ function GetAuctionItem() {
                 var data = response.result;
                 var endDate = new Date(Date.parse(data.auctionEndDateTime));
 
+                //if (parseInt(data.remainingDays) > 0) {
+                //    $('#defaultCountdown').countdown({
+                //        until: endDate,
+                //        layout: ' {dn} {dl}  '
+                //    });
+                //}
+                //else {
                 $('#defaultCountdown').countdown({
                     until: endDate,
-                    layout: ' {dn} {dl} {hn} {hl} {sn} {sl} '
+                    layout: ' {hn} {hl} {mn} {ml} {sn} {sl} '
                 });
+                //}
+
+
 
                 $(".name").text(data.itemName);
                 $("#lastBidAmount").text("$" + data.lastBidAmount.toFixed(2));

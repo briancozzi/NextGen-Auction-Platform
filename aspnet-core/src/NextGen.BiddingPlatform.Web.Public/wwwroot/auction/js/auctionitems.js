@@ -105,10 +105,48 @@ function GetAuctionItems(categoryId, search) {
         success: function (response) {
             if (response != null || response != undefined) {
                 var data = response.result.items;
+                
+                if (UserId !== "") {
+                    $.ajax({
+                        url: ApiServerPath + "/api/services/app/UserFavoriteItem/GetUserFavoriteItems?userId=" + UserId,
+                        type: "GET",
+                        cache: false,
+                        async: true,
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (responseFromFavorite) {
+                            
+                            if (responseFromFavorite !== null) {
+                                var favItems = responseFromFavorite.result;
+                                for (var i = 0; i < favItems.length; i++) {
+                                    var result = data.filter(s => s.actualItemId === favItems[i].itemId)[0];
+                                    if (result !== null) {
+                                        result.isFavorite = "liked";
+                                    }
+                                }
+                                var totalItems = 0;
+
+                                $("#auctionItems").empty();
+                                $.each(data, function (i, v) {
+                                    if (!v.isAuctionExpired) {
+                                        var output = Mustache.render($("#auctionItemTemplate").html(), v);
+                                        $("#auctionItems").append(output);
+                                        totalItems += 1;
+                                    }
+                                });
+                                $("#itemCount").text('(' + totalItems + ')');
+                            }
+
+                        },
+                        error: function (xhr) {
+                            alert("Error occured for favorite items!!");
+                        }
+                    });
+                }
+
                 var totalItems = 0;
 
                 $("#auctionItems").empty();
-                debugger;
                 $.each(data, function (i, v) {
                     if (!v.isAuctionExpired) {
                         v.imageName = ApiServerPath + v.imageName;
@@ -127,7 +165,7 @@ function GetAuctionItems(categoryId, search) {
 }
 
 $(document).on("click", "#categories li a", function () {
-    debugger;
+    
     var items = $(this).parents("ul").children("li");
     $.each(items, function (i, v) {
         $(this).find("a").removeClass("active");

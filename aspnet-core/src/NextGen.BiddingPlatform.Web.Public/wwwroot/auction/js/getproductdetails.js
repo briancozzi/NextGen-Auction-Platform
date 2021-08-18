@@ -18,11 +18,24 @@ function GetAuctionItem() {
 
                 var endDate = new Date(Date.parse(data.auctionEndDateTime));
 
-                $('#defaultCountdown').countdown({
-                    until: endDate,
-                    layout: ' {dn} {dl} {hn} {hl} {sn} {sl} '
-                });
-
+                if (parseInt(data.remainingDays) > 0) {
+                    $('#defaultCountdown').countdown({
+                        until: endDate,
+                        layout: ' {dn} {dl}  '
+                    });
+                }
+                else {
+                    $('#defaultCountdown').countdown({
+                        until: endDate,
+                        layout: ' {hn} {hl} {mn} {ml} {sn} {sl} '
+                    });
+                }
+                if (data.isAuctionExpired) {
+                    $("#bidNowBtn").addClass("disbale-btn");
+                }
+                else {
+                    $("#bidNowBtn").removeClass("disbale-btn");
+                }
                 $(".name").text(data.itemName);
                 $("#lastBidAmount").text("$" + data.lastBidAmount.toFixed(2));
                 $("#lastBidWinner").text(data.lastBidWinnerName);
