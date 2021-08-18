@@ -34,6 +34,11 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
             _webhookSubscriptionService = webhookSubscriptionService;
         }
         #region pages
+
+        public async Task<IActionResult> CurrentBids()
+        {
+            return View();
+        }
         public async Task<ActionResult> Index()
         {
             ViewBag.IsLoggedInUser = await IsCurrentUserLoggedIn();
