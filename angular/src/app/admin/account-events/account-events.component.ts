@@ -41,7 +41,6 @@ export class AccountEventsComponent extends AppComponentBase {
       )
     ]).pipe(finalize(() => this.primengTableHelper.hideLoadingIndicator()))
         .subscribe(result => {
-            debugger;
       this.primengTableHelper.totalRecordsCount = result[0].totalCount;
       this.primengTableHelper.records = result[0].items;
       this.primengTableHelper.hideLoadingIndicator();

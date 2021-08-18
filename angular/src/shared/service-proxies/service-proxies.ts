@@ -27242,6 +27242,7 @@ export interface IPagedResultDtoOfItemListDto {
 }
 
 export class ItemGalleryDto implements IItemGalleryDto {
+    id!: number;
     imageName!: string;
     thumbnail!: string | undefined;
     title!: string | undefined;
@@ -27258,6 +27259,7 @@ export class ItemGalleryDto implements IItemGalleryDto {
 
     init(_data?: any) {
         if (_data) {
+            this.id = _data["id"];
             this.imageName = _data["imageName"];
             this.thumbnail = _data["thumbnail"];
             this.title = _data["title"];
@@ -27274,6 +27276,7 @@ export class ItemGalleryDto implements IItemGalleryDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
         data["imageName"] = this.imageName;
         data["thumbnail"] = this.thumbnail;
         data["title"] = this.title;
@@ -27283,6 +27286,7 @@ export class ItemGalleryDto implements IItemGalleryDto {
 }
 
 export interface IItemGalleryDto {
+    id: number;
     imageName: string;
     thumbnail: string | undefined;
     title: string | undefined;
@@ -27314,6 +27318,7 @@ export class UpdateItemDto implements IUpdateItemDto {
     isHide!: boolean;
     itemImages!: ItemGalleryDto[] | undefined;
     categories!: number[] | undefined;
+    removeImageIds!: number[] | undefined;
 
     constructor(data?: IUpdateItemDto) {
         if (data) {
@@ -27357,6 +27362,11 @@ export class UpdateItemDto implements IUpdateItemDto {
                 this.categories = [] as any;
                 for (let item of _data["categories"])
                     this.categories!.push(item);
+            }
+            if (Array.isArray(_data["removeImageIds"])) {
+                this.removeImageIds = [] as any;
+                for (let item of _data["removeImageIds"])
+                    this.removeImageIds!.push(item);
             }
         }
     }
@@ -27402,6 +27412,11 @@ export class UpdateItemDto implements IUpdateItemDto {
             for (let item of this.categories)
                 data["categories"].push(item);
         }
+        if (Array.isArray(this.removeImageIds)) {
+            data["removeImageIds"] = [];
+            for (let item of this.removeImageIds)
+                data["removeImageIds"].push(item);
+        }
         return data; 
     }
 }
@@ -27431,6 +27446,7 @@ export interface IUpdateItemDto {
     isHide: boolean;
     itemImages: ItemGalleryDto[] | undefined;
     categories: number[] | undefined;
+    removeImageIds: number[] | undefined;
 }
 
 export class ItemDto implements IItemDto {

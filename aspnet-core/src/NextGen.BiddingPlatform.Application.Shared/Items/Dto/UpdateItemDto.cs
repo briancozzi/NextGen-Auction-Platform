@@ -48,10 +48,13 @@ namespace NextGen.BiddingPlatform.Items.Dto
         public ICollection<ItemGalleryDto> ItemImages { get; set; }
         public ICollection<int> Categories { get; set; }
 
+        public List<int> RemoveImageIds { get; set; }
+
         public UpdateItemDto()
         {
             ItemImages = new Collection<ItemGalleryDto>();
             Categories = new Collection<int>();
+            RemoveImageIds = new List<int>();
         }
     }
 }

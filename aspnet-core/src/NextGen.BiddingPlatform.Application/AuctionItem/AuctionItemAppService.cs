@@ -67,8 +67,9 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 FairMarketValue_FMV = s.Item.FairMarketValue_FMV,
                 ImageName = s.Item.MainImageName,
                 Thumbnail = s.Item.ThumbnailImage,
+                IsAuctionExpired = (s.Auction.AuctionEndDateTime - DateTime.Now).TotalHours <= 0,
                 RemainingDays = (s.Auction.AuctionEndDateTime - s.Auction.AuctionStartDateTime).TotalDays.ToString(),
-                RemainingTime = (s.Auction.AuctionEndDateTime - s.Auction.AuctionStartDateTime).Hours + ":" + (s.Auction.AuctionEndDateTime - s.Auction.AuctionStartDateTime).Seconds,
+                RemainingTime = (s.Auction.AuctionEndDateTime - s.Auction.AuctionStartDateTime).TotalHours + ":" + (s.Auction.AuctionEndDateTime - s.Auction.AuctionStartDateTime).TotalMinutes,
                 LastBidAmount = s.AuctionHistories.OrderByDescending(x => x.CreationTime).FirstOrDefault().BidAmount,
                 IsClosedItemStatus = s.Item.ItemStatus == (int)ItemStatus.Closed
             }).ToListAsync();

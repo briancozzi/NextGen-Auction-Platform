@@ -89,7 +89,6 @@ export class EditAccountsModalComponent extends AppComponentBase {
         );
     }
     show(AccountId?: string): void {
-        debugger;
         this.active = true;
         this.account = new AppAccountDto();
         this.account.address = new AddressDto();

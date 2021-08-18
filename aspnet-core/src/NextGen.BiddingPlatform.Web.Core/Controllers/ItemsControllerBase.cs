@@ -59,7 +59,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                 throw new Exception("Posted data is null. Please try again.");
 
 
-            var uploadedImages = await UploadImages();
+            var uploadedImages = await UploadImages(false);
 
             itemDto.MainImageName = uploadedImages.MainImageName;
             itemDto.ThumbnailImage = uploadedImages.ThumbnailImage;
@@ -84,10 +84,15 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             var uploadedFiles = Request.Form.Files.Count;
             if (uploadedFiles > 0)
             {
-                var uploadedImages = await UploadImages();
+                var isMainImgUploaded = string.IsNullOrEmpty(updateItemDto.MainImageName) ? false : true;
 
-                updateItemDto.MainImageName = uploadedImages.MainImageName;
-                updateItemDto.ThumbnailImage = uploadedImages.ThumbnailImage;
+                var uploadedImages = await UploadImages(isMainImgUploaded);
+                if (!isMainImgUploaded)
+                {
+                    updateItemDto.MainImageName = uploadedImages.MainImageName;
+                    updateItemDto.ThumbnailImage = uploadedImages.ThumbnailImage;
+                }
+
                 foreach (var item in uploadedImages.AdditionImages)
                 {
                     updateItemDto.ItemImages.Add(new ItemGalleryDto
@@ -100,20 +105,25 @@ namespace NextGen.BiddingPlatform.Web.Controllers
 
             await _itemService.UpdateItem(updateItemDto);
         }
-        public async Task<ItemImages> UploadImages()
+        public async Task<ItemImages> UploadImages(bool isMainImgUploaded)
         {
             ItemImages images = new ItemImages();
 
             var files = Request.Form.Files;
-            var mainFile = files.First();
-            if (mainFile != null)
+            if (!isMainImgUploaded)
             {
-                var image = await Upload(mainFile);
-                images.MainImageName = image.Logo;
-                images.ThumbnailImage = image.ThumbnailImage;
+                var mainFile = files.First();
+                if (mainFile != null)
+                {
+                    var image = await Upload(mainFile);
+                    images.MainImageName = image.Logo;
+                    images.ThumbnailImage = image.ThumbnailImage;
+                }
             }
 
-            var additionalFiles = files.Skip(1);
+            var skipCount = isMainImgUploaded ? 0 : 1;
+
+            var additionalFiles = files.Skip(skipCount);
             foreach (var logoFile in additionalFiles)
             {
                 if (logoFile != null)

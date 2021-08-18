@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NextGen.BiddingPlatform.EntityFrameworkCore;
 
 namespace NextGen.BiddingPlatform.Migrations
 {
     [DbContext(typeof(BiddingPlatformDbContext))]
-    partial class BiddingPlatformDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210812054216_Added-UserFavoriteItem-Entity")]
+    partial class AddedUserFavoriteItemEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3088,39 +3090,6 @@ namespace NextGen.BiddingPlatform.Migrations
                     b.ToTable("AppBinaryObjects");
                 });
 
-            modelBuilder.Entity("NextGen.BiddingPlatform.UserViewedItems.UserViewedItem", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("CreatorUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("ItemId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TenantId")
-                        .HasColumnType("int");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ItemId");
-
-                    b.HasIndex("TenantId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserViewedItems");
-                });
-
             modelBuilder.Entity("NextGen.BiddingPlatform.UserfavoriteItems.UserFavoriteItem", b =>
                 {
                     b.Property<long>("Id")
@@ -3669,21 +3638,6 @@ namespace NextGen.BiddingPlatform.Migrations
                     b.HasOne("NextGen.BiddingPlatform.Core.State.State", "State")
                         .WithMany()
                         .HasForeignKey("StateId");
-                });
-
-            modelBuilder.Entity("NextGen.BiddingPlatform.UserViewedItems.UserViewedItem", b =>
-                {
-                    b.HasOne("NextGen.BiddingPlatform.Core.Items.Item", "ItemFk")
-                        .WithMany()
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NextGen.BiddingPlatform.Authorization.Users.User", "UserFk")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("NextGen.BiddingPlatform.UserfavoriteItems.UserFavoriteItem", b =>

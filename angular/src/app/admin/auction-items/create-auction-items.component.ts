@@ -37,14 +37,14 @@ export class CreateAuctionItemsComponent extends AppComponentBase implements OnI
   ngOnInit(): void {
   }
   show():void{
-    debugger;
+    
     this.active = true;
     this.init();
     this.modal.show();
   }
 
   init(): void {
-    debugger;
+    
     forkJoin([
       this._itemService.getItems(),
       this._auctionService.getAuctions()

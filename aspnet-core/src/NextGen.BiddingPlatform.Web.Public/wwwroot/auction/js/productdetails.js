@@ -13,6 +13,13 @@ function GetAuctionItem() {
         success: function (response) {
             if (response != null || response != undefined) {
                 var data = response.result;
+                var endDate = new Date(Date.parse(data.auctionEndDateTime));
+
+                $('#defaultCountdown').countdown({
+                    until: endDate,
+                    layout: ' {dn} {dl} {hn} {hl} {sn} {sl} '
+                });
+
                 $(".name").text(data.itemName);
                 $("#lastBidAmount").text("$" + data.lastBidAmount.toFixed(2));
                 $("#fmvValue").text("$" + data.fairMarketValue_FMV.toFixed(2));

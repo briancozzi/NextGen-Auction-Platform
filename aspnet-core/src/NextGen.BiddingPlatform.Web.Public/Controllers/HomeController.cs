@@ -42,6 +42,8 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
         public async Task<ActionResult> Index()
         {
             ViewBag.IsLoggedInUser = await IsCurrentUserLoggedIn();
+            var user = await _sessionCache.GetCurrentLoginInformationsAsync();
+            ViewBag.UserId = user?.User?.Id;
             return View();
         }
         public ActionResult ProductDetail(Guid id)

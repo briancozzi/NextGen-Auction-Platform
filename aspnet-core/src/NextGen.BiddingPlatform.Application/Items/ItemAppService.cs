@@ -202,9 +202,10 @@ namespace NextGen.BiddingPlatform.Items
                 //    throw new UserFriendlyException("Please select at least one category for item");
 
                 //first remove gallery
-                var itemImages = await _itemGalleryRepository.GetAllListAsync(x => x.ItemId == existingItem.Id);
-                if (itemImages.Count > 0)
-                    await _itemGalleryRepository.DeleteAsync(x => x.ItemId == existingItem.Id);
+                foreach (var item in input.RemoveImageIds)
+                {
+                    await _itemGalleryRepository.DeleteAsync(x => x.Id == item);
+                }
 
                 //second remove categories
                 //var itemCategories = await _itemCategoryRepository.GetAllListAsync(x => x.ItemId == existingItem.Id);
@@ -224,14 +225,18 @@ namespace NextGen.BiddingPlatform.Items
                 
                 foreach (var image in input.ItemImages)
                 {
-                    existingItem.ItemImages.Add(new ItemGallery
+                    if(image.Id == 0)
                     {
-                        UniqueId = Guid.NewGuid(),
-                        ImageName = image.ImageName,
-                        Thumbnail = image.Thumbnail,
-                        Title = image.Title,
-                        Description = image.Description
-                    });
+                        existingItem.ItemImages.Add(new ItemGallery
+                        {
+                            UniqueId = Guid.NewGuid(),
+                            ImageName = image.ImageName,
+                            Thumbnail = image.Thumbnail,
+                            Title = image.Title,
+                            Description = image.Description
+                        });
+                    }
+                    
                 }
                 //update the properties
                 //existingItem.ItemType = input.ItemType;

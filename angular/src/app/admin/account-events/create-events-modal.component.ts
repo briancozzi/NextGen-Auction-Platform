@@ -63,7 +63,6 @@ export class CreateEventsModalComponent extends AppComponentBase {
     }
 
     init(): void {
-        debugger;
         this.event = new CreateAccountEventDto();
         this.event.address = new AddressDto();
 

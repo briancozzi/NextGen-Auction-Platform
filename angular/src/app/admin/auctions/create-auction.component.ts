@@ -58,7 +58,6 @@ export class CreateAuctionComponent extends AppComponentBase implements OnInit, 
     }
 
     init(): void {
-        debugger;
         this.auction = new CreateAuctionDto();
         this.auction.address = new AddressDto();
         this.auction.accountUniqueId = "";
