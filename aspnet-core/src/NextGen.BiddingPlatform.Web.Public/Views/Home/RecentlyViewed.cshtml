@@ -1,5 +1,165 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using Microsoft.AspNetCore.Hosting
+@using NextGen.BiddingPlatform.Configuration
+@using Microsoft.Extensions.Configuration
+@inject IWebHostEnvironment env
 @{
+    var appConfiguration = env.GetAppConfiguration();
+    var apiServerPath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:ApiWebSiteRootAddress", string.Empty);
+    var webSitePath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:WebSiteRootAddress", string.Empty);
+}
+
+<div class="inner-wrapper">
+    <div class="content-wrapper">
+        <div class="container position-relative current-bids">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link text-uppercase" asp-controller="Home" asp-action="CurrentBids">Current Bids</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-uppercase" asp-controller="Home" asp-action="WatchList">Watch List</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a class="nav-link text-uppercase" href="#">Recently Viewed</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <div class="row col-gap-20" id="auctionItems"></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script>
+        var ApiServerPath = "@apiServerPath";
+        var WebSiteUrl = "@webSitePath";
+        var IsLoggedInUser = "@ViewBag.IsLoggedInUser".toLowerCase();
+        var userId = "@ViewBag.UserId";
+        var tenantId = "@ViewBag.TenantId";
+
+        $(function () {
+            GetAuctionItems();
+
+
+            $(document).on("click", "#setFavoriteItem", function (e) {
+
+                if (userId === "") {
+                    alert("Please login first!!");
+                    return false;
+                }
+
+                var itemId = $(this).parents(".golf-event").attr("data-id");
+                var isFavorite = $(this).hasClass("liked") ? false : true;
+                var currEle = this;
+                var input = {
+                    userId: userId,
+                    itemId: itemId,
+                    isFavorite: isFavorite,
+                    tenantId: tenantId
+                };
+                $.ajax({
+                    url: ApiServerPath + "/api/services/app/UserFavoriteItem/SetItemAsFavoriteOrUnFavorite",
+                    type: "POST",
+                    cache: false,
+                    async: true,
+                    data: JSON.stringify(input),
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response != null && response.success) {
+                            if (isFavorite) {
+                                $(currEle).addClass("liked");
+                            }
+                            else {
+                                $(currEle).removeClass("liked");
+                            }
+                        }
+                        else {
+                            alert("error occured!!");
+                        }
+                    },
+                    error: function (xhr) {
+                        console.log(xhr.responseText + " " + xhr.status)
+                    }
+                });
+            })
+        });
+
+
+        function GetAuctionItems() {
+            $.ajax({
+                url: ApiServerPath + "/api/services/app/UserViewedItem/GetUserViewedItems?userId=" + userId + "&tenantId=" + tenantId,
+                type: "GET",
+                cache: false,
+                async: true,
+                contentType: "application/json",
+                dataType: "json",
+                success: function (response) {
+                    if (response != null || response != undefined) {
+                        var data = response.result.items;
+
+                        if (userId !== "") {
+                            $.ajax({
+                                url: ApiServerPath + "/api/services/app/UserFavoriteItem/GetUserFavoriteItems?userId=" + userId + "&tenantId=" + tenantId,
+                                type: "GET",
+                                cache: false,
+                                async: true,
+                                contentType: "application/json",
+                                dataType: "json",
+                                success: function (responseFromFavorite) {
+
+                                    if (responseFromFavorite !== null) {
+                                        var favItems = responseFromFavorite.result;
+                                        for (var i = 0; i < favItems.length; i++) {
+                                            var result = data.filter(s => s.actualItemId === favItems[i].itemId)[0];
+                                            if (result !== undefined) {
+                                                result.isFavorite = "liked";
+                                            }
+                                        }
+                                        var totalItems = 0;
+
+                                        $("#auctionItems").empty();
+                                        $.each(data, function (i, v) {
+                                            if (!v.isAuctionExpired) {
+                                                var output = Mustache.render($("#auctionItemTemplate").html(), v);
+                                                $("#auctionItems").append(output);
+                                                totalItems += 1;
+                                            }
+                                        });
+                                        $("#itemCount").text('(' + totalItems + ')');
+                                    }
+
+                                },
+                                error: function (xhr) {
+                                    alert("Error occured for favorite items!!");
+                                }
+                            });
+                        }
+
+                        var totalItems = 0;
+
+                        $("#auctionItems").empty();
+                        $.each(data, function (i, v) {
+                            if (!v.isAuctionExpired) {
+                                v.imageName = ApiServerPath + v.imageName;
+                                var output = Mustache.render($("#auctionItemTemplate").html(), v);
+                                $("#auctionItems").append(output);
+                                totalItems += 1;
+                            }
+                        });
+                        $("#itemCount").text('(' + totalItems + ')');
+                    }
+                },
+                error: function (xhr) {
+                    console.log(xhr.responseText + " " + xhr.status)
+                }
+            });
+        }
+    </script>
 }

@@ -1,4 +1,5 @@
-﻿using Abp.Domain.Repositories;
+﻿using Abp.Application.Services.Dto;
+using Abp.Domain.Repositories;
 using Abp.UI;
 using Microsoft.EntityFrameworkCore;
 using NextGen.BiddingPlatform.AuctionItem.Dto;
@@ -49,37 +50,45 @@ namespace NextGen.BiddingPlatform.UserViewedItems
             }
         }
 
-        public async Task<List<AuctionItemWithHistoryDto>> GetUserViewedItems(long userId, int? tenantId)
+        public async Task<ListResultDto<AuctionItemListDto>> GetUserViewedItems(long userId, int? tenantId)
         {
             using (CurrentUnitOfWork.DisableFilter(Abp.Domain.Uow.AbpDataFilters.MayHaveTenant))
             {
                 var itemIds = await _userViewedItemRepository.GetAll()
                                 .AsNoTracking().Where(s => s.UserId == userId && s.TenantId == tenantId).Select(s => s.ItemId).ToListAsync();
 
-                var auctionItems = await _auctionItemRepository.GetAll().AsNoTracking()
+
+                var query = _auctionItemRepository.GetAll().AsNoTracking()
                                                .Where(x => itemIds.Contains(x.ItemId))
                                                .Include(s => s.Item)
                                                .Include(s => s.Auction)
-                                               .Include(s => s.AuctionHistories)
-                                               .Select(item => new AuctionItemWithHistoryDto
-                                               {
-                                                   AuctionItemId = item.UniqueId,
-                                                   ItemName = item.Item.ItemName,
-                                                   AuctionEndDateTime = item.Auction.AuctionEndDateTime,
-                                                   AuctionStartDateTime = item.Auction.AuctionStartDateTime,
-                                                   ItemNumber = item.Item.ItemNumber,
-                                                   ItemStatus = item.Item.ItemStatus,
-                                                   ImageName = item.Item.MainImageName,
-                                                   Thumbnail = item.Item.ThumbnailImage,
-                                                   IsAuctionExpired = (item.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours <= 0,
-                                                   RemainingDays = Convert.ToInt32((item.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalDays).ToString(),
-                                                   RemainingTime = Convert.ToInt32((item.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours) + ":" + Convert.ToInt32((item.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalMinutes),
-                                                   IsClosedItemStatus = item.Item.ItemStatus == (int)ItemStatus.Closed,
-                                                   LastBidAmount = item.AuctionHistories.OrderByDescending(x => x.CreationTime).FirstOrDefault().BidAmount
-                                               })
-                                               .ToListAsync();
+                                               .Include(s => s.AuctionHistories);
 
-                return auctionItems;
+                var auctionItems = await query.Select(s => new AuctionItemListDto
+                {
+                    AuctionItemId = s.UniqueId,
+                    AuctionId = s.Auction.UniqueId,
+                    AuctionEndDateTime = s.Auction.AuctionEndDateTime,
+                    AuctionStartDateTime = s.Auction.AuctionStartDateTime,
+                    AuctionType = s.Auction.AuctionType,
+                    ItemId = s.Item.UniqueId,
+                    ItemName = s.Item.ItemName,
+                    ItemNumber = s.Item.ItemNumber,
+                    ItemStatus = s.Item.ItemStatus,
+                    ItemType = s.Item.ItemType,
+                    FairMarketValue_FMV = s.Item.FairMarketValue_FMV,
+                    ImageName = s.Item.MainImageName,
+                    Thumbnail = s.Item.ThumbnailImage,
+                    IsAuctionExpired = (s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours <= 0,
+                    RemainingDays = Convert.ToInt32((s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalDays).ToString(),
+                    RemainingTime = Convert.ToInt32((s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours) + ":" + Convert.ToInt32((s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalMinutes),
+                    LastBidAmount = s.AuctionHistories.OrderByDescending(x => x.CreationTime).FirstOrDefault().BidAmount,
+                    IsClosedItemStatus = s.Item.ItemStatus == (int)ItemStatus.Closed,
+                    IsFavorite = "",
+                    ActualItemId = s.ItemId
+                }).ToListAsync();
+
+                return new ListResultDto<AuctionItemListDto>(auctionItems);
             }
         }
     }
