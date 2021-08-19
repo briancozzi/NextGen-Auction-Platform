@@ -20,5 +20,8 @@ namespace NextGen.BiddingPlatform.AuctionItem
         Task Delete(Guid Id);
         Task<AuctionItemListDto> GetAuctionItem(Guid Id);
         Task<AuctionItemWithHistoryDto> GetAuctionItemWithHistory(Guid Id, int itemStatus, long userId);
+
+        //for current user bids
+        Task<List<AuctionItemWithHistoryDto>> GetUsersBiddingHistory(long userId);
     }
 }

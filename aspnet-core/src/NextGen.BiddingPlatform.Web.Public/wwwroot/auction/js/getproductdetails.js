@@ -61,7 +61,8 @@ function GetAuctionItem() {
 
                 var input = {
                     userId: userId,
-                    auctionItemId: id
+                    auctionItemId: id,
+                    tenantId: tenantId
                 };
                 $.ajax({
                     url: ApiServerPath + "/api/services/app/UserViewedItem/AddViewedItem",

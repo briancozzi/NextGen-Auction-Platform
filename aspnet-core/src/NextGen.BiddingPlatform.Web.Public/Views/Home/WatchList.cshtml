@@ -17,11 +17,11 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
-                        <li class="nav-item active">
-                            <a class="nav-link text-uppercase" href="#">Current Bids</a>
-                        </li>
                         <li class="nav-item">
-                            <a class="nav-link text-uppercase" asp-controller="Home" asp-action="WatchList">Watch List</a>
+                            <a class="nav-link text-uppercase" asp-controller="Home" asp-action="CurrentBids">Current Bids</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a class="nav-link text-uppercase" href="#">Watch List</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-uppercase" asp-controller="Home" asp-action="RecentlyViewed">Recently Viewed</a>
@@ -29,11 +29,11 @@
                     </ul>
                 </div>
             </nav>
-            <div id="usersBidAuctionItems"></div>
+            <div id="usersWatchListAuctionItems"></div>
         </div>
     </div>
 </div>
-<script id="userAuctionItemBidTemplate" type="x-tmpl-mustache">
+<script id="userWatchListAuctionItemBidTemplate" type="x-tmpl-mustache">
         <div id="current-bid-section">
                 <div class="row mt-20 position-relative" style="margin-left:0; margin-right:0px;">
                     <div class="col-md-3">
@@ -50,14 +50,7 @@
                                     <h5 class="winning-amt">${{lastBidAmount}}</h5>
                                 </div>
                                 <div class="col-md-7 winning-btn-section">
-                                    {{#isLastBidByCurrentUser}}
-                                    <div class="winning-right-btn">Winning</div>
-                                    <button class="btn btn-primary" style="text-transform:uppercase;max-width:200px;" id="btnViewItemDetail" data-url="{{url}}">View Detail</button>
-                                    {{/isLastBidByCurrentUser}}
-                                    {{^isLastBidByCurrentUser}}
-                                    <div class="winning-right-btn red">outbid</div>
-                                    <button class="btn btn-primary" style="text-transform:uppercase;max-width:200px;" id="btnViewItemDetail" data-url="{{url}}">Bid Again</button>
-                                    {{/isLastBidByCurrentUser}}
+                                    <button class="btn btn-primary" style="text-transform:uppercase;max-width:200px;" id="btnViewItemDetail" data-url="{{url}}">BID NOW</button>
                                 </div>
                             </div>
                         </div>
@@ -69,13 +62,14 @@
     <script>
         var ApiServerPath = "@apiServerPath";
         var userId = '@ViewBag.UserId';
+        var tenantId = '@ViewBag.TenantId';
 
-        var route = ApiServerPath + "/api/services/app/AuctionItem/GetUsersBiddingHistory?userId=" + userId;
+        var route = ApiServerPath + "/api/services/app/UserFavoriteItem/GetUserWatchListItems?userId=" + userId + "&tenantId=" + tenantId;
         if (userId !== "") {
             $.getJSON(route, "", function (response) {
 
                 if (response.result !== null) {
-                    $("#usersBidAuctionItems").empty();
+                    $("#usersWatchListAuctionItems").empty();
                     $.each(response.result, function (i, v) {
                         if (!v.isAuctionExpired) {
                             v.imageName = ApiServerPath + v.imageName;
@@ -87,8 +81,8 @@
                                 v.url = "/Home/ProductDetailWithLogin?id=" + v.auctionItemId + "&itemStatus=" + v.itemStatus;
                             }
 
-                            var output = Mustache.render($("#userAuctionItemBidTemplate").html(), v);
-                            $("#usersBidAuctionItems").append(output);
+                            var output = Mustache.render($("#userWatchListAuctionItemBidTemplate").html(), v);
+                            $("#usersWatchListAuctionItems").append(output);
 
 
                             var endDate = new Date(Date.parse(v.auctionEndDateTime));

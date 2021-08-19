@@ -10,6 +10,6 @@ namespace NextGen.BiddingPlatform.UserfavoriteItems
     public interface IUserFavoriteItemAppService : IApplicationService
     {
         Task SetItemAsFavoriteOrUnFavorite(CreateOrEditFavoriteItemDto input);
-        Task<List<GetUserFavoriteItemDto>> GetUserFavoriteItems(long userId);
+        Task<List<GetUserFavoriteItemDto>> GetUserFavoriteItems(long userId, int? tenantId);
     }
 }

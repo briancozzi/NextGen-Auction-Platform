@@ -25,7 +25,7 @@
         }
     });
 
-    $(document).on("click", ".wishlist", function (e) {
+    $(document).on("click", "#setFavoriteItem", function (e) {
 
         if (UserId === "") {
             alert("Please login first!!");
@@ -38,7 +38,8 @@
         var input = {
             userId: UserId,
             itemId: itemId,
-            isFavorite: isFavorite
+            isFavorite: isFavorite,
+            tenantId: tenantId
         };
         $.ajax({
             url: ApiServerPath + "/api/services/app/UserFavoriteItem/SetItemAsFavoriteOrUnFavorite",
@@ -105,17 +106,17 @@ function GetAuctionItems(categoryId, search) {
         success: function (response) {
             if (response != null || response != undefined) {
                 var data = response.result.items;
-                
+
                 if (UserId !== "") {
                     $.ajax({
-                        url: ApiServerPath + "/api/services/app/UserFavoriteItem/GetUserFavoriteItems?userId=" + UserId,
+                        url: ApiServerPath + "/api/services/app/UserFavoriteItem/GetUserFavoriteItems?userId=" + UserId + "&tenantId=" + tenantId,
                         type: "GET",
                         cache: false,
                         async: true,
                         contentType: "application/json",
                         dataType: "json",
                         success: function (responseFromFavorite) {
-                            
+
                             if (responseFromFavorite !== null) {
                                 var favItems = responseFromFavorite.result;
                                 for (var i = 0; i < favItems.length; i++) {
@@ -165,7 +166,7 @@ function GetAuctionItems(categoryId, search) {
 }
 
 $(document).on("click", "#categories li a", function () {
-    
+
     var items = $(this).parents("ul").children("li");
     $.each(items, function (i, v) {
         $(this).find("a").removeClass("active");

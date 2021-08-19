@@ -8,9 +8,11 @@ using Abp.Runtime.Session;
 using Abp.Timing;
 using Abp.UI;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NextGen.BiddingPlatform.AuctionItem.Dto;
+using NextGen.BiddingPlatform.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,17 +28,22 @@ namespace NextGen.BiddingPlatform.AuctionItem
         private readonly IRepository<Core.AuctionItems.AuctionItem> _auctionitemRepository;
         private readonly IRepository<Core.Auctions.Auction> _auctionRepository;
         private readonly IRepository<Core.Items.Item> _itemRepository;
+        private readonly IRepository<Core.AuctionBidders.AuctionBidder> _auctionBidderRepository;
+        private readonly IRepository<Core.AuctionHistories.AuctionHistory> _auctionHistoryRepository;
         private readonly IAbpSession _abpSession;
-
         public AuctionItemAppService(IRepository<Core.AuctionItems.AuctionItem> auctionitemRepository,
                                      IRepository<Core.Auctions.Auction> auctionRepository,
                                      IRepository<Core.Items.Item> itemRepository,
-                                     IAbpSession abpSession)
+                                     IAbpSession abpSession,
+                                     IRepository<Core.AuctionBidders.AuctionBidder> auctionBidderRepository,
+                                     IRepository<Core.AuctionHistories.AuctionHistory> auctionHistoryRepository)
         {
             _auctionitemRepository = auctionitemRepository;
             _auctionRepository = auctionRepository;
             _itemRepository = itemRepository;
             _abpSession = abpSession;
+            _auctionBidderRepository = auctionBidderRepository;
+            _auctionHistoryRepository = auctionHistoryRepository;
         }
         [AllowAnonymous]
         public async Task<ListResultDto<AuctionItemListDto>> GetAllAuctionItems(int categoryId = 0, string search = "")
@@ -341,6 +348,62 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 throw new Exception("AuctionItem not found for given Id");
 
             await _auctionitemRepository.DeleteAsync(auctionItem);
+        }
+
+        public async Task<List<AuctionItemWithHistoryDto>> GetUsersBiddingHistory(long userId)
+        {
+            var auctionBidderIds = await _auctionBidderRepository.GetAll().AsNoTracking()
+                .Where(s => s.UserId == userId).Select(s => new { AuctionBidderId = s.Id, UserId = s.UserId, AuctionId = s.AuctionId }).ToListAsync();
+
+            var auctionItemIdsFromAuctionHistory = await _auctionHistoryRepository.GetAll().AsNoTracking().Where(s => auctionBidderIds.Select(x => x.AuctionBidderId).Contains(s.AuctionBidderId)).Select(x => x.AuctionItemId).Distinct().ToListAsync();
+
+            var auctionItems = await _auctionitemRepository.GetAll()
+                .Where(x => auctionItemIdsFromAuctionHistory.Contains(x.Id))
+                .AsNoTracking()
+                .Include(s => s.Item)
+                .Include(s => s.Auction)
+                .Include(s => s.AuctionHistories)
+                .ToListAsync();
+
+
+            List<AuctionItemWithHistoryDto> output = new List<AuctionItemWithHistoryDto>();
+            foreach (var item in auctionItems)
+            {
+                var auctionId = item.Auction.Id;
+                var auctionBidderIdForCurrentItem = auctionBidderIds.FirstOrDefault(s => s.UserId == userId && s.AuctionId == auctionId);
+
+                var finalAuctionItem = new AuctionItemWithHistoryDto
+                {
+                    AuctionItemId = item.UniqueId,
+                    ItemName = item.Item.ItemName,
+                    AuctionEndDateTime = item.Auction.AuctionEndDateTime,
+                    AuctionStartDateTime = item.Auction.AuctionStartDateTime,
+                    ItemNumber = item.Item.ItemNumber,
+                    ItemStatus = item.Item.ItemStatus,
+                    ImageName = item.Item.MainImageName,
+                    Thumbnail = item.Item.ThumbnailImage,
+                    IsAuctionExpired = (item.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours <= 0,
+                    RemainingDays = Convert.ToInt32((item.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalDays).ToString(),
+                    RemainingTime = Convert.ToInt32((item.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours) + ":" + Convert.ToInt32((item.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalMinutes),
+                    IsClosedItemStatus = item.Item.ItemStatus == (int)ItemStatus.Closed,
+                };
+
+                double currUserLastBid = 0;
+                if (auctionBidderIdForCurrentItem != null)
+                {
+
+                    currUserLastBid = item.AuctionHistories.OrderByDescending(x => x.CreationTime).FirstOrDefault(s => s.AuctionBidderId == auctionBidderIdForCurrentItem.AuctionBidderId && s.AuctionItemId == item.Id).BidAmount;
+
+                    var lastAuctionHistory = item.AuctionHistories.OrderByDescending(x => x.CreationTime).FirstOrDefault();
+
+                    if (lastAuctionHistory != null)
+                        finalAuctionItem.IsLastBidByCurrentUser = lastAuctionHistory.AuctionBidderId == auctionBidderIdForCurrentItem.AuctionBidderId && lastAuctionHistory.AuctionItemId == item.Id;
+                }
+
+                finalAuctionItem.LastBidAmount = currUserLastBid;
+                output.Add(finalAuctionItem);
+            }
+            return output;
         }
     }
 }

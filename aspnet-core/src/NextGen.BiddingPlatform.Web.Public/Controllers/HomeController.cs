@@ -4,12 +4,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using NextGen.BiddingPlatform.AuctionHistory.Dto;
+using NextGen.BiddingPlatform.AuctionItem;
+using NextGen.BiddingPlatform.AuctionItem.Dto;
 using NextGen.BiddingPlatform.Sessions.Dto;
 using NextGen.BiddingPlatform.Web.Controllers;
 using NextGen.BiddingPlatform.Web.Public.Notification;
 using NextGen.BiddingPlatform.Web.Session;
 using NextGen.BiddingPlatform.WebHooks;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -25,25 +28,47 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
         private readonly IPerRequestSessionCache _sessionCache;
         private readonly INotificationManager _notify;
         private readonly IWebhookSubscriptionAppService _webhookSubscriptionService;
+        private readonly IAuctionItemAppService _auctionItemAppService;
         public HomeController(IPerRequestSessionCache sessionCache,
-                                                  INotificationManager notificationManager,
-                                                  IWebhookSubscriptionAppService webhookSubscriptionService)
+                              INotificationManager notificationManager,
+                              IWebhookSubscriptionAppService webhookSubscriptionService,
+                              IAuctionItemAppService auctionItemAppService)
         {
             _sessionCache = sessionCache;
             _notify = notificationManager;
             _webhookSubscriptionService = webhookSubscriptionService;
+            _auctionItemAppService = auctionItemAppService;
         }
         #region pages
 
         public async Task<IActionResult> CurrentBids()
         {
+            var user = await _sessionCache.GetCurrentLoginInformationsAsync();
+            ViewBag.UserId = user?.User?.Id;
             return View();
         }
+        public async Task<IActionResult> WatchList()
+        {
+            var user = await _sessionCache.GetCurrentLoginInformationsAsync();
+            ViewBag.UserId = user?.User?.Id;
+            ViewBag.TenantId = user?.Tenant?.Id;
+            return View();
+        }
+
+        public async Task<IActionResult> RecentlyViewed()
+        {
+            var user = await _sessionCache.GetCurrentLoginInformationsAsync();
+            ViewBag.UserId = user?.User?.Id;
+            ViewBag.TenantId = user?.Tenant?.Id;
+            return View();
+        }
+
         public async Task<ActionResult> Index()
         {
             ViewBag.IsLoggedInUser = await IsCurrentUserLoggedIn();
             var user = await _sessionCache.GetCurrentLoginInformationsAsync();
             ViewBag.UserId = user?.User?.Id;
+            ViewBag.TenantId = user?.Tenant?.Id;
             return View();
         }
         public ActionResult ProductDetail(Guid id)

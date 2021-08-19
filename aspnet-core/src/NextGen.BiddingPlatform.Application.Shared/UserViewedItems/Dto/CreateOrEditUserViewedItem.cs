@@ -8,5 +8,6 @@ namespace NextGen.BiddingPlatform.UserViewedItems.Dto
     {
         public long UserId { get; set; }
         public Guid AuctionItemId { get; set; }
+        public int? TenantId { get; set; }
     }
 }

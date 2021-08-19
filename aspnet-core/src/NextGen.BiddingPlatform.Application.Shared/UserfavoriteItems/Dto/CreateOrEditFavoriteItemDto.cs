@@ -9,5 +9,6 @@ namespace NextGen.BiddingPlatform.UserfavoriteItems.Dto
         public long UserId { get; set; }
         public Guid ItemId { get; set; }
         public bool IsFavorite { get; set; }
+        public int? TenantId { get; set; }
     }
 }

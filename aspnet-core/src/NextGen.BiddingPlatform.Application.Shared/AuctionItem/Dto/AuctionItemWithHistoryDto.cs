@@ -19,6 +19,8 @@ namespace NextGen.BiddingPlatform.AuctionItem.Dto
 
         //Item
         public Guid ItemId { get; set; }
+        public int ItemStatus { get; set; }
+        public bool IsClosedItemStatus { get; set; }
         public string ItemName { get; set; }
         public string ItemDescription { get; set; }
         public int ItemType { get; set; }//may be enum or dropdown
@@ -35,6 +37,8 @@ namespace NextGen.BiddingPlatform.AuctionItem.Dto
         public int CurrentUserAuctionHistoryCount { get; set; }
         public string CurrUserBidderName { get; set; }
         public int CurrUserBiddingId { get; set; }
+        public bool IsAuctionExpired { get; set; }
+        public bool IsLastBidByCurrentUser { get; set; }
 
         public List<AuctionItemHistoryDto> AuctionItemHistories { get; set; }
     }

@@ -45,13 +45,13 @@
         </div>
     </div>
     @*<div class="page-name">
-        <div class="container position-relative">
-            golf club
-            <a href="#" class="remove-bar">
-                <img src="~/auction/images/svg/cross-icon.svg" alt="">
-            </a>
-        </div>
-    </div>*@
+            <div class="container position-relative">
+                golf club
+                <a href="#" class="remove-bar">
+                    <img src="~/auction/images/svg/cross-icon.svg" alt="">
+                </a>
+            </div>
+        </div>*@
     <div class="content-wrapper have-sidename">
         <div class="container position-relative">
             <div class="side-name">
@@ -86,6 +86,7 @@
         var WebSiteUrl = "@webSitePath";
         var IsLoggedInUser = "@ViewBag.IsLoggedInUser".toLowerCase();
         var UserId = "@ViewBag.UserId";
+        var tenantId = "@ViewBag.TenantId";
     </script>
     <script src="~/auction/js/auctionitems.js"></script>
 }
