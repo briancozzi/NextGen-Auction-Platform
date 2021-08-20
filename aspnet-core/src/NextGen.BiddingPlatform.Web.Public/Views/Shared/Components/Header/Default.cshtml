@@ -6,12 +6,11 @@
     var orderedMenuItems = Model.Menu.Items.OrderByCustom().ToList();
 }
 <nav class=" d-none mob-nav">
-
     <ul class="list-unstyled">
         <li><a href="#">Donate</a></li>
         <li><a href="#">Pay</a></li>
         <li><a href="#">My Info</a></li>
-        <li><a href="#">My Activity</a></li>
+        <li><a href="/Home/CurrentBids">My Activity</a></li>
     </ul>
 </nav>
 <header>
@@ -34,7 +33,7 @@
                         <li><a href="#">Donate</a></li>
                         <li><a href="#">Pay</a></li>
                         <li><a href="#">My Info</a></li>
-                        <li><a href="#">My Activity</a></li>
+                        <li class="myActivity"><a href="/Home/CurrentBids">My Activity</a></li>
                         <li class="account">
                             @if (Model.LoginInformations?.User != null)
                             {

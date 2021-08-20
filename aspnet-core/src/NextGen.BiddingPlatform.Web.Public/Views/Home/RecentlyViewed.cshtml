@@ -30,6 +30,13 @@
                 </div>
             </nav>
             <div class="row col-gap-20" id="auctionItems"></div>
+            <div class="empty-img empty-view" style="display:none;">
+                <img src="~/Common/Images/empety-recently-view.png" />
+                <div>
+                    <span class="headingSmall"><b>No Recently Viewed Items</b></span>
+                    <span class="paraLine"><span class="clickred">Click here</span> to start bidding on items</span>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -42,7 +49,7 @@
         var IsLoggedInUser = "@ViewBag.IsLoggedInUser".toLowerCase();
         var userId = "@ViewBag.UserId";
         var tenantId = "@ViewBag.TenantId";
-
+        $("li.myActivity").addClass("active");
         $(function () {
             GetAuctionItems();
 
@@ -125,6 +132,9 @@
                                         var totalItems = 0;
 
                                         $("#auctionItems").empty();
+                                        if (response.result.length == 0) {
+                                            $(".empty-img.empty-view").show();
+                                        }
                                         $.each(data, function (i, v) {
                                             if (!v.isAuctionExpired) {
                                                 var output = Mustache.render($("#auctionItemTemplate").html(), v);
