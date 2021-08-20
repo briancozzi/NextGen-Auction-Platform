@@ -3008,8 +3008,9 @@ header .right-side nav ul li.active a {
 .current-bids .bidding-info {
     margin-top: 10px;
     background: #fff;
-    padding: 16px 8px;
+    padding: 10px 0px 6px;
     border: 1px solid #ccc;
+    margin-left: 0px;
 }
 
 .current-bids .winning-amt {
@@ -3034,7 +3035,7 @@ header .right-side nav ul li.active a {
 .current-bids .winning-btn-section {
     width: auto;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
 }
 
