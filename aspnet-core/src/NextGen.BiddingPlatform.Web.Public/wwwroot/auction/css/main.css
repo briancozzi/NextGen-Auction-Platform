@@ -2260,6 +2260,36 @@ footer {
                     text-decoration: underline;
                 }
 
+.empty-img {
+    margin: 0 auto;
+    text-align: center;
+    min-height: calc(100vh - 435px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.headingSmall {
+    text-align: center;
+    color: #043645;
+    margin: 20px 0px 10px 0px;
+    display: block;
+}
+
+.paraLine {
+    text-align: center;
+    color: #043645;
+}
+
+.clickred {
+    color: #CF0F0F;
+}
+
+header .right-side nav ul li.active a {
+    color: #7bc35e;
+}
+
 @media screen and (max-width: 575px) {
     footer .bottom-links li {
         padding-right: 20px;
@@ -2933,7 +2963,7 @@ footer {
 
 .current-bids li.nav-item {
     font-size: 1em;
-    margin-right:30px;
+    margin-right: 30px;
 }
 
 .current-bids nav #navbarNav {
@@ -2971,23 +3001,28 @@ footer {
     font-size: 1.25em;
 }
 
-.current-bids .timmer-section span {
-    vertical-align: middle;
-}
+    .current-bids .timmer-section span {
+        vertical-align: middle;
+    }
+
 .current-bids .bidding-info {
     margin-top: 10px;
     background: #fff;
-    padding: 16px 8px;
+    padding: 10px 0px 6px;
     border: 1px solid #ccc;
+    margin-left: 0px;
 }
+
 .current-bids .winning-amt {
     color: #7bc35e;
     font-size: 1.5em;
     margin-bottom: 0px;
 }
+
 .current-bids .winning-section span {
     color: #67838B;
 }
+
 .current-bids .winning-right-btn {
     display: inline-block;
     border: 2px solid;
@@ -2996,15 +3031,18 @@ footer {
     text-transform: uppercase;
     color: #7bc35e;
 }
+
 .current-bids .winning-btn-section {
     width: auto;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
 }
+
 .current-bids #current-bid-section {
-    margin:30px 0px;
+    margin: 30px 0px;
 }
+
 .red {
     color: #D12020 !important;
 }

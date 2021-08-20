@@ -8,6 +8,7 @@
     var appConfiguration = env.GetAppConfiguration();
     var apiServerPath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:ApiWebSiteRootAddress", string.Empty);
 }
+
 <div class="inner-wrapper">
     <div class="content-wrapper">
         <div class="container position-relative current-bids">
@@ -30,6 +31,14 @@
                 </div>
             </nav>
             <div id="usersBidAuctionItems"></div>
+            <div class="empty-img empty-view" style="display:none;">
+                <img src="~/Common/Images/empety-current-view.png" />
+                <div>
+                    <span class="headingSmall"><b>No Current Bids</b></span>
+                    <span class="paraLine"><span class="clickred">Click here</span> to start bidding on items</span>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -68,6 +77,7 @@
 @section Scripts{
 
     <script>
+        $("li.myActivity").addClass("active");
         var ApiServerPath = "@apiServerPath";
         var userId = '@ViewBag.UserId';
         var connectionHub;
@@ -105,11 +115,14 @@
             if (userId !== "") {
                 $.getJSON(route, "", function (response) {
 
-                    if (response.result !== null) {
-                        $("#usersBidAuctionItems").empty();
-                        $.each(response.result, function (i, v) {
-                            if (!v.isAuctionExpired) {
-                                v.imageName = ApiServerPath + v.imageName;
+                if (response.result !== null) {
+                    $("#usersBidAuctionItems").empty();
+                    if (response.result.length == 0) {
+                        $(".empty-img.empty-view").show();
+                    }
+                    $.each(response.result, function (i, v) {
+                        if (!v.isAuctionExpired) {
+                            v.imageName = ApiServerPath + v.imageName;
 
                                 if (v.isClosedItemStatus) {
                                     v.url = "/Home/ProductDetailClosedWithLogin?id=" + v.auctionItemId + "&itemStatus=" + v.itemStatus;

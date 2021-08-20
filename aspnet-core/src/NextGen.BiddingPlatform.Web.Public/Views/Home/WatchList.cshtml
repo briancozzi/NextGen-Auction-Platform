@@ -30,6 +30,13 @@
                 </div>
             </nav>
             <div id="usersWatchListAuctionItems"></div>
+            <div class="empty-img empty-view" style="display:none;">
+                <img src="~/Common/Images/empety-faviorate-view.png" />
+                <div>
+                    <span class="headingSmall"><b>No Watched Items</b></span>
+                    <span class="paraLine"><span class="clickred">Click here</span> to start bidding on items</span>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -39,6 +46,9 @@
                     <div class="col-md-3">
                         <img src="{{imageName}}" style="max-width:100%" />
                         <div class="abs-item-id">{{itemNumber}}</div>
+                        <img style="position: absolute;
+    right: 22px;
+    top: 17px;" src="/auction/images/svg/star-icon.svg" />
                     </div>
                     <div class="col-md-9">
                         <div>
@@ -63,13 +73,16 @@
         var ApiServerPath = "@apiServerPath";
         var userId = '@ViewBag.UserId';
         var tenantId = '@ViewBag.TenantId';
-
+        $("li.myActivity").addClass("active");
         var route = ApiServerPath + "/api/services/app/UserFavoriteItem/GetUserWatchListItems?userId=" + userId + "&tenantId=" + tenantId;
         if (userId !== "") {
             $.getJSON(route, "", function (response) {
 
                 if (response.result !== null) {
                     $("#usersWatchListAuctionItems").empty();
+                    if (response.result.length == 0) {
+                        $(".empty-img.empty-view").show();
+                    }
                     $.each(response.result, function (i, v) {
                         if (!v.isAuctionExpired) {
                             v.imageName = ApiServerPath + v.imageName;
