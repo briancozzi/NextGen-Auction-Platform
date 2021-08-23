@@ -255,9 +255,13 @@ namespace NextGen.BiddingPlatform.AuctionItem
             var item = await ValidateItemAndGet(input);
             var auction = await ValidateAuctionAndGet(input);
 
-            var existAuctionItem = await _auctionitemRepository.FirstOrDefaultAsync(x => x.AuctionId == auction.Id && x.ItemId == item.Id);
+            //var existAuctionItem = await _auctionitemRepository.FirstOrDefaultAsync(x => x.AuctionId == auction.Id && x.ItemId == item.Id);
+
+            var existAuctionItem = await _auctionitemRepository.FirstOrDefaultAsync(x => x.ItemId == item.Id);
+
             if (existAuctionItem != null)
                 throw new UserFriendlyException("Auction item already exist");
+
             var auctionItem = await _auctionitemRepository.InsertAsync(new Core.AuctionItems.AuctionItem
             {
                 UniqueId = Guid.NewGuid(),
