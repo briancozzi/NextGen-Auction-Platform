@@ -11,7 +11,8 @@
 <div class="inner-wrapper">
     <div class="content-wrapper">
         <div class="container position-relative current-bids">
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <nav class="navbar navbar-expand-sm navbar-light bg-light">
+                <span class="active-text"></span>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -51,7 +52,7 @@
     top: 17px;" src="/auction/images/svg/star-icon.svg" />
                     </div>
                     <div class="col-md-9">
-                        <div>
+                        <div class="item-section">
                             <h5 class="item-title">{{itemName}}</h5>
                             <div class="timmer-section"><img src="/Common/Images/timer.png" style="width:18px;" />  <span data-itemId="{{auctionItemId}}"></span></div>
                             <div class="bidding-info row">
@@ -59,7 +60,7 @@
                                     <span>Current Bid:</span>
                                     <h5 class="winning-amt">${{lastBidAmount}}</h5>
                                 </div>
-                                <div class="col-md-7 winning-btn-section">
+                                <div class="col-md-7 winning-btn-section watchlist">
                                     <button class="btn btn-primary" style="text-transform:uppercase;max-width:200px;" id="btnViewItemDetail" data-url="{{url}}">BID NOW</button>
                                 </div>
                             </div>
@@ -74,6 +75,11 @@
         var userId = '@ViewBag.UserId';
         var tenantId = '@ViewBag.TenantId';
         $("li.myActivity").addClass("active");
+        $(function () {
+            var activeText = $("li.nav-item.active").text();
+            $(".active-text").text(activeText);
+        });
+
         var route = ApiServerPath + "/api/services/app/UserFavoriteItem/GetUserWatchListItems?userId=" + userId + "&tenantId=" + tenantId;
         if (userId !== "") {
             $.getJSON(route, "", function (response) {

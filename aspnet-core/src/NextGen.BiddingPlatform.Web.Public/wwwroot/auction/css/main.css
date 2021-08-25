@@ -3011,6 +3011,7 @@ header .right-side nav ul li.active a {
     padding: 10px 0px 6px;
     border: 1px solid #ccc;
     margin-left: 0px;
+    margin-right: 0px;
 }
 
 .current-bids .winning-amt {
@@ -3035,8 +3036,12 @@ header .right-side nav ul li.active a {
 .current-bids .winning-btn-section {
     width: auto;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
+}
+
+.current-bids .winning-btn-section.watchlist {
+    justify-content: flex-end;
 }
 
 .current-bids #current-bid-section {
@@ -3047,7 +3052,16 @@ header .right-side nav ul li.active a {
     color: #D12020 !important;
 }
 
+.active-text {
+    display: none;
+    margin-right: 10px;
+    font-size: 16px;
+    color: #7bc35e;
+    text-transform: uppercase;
+}
+
 @media screen and (max-width: 1300px) {
+
     .side-name {
         top: auto !important;
         font-size: 50px;
@@ -3098,8 +3112,60 @@ header .right-side nav ul li.active a {
 }
 
 @media screen and (max-width: 767px) {
+
+    .current-bids .bidding-info,
+    .current-bids .winning-btn-section {
+        flex-direction: column;
+    }
+
+    .current-bids .bidding-info {
+        padding: 10px 0 12px;
+    }
+
+    .current-bids .winning-section {
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    .current-bids .winning-right-btn {
+        margin-bottom: 10px;
+    }
+
+    .current-bids nav #navbarNav {
+        border-bottom: 0px solid #E1E1E1;
+    }
+
+    .current-bids .navbar-nav {
+        align-items: center;
+    }
+
+    .current-bids .bidding-info {
+        margin-right: 0px;
+    }
+
+    .current-bids .navbar.bg-light {
+        background: #f1f1f1 !important;
+        justify-content: space-between;
+    }
+
+    .current-bids .sticky-top {
+        top: 100px;
+    }
+
+    .current-bids li.nav-item.active a.nav-link {
+        border-bottom: 0px;
+    }
+
+    .active-text {
+        display: block;
+    }
+
     .event-details .mt--81 {
         margin-top: 0;
+    }
+
+    .current-bids nav #navbarNav {
+        border-bottom: 0px;
     }
 
     .countdown-wrapper {
@@ -3152,6 +3218,10 @@ header .right-side nav ul li.active a {
         .search-bar .categories {
             padding-left: 15px;
         }
+
+    .item-section {
+        margin-top: 10px;
+    }
 }
 
 @media screen and (max-width: 575px) {
