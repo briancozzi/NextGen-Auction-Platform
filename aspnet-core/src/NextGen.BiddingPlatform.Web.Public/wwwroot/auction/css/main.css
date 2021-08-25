@@ -3036,8 +3036,12 @@ header .right-side nav ul li.active a {
 .current-bids .winning-btn-section {
     width: auto;
     display: flex;
-    justify-content:space-between;
+    justify-content: space-between;
     align-items: center;
+}
+
+.current-bids .winning-btn-section.watchlist {
+    justify-content: flex-end;
 }
 
 .current-bids #current-bid-section {
@@ -3117,10 +3121,12 @@ header .right-side nav ul li.active a {
     .current-bids .bidding-info {
         padding: 10px 0 12px;
     }
+
     .current-bids .winning-section {
         margin-bottom: 10px;
-        text-align:center;
+        text-align: center;
     }
+
     .current-bids .winning-right-btn {
         margin-bottom: 10px;
     }
