@@ -122,7 +122,7 @@ namespace NextGen.BiddingPlatform.Items
                                                               .Select(x => x.CategoryId)
                                                               .ToListAsync();
 
-            
+
 
             mappedItem.Categories = itemCategories;
             mappedItem.AppAccountUniqueId = existingItem.AppAccount.UniqueId;
@@ -222,10 +222,10 @@ namespace NextGen.BiddingPlatform.Items
                 //    });
                 //}
                 //add images to ItemGallery Table
-                
+
                 foreach (var image in input.ItemImages)
                 {
-                    if(image.Id == 0)
+                    if (image.Id == 0)
                     {
                         existingItem.ItemImages.Add(new ItemGallery
                         {
@@ -236,7 +236,7 @@ namespace NextGen.BiddingPlatform.Items
                             Description = image.Description
                         });
                     }
-                    
+
                 }
                 //update the properties
                 //existingItem.ItemType = input.ItemType;
@@ -256,6 +256,7 @@ namespace NextGen.BiddingPlatform.Items
                 existingItem.MainImageName = input.MainImageName;
                 existingItem.ThumbnailImage = input.ThumbnailImage;
                 existingItem.VideoLink = input.VideoLink;
+                existingItem.CategoryId = input.CategoryId;
                 await _itemRepository.UpdateAsync(existingItem);
 
             }
