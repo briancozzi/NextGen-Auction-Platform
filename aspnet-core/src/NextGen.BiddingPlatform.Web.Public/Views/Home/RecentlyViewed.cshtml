@@ -11,7 +11,8 @@
 <div class="inner-wrapper">
     <div class="content-wrapper">
         <div class="container position-relative current-bids">
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <nav class="navbar sticky-top navbar-expand-sm navbar-light bg-light">
+                <span class="active-text"></span>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -52,7 +53,8 @@
         $("li.myActivity").addClass("active");
         $(function () {
             GetAuctionItems();
-
+            var activeText = $("li.nav-item.active").text();
+            $(".active-text").text(activeText);
 
             $(document).on("click", "#setFavoriteItem", function (e) {
 

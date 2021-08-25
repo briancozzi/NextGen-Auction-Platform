@@ -12,7 +12,8 @@
 <div class="inner-wrapper">
     <div class="content-wrapper">
         <div class="container position-relative current-bids">
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <nav class="navbar sticky-top navbar-expand-sm navbar-light bg-light">
+                <span class="active-text"></span>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -50,7 +51,7 @@
                         <div class="abs-item-id">{{itemNumber}}</div>
                     </div>
                     <div class="col-md-9">
-                        <div>
+                        <div class="item-section">
                             <h5 class="item-title">{{itemName}}</h5>
                             <div class="timmer-section"><img src="/Common/Images/timer.png" style="width:18px;" />  <span data-itemId="{{auctionItemId}}"></span></div>
                             <div class="bidding-info row">
@@ -79,7 +80,10 @@
         $("li.myActivity").addClass("active");
         var ApiServerPath = "@apiServerPath";
         var userId = '@ViewBag.UserId';
-
+        $(function () {
+            var activeText = $("li.nav-item.active").text();
+            $(".active-text").text(activeText);
+        });
         var route = ApiServerPath + "/api/services/app/AuctionItem/GetUsersBiddingHistory?userId=" + userId;
         if (userId !== "") {
             $.getJSON(route, "", function (response) {
