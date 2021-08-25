@@ -23,5 +23,13 @@ namespace NextGen.BiddingPlatform.Web.Public.Notification
                 await _context.Clients.Clients(connections.ToList()).SendAsync("BidSaved", data);
             }
         }
+        public async Task UpdateCurrentBidsAsync()
+        {
+            var connections = _connectionManager.GetConnections("CurrentUserBids");
+            if (connections != null && connections.Count() > 0)
+            {
+                await _context.Clients.Clients(connections.ToList()).SendAsync("UpdateCurrentUserBids");
+            }
+        }
     }
 }

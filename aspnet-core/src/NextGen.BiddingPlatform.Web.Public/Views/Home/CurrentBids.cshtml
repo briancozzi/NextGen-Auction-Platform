@@ -76,17 +76,47 @@
             </div>
 </script>
 @section Scripts{
+
     <script>
         $("li.myActivity").addClass("active");
         var ApiServerPath = "@apiServerPath";
         var userId = '@ViewBag.UserId';
-        $(function () {
-            var activeText = $("li.nav-item.active").text();
-            $(".active-text").text(activeText);
-        });
+        var connectionHub;
         var route = ApiServerPath + "/api/services/app/AuctionItem/GetUsersBiddingHistory?userId=" + userId;
-        if (userId !== "") {
-            $.getJSON(route, "", function (response) {
+        $(function () {
+            loadUserBiddingHistory();
+        var activeText = $("li.nav-item.active").text();
+            $(".active-text").text(activeText);
+            $(document).on("click", "#btnViewItemDetail", function (e) {
+                e.preventDefault();
+
+                location.href = $(this).attr("data-url");
+            });
+
+
+            if (userId !== "") {
+                const connection = new signalR.HubConnectionBuilder()
+                    .withUrl("/signalr-BidHub")
+                    .build();
+
+                connection.start().then(function () {
+                    connection
+                        .invoke("StoreCurrentBidConnections")
+                        .catch(err => console.log(err.toString()));
+
+                }).catch(err => console.error(err.toString()));
+
+                connection.on("UpdateCurrentUserBids", () => {
+                    
+                    loadUserBiddingHistory();
+                });
+            }
+        });
+
+
+        function loadUserBiddingHistory() {
+            if (userId !== "") {
+                $.getJSON(route, "", function (response) {
 
                 if (response.result !== null) {
                     $("#usersBidAuctionItems").empty();
@@ -97,43 +127,40 @@
                         if (!v.isAuctionExpired) {
                             v.imageName = ApiServerPath + v.imageName;
 
-                            if (v.isClosedItemStatus) {
-                                v.url = "/Home/ProductDetailClosedWithLogin?id=" + v.auctionItemId + "&itemStatus=" + v.itemStatus;
-                            }
-                            else {
-                                v.url = "/Home/ProductDetailWithLogin?id=" + v.auctionItemId + "&itemStatus=" + v.itemStatus;
-                            }
+                                if (v.isClosedItemStatus) {
+                                    v.url = "/Home/ProductDetailClosedWithLogin?id=" + v.auctionItemId + "&itemStatus=" + v.itemStatus;
+                                }
+                                else {
+                                    v.url = "/Home/ProductDetailWithLogin?id=" + v.auctionItemId + "&itemStatus=" + v.itemStatus;
+                                }
 
-                            var output = Mustache.render($("#userAuctionItemBidTemplate").html(), v);
-                            $("#usersBidAuctionItems").append(output);
+                                var output = Mustache.render($("#userAuctionItemBidTemplate").html(), v);
+                                $("#usersBidAuctionItems").append(output);
 
 
-                            var endDate = new Date(Date.parse(v.auctionEndDateTime));
+                                var endDate = new Date(Date.parse(v.auctionEndDateTime));
 
-                            if (parseInt(v.remainingDays) > 0) {
-                                $('span[data-itemId="' + v.auctionItemId + '"]').countdown({
-                                    until: endDate,
-                                    layout: ' {dn} {dl}  '
-                                });
+                                if (parseInt(v.remainingDays) > 0) {
+                                    $('span[data-itemId="' + v.auctionItemId + '"]').countdown({
+                                        until: endDate,
+                                        layout: ' {dn} {dl}  '
+                                    });
+                                }
+                                else {
+                                    $('span[data-itemId="' + v.auctionItemId + '"]').countdown({
+                                        until: endDate,
+                                        layout: ' {hn} {hl} {mn} {ml} {sn} {sl} '
+                                    });
+                                }
                             }
-                            else {
-                                $('span[data-itemId="' + v.auctionItemId + '"]').countdown({
-                                    until: endDate,
-                                    layout: ' {hn} {hl} {mn} {ml} {sn} {sl} '
-                                });
-                            }
-                        }
-                    });
-                }
-                else {
-                    alert("Error occured!!");
-                }
-            });
+                        });
+                    }
+                    else {
+                        alert("Error occured!!");
+                    }
+                });
+            }
         }
-        $(document).on("click", "#btnViewItemDetail", function (e) {
-            e.preventDefault();
-
-            location.href = $(this).attr("data-url");
-        });
     </script>
+    <script src="~/signalr.js"></script>
 }

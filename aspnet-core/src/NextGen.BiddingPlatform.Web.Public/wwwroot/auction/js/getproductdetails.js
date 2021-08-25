@@ -11,7 +11,7 @@ function GetAuctionItem() {
         cache: false,
         dataType: "json",
         success: function (response) {
-            debugger;
+            
             if (response != null || response != undefined) {
                 var data = response.result;
 
@@ -73,7 +73,7 @@ function GetAuctionItem() {
                     contentType: "application/json",
                     dataType: "json",
                     success: function (response) {
-                        debugger;
+                        
                         if (response != null && response.success) {
                             console.log("added item to viewed");
                         }

@@ -131,6 +131,7 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
                         return BadRequest("Unexpected signature");
 
                     await _notify.SendAsync(result.Data.AuctionItemId.ToString(), result.Data);
+                    await _notify.UpdateCurrentBidsAsync();
                 }
                 return Ok("Success");
             }

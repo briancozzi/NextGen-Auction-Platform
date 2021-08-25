@@ -23,6 +23,12 @@ namespace NextGen.BiddingPlatform.Web.Public.Notification
                 _connectionManager.Add(auctionItemId, Context.ConnectionId);
             }
         }
+
+        public void StoreCurrentBidConnections()
+        {
+            _connectionManager.Add("CurrentUserBids", Context.ConnectionId);
+        }
+
         public override Task OnDisconnectedAsync(Exception exception)
         {
             var auctionItemId = _httpContext.HttpContext.Request.Query["auctionItemId"];
@@ -30,6 +36,7 @@ namespace NextGen.BiddingPlatform.Web.Public.Notification
             {
                 _connectionManager.Remove(auctionItemId, Context.ConnectionId);
             }
+            _connectionManager.Remove("CurrentUserBids", Context.ConnectionId);
             return base.OnDisconnectedAsync(exception);
         }
     }

@@ -8,5 +8,6 @@ namespace NextGen.BiddingPlatform.Web.Public.Notification
     public interface INotificationManager
     {
         Task SendAsync(string auctionItemId, object data);
+        Task UpdateCurrentBidsAsync();
     }
 }
