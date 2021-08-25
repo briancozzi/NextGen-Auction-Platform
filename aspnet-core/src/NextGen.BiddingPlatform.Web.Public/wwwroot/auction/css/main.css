@@ -3036,7 +3036,7 @@ header .right-side nav ul li.active a {
 .current-bids .winning-btn-section {
     width: auto;
     display: flex;
-    justify-content: flex-end;
+    justify-content:space-between;
     align-items: center;
 }
 
