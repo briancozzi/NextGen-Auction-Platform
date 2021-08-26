@@ -3062,7 +3062,7 @@ header .right-side nav ul li.active a {
     margin: 30px 0px;
 }
 
-.current-bids #current-bid-section img {
+.current-bids #current-bid-section img:first-child {
     width: 100%;
 }
 
