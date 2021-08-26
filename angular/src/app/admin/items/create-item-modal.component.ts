@@ -122,7 +122,7 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
 
   initUploaders(): void {
     this.logoUploader = this.createUploader(
-      '/Items/UploadLogo',
+      '/Items/AddItem',
       result => {
         
         if (result.status) {
