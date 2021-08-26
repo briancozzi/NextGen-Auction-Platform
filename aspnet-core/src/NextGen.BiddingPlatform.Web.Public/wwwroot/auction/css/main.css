@@ -2504,6 +2504,7 @@ header .right-side nav ul li.active a {
 .golf-event {
     background: #ffffff;
     padding-bottom: 1px;
+    padding-top: 1px;
     min-height: calc(100% - 20px);
     margin-bottom: 20px;
     max-width: 320px;
@@ -2555,6 +2556,8 @@ header .right-side nav ul li.active a {
     .golf-event .image {
         position: relative;
         overflow: hidden;
+        padding:10px;
+        border-bottom:2px solid #d7d7d7;
     }
 
         .golf-event .image .numeric {
@@ -2588,41 +2591,46 @@ header .right-side nav ul li.active a {
 
     .golf-event .desc {
         background-color: #ffffff;
-        margin: 1.25rem;
+        /*margin: 1.25rem;
         margin-top: 0rem;
         border: 2px solid #d7d7d7;
-        border-top: 0;
+        border-top: 0;*/
         padding: 0.9375rem 0.75rem 0.75rem 0.75rem;
     }
 
-        .golf-event .desc .name {
-            color: #043645;
+    .golf-event .item-section-border {
+        margin:5px;
+        border:2px solid #d7d7d7;
+    }
+
+.golf-event .desc .name {
+    color: #043645;
+    font-size: 1.125rem;
+    line-height: normal;
+    margin-bottom: 0;
+    min-height: 78px;
+}
+
+.golf-event .desc ul {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+    .golf-event .desc ul li {
+        color: #67838b;
+        font-size: 0.875rem;
+    }
+
+        .golf-event .desc ul li:last-child {
+            text-align: right;
+        }
+
+        .golf-event .desc ul li span {
+            color: #86660f;
             font-size: 1.125rem;
-            line-height: normal;
-            margin-bottom: 0;
-            min-height: 78px;
+            display: block;
         }
-
-        .golf-event .desc ul {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-            .golf-event .desc ul li {
-                color: #67838b;
-                font-size: 0.875rem;
-            }
-
-                .golf-event .desc ul li:last-child {
-                    text-align: right;
-                }
-
-                .golf-event .desc ul li span {
-                    color: #86660f;
-                    font-size: 1.125rem;
-                    display: block;
-                }
 
 .content-wrapper.pt-80 {
     padding-top: 5rem;
@@ -3040,9 +3048,9 @@ header .right-side nav ul li.active a {
     align-items: center;
 }
 
-.current-bids .winning-btn-section.watchlist {
-    justify-content: flex-end;
-}
+    .current-bids .winning-btn-section.watchlist {
+        justify-content: flex-end;
+    }
 
 .current-bids #current-bid-section {
     margin: 30px 0px;
@@ -3112,9 +3120,10 @@ header .right-side nav ul li.active a {
 }
 
 @media screen and (max-width: 767px) {
-
-    .current-bids .bidding-info,
-    .current-bids .winning-btn-section {
+    header .right-side nav ul li.account {
+        display:none;
+    }
+        .current-bids .bidding-info, .current-bids .winning-btn-section {
         flex-direction: column;
     }
 
