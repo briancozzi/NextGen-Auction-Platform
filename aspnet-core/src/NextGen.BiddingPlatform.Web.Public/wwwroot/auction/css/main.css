@@ -2556,12 +2556,13 @@ header .right-side nav ul li.active a {
     .golf-event .image {
         position: relative;
         overflow: hidden;
-        padding:10px;
-        border-bottom:2px solid #d7d7d7;
+        padding: 10px;
+        border-bottom: 2px solid #d7d7d7;
     }
+
         .golf-event .image img {
             width: 100%;
-           /* min-height: 185px !important;
+            /* min-height: 185px !important;
             max-height: 185px !important;*/
         }
 
@@ -2604,38 +2605,38 @@ header .right-side nav ul li.active a {
     }
 
     .golf-event .item-section-border {
-        margin:5px;
-        border:2px solid #d7d7d7;
+        margin: 5px;
+        border: 2px solid #d7d7d7;
     }
 
-.golf-event .desc .name {
-    color: #043645;
-    font-size: 1.125rem;
-    line-height: normal;
-    margin-bottom: 0;
-    min-height: 78px;
-}
-
-.golf-event .desc ul {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-    .golf-event .desc ul li {
-        color: #67838b;
-        font-size: 0.875rem;
+    .golf-event .desc .name {
+        color: #043645;
+        font-size: 1.125rem;
+        line-height: normal;
+        margin-bottom: 0;
+        min-height: 78px;
     }
 
-        .golf-event .desc ul li:last-child {
-            text-align: right;
+    .golf-event .desc ul {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+        .golf-event .desc ul li {
+            color: #67838b;
+            font-size: 0.875rem;
         }
 
-        .golf-event .desc ul li span {
-            color: #86660f;
-            font-size: 1.125rem;
-            display: block;
-        }
+            .golf-event .desc ul li:last-child {
+                text-align: right;
+            }
+
+            .golf-event .desc ul li span {
+                color: #86660f;
+                font-size: 1.125rem;
+                display: block;
+            }
 
 .content-wrapper.pt-80 {
     padding-top: 5rem;
@@ -3061,6 +3062,10 @@ header .right-side nav ul li.active a {
     margin: 30px 0px;
 }
 
+    .current-bids #current-bid-section img {
+        width: 100%;
+    }
+
 .red {
     color: #D12020 !important;
 }
@@ -3126,9 +3131,10 @@ header .right-side nav ul li.active a {
 
 @media screen and (max-width: 767px) {
     header .right-side nav ul li.account {
-        display:none;
+        display: none;
     }
-        .current-bids .bidding-info, .current-bids .winning-btn-section {
+
+    .current-bids .bidding-info, .current-bids .winning-btn-section {
         flex-direction: column;
     }
 
