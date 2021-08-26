@@ -18,8 +18,6 @@ namespace NextGen.BiddingPlatform.Core.Items
         [ForeignKey("Item")]
         public int ItemId { get; set; }
         public Item Item { get; set; }
-
-        [Required]
         public string ImageName { get; set; }
         public string Thumbnail { get; set; }
         public string Title { get; set; }

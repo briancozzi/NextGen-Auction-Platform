@@ -2559,6 +2559,11 @@ header .right-side nav ul li.active a {
         padding:10px;
         border-bottom:2px solid #d7d7d7;
     }
+        .golf-event .image img {
+            width: 100%;
+           /* min-height: 185px !important;
+            max-height: 185px !important;*/
+        }
 
         .golf-event .image .numeric {
             background: rgba(255, 255, 255, 0.85);

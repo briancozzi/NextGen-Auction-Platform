@@ -91,7 +91,12 @@
                     }
                     $.each(response.result, function (i, v) {
                         if (!v.isAuctionExpired) {
-                            v.imageName = ApiServerPath + v.imageName;
+                            if (v.imageName != null) {
+                                v.imageName = ApiServerPath + v.imageName;
+                            }
+                            else {
+                                v.imageName = WebSiteUrl + "/auction/images/no-img.png";
+                            }
 
                             if (v.isClosedItemStatus) {
                                 v.url = "/Home/ProductDetailClosedWithLogin?id=" + v.auctionItemId + "&itemStatus=" + v.itemStatus;

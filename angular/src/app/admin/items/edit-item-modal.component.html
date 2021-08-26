@@ -139,7 +139,7 @@
                         </div>
                         <div *ngIf="!isLogo">
                             <input id="logo" #inputFile type="file" class="col-lg-12"
-                                (change)="onSelectedFile($event, true)" required />
+                                (change)="onSelectedFile($event, true)"/>
                         </div>
                     </div>
                     <button class="btn btn-default" type="button" (click)="clearLogo()">{{"Clear" | localize}}</button>
