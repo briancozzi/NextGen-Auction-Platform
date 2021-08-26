@@ -134,10 +134,10 @@
 
                     <div class="form-group">
                         <label for="logo">{{"MainImage" | localize}}</label>
-                        <div #imageViewSection *ngIf="isLogo">
+                        <div #imageViewSection *ngIf="item.mainImageName !== null && item.mainImageName.length > 0">
                             <img src="{{webHostUrl}}{{item.mainImageName}}" alt="logo" height="250" width="250" />
                         </div>
-                        <div *ngIf="!isLogo">
+                        <div *ngIf="item.mainImageName == null || item.mainImageName.length == 0">
                             <input id="logo" #inputFile type="file" class="col-lg-12"
                                 (change)="onSelectedFile($event, true)"/>
                         </div>
