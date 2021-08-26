@@ -8,8 +8,7 @@
                     <h5 class="modal-title">
                         <span>{{"EditItem" | localize}}</span>
                     </h5>
-                    <button type="button" class="close" (click)="close()" [attr.aria-label]="l('Close')"
-                        [disabled]="saving">
+                    <button type="button" class="close" (click)="close()" [attr.aria-label]="l('Close')">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -140,7 +139,7 @@
                         </div>
                         <div *ngIf="!isLogo">
                             <input id="logo" #inputFile type="file" class="col-lg-12"
-                                (change)="onSelectedFile($event, true)" required />
+                                (change)="onSelectedFile($event, true)"/>
                         </div>
                     </div>
                     <button class="btn btn-default" type="button" (click)="clearLogo()">{{"Clear" | localize}}</button>
@@ -168,7 +167,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" [disabled]="saving" class="btn btn-secondary"
+                    <button type="button" class="btn btn-secondary"
                         (click)="close()">{{l("Cancel")}}</button>
                     <button [disabled]="!itemEditForm.form.valid" type="submit" [buttonBusy]="saving"
                         [busyText]="l('SavingWithThreeDot')" class="btn btn-primary"><i class="fa fa-save"></i>

@@ -43,7 +43,13 @@ function GetAuctionItem() {
                 $("#fmvValue").text("$" + data.fairMarketValue_FMV.toFixed(2));
                 $("#totalBids").text(data.totalBidCount);
                 $("#itemDescription").text(data.itemDescription);
-                var imageFullPath = ApiServerPath + data.imageName;
+                var imageFullPath = "";
+                if (data.imageName != null) {
+                    imageFullPath = ApiServerPath + data.imageName;
+                }
+                else {
+                    imageFullPath = WebSiteUrl + "/auction/images/no-img.png";
+                }
                 $("#itemImage").attr("src", imageFullPath);
                 $("#minimumBidValue").text("$" + data.bidStepIncrementValue);
                 $("#bidNowBtn").attr("data-minimumBidAmount", data.bidStepIncrementValue);
