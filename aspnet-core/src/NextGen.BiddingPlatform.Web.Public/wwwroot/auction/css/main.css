@@ -2070,59 +2070,71 @@ header {
                 justify-content: center;
             }
 
-                header .right-side nav ul li.account a {
-                    font-size: 0.75rem;
-                    color: #1e2027;
-                    text-transform: uppercase;
-                    position: relative;
-                    font-family: "GibsonSemiBold";
-                }
+.mob-nav li.account {
+    padding: 0.75rem 1.125rem;
+    padding-top: 0.8125rem;
+    background-color: #ffffff;
+    border-radius: 35px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 10px;
+}
 
-                    header .right-side nav ul li.account a:hover {
-                        color: #86660f;
-                    }
+header .right-side nav ul li.account a {
+    font-size: 0.75rem;
+    color: #1e2027;
+    text-transform: uppercase;
+    position: relative;
+    font-family: "GibsonSemiBold";
+}
 
-                    header .right-side nav ul li.account a:first-child {
-                        padding-right: 0.8125rem;
-                        margin-right: 0.8125rem;
-                    }
-
-                        header .right-side nav ul li.account a:first-child:after {
-                            width: 2px;
-                            height: 12px;
-                            background-color: #696a6f;
-                            position: absolute;
-                            content: '';
-                            right: 0;
-                            top: 50%;
-                            transform: translateY(-50%);
-                        }
-
-    header .menu-icon {
-        position: absolute;
-        right: 0;
-        left: auto;
-        cursor: pointer;
-        z-index: 999;
+    header .right-side nav ul li.account a:hover {
+        color: #86660f;
     }
 
-        header .menu-icon span {
-            width: 26px;
-            height: 3px;
-            background: #ffffff;
-            display: block;
-            margin-bottom: 4px;
-            transition: all .3s;
+    header .right-side nav ul li.account a:first-child {
+        padding-right: 0.8125rem;
+        margin-right: 0.8125rem;
+    }
+
+        header .right-side nav ul li.account a:first-child:after {
+            width: 2px;
+            height: 12px;
+            background-color: #696a6f;
+            position: absolute;
+            content: '';
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
         }
 
-            header .menu-icon span:nth-child(3) {
-                width: 16px;
-                position: relative;
-            }
+header .menu-icon {
+    position: absolute;
+    right: 0;
+    left: auto;
+    cursor: pointer;
+    z-index: 999;
+}
 
-        header .menu-icon:hover span:nth-child(3) {
-            width: 26px;
+    header .menu-icon span {
+        width: 26px;
+        height: 3px;
+        background: #ffffff;
+        display: block;
+        margin-bottom: 4px;
+        transition: all .3s;
+    }
+
+        header .menu-icon span:nth-child(3) {
+            width: 16px;
+            position: relative;
         }
+
+    header .menu-icon:hover span:nth-child(3) {
+        width: 26px;
+    }
 
 @media screen and (max-width: 767px) {
     .menu-active .mob-nav {
@@ -2143,7 +2155,7 @@ header {
     }
 
         .mob-nav ul {
-            background: #f1f1f1;
+            background: #1e2027;
             text-align: center;
             padding: 20px 0;
             border-bottom: 1px solid #7bc35e;
@@ -2156,7 +2168,7 @@ header {
             .mob-nav ul li > a {
                 font-size: 15px;
                 text-transform: capitalize;
-                color: #1e2027;
+                color: #fff;
             }
 
                 .mob-nav ul li > a i {
@@ -2615,6 +2627,7 @@ header .right-side nav ul li.active a {
         line-height: normal;
         margin-bottom: 0;
         min-height: 78px;
+        text-transform:uppercase;
     }
 
     .golf-event .desc ul {
@@ -3006,8 +3019,9 @@ header .right-side nav ul li.active a {
 }
 
 .current-bids .item-title {
-    font-size: 1.5em;
+    font-size: 1.125em;
     color: #043645;
+    text-transform:uppercase;
 }
 
 .current-bids .timmer-section {
@@ -3054,17 +3068,17 @@ header .right-side nav ul li.active a {
     align-items: center;
 }
 
-.current-bids .winning-btn-section.watchlist {
-    justify-content: flex-end;
-}
+    .current-bids .winning-btn-section.watchlist {
+        justify-content: flex-end;
+    }
 
 .current-bids #current-bid-section {
     margin: 30px 0px;
 }
 
-.current-bids #current-bid-section img:first-child {
-    width: 100%;
-}
+    .current-bids #current-bid-section img:first-child {
+        width: 100%;
+    }
 
 .red {
     color: #D12020 !important;
@@ -3076,6 +3090,10 @@ header .right-side nav ul li.active a {
     font-size: 16px;
     color: #7bc35e;
     text-transform: uppercase;
+}
+
+.container.position-relative.current-bids {
+    padding: 0px;
 }
 
 @media screen and (max-width: 1300px) {
@@ -3176,9 +3194,7 @@ header .right-side nav ul li.active a {
         border-bottom: 0px;
     }
 
-    .active-text {
-        display: block;
-    }
+
 
     .event-details .mt--81 {
         margin-top: 0;
@@ -3252,6 +3268,10 @@ header .right-side nav ul li.active a {
 }
 
 @media screen and (max-width: 575px) {
+    .active-text {
+        display: block;
+    }
+
     .side-name {
         font-size: 38px;
     }
