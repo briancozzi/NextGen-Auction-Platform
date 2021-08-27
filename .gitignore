@@ -353,3 +353,4 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 /aspnet-core/src/NextGen.BiddingPlatform.Web.Host/wwwroot/Uploads/AppAccountLogo
+/aspnet-core/src/NextGen.BiddingPlatform.Web.Host/wwwroot/Uploads/ItemImages
