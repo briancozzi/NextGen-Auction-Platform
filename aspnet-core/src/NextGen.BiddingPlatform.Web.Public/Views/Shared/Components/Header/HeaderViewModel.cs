@@ -30,14 +30,15 @@ namespace NextGen.BiddingPlatform.Web.Public.Views.Shared.Components.Header
 
         public string GetShownLoginName()
         {
-            if (!IsMultiTenancyEnabled)
-            {
-                return LoginInformations.User.UserName;
-            }
+            return LoginInformations.User.Name + " " + LoginInformations.User.Surname;
+            //if (!IsMultiTenancyEnabled)
+            //{
+            //    return LoginInformations.User.Name + " " + LoginInformations.User.Surname;
+            //}
 
-            return LoginInformations.Tenant == null
-                ? ".\\" + LoginInformations.User.UserName
-                : LoginInformations.Tenant.TenancyName + "\\" + LoginInformations.User.UserName;
+            //return LoginInformations.Tenant == null
+            //    ? ".\\" + LoginInformations.User.Name + " " + LoginInformations.User.Surname
+            //    : LoginInformations.Tenant.TenancyName + "\\" + LoginInformations.User.Name + " " + LoginInformations.User.Surname;
         }
 
         public string GetLogoUrl(string appPath)

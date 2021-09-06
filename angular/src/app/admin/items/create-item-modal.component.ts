@@ -122,7 +122,7 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
 
   initUploaders(): void {
     this.logoUploader = this.createUploader(
-      '/Items/UploadLogo',
+      '/Items/AddItem',
       result => {
         
         if (result.status) {
@@ -166,10 +166,10 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
   }
   save(): void {
     let mainImages = this.images.filter(s => s.isMainImg === true);
-    if (mainImages.length === 0) {
-      this.notify.error("Please upload main image");
-      return;
-    }
+    // if (mainImages.length === 0) {
+    //   this.notify.error("Please upload main image");
+    //   return;
+    // }
     this.saving = true;
     var formData = new FormData();
 
@@ -185,7 +185,7 @@ export class CreateItemModalComponent extends AppComponentBase implements OnInit
     formData.append("isCreated", "true");
     formData.append('itemDto', JSON.stringify(this.item));
     this.saving = true;
-    var url = AppConsts.remoteServiceBaseUrl + '/Items/UploadLogo';
+    var url = AppConsts.remoteServiceBaseUrl + '/Items/AddItem';
     this._httpClient.post(url, formData).subscribe(result => {
 
       if (result["result"].status === true) {

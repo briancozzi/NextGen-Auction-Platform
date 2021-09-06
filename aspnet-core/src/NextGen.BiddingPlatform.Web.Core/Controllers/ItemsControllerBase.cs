@@ -32,7 +32,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             _env = env;
         }
 
-        public async Task<JsonResult> UploadLogo()
+        public async Task<JsonResult> AddItem()
         {
             try
             {
@@ -110,7 +110,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             ItemImages images = new ItemImages();
 
             var files = Request.Form.Files;
-            if (!isMainImgUploaded)
+            if (!isMainImgUploaded && files.Count > 0)
             {
                 var mainFile = files.First();
                 if (mainFile != null)

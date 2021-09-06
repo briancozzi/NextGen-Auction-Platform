@@ -401,7 +401,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 if (auctionBidderIdForCurrentItem != null)
                 {
 
-                    currUserLastBid = item.AuctionHistories.OrderByDescending(x => x.CreationTime).FirstOrDefault(s => s.AuctionBidderId == auctionBidderIdForCurrentItem.AuctionBidderId && s.AuctionItemId == item.Id).BidAmount;
+                    currUserLastBid = item.AuctionHistories.OrderByDescending(x => x.CreationTime).FirstOrDefault(s => s.AuctionBidderId == auctionBidderIdForCurrentItem.AuctionBidderId && s.AuctionItemId == item.Id)?.BidAmount ?? 0;
 
                     var lastAuctionHistory = item.AuctionHistories.OrderByDescending(x => x.CreationTime).FirstOrDefault();
 

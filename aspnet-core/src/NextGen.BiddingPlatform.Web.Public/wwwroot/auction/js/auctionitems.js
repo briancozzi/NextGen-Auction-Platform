@@ -150,7 +150,12 @@ function GetAuctionItems(categoryId, search) {
                 $("#auctionItems").empty();
                 $.each(data, function (i, v) {
                     if (!v.isAuctionExpired) {
-                        v.imageName = ApiServerPath + v.imageName;
+                        if (v.imageName != null) {
+                            v.imageName = ApiServerPath + v.imageName;
+                        }
+                        else {
+                            v.imageName = WebSiteUrl + "/auction/images/no-img.png";
+                        }
                         var output = Mustache.render($("#auctionItemTemplate").html(), v);
                         $("#auctionItems").append(output);
                         totalItems += 1;

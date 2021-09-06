@@ -2,7 +2,8 @@
     {{#isClosedItemStatus}}
     <div class="col-lg-4 col-sm-6">
         <div class="golf-event closed" data-id="{{auctionItemId}}" data-is-closed-auction="true" data-itemstatus="{{itemStatus}}">
-            <div class="image" style="margin: 1.25rem;">
+            <div class="item-section-border">
+            <div class="image">
                 <img src="{{imageName}}" alt="">
                 <div class="numeric">{{itemNumber}}</div>
                 <a href="#" id="setFavoriteItem" class="wishlist {{isFavorite}}"></a>
@@ -22,12 +23,14 @@
                 </ul>
             </div>
         </div>
+        </div>
     </div>
     {{/isClosedItemStatus}}
     {{^isClosedItemStatus}}
     <div class="col-lg-4 col-sm-6">
         <div class="golf-event" data-id="{{auctionItemId}}" data-is-closed-auction="false" data-itemstatus="{{itemStatus}}">
-            <div class="image" style="margin: 1.25rem;">
+            <div class="item-section-border">
+            <div class="image">
                 <img src="{{imageName}}" alt="">
                 <div class="numeric">{{itemNumber}}</div>
                 <a href="#" id="setFavoriteItem" class="wishlist {{isFavorite}}"></a>
@@ -51,6 +54,7 @@
                     </li>
                 </ul>
             </div>
+        </div>
         </div>
     </div>
     {{/isClosedItemStatus}}

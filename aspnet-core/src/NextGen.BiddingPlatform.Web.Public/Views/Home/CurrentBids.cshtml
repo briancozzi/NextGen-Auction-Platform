@@ -7,6 +7,7 @@
 @{
     var appConfiguration = env.GetAppConfiguration();
     var apiServerPath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:ApiWebSiteRootAddress", string.Empty);
+    var webSitePath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:WebSiteRootAddress", string.Empty);
 }
 
 <div class="inner-wrapper">
@@ -62,7 +63,7 @@
                                 <div class="col-md-7 winning-btn-section">
                                     {{#isLastBidByCurrentUser}}
                                     <div class="winning-right-btn">Winning</div>
-                                    <button class="btn btn-primary" style="text-transform:uppercase;max-width:200px;" id="btnViewItemDetail" data-url="{{url}}">View Detail</button>
+                                    <button class="btn btn-primary" style="text-transform:uppercase;max-width:200px;" id="btnViewItemDetail" data-url="{{url}}">View Details</button>
                                     {{/isLastBidByCurrentUser}}
                                     {{^isLastBidByCurrentUser}}
                                     <div class="winning-right-btn red">outbid</div>
@@ -80,6 +81,7 @@
     <script>
         $("li.myActivity").addClass("active");
         var ApiServerPath = "@apiServerPath";
+        var WebSiteUrl = "@webSitePath";
         var userId = '@ViewBag.UserId';
         var connectionHub;
         var route = ApiServerPath + "/api/services/app/AuctionItem/GetUsersBiddingHistory?userId=" + userId;
@@ -107,7 +109,7 @@
                 }).catch(err => console.error(err.toString()));
 
                 connection.on("UpdateCurrentUserBids", () => {
-                    
+
                     loadUserBiddingHistory();
                 });
             }
@@ -125,7 +127,12 @@
                     }
                     $.each(response.result, function (i, v) {
                         if (!v.isAuctionExpired) {
-                            v.imageName = ApiServerPath + v.imageName;
+                            if (v.imageName != null) {
+                                v.imageName = ApiServerPath + v.imageName;
+                            }
+                            else {
+                                v.imageName = WebSiteUrl + "/auction/images/no-img.png";
+                            }
 
                                 if (v.isClosedItemStatus) {
                                     v.url = "/Home/ProductDetailClosedWithLogin?id=" + v.auctionItemId + "&itemStatus=" + v.itemStatus;

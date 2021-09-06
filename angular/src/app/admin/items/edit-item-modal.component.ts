@@ -96,7 +96,7 @@ export class EditItemModalComponent extends AppComponentBase {
   }
   initUploaders(): void {
     this.logoUploader = this.createUploader(
-      '/Items/UploadLogo',
+      '/Items/AddItem',
       result => {
         this.notify.info(this.l('SavedSuccessfully'));
         this.close();
@@ -159,12 +159,6 @@ export class EditItemModalComponent extends AppComponentBase {
   save(): void {
     
     let mainImages = this.images.filter(s => s.isMainImg === true);
-    if (!this.isLogo) {
-      if (mainImages.length === 0) {
-        this.notify.error("Please upload main image");
-        return;
-      }
-    }
 
     this.saving = true;
     var formData = new FormData();
@@ -186,7 +180,7 @@ export class EditItemModalComponent extends AppComponentBase {
 
     formData.append('updateItemDto', JSON.stringify(this.item));
     this.saving = true;
-    var url = AppConsts.remoteServiceBaseUrl + '/Items/UploadLogo';
+    var url = AppConsts.remoteServiceBaseUrl + '/Items/AddItem';
     this._httpClient.post(url, formData).subscribe(result => {
 
       if (result["result"].status === true) {

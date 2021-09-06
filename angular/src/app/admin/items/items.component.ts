@@ -46,6 +46,7 @@ export class ItemsComponent extends AppComponentBase {
     )
         .pipe(finalize(() => this.primengTableHelper.hideLoadingIndicator()))
         .subscribe(result => {
+          debugger;
             this.primengTableHelper.totalRecordsCount = result.totalCount;
             this.primengTableHelper.records = result.items;
             this.primengTableHelper.hideLoadingIndicator();
