@@ -20,6 +20,7 @@ import {
 import { forkJoin } from "rxjs";
 import { AppConsts } from '@shared/AppConsts';
 import * as moment from 'moment';
+import { findOneIana } from 'windows-iana/dist';
 @Component({
     templateUrl: './edit-auction.component.html',
     animations: [appModuleAnimation()]
@@ -94,10 +95,18 @@ export class EditAuctionComponent extends AppComponentBase implements OnInit {
         this.saving = true;
         var stime = this.getTimePart(this.startTime);
         var etime = this.getTimePart(this.endTime);
-        var EndDate =   this.auction.auctionEndDateTime.local().format("YYYY-MM-DD");
-        var StartDate = this.auction.auctionStartDateTime.local().format("YYYY-MM-DD");
-        this.auction.auctionStartDateTime = moment(StartDate + ' ' + stime);
-        this.auction.auctionEndDateTime = moment(EndDate + ' ' + etime);
+        debugger;
+        var auctionEndDate = this.auction.auctionEndDateTime.local().format("YYYY-MM-DD");
+        var auctionStartDate = this.auction.auctionStartDateTime.local().format("YYYY-MM-DD");
+
+        var eventTimezone = this.eventList.filter(s => s.uniqueId == this.auction.eventUniqueId)[0];
+        if (eventTimezone === null)
+            return;
+
+        var selectedtimezoneId = findOneIana(eventTimezone.timeZone);
+
+        this.auction.auctionStartDateTime = moment.tz(auctionStartDate + ' ' + stime, selectedtimezoneId);
+        this.auction.auctionEndDateTime = moment.tz(auctionEndDate + ' ' + etime, selectedtimezoneId);
         this._auctionService.updateAuction(this.auction)
         .pipe(finalize(() => this.saving = false))
         .subscribe(() => {

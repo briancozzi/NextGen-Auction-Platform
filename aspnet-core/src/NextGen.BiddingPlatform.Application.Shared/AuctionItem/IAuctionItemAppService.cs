@@ -23,5 +23,6 @@ namespace NextGen.BiddingPlatform.AuctionItem
 
         //for current user bids
         Task<List<AuctionItemWithHistoryDto>> GetUsersBiddingHistory(long userId);
+        Task<List<EventAuctionItemWinnerDto>> GetEventWinners(Guid eventUniqueId);
     }
 }

@@ -129,6 +129,11 @@ namespace NextGen.BiddingPlatform.Auction
             if (!AbpSession.TenantId.HasValue)
                 throw new UserFriendlyException("You are not authorized user");
 
+            if (!(input.AuctionStartDateTime >= existingEvent.EventStartDateTime && input.AuctionEndDateTime <= existingEvent.EventEndDateTime))
+            {
+                throw new UserFriendlyException("Please make sure auction start/end time between event start and end time");
+            }
+
             var uniqueId = Guid.NewGuid();
             var auction = ObjectMapper.Map<Core.Auctions.Auction>(input);
             auction.TenantId = AbpSession.TenantId.Value;
@@ -180,6 +185,12 @@ namespace NextGen.BiddingPlatform.Auction
 
             if (exisingAuction == null)
                 throw new UserFriendlyException("Auction not found for given Id");
+
+
+            if (!(input.AuctionStartDateTime >= existingEvent.EventStartDateTime && input.AuctionEndDateTime <= existingEvent.EventEndDateTime))
+            {
+                throw new UserFriendlyException("Please make sure auction start/end time between event start and end time");
+            }
 
 
             exisingAuction.AuctionType = input.AuctionType;

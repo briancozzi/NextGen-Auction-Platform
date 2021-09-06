@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Injector, Output, ViewChild,Input, OnInit, AfterViewInit } from '@angular/core';
+import { Component, EventEmitter, Injector, Output, ViewChild, Input, OnInit, AfterViewInit } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import * as _ from 'lodash';
 import { ModalDirective } from 'ngx-bootstrap';
@@ -11,23 +11,24 @@ import {
     CreateAuctionDto,
     AuctionServiceProxy
 } from '@shared/service-proxies/service-proxies';
-import {forkJoin} from "rxjs";
+import { forkJoin } from "rxjs";
 import * as moment from 'moment';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { Router } from '@angular/router';
+import { findOneIana } from 'windows-iana/dist';
 
 @Component({
-   // selector: 'createAuction',
+    // selector: 'createAuction',
     templateUrl: './create-auction.component.html',
     animations: [appModuleAnimation()]
 })
 export class CreateAuctionComponent extends AppComponentBase implements OnInit, AfterViewInit {
-  
+
     active = false;
     saving = false;
     auction: CreateAuctionDto = new CreateAuctionDto();
     countryList = [];
-    stateList =[];
+    stateList = [];
     accountList = [];
     eventList = [];
     stateDropdown = true;
@@ -35,7 +36,7 @@ export class CreateAuctionComponent extends AppComponentBase implements OnInit, 
     startTime: Date = new Date();
     endTime: Date = new Date();
     isSelected = true;
-    
+
 
     constructor(
         injector: Injector,
@@ -47,11 +48,11 @@ export class CreateAuctionComponent extends AppComponentBase implements OnInit, 
     ) {
         super(injector);
     }
-  
+
     ngOnInit() {
         this.active = true;
         this.init();
-       
+
     }
 
     ngAfterViewInit(): void {
@@ -67,7 +68,7 @@ export class CreateAuctionComponent extends AppComponentBase implements OnInit, 
             this._countryService.getCountriesWithState(),
             this._accountService.getAllAccount(),
             this._eventService.getAllAccountEvents(),
-          ]).subscribe(allResults =>{
+        ]).subscribe(allResults => {
             this.countryList = allResults[0];
             this.auction.address.countryUniqueId = allResults[0][0].countryUniqueId;
             this.loadStateList(this.auction.address.countryUniqueId);
@@ -77,9 +78,9 @@ export class CreateAuctionComponent extends AppComponentBase implements OnInit, 
             this.auction.auctionEndDateTime = moment();
         });
     }
-    loadStateList(countryId):void{
+    loadStateList(countryId): void {
         this.stateDropdown = false;
-        this.stateList = this.countryList.find(x=> x.countryUniqueId === countryId);
+        this.stateList = this.countryList.find(x => x.countryUniqueId === countryId);
     }
 
     getTimePart(dateTimeVal): string {
@@ -91,22 +92,30 @@ export class CreateAuctionComponent extends AppComponentBase implements OnInit, 
         this.saving = true;
         var stime = this.getTimePart(this.startTime);
         var etime = this.getTimePart(this.endTime);
-        var EndDate =   this.auction.auctionEndDateTime.local().format("YYYY-MM-DD");
-        var StartDate = this.auction.auctionStartDateTime.local().format("YYYY-MM-DD");
-        this.auction.auctionStartDateTime = moment(StartDate + ' ' + stime);
-        this.auction.auctionEndDateTime = moment(EndDate + ' ' + etime);
+        debugger;
+        var auctionEndDate = this.auction.auctionEndDateTime.local().format("YYYY-MM-DD");
+        var auctionStartDate = this.auction.auctionStartDateTime.local().format("YYYY-MM-DD");
+
+        var eventTimezone = this.eventList.filter(s => s.uniqueId == this.auction.eventUniqueId)[0];
+        if (eventTimezone === null)
+            return;
+
+        var selectedtimezoneId = findOneIana(eventTimezone.timeZone);
+
+        this.auction.auctionStartDateTime = moment.tz(auctionStartDate + ' ' + stime, selectedtimezoneId);
+        this.auction.auctionEndDateTime = moment.tz(auctionEndDate + ' ' + etime, selectedtimezoneId);
         this._auctionService.createAuction(this.auction)
-        .pipe(finalize(() => this.saving = false))
-        .subscribe(() => {
-            this.notify.info(this.l('SavedSuccessfully'));
-            this.close();
-           
-        });
+            .pipe(finalize(() => this.saving = false))
+            .subscribe(() => {
+                this.notify.info(this.l('SavedSuccessfully'));
+                this.close();
+
+            });
     }
-  
+
     close(): void {
         this.active = false;
         this._router.navigate(['app/admin/auctions']);
     }
-   
+
 }

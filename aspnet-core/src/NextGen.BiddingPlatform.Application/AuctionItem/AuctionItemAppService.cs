@@ -12,7 +12,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NextGen.BiddingPlatform.AuctionItem.Dto;
+using NextGen.BiddingPlatform.Caching;
 using NextGen.BiddingPlatform.Configuration;
+using NextGen.BiddingPlatform.Core.AppAccountEvents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,12 +33,14 @@ namespace NextGen.BiddingPlatform.AuctionItem
         private readonly IRepository<Core.AuctionBidders.AuctionBidder> _auctionBidderRepository;
         private readonly IRepository<Core.AuctionHistories.AuctionHistory> _auctionHistoryRepository;
         private readonly IAbpSession _abpSession;
+        private readonly IRepository<Event> _eventRepository;
         public AuctionItemAppService(IRepository<Core.AuctionItems.AuctionItem> auctionitemRepository,
                                      IRepository<Core.Auctions.Auction> auctionRepository,
                                      IRepository<Core.Items.Item> itemRepository,
                                      IAbpSession abpSession,
                                      IRepository<Core.AuctionBidders.AuctionBidder> auctionBidderRepository,
-                                     IRepository<Core.AuctionHistories.AuctionHistory> auctionHistoryRepository)
+                                     IRepository<Core.AuctionHistories.AuctionHistory> auctionHistoryRepository,
+                                     IRepository<Event> eventRepository)
         {
             _auctionitemRepository = auctionitemRepository;
             _auctionRepository = auctionRepository;
@@ -44,6 +48,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
             _abpSession = abpSession;
             _auctionBidderRepository = auctionBidderRepository;
             _auctionHistoryRepository = auctionHistoryRepository;
+            _eventRepository = eventRepository;
         }
         [AllowAnonymous]
         public async Task<ListResultDto<AuctionItemListDto>> GetAllAuctionItems(int categoryId = 0, string search = "")
@@ -408,6 +413,51 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 output.Add(finalAuctionItem);
             }
             return output;
+        }
+
+        public async Task<List<EventAuctionItemWinnerDto>> GetEventWinners(Guid eventUniqueId)
+        {
+            var @event = await _eventRepository.FirstOrDefaultAsync(s => s.UniqueId == eventUniqueId);
+            if (@event == null)
+                throw new UserFriendlyException("Event not found!!");
+
+            var auctionIds = await _auctionRepository.GetAll().AsNoTracking().Where(s => s.EventId == @event.Id).Select(s => s.Id).ToListAsync();
+
+            var auctionItems = await _auctionitemRepository.GetAll().AsNoTracking()
+                                    .Include(s => s.Item)
+                                    .Include(s => s.Auction)
+                                    .Include(s => s.AuctionHistories)
+                                    .Where(s => auctionIds.Contains(s.AuctionId)).ToListAsync();
+
+            List<EventAuctionItemWinnerDto> result = new List<EventAuctionItemWinnerDto>();
+
+            foreach (var s in auctionItems)
+            {
+                var auctionItem = new EventAuctionItemWinnerDto
+                {
+                    ItemName = s.Item.ItemName,
+                    ItemPrice = (decimal)Math.Round(s.Item.FairMarketValue_FMV, 2),
+                    AuctionStatus = "In Progress"
+                };
+
+                if ((s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours <= 0)
+                {
+                    auctionItem.AuctionStatus = "Winner";
+                    //status inprogress
+                    var maxBidBidder = s.AuctionHistories.OrderByDescending(s => s.CreationTime).ThenByDescending(s => s.BidAmount).FirstOrDefault();
+                    if (maxBidBidder != null)
+                    {
+                        var bidderDetails = await _auctionBidderRepository.GetAll().AsNoTracking().Include(s => s.User).FirstOrDefaultAsync(s => s.Id == maxBidBidder.AuctionBidderId);
+
+                        auctionItem.LastBiddingAmountOfWinner = (decimal)Math.Round(maxBidBidder.BidAmount, 2);
+                        auctionItem.WinnerName = bidderDetails.BidderName;
+                    }
+                }
+
+                result.Add(auctionItem);
+            }
+
+            return result;
         }
     }
 }

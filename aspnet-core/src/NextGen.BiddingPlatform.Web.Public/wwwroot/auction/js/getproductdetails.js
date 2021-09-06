@@ -11,23 +11,27 @@ function GetAuctionItem() {
         cache: false,
         dataType: "json",
         success: function (response) {
-            
+
             if (response != null || response != undefined) {
                 var data = response.result;
 
-
                 var endDate = new Date(Date.parse(data.auctionEndDateTime));
+
+                //shortly = new Date();
+                //shortly.setSeconds(shortly.getSeconds() + 5.5);
 
                 if (parseInt(data.remainingDays) > 0) {
                     $('#defaultCountdown').countdown({
                         until: endDate,
-                        layout: ' {dn} {dl}  '
+                        layout: ' {dn} {dl}  ',
+                        onExpiry: disableBidding
                     });
                 }
                 else {
                     $('#defaultCountdown').countdown({
                         until: endDate,
-                        layout: ' {hn} {hl} {mn} {ml} {sn} {sl} '
+                        layout: ' {hn} {hl} {mn} {ml} {sn} {sl} ',
+                        onExpiry: disableBidding
                     });
                 }
                 if (data.isAuctionExpired) {
@@ -73,7 +77,7 @@ function GetAuctionItem() {
                     contentType: "application/json",
                     dataType: "json",
                     success: function (response) {
-                        
+
                         if (response != null && response.success) {
                             console.log("added item to viewed");
                         }
@@ -91,6 +95,11 @@ function GetAuctionItem() {
             console.log(xhr.responseText + " " + xhr.status);
         }
     });
+
+    function disableBidding() {
+        $("#biddingAmount").addClass("disbale-btn");
+        $("#bidNowBtn").addClass("disbale-btn")
+    }
 }
 
 
