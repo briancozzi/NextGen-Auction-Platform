@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace NextGen.BiddingPlatform.Web.Models.TokenAuth
 {
@@ -27,5 +28,6 @@ namespace NextGen.BiddingPlatform.Web.Models.TokenAuth
         public string RefreshToken { get; set; }
 
         public int RefreshTokenExpireInSeconds { get; set; }
+        public Guid? AppAccountUniqueId { get; set; }
     }
 }

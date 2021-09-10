@@ -46,6 +46,8 @@ using NextGen.BiddingPlatform.Security.Recaptcha;
 using NextGen.BiddingPlatform.Web.Authentication.External;
 using NextGen.BiddingPlatform.Web.Common;
 using NextGen.BiddingPlatform.Authorization.Delegation;
+using Abp.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace NextGen.BiddingPlatform.Web.Controllers
 {
@@ -77,6 +79,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
         private readonly AbpUserClaimsPrincipalFactory<User, Role> _claimsPrincipalFactory;
         public IRecaptchaValidator RecaptchaValidator { get; set; }
         private readonly IUserDelegationManager _userDelegationManager;
+        private readonly IRepository<Core.AppAccounts.AppAccount> _appAccountRepository;
 
         public TokenAuthController(
             LogInManager logInManager,
@@ -99,8 +102,9 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             ExternalLoginInfoManagerFactory externalLoginInfoManagerFactory,
             ISettingManager settingManager,
             IJwtSecurityStampHandler securityStampHandler,
-            AbpUserClaimsPrincipalFactory<User, Role> claimsPrincipalFactory, 
-            IUserDelegationManager userDelegationManager)
+            AbpUserClaimsPrincipalFactory<User, Role> claimsPrincipalFactory,
+            IUserDelegationManager userDelegationManager,
+            IRepository<Core.AppAccounts.AppAccount> appAccountRepository)
         {
             _logInManager = logInManager;
             _tenantCache = tenantCache;
@@ -125,6 +129,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             _claimsPrincipalFactory = claimsPrincipalFactory;
             RecaptchaValidator = NullRecaptchaValidator.Instance;
             _userDelegationManager = userDelegationManager;
+            _appAccountRepository = appAccountRepository;
         }
 
         [HttpPost]
@@ -201,6 +206,8 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             var accessToken = CreateAccessToken(await CreateJwtClaims(loginResult.Identity, loginResult.User));
             var refreshToken = CreateRefreshToken(await CreateJwtClaims(loginResult.Identity, loginResult.User, tokenType: TokenType.RefreshToken));
 
+            var appAccount = await _appAccountRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.Id == loginResult.User.AppAccountId);
+
             return new AuthenticateResultModel
             {
                 AccessToken = accessToken,
@@ -210,7 +217,8 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                 EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
                 TwoFactorRememberClientToken = twoFactorRememberClientToken,
                 UserId = loginResult.User.Id,
-                ReturnUrl = returnUrl
+                ReturnUrl = returnUrl,
+                AppAccountUniqueId = appAccount?.UniqueId
             };
         }
 
@@ -346,7 +354,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             {
                 throw new UserFriendlyException("User delegation error...");
             }
-        
+
             var expiration = userDelegation.EndTime.Subtract(Clock.Now);
             var accessToken = CreateAccessToken(await CreateJwtClaims(result.Identity, result.User, expiration), expiration);
 
