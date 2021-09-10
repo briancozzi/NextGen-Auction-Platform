@@ -25,5 +25,7 @@ namespace NextGen.BiddingPlatform.Auction.Dto
         public AddressDto Address { get; set; }
 
         public List<int> Items { get; set; }
+
+        public Guid? AuctionUniqueId { get; set; }
     }
 }

@@ -157,6 +157,7 @@ namespace NextGen.BiddingPlatform.Auction
             }
 
             await _auctionRepository.InsertAsync(auction);
+            input.AuctionUniqueId = auction.UniqueId;
             return input;
         }
 
