@@ -183,9 +183,16 @@ namespace NextGen.BiddingPlatform.AppAccount
             if (appAccount == null)
                 throw new Exception("AppAccount not found for given Id");
 
-
-
             await _accountRepository.DeleteAsync(appAccount);
+
+            var user = await UserManager.Users.FirstOrDefaultAsync(s => s.AppAccountId == appAccount.Id);
+            if (user != null)
+            {
+                user.IsDeleted = true;
+                user.LastModificationTime = DateTime.Now;
+                user.LastModifierUserId = AbpSession.UserId;
+                await UserManager.UpdateAsync(user);
+            }
         }
 
         public async Task<ListResultDto<AppAccountListDto>> GetAllAccount()
