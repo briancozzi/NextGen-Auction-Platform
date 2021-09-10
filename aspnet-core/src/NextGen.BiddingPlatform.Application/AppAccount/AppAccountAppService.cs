@@ -49,7 +49,7 @@ namespace NextGen.BiddingPlatform.AppAccount
         public async Task<PagedResultDto<AppAccountListDto>> GetAllAccountFilter(AppAccountFilter input)
         {
             var query = _accountRepository.GetAll();
-            
+
 
             var resultquery = query.WhereIf(!input.SearchName.IsNullOrWhiteSpace(), x => x.FirstName.ToLower().IndexOf(input.SearchName.ToLower()) > -1 || x.LastName.ToLower().IndexOf(input.SearchName.ToLower()) > -1)
                          .Select(x => new AppAccountListDto
@@ -113,6 +113,8 @@ namespace NextGen.BiddingPlatform.AppAccount
                     SetRandomPassword = false,
                     AssignedRoleNames = new List<string>() { StaticRoleNames.Tenants.AccountAdmin }.ToArray()
                 });
+
+                input.AppAccountUniqueId = account.UniqueId;
                 return input;
             }
             catch (Exception ex)
@@ -181,7 +183,7 @@ namespace NextGen.BiddingPlatform.AppAccount
             if (appAccount == null)
                 throw new Exception("AppAccount not found for given Id");
 
-            
+
 
             await _accountRepository.DeleteAsync(appAccount);
         }
@@ -206,7 +208,7 @@ namespace NextGen.BiddingPlatform.AppAccount
             if (account == null)
                 throw new Exception("AppAccount not found for given Id");
 
-           
+
 
             var mappedAccount = ObjectMapper.Map<AppAccountDto>(account);
             // mappedAccount.Users = account.AccountPermissions.Select(x => x.UserId).ToList();

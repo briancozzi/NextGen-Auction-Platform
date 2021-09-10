@@ -125,6 +125,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             events.TenantId = AbpSession.TenantId.Value;
 
             await _eventRepository.InsertAsync(events);
+            input.EventUniqueId = events.UniqueId;
             return input;
         }
 
@@ -194,7 +195,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             if (Event == null)
                 throw new Exception("Event not found for given id");
 
-           
+
 
             var mappedEvent = ObjectMapper.Map<AccountEventDto>(Event);
             mappedEvent.Users = Event.EventPermissions.Select(x => x.UserId).ToList();

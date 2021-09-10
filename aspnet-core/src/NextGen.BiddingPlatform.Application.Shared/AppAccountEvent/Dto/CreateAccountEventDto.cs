@@ -35,5 +35,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent.Dto
         public AddressDto Address { get; set; }
 
         public List<long> Users { get; set; }
+
+        public Guid? EventUniqueId { get; set; }
     }
 }

@@ -35,5 +35,6 @@ namespace NextGen.BiddingPlatform.AppAccount.Dto
         public string ThumbnailImage { get; set; }
 
         public List<long> Users { get; set; }
+        public Guid? AppAccountUniqueId { get; set; }
     }
 }
