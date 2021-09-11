@@ -10,7 +10,7 @@ namespace NextGen.BiddingPlatform.Items.Dto
     {
         //[Required]
         //public int ItemType { get; set; }//may be enum or dropdown
-        public int? ItemId { get; set; }
+        public Guid? ItemUniqueId { get; set; }
         public Guid AppAccountUniqueId { get; set; }
         [Required]
         public int ItemNumber { get; set; }

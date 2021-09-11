@@ -106,7 +106,7 @@ namespace NextGen.BiddingPlatform.AppAccount
                         PhoneNumber = input.PhoneNo,
                         Surname = input.LastName,
                         Password = "123qwe",
-                        ShouldChangePasswordOnNextLogin = true,
+                        ShouldChangePasswordOnNextLogin = false,
                         UserName = input.Email,
                         AppAccountId = appAccount.Id
                     },

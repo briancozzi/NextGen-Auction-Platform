@@ -171,7 +171,7 @@ namespace NextGen.BiddingPlatform.Items
                 var itemId = await _itemRepository.InsertAndGetIdAsync(mappedItem);
                 await CurrentUnitOfWork.SaveChangesAsync();
 
-                input.ItemId = itemId;
+                input.ItemUniqueId = mappedItem.UniqueId;
 
                 return input;
             }
