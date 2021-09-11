@@ -14,7 +14,7 @@ namespace NextGen.BiddingPlatform.Items
         Task<long> GetNextItemNumber();
         Task<PagedResultDto<ItemListDto>> GetItemsWithFilter(ItemFilter input);
         Task<UpdateItemDto> GetItemById(Guid Id);
-        Task CreateItem(ItemDto input);
+        Task<ItemDto> CreateItem(ItemDto input);
         Task UpdateItem(UpdateItemDto input);
         Task DeleteItem(Guid Id);
         Dropdowns GetDropdowns();
