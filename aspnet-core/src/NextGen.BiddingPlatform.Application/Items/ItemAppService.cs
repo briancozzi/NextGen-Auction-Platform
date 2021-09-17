@@ -129,7 +129,7 @@ namespace NextGen.BiddingPlatform.Items
             return mappedItem;
         }
 
-        public async Task CreateItem(ItemDto input)
+        public async Task<ItemDto> CreateItem(ItemDto input)
         {
             try
             {
@@ -154,16 +154,7 @@ namespace NextGen.BiddingPlatform.Items
                 mappedItem.AppAccountId = currUser.AppAccountId.Value;
                 mappedItem.UniqueId = Guid.NewGuid();
                 mappedItem.TenantId = AbpSession.TenantId.Value;
-                //add category to ItemCategory Table
-                //foreach (var category in input.Categories)
-                //{
-                //    mappedItem.ItemCategories.Add(new ItemCategory.ItemCategory
-                //    {
-                //        UniqueId = Guid.NewGuid(),
-                //        CategoryId = category
-                //    });
-                //}
-                //add images to ItemGallery Table
+
                 mappedItem.ItemImages = new List<ItemGallery>();
                 foreach (var image in input.ItemImages)
                 {
@@ -177,8 +168,12 @@ namespace NextGen.BiddingPlatform.Items
                     });
                 }
 
-                await _itemRepository.InsertAsync(mappedItem);
+                var itemId = await _itemRepository.InsertAndGetIdAsync(mappedItem);
                 await CurrentUnitOfWork.SaveChangesAsync();
+
+                input.ItemUniqueId = mappedItem.UniqueId;
+
+                return input;
             }
             catch (Exception ex)
             {
