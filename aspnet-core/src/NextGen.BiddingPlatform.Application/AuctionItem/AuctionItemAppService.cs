@@ -77,8 +77,8 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 ItemStatus = s.Item.ItemStatus,
                 ItemType = s.Item.ItemType,
                 FairMarketValue_FMV = s.Item.FairMarketValue_FMV,
-                ImageName = s.Item.MainImageName,
-                Thumbnail = s.Item.ThumbnailImage,
+                MainImageName = s.Item.MainImageName,
+                ThumbnailImage = s.Item.ThumbnailImage,
                 IsAuctionExpired = (s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours <= 0,
                 RemainingDays = Convert.ToInt32((s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalDays).ToString(),
                 RemainingTime = Convert.ToInt32((s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours) + ":" + Convert.ToInt32((s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalMinutes),
@@ -106,8 +106,8 @@ namespace NextGen.BiddingPlatform.AuctionItem
                                            ItemNumber = s.Item.ItemNumber,
                                            ItemType = s.Item.ItemType,
                                            FairMarketValue_FMV = s.Item.FairMarketValue_FMV,
-                                           ImageName = s.Item.MainImageName,
-                                           Thumbnail = s.Item.ThumbnailImage,
+                                           MainImageName = s.Item.MainImageName,
+                                           ThumbnailImage = s.Item.ThumbnailImage,
                                        });
 
             var resultCount = await query.CountAsync();
@@ -172,8 +172,8 @@ namespace NextGen.BiddingPlatform.AuctionItem
                     ItemNumber = output.Item.ItemNumber,
                     ItemType = output.Item.ItemType,
                     FairMarketValue_FMV = output.Item.FairMarketValue_FMV,
-                    ImageName = output.Item.MainImageName,
-                    Thumbnail = output.Item.ThumbnailImage,
+                    MainImageName = output.Item.MainImageName,
+                    ThumbnailImage = output.Item.ThumbnailImage,
                     IsAuctionExpired = (output.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours <= 0,
                     RemainingDays = Convert.ToInt32((output.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalDays).ToString(),
                     RemainingTime = Convert.ToInt32((output.Auction.AuctionEndDateTime - DateTime.UtcNow).Hours) + ":" + Convert.ToInt32((output.Auction.AuctionEndDateTime - DateTime.UtcNow).Minutes),

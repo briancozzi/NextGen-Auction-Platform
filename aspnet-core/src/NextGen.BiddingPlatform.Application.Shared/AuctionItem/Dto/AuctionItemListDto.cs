@@ -21,8 +21,8 @@ namespace NextGen.BiddingPlatform.AuctionItem.Dto
         public int ItemType { get; set; }//may be enum or dropdown
         public int ItemNumber { get; set; }
         public double FairMarketValue_FMV { get; set; }
-        public string ImageName { get; set; }
-        public string Thumbnail { get; set; }
+        public string MainImageName { get; set; }
+        public string ThumbnailImage { get; set; }
         public string RemainingDays { get; set; }
         public string RemainingTime { get; set; }
         public double LastBidAmount { get; set; }
