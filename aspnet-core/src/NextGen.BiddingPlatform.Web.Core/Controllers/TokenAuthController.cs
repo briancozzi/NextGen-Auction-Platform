@@ -48,6 +48,11 @@ using NextGen.BiddingPlatform.Web.Common;
 using NextGen.BiddingPlatform.Authorization.Delegation;
 using Abp.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Hosting;
+using NextGen.BiddingPlatform.Authorization.Users.Dto;
+using NextGen.BiddingPlatform.Web.Models;
+using System.Collections.ObjectModel;
 
 namespace NextGen.BiddingPlatform.Web.Controllers
 {
@@ -80,6 +85,12 @@ namespace NextGen.BiddingPlatform.Web.Controllers
         public IRecaptchaValidator RecaptchaValidator { get; set; }
         private readonly IUserDelegationManager _userDelegationManager;
         private readonly IRepository<Core.AppAccounts.AppAccount> _appAccountRepository;
+        private readonly IConfigurationRoot _configurationRoot;
+        private readonly IUserAppService _userAppService;
+        private readonly IUserPolicy _userPolicy;
+        private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly IEnumerable<IPasswordValidator<User>> _passwordValidators;
+        private readonly RoleManager _roleManager;
 
         public TokenAuthController(
             LogInManager logInManager,
@@ -104,7 +115,12 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             IJwtSecurityStampHandler securityStampHandler,
             AbpUserClaimsPrincipalFactory<User, Role> claimsPrincipalFactory,
             IUserDelegationManager userDelegationManager,
-            IRepository<Core.AppAccounts.AppAccount> appAccountRepository)
+            IRepository<Core.AppAccounts.AppAccount> appAccountRepository,
+            IWebHostEnvironment env,
+            IUserAppService userAppService,
+            IUserPolicy userPolicy, IPasswordHasher<User> passwordHasher,
+            IEnumerable<IPasswordValidator<User>> passwordValidators,
+            RoleManager roleManager)
         {
             _logInManager = logInManager;
             _tenantCache = tenantCache;
@@ -130,6 +146,12 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             RecaptchaValidator = NullRecaptchaValidator.Instance;
             _userDelegationManager = userDelegationManager;
             _appAccountRepository = appAccountRepository;
+            _configurationRoot = env.GetAppConfiguration();
+            _userAppService = userAppService;
+            _userPolicy = userPolicy;
+            _passwordHasher = passwordHasher;
+            _passwordValidators = passwordValidators;
+            _roleManager = roleManager;
         }
 
         [HttpPost]
@@ -220,6 +242,100 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                 ReturnUrl = returnUrl,
                 AppAccountUniqueId = appAccount?.UniqueId
             };
+        }
+
+        [HttpPost]
+        public async Task<string> ExternalEventlifyLogin([FromBody] EventlifyLoginModel data)
+        {
+            var returlUrl = _configurationRoot["ExternalUserLoginSettings:ReturnUrl"];
+
+            var existingUser = await _userManager.FindByEmailAsync(data.EmailAddress);
+            var generalPassword = "123qwe";
+            if (existingUser == null)
+            {
+                var input = new CreateOrUpdateUserInput
+                {
+                    User = new UserEditDto
+                    {
+                        EmailAddress = data.EmailAddress,
+                        IsActive = true,
+                        IsLockoutEnabled = false,
+                        IsTwoFactorEnabled = false,
+                        Name = data.FirstName,
+                        Password = generalPassword,
+                        PhoneNumber = "",
+                        ShouldChangePasswordOnNextLogin = false,
+                        Surname = data.LastName,
+                        UserName = data.EmailAddress
+                    },
+                    AssignedRoleNames = new List<string>() { "User" }.ToArray(),
+                    SendActivationEmail = false,
+                    SetRandomPassword = false
+                };
+
+
+                await _userPolicy.CheckMaxUserCountAsync(data.TenantId);
+                await CreateUser(input, data.TenantId);
+
+
+                var result = await Authenticate(new AuthenticateModel
+                {
+                    UserNameOrEmailAddress = input.User.UserName,
+                    Password = generalPassword,
+                    SingleSignIn = true,
+                    ReturnUrl = returlUrl
+                });
+
+                return result.ReturnUrl;
+            }
+            else
+            {
+                var result = await Authenticate(new AuthenticateModel
+                {
+                    UserNameOrEmailAddress = existingUser.UserName,
+                    Password = generalPassword,
+                    SingleSignIn = true,
+                    ReturnUrl = returlUrl
+                });
+                return result.ReturnUrl;
+            }
+        }
+
+        private async Task CreateUser(CreateOrUpdateUserInput input, int tenantId)
+        {
+            var user = ObjectMapper.Map<User>(input.User); //Passwords is not mapped (see mapping configuration)
+            user.TenantId = tenantId;
+
+            //Set password
+            if (input.SetRandomPassword)
+            {
+                var randomPassword = await _userManager.CreateRandomPassword();
+                user.Password = _passwordHasher.HashPassword(user, randomPassword);
+                input.User.Password = randomPassword;
+            }
+            else if (!input.User.Password.IsNullOrEmpty())
+            {
+                await _userManager.InitializeOptionsAsync(tenantId);
+                foreach (var validator in _passwordValidators)
+                {
+                    CheckErrors(await validator.ValidateAsync(_userManager, user, input.User.Password));
+                }
+
+                user.Password = _passwordHasher.HashPassword(user, input.User.Password);
+            }
+
+            user.ShouldChangePasswordOnNextLogin = input.User.ShouldChangePasswordOnNextLogin;
+
+            //Assign roles
+            user.Roles = new Collection<UserRole>();
+            foreach (var roleName in input.AssignedRoleNames)
+            {
+                var role = await _roleManager.GetRoleByNameAsync(roleName);
+                user.Roles.Add(new UserRole(AbpSession.TenantId, user.Id, role.Id));
+            }
+
+            CheckErrors(await _userManager.CreateAsync(user));
+            await CurrentUnitOfWork.SaveChangesAsync(); //To get new user's Id.
         }
 
         [HttpPost]
