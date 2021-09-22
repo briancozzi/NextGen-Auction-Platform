@@ -15,13 +15,16 @@
         <li><a href="/Home/CurrentBids">My Activity</a></li>
         <li><a href="#">Pay</a></li>
         <li><a href="#">Donate</a></li>
-        <li class="account">
-            @if (Model.LoginInformations?.User != null)
-            {
+        @if (Model.LoginInformations?.User != null)
+        {
+            <li><a href='/Account/Logout'>Logout</a></li>
+            <li class="account">
+
                 <i class="fa fa-cogs" style="margin-right:10px;"></i>
                 @Model.GetShownLoginName()
-            }
-        </li>
+            </li>
+        }
+
     </ul>
 </nav>
 <header>
@@ -48,6 +51,7 @@
                             {
                                 <i class="fa fa-cogs" style="margin-right:10px;"></i>
                                 @Model.GetShownLoginName()
+                                <a href='/Account/Logout'>&nbsp;| LOGOUT</a>
                             }
                             else
                             {
