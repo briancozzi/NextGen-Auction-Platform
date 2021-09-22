@@ -5,6 +5,11 @@
 @{
     var orderedMenuItems = Model.Menu.Items.OrderByCustom().ToList();
 }
+<style>
+    .logo-pointer {
+        cursor: pointer;
+    }
+</style>
 <nav class="d-none mob-nav">
     <ul class="list-unstyled">
         <li><a href="/Home/CurrentBids">My Activity</a></li>
@@ -23,11 +28,11 @@
     <div class="container">
 
         <div class="d-flex align-items-center justify-content-between">
-            <div class="left-side">
-                <div class="logo-heading">
+            <div class="left-side logo-pointer">
+                <div class="logo-heading logo-pointer">
                     Silent Auctions
                 </div>
-                <div class="logo">
+                <div class="logo logo-pointer">
                     POWERED BY
                     <img src="~/auction/images/eventlify-logo.png" alt="">
                 </div>

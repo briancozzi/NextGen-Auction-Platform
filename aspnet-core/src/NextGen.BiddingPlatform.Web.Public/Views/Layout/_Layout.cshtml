@@ -73,6 +73,11 @@
     <script type="text/javascript">
         $(function () {
             //Layout.init();
+            $(document).on("click", ".logo, .logo-heading", function (e) {
+                e.preventDefault();
+
+                location.href = "/Home/Index";
+            });
         });
     </script>
 
