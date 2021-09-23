@@ -85,7 +85,9 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 LastBidAmount = s.AuctionHistories.OrderByDescending(x => x.CreationTime).FirstOrDefault().BidAmount,
                 IsClosedItemStatus = s.Item.ItemStatus == (int)ItemStatus.Closed,
                 IsFavorite = "",
-                ActualItemId = s.ItemId
+                ActualItemId = s.ItemId,
+                IsHide = s.Item.IsHide,
+                IsActive = s.Item.IsActive,
             }).ToListAsync();
 
             return new ListResultDto<AuctionItemListDto>(auctionItems);
@@ -179,7 +181,9 @@ namespace NextGen.BiddingPlatform.AuctionItem
                     RemainingTime = Convert.ToInt32((output.Auction.AuctionEndDateTime - DateTime.UtcNow).Hours) + ":" + Convert.ToInt32((output.Auction.AuctionEndDateTime - DateTime.UtcNow).Minutes),
                     LastBidAmount = lastBidAmount,
                     TotalBidCount = output.AuctionHistories.Count,
-                    ItemDescription = output.Item.Description
+                    ItemDescription = output.Item.Description,
+                    IsActive = output.Item.IsActive,
+                    IsHide = output.Item.IsHide
                 };
             }
             catch (Exception ex)

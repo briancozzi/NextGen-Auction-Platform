@@ -43,5 +43,8 @@ namespace NextGen.BiddingPlatform.AuctionItem.Dto
         public bool IsAuctionExpired { get; set; }
         public string IsFavorite { get; set; }
         public int ActualItemId { get; set; }
+
+        public bool IsHide { get; set; }
+        public bool IsActive { get; set; }
     }
 }
