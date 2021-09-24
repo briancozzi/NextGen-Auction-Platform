@@ -53,7 +53,11 @@ namespace NextGen.BiddingPlatform.AuctionItem
         [AllowAnonymous]
         public async Task<ListResultDto<AuctionItemListDto>> GetAllAuctionItems(int categoryId = 0, string search = "")
         {
-            var query = _auctionitemRepository.GetAllIncluding(x => x.Auction, x => x.Item, x => x.AuctionHistories)
+            var query = _auctionitemRepository.GetAll()
+                                                //.GetAllIncluding(x => x.Auction, x => x.Item, x => x.AuctionHistories)
+                                                .Include(s => s.Auction)
+                                                .Include(s => s.Item).ThenInclude(s => s.CategoryFk)
+                                                .Include(s => s.AuctionHistories)
                                                     .AsNoTracking();
 
             if (categoryId > 0)
@@ -88,6 +92,8 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 ActualItemId = s.ItemId,
                 IsHide = s.Item.IsHide,
                 IsActive = s.Item.IsActive,
+                CategoryId = s.Item.CategoryFk.Id,
+                UniqueCategoryId = s.Item.CategoryFk.UniqueId
             }).ToListAsync();
 
             return new ListResultDto<AuctionItemListDto>(auctionItems);
