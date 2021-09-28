@@ -53,6 +53,8 @@ using Microsoft.AspNetCore.Hosting;
 using NextGen.BiddingPlatform.Authorization.Users.Dto;
 using NextGen.BiddingPlatform.Web.Models;
 using System.Collections.ObjectModel;
+using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace NextGen.BiddingPlatform.Web.Controllers
 {
@@ -244,60 +246,84 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             };
         }
 
-        [HttpPost]
-        public async Task<string> ExternalEventlifyLogin([FromBody] EventlifyLoginModel data)
+        [HttpGet]
+        public async Task<string> ExternalUserLogin(Guid UniqueId, string userId, int TenantId)
         {
             var returlUrl = _configurationRoot["ExternalUserLoginSettings:ReturnUrl"];
 
-            var existingUser = await _userManager.FindByEmailAsync(data.EmailAddress);
-            var generalPassword = "123qwe";
-            if (existingUser == null)
+            HttpClient _client = new HttpClient();
+            _client.DefaultRequestHeaders.Clear();
+
+            var getUserDetailsApi = _configurationRoot["ExternalUserLoginSettings:GetUserApi"];
+            getUserDetailsApi += "?uniqueId=" + UniqueId;
+            getUserDetailsApi += "&userId=" + userId;
+            getUserDetailsApi += "&tenantId=" + TenantId;
+
+            var httpResponse = await _client.GetAsync(getUserDetailsApi);
+            if (httpResponse.IsSuccessStatusCode)
             {
-                var input = new CreateOrUpdateUserInput
+                var resultFromApi = await httpResponse.Content.ReadAsStringAsync();
+                var data = JsonConvert.DeserializeObject<UserDetails>(resultFromApi);
+
+                var existingUser = await _userManager.Users.FirstOrDefaultAsync(s => s.ExternalUserId == data.ExternalUserId);
+
+                var generalPassword = "123qwe";
+                if (existingUser == null)
                 {
-                    User = new UserEditDto
+                    var input = new CreateOrUpdateUserInput
                     {
-                        EmailAddress = data.EmailAddress,
-                        IsActive = true,
-                        IsLockoutEnabled = false,
-                        IsTwoFactorEnabled = false,
-                        Name = data.FirstName,
+                        User = new UserEditDto
+                        {
+                            EmailAddress = data.EmailAddress,
+                            IsActive = true,
+                            IsLockoutEnabled = false,
+                            IsTwoFactorEnabled = false,
+                            Name = data.FirstName,
+                            Password = generalPassword,
+                            PhoneNumber = "",
+                            ShouldChangePasswordOnNextLogin = false,
+                            Surname = data.LastName,
+                            UserName = data.EmailAddress,
+                            ExternalUserId = data.ExternalUserId,
+                            //ExternalUserUniqueId = data.ExternalUniqueId
+                        },
+                        AssignedRoleNames = new List<string>() { "User" }.ToArray(),
+                        SendActivationEmail = false,
+                        SetRandomPassword = false
+                    };
+
+
+                    await _userPolicy.CheckMaxUserCountAsync(data.TenantId);
+                    await CreateUser(input, data.TenantId);
+
+
+                    var result = await Authenticate(new AuthenticateModel
+                    {
+                        UserNameOrEmailAddress = input.User.UserName,
                         Password = generalPassword,
-                        PhoneNumber = "",
-                        ShouldChangePasswordOnNextLogin = false,
-                        Surname = data.LastName,
-                        UserName = data.EmailAddress
-                    },
-                    AssignedRoleNames = new List<string>() { "User" }.ToArray(),
-                    SendActivationEmail = false,
-                    SetRandomPassword = false
-                };
+                        SingleSignIn = true,
+                        ReturnUrl = returlUrl
+                    });
 
-
-                await _userPolicy.CheckMaxUserCountAsync(data.TenantId);
-                await CreateUser(input, data.TenantId);
-
-
-                var result = await Authenticate(new AuthenticateModel
+                    return result.ReturnUrl;
+                }
+                else
                 {
-                    UserNameOrEmailAddress = input.User.UserName,
-                    Password = generalPassword,
-                    SingleSignIn = true,
-                    ReturnUrl = returlUrl
-                });
+                    await _userManager.UpdateAsync(existingUser);
 
-                return result.ReturnUrl;
+                    var result = await Authenticate(new AuthenticateModel
+                    {
+                        UserNameOrEmailAddress = existingUser.UserName,
+                        Password = generalPassword,
+                        SingleSignIn = true,
+                        ReturnUrl = returlUrl
+                    });
+                    return result.ReturnUrl;
+                }
             }
             else
             {
-                var result = await Authenticate(new AuthenticateModel
-                {
-                    UserNameOrEmailAddress = existingUser.UserName,
-                    Password = generalPassword,
-                    SingleSignIn = true,
-                    ReturnUrl = returlUrl
-                });
-                return result.ReturnUrl;
+                return null;
             }
         }
 
@@ -930,5 +956,14 @@ namespace NextGen.BiddingPlatform.Web.Controllers
 
             await RecaptchaValidator.ValidateAsync(captchaResponse);
         }
+    }
+    public class UserDetails
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string EmailAddress { get; set; }
+        public int TenantId { get; set; }
+        public string ExternalUserId { get; set; }
+        public string ExternalUniqueId { get; set; }
     }
 }

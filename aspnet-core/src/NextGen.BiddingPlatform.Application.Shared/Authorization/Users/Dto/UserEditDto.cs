@@ -46,5 +46,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users.Dto
 
         public virtual bool IsLockoutEnabled { get; set; }
         public int? AppAccountId { get; set; }
+
+        public string ExternalUserId { get; set; }
+        public string ExternalUserUniqueId { get; set; }
     }
 }

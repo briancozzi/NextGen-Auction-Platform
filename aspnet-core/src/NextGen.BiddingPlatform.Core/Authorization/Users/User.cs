@@ -30,6 +30,10 @@ namespace NextGen.BiddingPlatform.Authorization.Users
 
         [ForeignKey("AppAccountId")]
         public Core.AppAccounts.AppAccount AppAccount { get; set; }
+
+        public string ExternalUserId { get; set; }
+        public string ExternalUserUniqueId { get; set; }
+
         public User()
         {
             IsLockoutEnabled = true;

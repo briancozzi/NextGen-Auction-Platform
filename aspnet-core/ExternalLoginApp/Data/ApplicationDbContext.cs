@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using ExternalLoginApp.Data.DataModel;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,5 +13,10 @@ namespace ExternalLoginApp.Data
             : base(options)
         {
         }
+        public ApplicationDbContext()
+        {
+
+        }
+        public virtual DbSet<UserExternalSession> UserExternalSessions { get; set; }
     }
 }
