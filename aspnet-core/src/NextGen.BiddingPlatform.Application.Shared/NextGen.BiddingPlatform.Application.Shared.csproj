@@ -13,5 +13,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AuctionUserInvitations\Dto\" />
+    <Folder Include="UserEvents\Dto\" />
   </ItemGroup>
 </Project>

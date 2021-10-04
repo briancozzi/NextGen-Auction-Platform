@@ -1,18 +1,25 @@
-﻿using NextGen.BiddingPlatform.Address.Dto;
-using NextGen.BiddingPlatform.AppAccount.Dto;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace NextGen.BiddingPlatform.AppAccountEvent.Dto
+namespace ExternalLoginApp.Models.ApiModels
 {
+
+    public class AuctionEvents
+    {
+        public AuctionEvents()
+        {
+            Items = new List<AccountEventListDto>();
+        }
+        public List<AccountEventListDto> Items { get; set; }
+    }
     public class AccountEventListDto
     {
         public int Id { get; set; }
         public Guid UniqueId { get; set; }
         public Guid AppAccountUniqueId { get; set; }
         public string EventName { get; set; }
-        //public DateTime EventDate { get; set; }
         public DateTime EventStartDateTime { get; set; }
         public DateTime EventEndDateTime { get; set; }
         public string EventUrl { get; set; }

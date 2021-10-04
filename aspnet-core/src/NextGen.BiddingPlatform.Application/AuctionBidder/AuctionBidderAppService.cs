@@ -2,9 +2,11 @@
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Session;
+using Abp.UI;
 using Microsoft.EntityFrameworkCore;
 using NextGen.BiddingPlatform.AuctionBidder.Dto;
 using NextGen.BiddingPlatform.Authorization.Users;
+using NextGen.BiddingPlatform.UserEvents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,13 +21,16 @@ namespace NextGen.BiddingPlatform.AuctionBidder
         private readonly IRepository<Core.AuctionBidders.AuctionBidder> _auctionBidderRepository;
         private readonly IRepository<Core.Auctions.Auction> _auctionRepository;
         private readonly IAbpSession _abpSession;
+        private readonly IRepository<UserEvent, Guid> _userEventRepository;
         public AuctionBidderAppService(IRepository<Core.AuctionBidders.AuctionBidder> auctionBidderRepository,
                                         IAbpSession abpSession,
-                                        IRepository<Core.Auctions.Auction> auctionRepository)
+                                        IRepository<Core.Auctions.Auction> auctionRepository,
+                                        IRepository<UserEvent, Guid> userEventRepository)
         {
             _auctionBidderRepository = auctionBidderRepository;
             _auctionRepository = auctionRepository;
             _abpSession = abpSession;
+            _userEventRepository = userEventRepository;
         }
 
         public async Task CreateBidder(CreateAuctionBidderDto input)
@@ -48,6 +53,37 @@ namespace NextGen.BiddingPlatform.AuctionBidder
                 AuctionId = auction.Id,
                 BidderName = input.BidderName
             });
+        }
+
+        public async Task CreateBidderFromExternalApp(CreateAuctionBidderWithExternalApp input)
+        {
+            var user = await UserManager.Users.FirstOrDefaultAsync(s => s.ExternalUserId == input.ExternalUserId);
+            if (user == null)
+                throw new Exception("User not found for given user id");
+
+            var userEvent = await _userEventRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.UserId == user.Id && s.EventId == input.EventId);
+            if (userEvent == null)
+                throw new UserFriendlyException("User not registered with this event");
+
+            var auctions = await _auctionRepository.GetAll().AsNoTracking().Where(s => s.EventId == userEvent.EventId).Select(s => s.Id).ToListAsync();
+
+            foreach (var auctionId in auctions)
+            {
+                var auctionBidder = await _auctionBidderRepository.GetAll()
+                                .AsNoTracking()
+                                .FirstOrDefaultAsync(s => s.AuctionId == auctionId && s.UserId == user.Id);
+
+                if (auctionBidder == null)
+                {
+                    await _auctionBidderRepository.InsertAsync(new Core.AuctionBidders.AuctionBidder
+                    {
+                        UniqueId = Guid.NewGuid(),
+                        UserId = user.Id,
+                        AuctionId = auctionId,
+                        BidderName = user.FullName
+                    });
+                }
+            }
         }
 
         //public async Task UpdateBidder(UpdateAuctionBidderDto input)

@@ -12,7 +12,7 @@ namespace ExternalLoginApp.Helper
 {
     public static class DataHelper<T> where T : class, new()
     {
-        public async static Task<ResponseVM<T>> Execute(string baseUrl, string route, OperationType type, object payload = null)
+        public async static Task<ResponseVM<T>> Execute(string baseUrl, string route, string tenantId, OperationType type, object payload = null)
         {
             ResponseVM<T> response = new ResponseVM<T>();
             try
@@ -24,7 +24,7 @@ namespace ExternalLoginApp.Helper
                 client.DefaultRequestHeaders.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 client.DefaultRequestHeaders.Add("crossDomain", "true");
-                client.DefaultRequestHeaders.Add("Abp.TenantId", "1");
+                client.DefaultRequestHeaders.Add("Abp.TenantId", tenantId);
 
                 HttpResponseMessage httpResponse = null;
                 if (type == OperationType.GET)
@@ -56,9 +56,9 @@ namespace ExternalLoginApp.Helper
             return response;
         }
 
-        public async static Task<Response<T>> ExecuteWithToken(string baseUrl, string route, OperationType type, string token, object payload = null)
+        public async static Task<ResponseVM<T>> ExecuteWithToken(string baseUrl, string route, string tenantId, OperationType type, string token, object payload = null)
         {
-            Response<T> response = new Response<T>();
+            ResponseVM<T> response = new ResponseVM<T>();
             try
             {
                 HttpClient client = new HttpClient()
@@ -68,6 +68,7 @@ namespace ExternalLoginApp.Helper
                 client.DefaultRequestHeaders.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 client.DefaultRequestHeaders.Add("crossDomain", "true");
+                client.DefaultRequestHeaders.Add("Abp.TenantId", tenantId);
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
                 HttpResponseMessage httpResponse = null;
@@ -84,18 +85,16 @@ namespace ExternalLoginApp.Helper
                 var result = await httpResponse.Content.ReadAsStringAsync();
                 if (httpResponse.IsSuccessStatusCode)
                 {
-                    response.Data = JsonConvert.DeserializeObject<T>(result, new IsoDateTimeConverter());
-                    response.Message = "";
+                    response.Result = JsonConvert.DeserializeObject<Result<T>>(result, new IsoDateTimeConverter());
                 }
                 else
                 {
-                    response.Message = "Something went wrong with api calling.";
+                    response.Result = JsonConvert.DeserializeObject<Result<T>>(result, new IsoDateTimeConverter());
                 }
                 return response;
             }
             catch (Exception ex)
             {
-                response.Message = "Error occured!!";
             }
             return response;
         }

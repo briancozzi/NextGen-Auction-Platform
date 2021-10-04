@@ -255,6 +255,16 @@ namespace NextGen.BiddingPlatform.AuctionItem
                     result.CurrentUserAuctionHistoryCount = output.AuctionHistories.Count(x => x.AuctionBidder.UserId == userId);
                     result.CurrUserBidderName = output.AuctionHistories.FirstOrDefault(x => x.AuctionBidder.UserId == userId)?.AuctionBidder?.BidderName;
                     result.CurrUserBiddingId = output.AuctionHistories.FirstOrDefault(x => x.AuctionBidder.UserId == userId)?.AuctionBidderId ?? 0;
+                    if (string.IsNullOrWhiteSpace(result.CurrUserBidderName))
+                    {
+                        var auctionBidder = await _auctionBidderRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.AuctionId == output.Auction.Id && s.UserId == userId);
+                        if (auctionBidder != null)
+                        {
+                            result.CurrUserBiddingId = auctionBidder.Id;
+                            result.CurrUserBidderName = auctionBidder.BidderName;
+                        }
+                    }
+
                 }
                 return result;
             }

@@ -17,5 +17,8 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
         Task Delete(EntityDto<Guid> input);
         Task<AccountEventDto> GetAccountEventById(Guid input);
         Task<AccountEventListDto> GetEventDateTimeByEventId(Guid Id);
+
+        Task<ListResultDto<AccountEventListDto>> GetAllAnnonymousAccountEvents();
+        Task<EventWithAuctionItems> GetEventById(int id);
     }
 }

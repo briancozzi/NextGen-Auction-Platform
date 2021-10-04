@@ -220,7 +220,7 @@
         }
         else {
             var historyCount = parseInt($("#currentUserAuctionHistoryCount").val());
-            if (historyCount === 0) {
+            if (parseInt($("#auctionBidderId").val()) === 0) {
                 //open popup and then save the auction bidder with auction history
                 $("#myModal").modal("show");
             }

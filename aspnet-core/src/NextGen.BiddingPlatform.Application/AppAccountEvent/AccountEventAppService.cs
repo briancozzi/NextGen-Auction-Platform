@@ -14,13 +14,16 @@ using NextGen.BiddingPlatform.Authorization;
 using Abp.Authorization;
 using Abp.UI;
 using NextGen.BiddingPlatform.Authorization.Users;
+using System.Collections.Generic;
 
 namespace NextGen.BiddingPlatform.AppAccountEvent
 {
-    [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Event)]
     public class AccountEventAppService : BiddingPlatformAppServiceBase, IAccountEventAppService
     {
         private readonly IRepository<Event> _eventRepository;
+        private readonly IRepository<Core.Auctions.Auction> _auctionRepository;
+        private readonly IRepository<Core.AuctionItems.AuctionItem> _auctionItemRepository;
+
         private readonly IRepository<Core.AppAccounts.AppAccount> _accountRepository;
         private readonly IRepository<Core.State.State> _stateRepository;
         private readonly IRepository<Country.Country> _countryRepository;
@@ -29,15 +32,86 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
                                       IRepository<Core.AppAccounts.AppAccount> accountRepository,
                                       IRepository<Core.State.State> stateRepository,
                                       IRepository<Country.Country> countryRepository,
-                                      IUserAppService userAppService)
+                                      IUserAppService userAppService,
+                                      IRepository<Core.Auctions.Auction> auctionRepository,
+                                      IRepository<Core.AuctionItems.AuctionItem> auctionItemRepository)
         {
             _eventRepository = eventRepository;
             _accountRepository = accountRepository;
             _countryRepository = countryRepository;
             _stateRepository = stateRepository;
             _userAppService = userAppService;
+            _auctionRepository = auctionRepository;
+            _auctionItemRepository = auctionItemRepository;
+        }
+        [AbpAllowAnonymous]
+        public async Task<ListResultDto<AccountEventListDto>> GetAllAnnonymousAccountEvents()
+        {
+
+            var query = _eventRepository.GetAllIncluding(x => x.AppAccount);
+
+            var eventsData = await query.Select(x => new AccountEventListDto
+            {
+                Id = x.Id,
+                AppAccountUniqueId = x.AppAccount.UniqueId,
+                EventEndDateTime = x.EventEndDateTime,//.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
+                EventStartDateTime = x.EventStartDateTime,//.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
+                EventName = x.EventName,
+                EventUrl = x.EventUrl,
+                TimeZone = x.TimeZone,
+                UniqueId = x.UniqueId
+            }).ToListAsync();
+
+            return new ListResultDto<AccountEventListDto>(eventsData);
         }
 
+        [AbpAuthorize]
+        public async Task<EventWithAuctionItems> GetEventById(int id)
+        {
+            try
+            {
+                var currEvent = await _eventRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.Id == id);
+
+                var auctionIds = await _auctionRepository.GetAll()
+                                                    .AsNoTracking()
+                                                    .Where(s => s.EventId == currEvent.Id).Select(s => s.Id).ToListAsync();
+
+                var auctionItems = await _auctionItemRepository.GetAll()
+                                                .Include(s => s.Item)
+                                                .Include(s => s.Auction)
+                                                .Include(s => s.AuctionHistories)
+                                                .AsNoTracking().Where(s => auctionIds.Contains(s.AuctionId)).Select(x => new AuctionItem.Dto.AuctionItemListDto
+                                                {
+                                                    AuctionItemId = x.UniqueId,
+                                                    ItemName = x.Item.ItemName,
+                                                    ItemId = x.Item.UniqueId,
+                                                    ItemNumber = x.Item.ItemNumber,
+                                                    ItemStatus = x.Item.ItemStatus,
+                                                    ActualItemId = x.ItemId,
+                                                    LastBidAmount = x.AuctionHistories.OrderByDescending(x => x.CreationTime).FirstOrDefault().BidAmount,
+                                                    AuctionId = x.Auction.UniqueId
+
+
+                                                }).ToListAsync();
+
+                var result = new EventWithAuctionItems
+                {
+                    EventName = currEvent.EventName,
+                    EventStartDate = currEvent.EventStartDateTime,
+                    EventEndDate = currEvent.EventEndDateTime,
+                    AuctionItems = auctionItems
+                };
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+
+        [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Event)]
         public async Task<PagedResultDto<AccountEventListDto>> GetAccountEventsWithFilter(AccountEventFilter input)
         {
             //for get current user timezzone from MySetting
@@ -69,6 +143,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             return new PagedResultDto<AccountEventListDto>(resultCount, resultQuery.ToList());
         }
 
+        [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Event)]
         public async Task<ListResultDto<AccountEventListDto>> GetAllAccountEvents()
         {
             //get current user timezone which is added through MySettings
@@ -92,7 +167,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             return new ListResultDto<AccountEventListDto>(eventsData);
         }
 
-        [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Event_Create)]
+        [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Event, AppPermissions.Pages_Administration_Tenant_Event_Create, RequireAllPermissions = true)]
         public async Task<CreateAccountEventDto> Create(CreateAccountEventDto input)
         {
             var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.CountryUniqueId);
@@ -129,7 +204,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             return input;
         }
 
-        [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Event_Edit)]
+        [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Event, AppPermissions.Pages_Administration_Tenant_Event_Edit, RequireAllPermissions = true)]
         public async Task<UpdateAccountEventDto> Update(UpdateAccountEventDto input)
         {
             var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.CountryUniqueId);
@@ -172,7 +247,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             return input;
         }
 
-        [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Event_Delete)]
+        [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Event, AppPermissions.Pages_Administration_Tenant_Event_Delete, RequireAllPermissions = true)]
         public async Task Delete(EntityDto<Guid> input)
         {
             var events = await _eventRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Id);
@@ -182,6 +257,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             await _eventRepository.DeleteAsync(events);
         }
 
+        [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Event)]
         public async Task<AccountEventDto> GetAccountEventById(Guid Id)
         {
             //var currentUserTimeZone = await SettingManager.GetSettingValueAsync(TimingSettingNames.TimeZone);
@@ -204,6 +280,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             return mappedEvent;
         }
 
+        [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Event)]
         public async Task<AccountEventListDto> GetEventDateTimeByEventId(Guid Id)
         {
             var existingEvent = await _eventRepository.FirstOrDefaultAsync(x => x.UniqueId == Id);
@@ -281,5 +358,6 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
 
         //    return selfEvents != null || filterEvent != null;
         //}
+
     }
 }

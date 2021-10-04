@@ -6,3 +6,104 @@
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+
+<h1 class="text-center display-4">Events</h1>
+<div id="events">
+
+</div>
+
+@section scripts{
+    <script>
+
+        var isUserAuthenticated = '@User.Identity.IsAuthenticated'.toLowerCase();
+    $(function () {
+
+        $.ajax({
+            url: "/Home/GetEvents",
+            type: "GET",
+            dataType: "html",
+            async: true,
+            cache: false,
+            success: function (response) {
+                $("#events").html(response);
+            },
+            error: function (x) {
+                console.log("Error!!");
+            }
+        });
+
+        $(document).on("click", ".register-to-event", function (e) {
+
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            if (isUserAuthenticated === 'false') {
+                location.href = "/Identity/Account/Login"
+                return;
+            }
+
+            var _element = $(this);
+            var eventId = $(_element).attr("data-event-id");
+            $.ajax({
+                url: "/Home/RegisterToEvent?eventId=" + eventId,
+                type: "GET",
+                dataType: "json",
+                async: true,
+                cache: false,
+                success: function (response) {
+                    if (!response.success) {
+                        alert(response.message)
+                    }
+                    else {
+                        $(_element).hide();
+                        $(_element).next("a").show();
+                        //$(_element).html("Registered");
+                    }
+
+                },
+                error: function (x) {
+                    console.log("Error!!");
+                }
+            });
+        });
+
+        $(document).on("click", ".start-bidding", function (e) {
+            e.preventDefault();
+
+            var _element = $(this);
+            var eventId = $(_element).attr("data-event-id");
+
+            if (isUserAuthenticated === 'false') {
+                location.href = "/Identity/Account/Login"
+                return;
+            }
+
+            $.ajax({
+                url: "/Home/CreateBidderAndPlaceABid?eventId=" + eventId,
+                type: "GET",
+                dataType: "json",
+                async: true,
+                cache: false,
+                success: function (response) {
+                    if (!response.success) {
+                        alert(response.message)
+                    }
+                    else {
+                        location.href = "/Home/GoToBiddingApp";
+                    }
+
+                },
+                error: function (x) {
+                    console.log("Error!!");
+                }
+            });
+
+        });
+
+    });
+
+
+
+
+    </script>
+}

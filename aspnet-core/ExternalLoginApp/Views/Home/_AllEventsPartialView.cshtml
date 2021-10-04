@@ -1,0 +1,27 @@
+﻿@model List<AccountEventListDto>
+<table class="table table-responsive">
+    <thead>
+        <tr>
+            <th>Event Name</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Event Url</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.EventName</td>
+                <td>@item.EventStartDateTime</td>
+                <td>@item.EventEndDateTime</td>
+                <td>@item.EventUrl</td>
+                <td>
+                    <button class="btn btn-primary register-to-event" data-event-id="@item.Id">Register to Event</button>
+                    <a style="display:none;" href="javascript:void(0)" class="btn btn-secondary start-bidding" data-event-id="@item.Id">Start Bidding</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

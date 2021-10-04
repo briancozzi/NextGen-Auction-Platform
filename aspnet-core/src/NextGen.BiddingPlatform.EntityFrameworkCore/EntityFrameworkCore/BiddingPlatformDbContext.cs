@@ -29,6 +29,7 @@ using NextGen.BiddingPlatform.MultiTenancy;
 using NextGen.BiddingPlatform.MultiTenancy.Accounting;
 using NextGen.BiddingPlatform.MultiTenancy.Payments;
 using NextGen.BiddingPlatform.Storage;
+using NextGen.BiddingPlatform.UserEvents;
 using NextGen.BiddingPlatform.UserfavoriteItems;
 using NextGen.BiddingPlatform.UserViewedItems;
 using Toolbelt.ComponentModel.DataAnnotations;
@@ -38,7 +39,7 @@ namespace NextGen.BiddingPlatform.EntityFrameworkCore
     public class BiddingPlatformDbContext : AbpZeroDbContext<Tenant, Role, User, BiddingPlatformDbContext>, IAbpPersistedGrantDbContext
     {
         /* Define an IDbSet for each entity of the application */
-
+        public virtual DbSet<UserEvent> UserEvents { get; set; }
         public virtual DbSet<UserViewedItem> UserViewedItems { get; set; }
         public virtual DbSet<UserFavoriteItem> UserFavoriteItems { get; set; }
 

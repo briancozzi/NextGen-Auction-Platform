@@ -55,6 +55,7 @@ using NextGen.BiddingPlatform.Web.Models;
 using System.Collections.ObjectModel;
 using System.Net.Http;
 using Newtonsoft.Json;
+using NextGen.BiddingPlatform.UserEvents;
 
 namespace NextGen.BiddingPlatform.Web.Controllers
 {
@@ -93,6 +94,8 @@ namespace NextGen.BiddingPlatform.Web.Controllers
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IEnumerable<IPasswordValidator<User>> _passwordValidators;
         private readonly RoleManager _roleManager;
+        private readonly IRepository<UserEvent, Guid> _userEventsRepository;
+
 
         public TokenAuthController(
             LogInManager logInManager,
@@ -122,7 +125,8 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             IUserAppService userAppService,
             IUserPolicy userPolicy, IPasswordHasher<User> passwordHasher,
             IEnumerable<IPasswordValidator<User>> passwordValidators,
-            RoleManager roleManager)
+            RoleManager roleManager,
+            IRepository<UserEvent, Guid> userEventsRepository)
         {
             _logInManager = logInManager;
             _tenantCache = tenantCache;
@@ -154,6 +158,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             _passwordHasher = passwordHasher;
             _passwordValidators = passwordValidators;
             _roleManager = roleManager;
+            _userEventsRepository = userEventsRepository;
         }
 
         [HttpPost]
@@ -319,6 +324,108 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                         ReturnUrl = returlUrl
                     });
                     return result.ReturnUrl;
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        [HttpPost]
+        public async Task<AuthenticateResultModel> ExternalUserLoginWithEvent([FromBody] ExternalLoginWithEvent model)
+        {
+            var returlUrl = _configurationRoot["ExternalUserLoginSettings:ReturnUrl"];
+
+            HttpClient _client = new HttpClient();
+            _client.DefaultRequestHeaders.Clear();
+
+            var getUserDetailsApi = _configurationRoot["ExternalUserLoginSettings:GetUserApi"];
+            getUserDetailsApi += "?uniqueId=" + model.UserUniqueId;
+            getUserDetailsApi += "&userId=" + model.UserId;
+            getUserDetailsApi += "&tenantId=" + model.TenantId;
+
+            var httpResponse = await _client.GetAsync(getUserDetailsApi);
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var resultFromApi = await httpResponse.Content.ReadAsStringAsync();
+                var data = JsonConvert.DeserializeObject<UserDetails>(resultFromApi);
+
+                var existingUser = await _userManager.Users.FirstOrDefaultAsync(s => s.ExternalUserId == data.ExternalUserId);
+
+                var generalPassword = "123qwe";
+                if (existingUser == null)
+                {
+                    var input = new CreateOrUpdateUserInput
+                    {
+                        User = new UserEditDto
+                        {
+                            EmailAddress = data.EmailAddress,
+                            IsActive = true,
+                            IsLockoutEnabled = false,
+                            IsTwoFactorEnabled = false,
+                            Name = data.FirstName,
+                            Password = generalPassword,
+                            PhoneNumber = "",
+                            ShouldChangePasswordOnNextLogin = false,
+                            Surname = data.LastName,
+                            UserName = data.EmailAddress,
+                            ExternalUserId = data.ExternalUserId,
+                            //ExternalUserUniqueId = data.ExternalUniqueId
+                        },
+                        AssignedRoleNames = new List<string>() { "User" }.ToArray(),
+                        SendActivationEmail = false,
+                        SetRandomPassword = false
+                    };
+
+
+                    await _userPolicy.CheckMaxUserCountAsync(data.TenantId);
+                    await CreateUser(input, data.TenantId);
+
+                    //add entry into user events
+                    await _userEventsRepository.InsertAsync(new UserEvent
+                    {
+                        UserId = input.User.Id.Value,
+                        EventId = model.EventId,
+                        TenantId = model.TenantId
+                    });
+
+
+                    var result = await Authenticate(new AuthenticateModel
+                    {
+                        UserNameOrEmailAddress = input.User.UserName,
+                        Password = generalPassword,
+                        SingleSignIn = true,
+                        ReturnUrl = returlUrl
+                    });
+
+                    return result;
+                }
+                else
+                {
+                    await _userManager.UpdateAsync(existingUser);
+
+                    //add entry into user events
+
+                    var userEvent = await _userEventsRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.EventId == model.EventId && s.UserId == existingUser.Id);
+                    if (userEvent == null)
+                    {
+                        await _userEventsRepository.InsertAsync(new UserEvent
+                        {
+                            UserId = existingUser.Id,
+                            EventId = model.EventId,
+                            TenantId = model.TenantId
+                        });
+                    }
+
+                    var result = await Authenticate(new AuthenticateModel
+                    {
+                        UserNameOrEmailAddress = existingUser.UserName,
+                        Password = generalPassword,
+                        SingleSignIn = true,
+                        ReturnUrl = returlUrl
+                    });
+                    return result;
                 }
             }
             else

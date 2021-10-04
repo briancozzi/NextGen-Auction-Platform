@@ -15,5 +15,6 @@ namespace NextGen.BiddingPlatform.AuctionBidder
         Task DeleteBidder(Guid Id);
         Task<ListResultDto<AuctionBidderListDto>> GetAllBidders();
         Task<ListResultDto<AuctionBidderListDto>> GetBiddersByAuctionId(Guid auctionId);
+        Task CreateBidderFromExternalApp(CreateAuctionBidderWithExternalApp input);
     }
 }
