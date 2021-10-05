@@ -214,6 +214,9 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 if (output == null)
                     throw new UserFriendlyException("Auction Item not found for given id and status");
 
+
+                var isBiddingStarted = (output.Auction.AuctionStartDateTime - DateTime.UtcNow).TotalSeconds <= 0;
+
                 var result = new AuctionItemWithHistoryDto
                 {
                     AuctionItemId = output.UniqueId,
@@ -242,7 +245,8 @@ namespace NextGen.BiddingPlatform.AuctionItem
                         BidDate = s.CreationTime,
                         AuctionBidderUserId = s.AuctionBidder.UserId,
                         AuctionBidderId = s.AuctionBidderId
-                    }).ToList()
+                    }).ToList(),
+                    IsBiddingStarted = isBiddingStarted
                 };
                 result.LastBidAmount = result.AuctionItemHistories.OrderByDescending(x => x.BidDate).FirstOrDefault()?.BidAmount ?? 0;
                 result.LastBidWinnerName = result.AuctionItemHistories.OrderByDescending(x => x.BidDate).FirstOrDefault()?.BidderName ?? string.Empty;

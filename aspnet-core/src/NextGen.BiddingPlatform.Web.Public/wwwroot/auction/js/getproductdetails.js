@@ -20,6 +20,8 @@ function GetAuctionItem() {
                 //shortly = new Date();
                 //shortly.setSeconds(shortly.getSeconds() + 5.5);
 
+                
+
                 if (parseInt(data.remainingDays) > 0) {
                     $('#defaultCountdown').countdown({
                         until: endDate,
@@ -40,6 +42,15 @@ function GetAuctionItem() {
                 else {
                     $("#bidNowBtn").removeClass("disbale-btn");
                 }
+
+                if (!data.isBiddingStarted) {
+                    $("#bidNowBtn").addClass("disbale-btn");
+                }
+                else {
+                    //do nothing
+                    $("#bidNowBtn").removeClass("disbale-btn");
+                }
+
                 $(".name").text(data.itemName);
                 $("#lastBidAmount").text("$" + data.lastBidAmount.toFixed(2));
                 $("#lastBidWinner").text(data.lastBidWinnerName);
