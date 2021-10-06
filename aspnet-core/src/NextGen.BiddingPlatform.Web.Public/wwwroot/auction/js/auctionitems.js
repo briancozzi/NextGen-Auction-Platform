@@ -4,7 +4,7 @@
     GetAuctionItems();
     //get auction item by id
     //.golf-event.image,
-    $(document).on("click", ".golf-event .desc", function () {
+    $(document).on("click", ".golf-event .desc, #viewItem", function () {
         var isClosedAuction = $(this).parents(".golf-event").attr("data-is-closed-auction");
         var itemStatus = $(this).parents(".golf-event").attr("data-itemstatus");
         if (isClosedAuction == "true") {
@@ -24,6 +24,28 @@
             }
         }
     });
+
+    $(document).on("click", "#viewItem", function () {
+        var isClosedAuction = $(this).parents(".golf-event").attr("data-is-closed-auction");
+        var itemStatus = $(this).parents(".golf-event").attr("data-itemstatus");
+        if (isClosedAuction == "true") {
+            if (IsLoggedInUser == "true") {
+                location.href = "/Home/ProductDetailClosedWithLogin?id=" + $(this).parents(".golf-event").attr("data-id") + "&itemStatus=" + itemStatus;
+            }
+            else {
+                location.href = "/Home/ProductDetailClosed?id=" + $(this).parents(".golf-event").attr("data-id") + "&itemStatus=" + itemStatus;
+            }
+        }
+        else {
+            if (IsLoggedInUser == "true") {
+                location.href = "/Home/ProductDetailWithLogin?id=" + $(this).parents(".golf-event").attr("data-id") + "&itemStatus=" + itemStatus;
+            }
+            else {
+                location.href = "/Home/ProductDetail?id=" + $(this).parents(".golf-event").attr("data-id");
+            }
+        }
+    });
+
 
     $(document).on("click", "#setFavoriteItem", function (e) {
 
@@ -130,6 +152,7 @@ function GetAuctionItems(categoryId, search) {
                                 $("#auctionItems").empty();
                                 $.each(data, function (i, v) {
                                     if (!v.isAuctionExpired) {
+                                        debugger;
                                         var output = Mustache.render($("#auctionItemTemplate").html(), v);
                                         $("#auctionItems").append(output);
                                         totalItems += 1;
