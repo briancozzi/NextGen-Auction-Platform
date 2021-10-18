@@ -105,6 +105,7 @@ namespace ExternalLoginApp.Controllers
                 {
                     Expires = DateTime.Now.AddSeconds(data.ExpireInSeconds)
                 });
+                data.ReturnUrl = data.ReturnUrl + $"&eventId={eventId}";
                 _httpAccessor.HttpContext.Response.Cookies.Append("BiddingReturnUrl", data.ReturnUrl, new CookieOptions
                 {
                     Expires = DateTime.Now.AddSeconds(data.ExpireInSeconds)

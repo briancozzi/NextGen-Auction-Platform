@@ -9,5 +9,7 @@ namespace NextGen.BiddingPlatform.Web.Public.Notification
     {
         Task SendAsync(string auctionItemId, object data);
         Task UpdateCurrentBidsAsync();
+
+        Task CloseBiddingForEventOrItem(List<Guid> auctionItemIds);
     }
 }

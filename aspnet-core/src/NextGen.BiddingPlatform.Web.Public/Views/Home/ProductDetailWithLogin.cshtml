@@ -197,6 +197,12 @@
                 ClearHistoryAndAppendNew(auctionHistoryDto.auctionItemHistory);
             }
         });
+
+        connection.on("CloseBiddingOnAuctionItems", () => {
+            debugger;
+            $("#bidNowBtn").addClass("disbale-btn");
+        });
+
         connection.start().then(function () {
             connection
                 .invoke("GetAndStoreConnection", auctionItemId)

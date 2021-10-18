@@ -15,6 +15,10 @@ namespace NextGen.BiddingPlatform.WebHooks
             context.Manager.Add(new WebhookDefinition(
                 name: AppWebHookNames.TestAuctionHistoryWebhook
             ));
+
+            context.Manager.Add(new WebhookDefinition(
+               name: AppWebHookNames.CloseBiddingOnEventOrItem
+           ));
         }
 
         private static ILocalizableString L(string name)

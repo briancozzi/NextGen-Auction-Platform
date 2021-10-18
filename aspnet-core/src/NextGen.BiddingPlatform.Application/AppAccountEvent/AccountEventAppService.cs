@@ -15,6 +15,8 @@ using Abp.Authorization;
 using Abp.UI;
 using NextGen.BiddingPlatform.Authorization.Users;
 using System.Collections.Generic;
+using Abp.Webhooks;
+using NextGen.BiddingPlatform.WebHooks;
 
 namespace NextGen.BiddingPlatform.AppAccountEvent
 {
@@ -28,13 +30,15 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
         private readonly IRepository<Core.State.State> _stateRepository;
         private readonly IRepository<Country.Country> _countryRepository;
         private readonly IUserAppService _userAppService;
+        private readonly IWebhookPublisher _webHookPublisher;
         public AccountEventAppService(IRepository<Event> eventRepository,
                                       IRepository<Core.AppAccounts.AppAccount> accountRepository,
                                       IRepository<Core.State.State> stateRepository,
                                       IRepository<Country.Country> countryRepository,
                                       IUserAppService userAppService,
                                       IRepository<Core.Auctions.Auction> auctionRepository,
-                                      IRepository<Core.AuctionItems.AuctionItem> auctionItemRepository)
+                                      IRepository<Core.AuctionItems.AuctionItem> auctionItemRepository,
+                                       IWebhookPublisher webhookPublisher)
         {
             _eventRepository = eventRepository;
             _accountRepository = accountRepository;
@@ -43,6 +47,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             _userAppService = userAppService;
             _auctionRepository = auctionRepository;
             _auctionItemRepository = auctionItemRepository;
+            _webHookPublisher = webhookPublisher;
         }
         [AbpAllowAnonymous]
         public async Task<ListResultDto<AccountEventListDto>> GetAllAnnonymousAccountEvents()
@@ -358,6 +363,44 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
 
         //    return selfEvents != null || filterEvent != null;
         //}
+
+
+        public async Task CloseBiddingOnEvent(Guid eventId)
+        {
+            var @event = await _eventRepository.GetAll().AsNoTracking()
+                                .Include(s => s.EventAuctions).FirstOrDefaultAsync(s => s.UniqueId == eventId);
+
+            if (@event == null)
+                throw new UserFriendlyException("Event not found!!");
+
+            List<int> auctionIds = new List<int>();
+            foreach (var s in @event.EventAuctions)
+            {
+                if ((s.AuctionEndDateTime - DateTime.UtcNow).TotalHours >= 0)
+                {
+                    auctionIds.Add(s.Id);
+                }
+            }
+
+            var auctionItems = await _auctionItemRepository.GetAll().AsNoTracking()
+                                        .Where(s => auctionIds.Contains(s.AuctionId)).ToListAsync();
+
+            List<Guid> auctionItemIds = new List<Guid>();
+            foreach (var auctionItem in auctionItems)
+            {
+                auctionItem.IsBiddingClosed = true;
+                await _auctionItemRepository.UpdateAsync(auctionItem);
+                auctionItemIds.Add(auctionItem.UniqueId);
+            }
+
+
+            await _webHookPublisher.PublishAsync(AppWebHookNames.CloseBiddingOnEventOrItem,
+                new CloseEventOrItemDto
+                {
+                    AuctionItemIds = auctionItemIds,
+                    TenantId = AbpSession.TenantId
+                }, AbpSession.TenantId);
+        }
 
     }
 }

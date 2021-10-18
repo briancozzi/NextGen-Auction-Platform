@@ -29,6 +29,7 @@ namespace NextGen.BiddingPlatform.Core.AuctionItems
         public Item Item { get; set; }
 
         public bool IsActive { get; set; }
+        public bool IsBiddingClosed { get; set; }
 
         public ICollection<AuctionHistories.AuctionHistory> AuctionHistories { get; set; }
         public AuctionItem()

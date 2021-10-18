@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NextGen.BiddingPlatform.EntityFrameworkCore;
 
 namespace NextGen.BiddingPlatform.Migrations
 {
     [DbContext(typeof(BiddingPlatformDbContext))]
-    partial class BiddingPlatformDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211018085947_Added_New_Field_To_Auction_Item")]
+    partial class Added_New_Field_To_Auction_Item
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

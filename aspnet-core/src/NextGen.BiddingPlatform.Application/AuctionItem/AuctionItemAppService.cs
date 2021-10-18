@@ -51,7 +51,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
             _eventRepository = eventRepository;
         }
         [AllowAnonymous]
-        public async Task<ListResultDto<AuctionItemListDto>> GetAllAuctionItems(int categoryId = 0, string search = "")
+        public async Task<ListResultDto<AuctionItemListDto>> GetAllAuctionItems(int eventId, int categoryId = 0, string search = "")
         {
             var query = _auctionitemRepository.GetAll()
                                                 //.GetAllIncluding(x => x.Auction, x => x.Item, x => x.AuctionHistories)
@@ -59,6 +59,9 @@ namespace NextGen.BiddingPlatform.AuctionItem
                                                 .Include(s => s.Item).ThenInclude(s => s.CategoryFk)
                                                 .Include(s => s.AuctionHistories)
                                                     .AsNoTracking();
+
+
+            query = query.Where(s => s.Auction.EventId == eventId);
 
             if (categoryId > 0)
                 query = query.Where(s => s.Item.CategoryId == categoryId);
@@ -248,7 +251,8 @@ namespace NextGen.BiddingPlatform.AuctionItem
                         AuctionBidderUserId = s.AuctionBidder.UserId,
                         AuctionBidderId = s.AuctionBidderId
                     }).ToList(),
-                    IsBiddingStarted = isBiddingStarted
+                    IsBiddingStarted = isBiddingStarted,
+                    IsBiddingClosed = output.IsBiddingClosed
                 };
                 result.LastBidAmount = result.AuctionItemHistories.OrderByDescending(x => x.BidDate).FirstOrDefault()?.BidAmount ?? 0;
                 result.LastBidWinnerName = result.AuctionItemHistories.OrderByDescending(x => x.BidDate).FirstOrDefault()?.BidderName ?? string.Empty;

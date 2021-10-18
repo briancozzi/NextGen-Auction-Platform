@@ -66,5 +66,17 @@ export class ItemsComponent extends AppComponentBase {
           }
       );
     }
-
+    closeBidding(itemId : string):void{
+      this.message.confirm(
+        this.l('Are you sure want to close bidding on item?'),
+        this.l('AreYouSure'),
+        isConfirmed => {
+            if (isConfirmed) {
+                this._itemService.closeBiddingOnItem(itemId).subscribe(() => {
+                    this.notify.success(this.l('SuccessfullyDeleted'));
+                });
+            }
+        }
+    );
+    }
 }

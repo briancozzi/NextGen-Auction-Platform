@@ -20,5 +20,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
 
         Task<ListResultDto<AccountEventListDto>> GetAllAnnonymousAccountEvents();
         Task<EventWithAuctionItems> GetEventById(int id);
+
+        Task CloseBiddingOnEvent(Guid eventId);
     }
 }

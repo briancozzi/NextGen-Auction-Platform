@@ -34,7 +34,7 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
             _tenantManager = tenantManager;
         }
 
-        public async Task<ActionResult> Login(string accessToken, string userId, string tenantId = "", string returnUrl = "")
+        public async Task<ActionResult> Login(string accessToken, string userId, int eventId, string tenantId = "", string returnUrl = "")
         {
             if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(userId))
             {
@@ -65,7 +65,7 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
                 return Redirect(returnUrl);
             }
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Home", new { eventId = eventId });
         }
 
         public async Task<ActionResult> Logout()

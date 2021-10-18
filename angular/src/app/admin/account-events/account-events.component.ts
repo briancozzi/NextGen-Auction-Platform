@@ -64,4 +64,18 @@ export class AccountEventsComponent extends AppComponentBase {
         }
     );
   }
+
+  closeEvent(eventId : string):void{
+    this.message.confirm(
+      this.l('Are you sure want to close event?'),
+      this.l('Close Event'),
+      isConfirmed => {
+          if (isConfirmed) {
+              this._eventService.closeBiddingOnEvent(eventId).subscribe(() => {
+                  this.notify.success(this.l('SuccefullyCloseEvent'));
+              });
+          }
+      }
+  );
+  }
 }

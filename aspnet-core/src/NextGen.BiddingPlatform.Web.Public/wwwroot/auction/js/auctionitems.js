@@ -119,7 +119,7 @@ function GetAuctionItems(categoryId, search) {
     if (search === undefined || search === "undefined")
         search = "";
     $.ajax({
-        url: ApiServerPath + "/api/services/app/AuctionItem/GetAllAuctionItems?categoryId=" + categoryId + "&search=" + search,
+        url: ApiServerPath + "/api/services/app/AuctionItem/GetAllAuctionItems?categoryId=" + categoryId + "&search=" + search + "&eventId=" + eventId,
         type: "GET",
         cache: false,
         async: true,
