@@ -34,12 +34,24 @@ function GetAuctionItem() {
                         onExpiry: disableBidding
                     });
                 }
-                if (data.isAuctionExpired) {
+                
+                if (!data.isBiddingStarted) {
+                    $("#bidNowBtn").addClass("disbale-btn");
+                    $("#lastBidAmount").parent("li").hide();
+                }
+                else {
+                    //do nothing
+                    $("#bidNowBtn").removeClass("disbale-btn");
+                    $("#lastBidAmount").parent("li").show();
+                }
+
+                if (data.isAuctionExpired || data.isBiddingClosed) {
                     $("#bidNowBtn").addClass("disbale-btn");
                 }
                 else {
                     $("#bidNowBtn").removeClass("disbale-btn");
                 }
+
                 $(".name").text(data.itemName);
                 $("#lastBidAmount").text("$" + data.lastBidAmount.toFixed(2));
                 $("#lastBidWinner").text(data.lastBidWinnerName);

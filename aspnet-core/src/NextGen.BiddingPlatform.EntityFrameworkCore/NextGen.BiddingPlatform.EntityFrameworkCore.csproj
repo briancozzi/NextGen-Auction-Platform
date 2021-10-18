@@ -35,6 +35,8 @@
     <Compile Remove="Migrations\20200501134117_Event_Entity_Update.Designer.cs" />
     <Compile Remove="Migrations\20210119080237_added_appaccountid_to_user.cs" />
     <Compile Remove="Migrations\20210119080237_added_appaccountid_to_user.Designer.cs" />
+    <Compile Remove="Migrations\20211018085849_Added.cs" />
+    <Compile Remove="Migrations\20211018085849_Added.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.3" />

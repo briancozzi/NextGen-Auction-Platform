@@ -49,5 +49,6 @@ namespace NextGen.BiddingPlatform.AuctionItem.Dto
 
         public int? CategoryId { get; set; }
         public Guid? UniqueCategoryId { get; set; }
+        public bool IsBiddingStarted { get; set; }
     }
 }

@@ -51,7 +51,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
             _eventRepository = eventRepository;
         }
         [AllowAnonymous]
-        public async Task<ListResultDto<AuctionItemListDto>> GetAllAuctionItems(int categoryId = 0, string search = "")
+        public async Task<ListResultDto<AuctionItemListDto>> GetAllAuctionItems(int eventId, int categoryId = 0, string search = "")
         {
             var query = _auctionitemRepository.GetAll()
                                                 //.GetAllIncluding(x => x.Auction, x => x.Item, x => x.AuctionHistories)
@@ -59,6 +59,9 @@ namespace NextGen.BiddingPlatform.AuctionItem
                                                 .Include(s => s.Item).ThenInclude(s => s.CategoryFk)
                                                 .Include(s => s.AuctionHistories)
                                                     .AsNoTracking();
+
+
+            query = query.Where(s => s.Auction.EventId == eventId);
 
             if (categoryId > 0)
                 query = query.Where(s => s.Item.CategoryId == categoryId);
@@ -83,6 +86,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 FairMarketValue_FMV = s.Item.FairMarketValue_FMV,
                 MainImageName = s.Item.MainImageName,
                 ThumbnailImage = s.Item.ThumbnailImage,
+                IsBiddingStarted = (s.Auction.AuctionStartDateTime - DateTime.UtcNow).TotalSeconds <= 0,
                 IsAuctionExpired = (s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours <= 0,
                 RemainingDays = Convert.ToInt32((s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalDays).ToString(),
                 RemainingTime = Convert.ToInt32((s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours) + ":" + Convert.ToInt32((s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalMinutes),
@@ -182,6 +186,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
                     FairMarketValue_FMV = output.Item.FairMarketValue_FMV,
                     MainImageName = output.Item.MainImageName,
                     ThumbnailImage = output.Item.ThumbnailImage,
+                    IsBiddingStarted = (output.Auction.AuctionStartDateTime - DateTime.UtcNow).TotalSeconds <= 0,
                     IsAuctionExpired = (output.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours <= 0,
                     RemainingDays = Convert.ToInt32((output.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalDays).ToString(),
                     RemainingTime = Convert.ToInt32((output.Auction.AuctionEndDateTime - DateTime.UtcNow).Hours) + ":" + Convert.ToInt32((output.Auction.AuctionEndDateTime - DateTime.UtcNow).Minutes),
@@ -214,6 +219,9 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 if (output == null)
                     throw new UserFriendlyException("Auction Item not found for given id and status");
 
+
+                var isBiddingStarted = (output.Auction.AuctionStartDateTime - DateTime.UtcNow).TotalSeconds <= 0;
+
                 var result = new AuctionItemWithHistoryDto
                 {
                     AuctionItemId = output.UniqueId,
@@ -242,7 +250,9 @@ namespace NextGen.BiddingPlatform.AuctionItem
                         BidDate = s.CreationTime,
                         AuctionBidderUserId = s.AuctionBidder.UserId,
                         AuctionBidderId = s.AuctionBidderId
-                    }).ToList()
+                    }).ToList(),
+                    IsBiddingStarted = isBiddingStarted,
+                    IsBiddingClosed = output.IsBiddingClosed
                 };
                 result.LastBidAmount = result.AuctionItemHistories.OrderByDescending(x => x.BidDate).FirstOrDefault()?.BidAmount ?? 0;
                 result.LastBidWinnerName = result.AuctionItemHistories.OrderByDescending(x => x.BidDate).FirstOrDefault()?.BidderName ?? string.Empty;

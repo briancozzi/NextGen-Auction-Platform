@@ -31,5 +31,14 @@ namespace NextGen.BiddingPlatform.Web.Public.Notification
                 await _context.Clients.Clients(connections.ToList()).SendAsync("UpdateCurrentUserBids");
             }
         }
+
+        public async Task CloseBiddingForEventOrItem(List<Guid> auctionItemIds)
+        {
+            var connections = _connectionManager.GetCloseBiddingConnections(auctionItemIds);
+            if (connections != null && connections.Count() > 0)
+            {
+                await _context.Clients.Clients(connections.ToList()).SendAsync("CloseBiddingOnAuctionItems");
+            }
+        }
     }
 }

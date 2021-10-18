@@ -12,10 +12,13 @@
             <div class="desc">
                 <p class="name">{{itemName}}</p>
                 <ul>
+                    {{#isBiddingStarted}}
                     <li>
                         Last Bid:
                         <span>$ {{lastBidAmount}}</span>
                     </li>
+                    {{/isBiddingStarted}}
+                    <li><button class="btn btn-primary" id="viewItem" style="cursor:pointer">View Details</button></li>
                     <li>
                         Time Left:
                         <span>{{remainingDays}} day {{remainingTime}} hrs</span>
@@ -38,10 +41,13 @@
             <div class="desc">
                 <p class="name">{{itemName}}</p>
                 <ul>
+                   {{#isBiddingStarted}}
                     <li>
                         Last Bid:
                         <span>$ {{lastBidAmount}}</span>
                     </li>
+                    {{/isBiddingStarted}}
+                    <li><button class="btn btn-primary" id="viewItem" style="cursor:pointer">View Details</button></li>
                     <li>
                         Time Left:
                         {{#IsDaysGreaterThan1}}

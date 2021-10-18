@@ -41,6 +41,20 @@ namespace NextGen.BiddingPlatform.Web.Public.Notification
 
             return Enumerable.Empty<string>();
         }
+
+        public IEnumerable<string> GetCloseBiddingConnections(List<Guid> keys)
+        {
+            List<string> conn = new List<string>();
+            foreach (var item in keys)
+            {
+                if (_connections.TryGetValue(item.ToString(), out HashSet<string> connections))
+                {
+                    conn.AddRange(connections);
+                }
+            }
+            return conn;
+        }
+
         public void Remove(string key, string connectionId)
         {
             lock (_connections)

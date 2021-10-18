@@ -42,7 +42,7 @@ namespace NextGen.BiddingPlatform.Helper
             if (lastBidAmount >= 5000)
                 nextBidValue = 100.00;
 
-            return nextBidValue;
+            return nextBidValue + lastBidAmount;
         }
     }
 }

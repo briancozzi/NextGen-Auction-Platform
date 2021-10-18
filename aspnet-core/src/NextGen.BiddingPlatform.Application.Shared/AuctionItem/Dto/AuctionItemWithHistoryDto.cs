@@ -41,6 +41,9 @@ namespace NextGen.BiddingPlatform.AuctionItem.Dto
         public bool IsLastBidByCurrentUser { get; set; }
 
         public List<AuctionItemHistoryDto> AuctionItemHistories { get; set; }
+
+        public bool IsBiddingStarted { get; set; }
+        public bool IsBiddingClosed { get; set; }
     }
 
     public class AuctionItemHistoryDto

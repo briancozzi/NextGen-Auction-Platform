@@ -77,6 +77,10 @@
                                             <ul class="dropdown-menu" *dropdownMenu>
                                                 <li>
                                                     <a href="javascript:;"
+                                                        (click)="closeBidding(record.uniqueId)">{{'Close Bidding' | localize}}</a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:;"
                                                         (click)="editItemModal.show(record.uniqueId)">{{'Edit' | localize}}</a>
                                                 </li>
                                                 <li>

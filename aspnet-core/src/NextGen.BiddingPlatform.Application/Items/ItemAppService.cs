@@ -15,6 +15,9 @@ using NextGen.BiddingPlatform.Enums;
 using NextGen.BiddingPlatform.Authorization.Users;
 using Abp.UI;
 using Abp.Authorization;
+using Abp.Webhooks;
+using NextGen.BiddingPlatform.WebHooks;
+using NextGen.BiddingPlatform.AppAccountEvent.Dto;
 
 namespace NextGen.BiddingPlatform.Items
 {
@@ -26,17 +29,23 @@ namespace NextGen.BiddingPlatform.Items
         private readonly IRepository<ItemCategory.ItemCategory> _itemCategoryRepository;
         private readonly IRepository<Core.AppAccounts.AppAccount> _appAccountRepository;
         private readonly IUserAppService _userAppService;
+        private readonly IRepository<Core.AuctionItems.AuctionItem> _auctionItemRepository;
+        private readonly IWebhookPublisher _webHookPublisher;
         public ItemAppService(IRepository<Item> itemRepository,
                            IRepository<ItemGallery> itemGalleryRepository,
                            IRepository<ItemCategory.ItemCategory> itemCategoryRepository,
                            IRepository<Core.AppAccounts.AppAccount> appAccountRepository,
-                           IUserAppService userAppService)
+                           IUserAppService userAppService,
+                           IRepository<Core.AuctionItems.AuctionItem> auctionItemRepository,
+                           IWebhookPublisher webHookPublisher)
         {
             _itemRepository = itemRepository;
             _itemGalleryRepository = itemGalleryRepository;
             _itemCategoryRepository = itemCategoryRepository;
             _appAccountRepository = appAccountRepository;
             _userAppService = userAppService;
+            _auctionItemRepository = auctionItemRepository;
+            _webHookPublisher = webHookPublisher;
         }
 
         public async Task<List<ItemListDto>> GetAllItems()
@@ -323,6 +332,29 @@ namespace NextGen.BiddingPlatform.Items
             var visibilities = Utility.GetVisibilityList();
             var visibility = visibilities.FirstOrDefault(x => x.Id == id);
             return visibility?.Name;
+        }
+
+        public async Task CloseBiddingOnItem(Guid itemId)
+        {
+            var item = await _itemRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.UniqueId == itemId);
+
+            if (item == null)
+                throw new UserFriendlyException("Item not found!!");
+
+            var auctionItem = await _auctionItemRepository.FirstOrDefaultAsync(s => s.ItemId == item.Id);
+            if (auctionItem == null)
+                throw new UserFriendlyException("Auction item not found!!");
+
+            auctionItem.IsBiddingClosed = true;
+            await _auctionItemRepository.UpdateAsync(auctionItem);
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+            await _webHookPublisher.PublishAsync(AppWebHookNames.CloseBiddingOnEventOrItem,
+                new CloseEventOrItemDto
+                {
+                    AuctionItemIds = new List<Guid>() { auctionItem.UniqueId },
+                    TenantId = AbpSession.TenantId
+                }, AbpSession.TenantId);
         }
     }
 }

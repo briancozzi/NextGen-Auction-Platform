@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
+using NextGen.BiddingPlatform.AppAccountEvent.Dto;
 using NextGen.BiddingPlatform.AuctionHistory.Dto;
 using NextGen.BiddingPlatform.AuctionItem;
 using NextGen.BiddingPlatform.AuctionItem.Dto;
@@ -63,12 +64,13 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
             return View();
         }
 
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(int eventId)
         {
             ViewBag.IsLoggedInUser = await IsCurrentUserLoggedIn();
             var user = await _sessionCache.GetCurrentLoginInformationsAsync();
             ViewBag.UserId = user?.User?.Id;
             ViewBag.TenantId = user?.Tenant?.Id;
+            ViewBag.EventId = eventId;
             return View();
         }
         public ActionResult ProductDetail(Guid id)
@@ -132,6 +134,42 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
 
                     await _notify.SendAsync(result.Data.AuctionItemId.ToString(), result.Data);
                     await _notify.UpdateCurrentBidsAsync();
+                }
+                return Ok("Success");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Error occured");
+            }
+        }
+
+        [AllowAnonymous]
+        [IgnoreAntiforgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> CloseEventItemWebhookReceiver()
+        {
+            try
+            {
+                using (StreamReader reader = new StreamReader(HttpContext.Request.Body, Encoding.UTF8))
+                {
+                    var body = await reader.ReadToEndAsync();
+                    if (body == null)
+                        return BadRequest("Data not found");
+
+                    var result = JsonConvert.DeserializeObject<WebHookResponse<CloseEventOrItemDto>>(body);
+                    if (result == null)
+                        return BadRequest("Error occured while deserializing data");
+
+                    //right now we don't need below code because we are able to sent webhooks to specific tenant during publish webhook
+
+                    if (!await _webhookSubscriptionService.IsWebhookSubscribed(result.Data?.TenantId, result.Event))
+                        return BadRequest("Webhook not subscribe by this user");
+
+                    if (!await IsSignatureValid(result.Event, body, result.Data?.TenantId))
+                        return BadRequest("Unexpected signature");
+
+                    await _notify.CloseBiddingForEventOrItem(result.Data.AuctionItemIds);
+                    //await _notify.UpdateCurrentBidsAsync();
                 }
                 return Ok("Success");
             }

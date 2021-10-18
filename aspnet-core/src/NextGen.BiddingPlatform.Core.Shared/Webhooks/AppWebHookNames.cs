@@ -4,5 +4,6 @@
     {
         public const string TestWebhook = "App.TestWebhook";
         public const string TestAuctionHistoryWebhook = "App.TestAuctionHistoryWebhook";
+        public const string CloseBiddingOnEventOrItem = "App.CloseBiddingOnEventOrItem";
     }
 }
