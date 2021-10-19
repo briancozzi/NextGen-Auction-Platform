@@ -468,6 +468,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             }
 
             CheckErrors(await _userManager.CreateAsync(user));
+            input.User.Id = user.Id;
             await CurrentUnitOfWork.SaveChangesAsync(); //To get new user's Id.
         }
 
