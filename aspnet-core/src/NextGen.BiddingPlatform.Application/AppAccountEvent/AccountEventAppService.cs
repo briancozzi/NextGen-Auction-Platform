@@ -53,20 +53,30 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
         public async Task<ListResultDto<AccountEventListDto>> GetAllAnnonymousAccountEvents()
         {
 
-            var query = _eventRepository.GetAllIncluding(x => x.AppAccount);
+            var query = await _eventRepository.GetAll().AsNoTracking()
+                .Include(s => s.AppAccount)
+                .Include(s => s.EventAuctions)
+                .Include($"{nameof(Event.EventAuctions)}.{nameof(Core.Auctions.Auction.AuctionItems)}")
+                .Where(x => x.EventAuctions.Any(c => c.AuctionItems.Any())).ToListAsync();
 
-            var eventsData = await query.Select(x => new AccountEventListDto
+            List<AccountEventListDto> eventsData = new List<AccountEventListDto>();
+            foreach (var x in query)
             {
-                Id = x.Id,
-                AppAccountUniqueId = x.AppAccount.UniqueId,
-                EventEndDateTime = x.EventEndDateTime,//.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
-                EventStartDateTime = x.EventStartDateTime,//.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
-                EventName = x.EventName,
-                EventUrl = x.EventUrl,
-                TimeZone = x.TimeZone,
-                UniqueId = x.UniqueId
-            }).ToListAsync();
-
+                if (x.EventAuctions.Any(s => s.AuctionEndDateTime >= DateTime.UtcNow))
+                {
+                    eventsData.Add(new AccountEventListDto
+                    {
+                        Id = x.Id,
+                        AppAccountUniqueId = x.AppAccount.UniqueId,
+                        EventEndDateTime = x.EventEndDateTime,//.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
+                        EventStartDateTime = x.EventStartDateTime,//.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
+                        EventName = x.EventName,
+                        EventUrl = x.EventUrl,
+                        TimeZone = x.TimeZone,
+                        UniqueId = x.UniqueId
+                    });
+                }
+            }
             return new ListResultDto<AccountEventListDto>(eventsData);
         }
 

@@ -164,51 +164,58 @@ namespace NextGen.BiddingPlatform.Auction
         [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Auction_Edit)]
         public async Task<UpdateAuctionDto> UpdateAuction(UpdateAuctionDto input)
         {
-            var existingEvent = await _eventRepository.FirstOrDefaultAsync(x => x.UniqueId == input.EventUniqueId);
-            if (existingEvent == null)
-                throw new UserFriendlyException("Event not found for given id");
-
-            var existingAccount = await _appAccountRepository.FirstOrDefaultAsync(x => x.UniqueId == input.AccountUniqueId);
-            if (existingAccount == null)
-                throw new UserFriendlyException("Account not found for given id");
-
-            var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.CountryUniqueId);
-            if (country == null)
-                throw new UserFriendlyException("Country not found for given id");
-
-            var state = await _stateRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.StateUniqueId);
-            if (state == null)
-                throw new UserFriendlyException("State not found for given id");
-
-            var exisingAuction = await _auctionRepository
-                                          .GetAllIncluding(x => x.Address, x => x.Address.State, x => x.Address.Country, x => x.AuctionItems)
-                                          .FirstOrDefaultAsync(x => x.UniqueId == input.UniqueId);
-
-            if (exisingAuction == null)
-                throw new UserFriendlyException("Auction not found for given Id");
-
-
-            if (!(input.AuctionStartDateTime >= existingEvent.EventStartDateTime && input.AuctionEndDateTime <= existingEvent.EventEndDateTime))
+            try
             {
-                throw new UserFriendlyException("Please make sure auction start/end time between event start and end time");
+                var existingEvent = await _eventRepository.FirstOrDefaultAsync(x => x.UniqueId == input.EventUniqueId);
+                if (existingEvent == null)
+                    throw new UserFriendlyException("Event not found for given id");
+
+                var existingAccount = await _appAccountRepository.FirstOrDefaultAsync(x => x.UniqueId == input.AccountUniqueId);
+                if (existingAccount == null)
+                    throw new UserFriendlyException("Account not found for given id");
+
+                var country = await _countryRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.CountryUniqueId);
+                if (country == null)
+                    throw new UserFriendlyException("Country not found for given id");
+
+                var state = await _stateRepository.FirstOrDefaultAsync(x => x.UniqueId == input.Address.StateUniqueId);
+                if (state == null)
+                    throw new UserFriendlyException("State not found for given id");
+
+                var exisingAuction = await _auctionRepository
+                                              .GetAllIncluding(x => x.Address, x => x.Address.State, x => x.Address.Country, x => x.AuctionItems)
+                                              .FirstOrDefaultAsync(x => x.UniqueId == input.UniqueId);
+
+                if (exisingAuction == null)
+                    throw new UserFriendlyException("Auction not found for given Id");
+
+
+                if (!(input.AuctionStartDateTime >= existingEvent.EventStartDateTime && input.AuctionEndDateTime <= existingEvent.EventEndDateTime))
+                {
+                    throw new UserFriendlyException("Please make sure auction start/end time between event start and end time");
+                }
+
+
+                exisingAuction.AuctionType = input.AuctionType;
+                exisingAuction.AuctionStartDateTime = input.AuctionStartDateTime;
+                exisingAuction.AuctionEndDateTime = input.AuctionEndDateTime;
+                //address property
+                exisingAuction.Address.Address1 = input.Address.Address1;
+                exisingAuction.Address.Address2 = input.Address.Address2;
+                exisingAuction.Address.City = input.Address.City;
+                exisingAuction.Address.ZipCode = input.Address.ZipCode;
+                exisingAuction.Address.CountryId = country.Id;
+                exisingAuction.Address.StateId = state.Id;
+                exisingAuction.EventId = existingEvent.Id;
+                exisingAuction.AppAccountId = existingAccount.Id;
+                exisingAuction.AuctionLink = exisingAuction.UniqueId;
+                await _auctionRepository.UpdateAsync(exisingAuction);
+                return input;
             }
-
-
-            exisingAuction.AuctionType = input.AuctionType;
-            exisingAuction.AuctionStartDateTime = input.AuctionStartDateTime;
-            exisingAuction.AuctionEndDateTime = input.AuctionEndDateTime;
-            //address property
-            exisingAuction.Address.Address1 = input.Address.Address1;
-            exisingAuction.Address.Address2 = input.Address.Address2;
-            exisingAuction.Address.City = input.Address.City;
-            exisingAuction.Address.ZipCode = input.Address.ZipCode;
-            exisingAuction.Address.CountryId = country.Id;
-            exisingAuction.Address.StateId = state.Id;
-            exisingAuction.EventId = existingEvent.Id;
-            exisingAuction.AppAccountId = existingAccount.Id;
-            exisingAuction.AuctionLink = exisingAuction.UniqueId;
-            await _auctionRepository.UpdateAsync(exisingAuction);
-            return input;
+            catch (Exception ex)
+            { 
+                throw;
+            }
         }
 
         [AbpAuthorize(AppPermissions.Pages_Administration_Tenant_Auction_Delete)]
