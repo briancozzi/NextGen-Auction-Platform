@@ -24,17 +24,21 @@ namespace ExternalLoginApp.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ApplicationDbContext _context;
         private readonly IHttpContextAccessor _httpAccessor;
+        private readonly SignInManager<IdentityUser> _signInManager;
+
         public HomeController(ILogger<HomeController> logger,
                               IConfiguration configuration,
                               UserManager<IdentityUser> userManager,
                               ApplicationDbContext context,
-                              IHttpContextAccessor httpAccessor)
+                              IHttpContextAccessor httpAccessor,
+                              SignInManager<IdentityUser> signInManager)
         {
             _logger = logger;
             _configuration = configuration;
             _userManager = userManager;
             _context = context;
             _httpAccessor = httpAccessor;
+            _signInManager = signInManager;
         }
 
         public IActionResult Index()
@@ -235,6 +239,11 @@ namespace ExternalLoginApp.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public IActionResult Logout()
+        {
+            return View();
         }
     }
 }

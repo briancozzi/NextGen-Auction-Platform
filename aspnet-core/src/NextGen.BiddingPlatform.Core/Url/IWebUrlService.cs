@@ -17,5 +17,7 @@ namespace NextGen.BiddingPlatform.Url
         string GetApiServerRootAddress(string tenancyName = null);
 
         List<string> GetRedirectAllowedExternalWebSites();
+
+        string GetExternalLoginAppRootAddress(string tenancyName = null);
     }
 }

@@ -287,6 +287,34 @@
                 $("#biddingAmount").val("");
         }
     });
+
+    var pageSize = 10;
+    $(document).on("click", ".add-item", function (e) {
+        e.preventDefault();
+
+        pageSize += 10;
+
+        var url = ApiServerPath + "/api/services/app/AuctionHistory/GetHistorbyAuctionItemId";
+        url += "?auctionItemId=" + auctionItemId;
+        url += "&pageSize=" + pageSize;
+        url += "&pageIndex=" + 1;
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            async: true,
+            cache: false,
+            dataType: "json",
+            success: function (response) {
+                ClearHistoryAndAppendNew(response.result);
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText + " " + xhr.status);
+                alert(xhr.responseText + " " + xhr.status);
+            }
+        });
+    });
+
     function SaveAuctionBidderFirstThenHistory(bidderName) {
         var auctionHistoryDto = {
             bidderName: bidderName,

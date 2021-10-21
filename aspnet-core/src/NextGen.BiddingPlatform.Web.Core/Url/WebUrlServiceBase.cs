@@ -14,11 +14,13 @@ namespace NextGen.BiddingPlatform.Web.Url
 
         public abstract string ServerRootAddressFormatKey { get; }
         public abstract string ApiServerRootAddressFormatKey { get; }
+        public abstract string ExternalLoginSiteRootAddressFormatKey { get; }
 
         public string WebSiteRootAddressFormat => _appConfiguration[WebSiteRootAddressFormatKey] ?? "https://localhost:44302/";
 
         public string ServerRootAddressFormat => _appConfiguration[ServerRootAddressFormatKey] ?? "https://localhost:44302/";
         public string ApiServerRootAddressFormat => _appConfiguration[ApiServerRootAddressFormatKey] ?? "https://localhost:44302/";
+        public string ExternalLoginSiteRootAddressFormat => _appConfiguration[ExternalLoginSiteRootAddressFormatKey] ?? "https://localhost:44302/";
 
         public bool SupportsTenancyNameInUrl
         {
@@ -49,6 +51,11 @@ namespace NextGen.BiddingPlatform.Web.Url
         public string GetApiServerRootAddress(string tenancyName = null)
         {
             return ReplaceTenancyNameInUrl(ApiServerRootAddressFormat, tenancyName);
+        }
+
+        public string GetExternalLoginAppRootAddress(string tenancyName = null)
+        {
+            return ReplaceTenancyNameInUrl(ExternalLoginSiteRootAddressFormat, tenancyName);
         }
 
         public List<string> GetRedirectAllowedExternalWebSites()

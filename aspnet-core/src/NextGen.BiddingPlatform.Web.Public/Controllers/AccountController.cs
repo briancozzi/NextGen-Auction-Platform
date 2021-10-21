@@ -75,7 +75,11 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
             var serverAddress = _webUrlService.GetServerRootAddress(tenancyName);
 
             await _signInManager.SignOutAsync();
-            return Redirect(serverAddress.EnsureEndsWith('/') + "account/logout?returnUrl=" + websiteAddress);
+
+            var externalSiteAddress = _webUrlService.GetExternalLoginAppRootAddress(tenancyName);
+            return Redirect(externalSiteAddress.EnsureEndsWith('/') + "Home/Logout");
+
+            //return Redirect(serverAddress.EnsureEndsWith('/') + "account/logout?returnUrl=" + websiteAddress);
         }
 
         private async Task<ActionResult> RedirectToExternalLoginPageAsync()
