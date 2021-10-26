@@ -77,6 +77,16 @@ namespace NextGen.BiddingPlatform.AuctionHistory
             return new ListResultDto<AuctionHistoryListDto>(await historyData.ToListAsync());
         }
 
+        public async Task<AuctionHistoryDto> GetHighestBid(Guid auctionItemId)
+        {
+            var auctionItem = await _auctionItemRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.UniqueId == auctionItemId);
+
+            var highestBidHistory = await _auctionHistoryRepository.GetAll().Include(s => s.AuctionItem).AsNoTracking().Where(s => s.AuctionItemId == auctionItem.Id && !s.IsOutBid).OrderByDescending(x => x.CreationTime).FirstOrDefaultAsync();
+
+            return ObjectMapper.Map<AuctionHistoryDto>(highestBidHistory);
+        }
+
+
         public async Task<ListResultDto<AuctionHistoryListDto>> GetHistoryByBidderId(Guid auctionBidderId)
         {
             var auctionBidder = await _auctionBidderRepository.FirstOrDefaultAsync(x => x.UniqueId == auctionBidderId);
@@ -127,7 +137,7 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                 throw new UserFriendlyException("Auction item not found for given id");
 
             var historyData = await _auctionHistoryRepository.GetAllIncluding(x => x.AuctionBidder).AsNoTracking()
-                                                       .Where(x => x.AuctionItemId == auctionItem.Id)
+                                                       .Where(x => x.AuctionItemId == auctionItem.Id && !x.IsOutBid)
                                                        .OrderByDescending(x => x.CreationTime)
                                                        .Skip((pageIndex - 1) * pageSize).Take(pageSize)
                                                        .Select(x => new GetAuctionHistoryByAuctionIdDto
@@ -189,7 +199,8 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                     BidStatus = BiddingStatus.Pending.ToString(),
                     CreationTime = Clock.Now,
                     UniqueId = Guid.NewGuid(),
-                    AuctionBidderId = item.AuctionBidderId.Value
+                    AuctionBidderId = item.AuctionBidderId.Value,
+                    IsOutBid = item.IsOutBid
                 });
             }
 
@@ -227,7 +238,7 @@ namespace NextGen.BiddingPlatform.AuctionHistory
                 CreationTime = Clock.Now,
                 UniqueId = Guid.NewGuid(),
                 AuctionBidderId = auctionBidderHistory.AuctionBidderId.Value,
-                 
+                IsOutBid = auctionBidderHistory.IsOutBid
             });
             await CurrentUnitOfWork.SaveChangesAsync();
             var auctionItemHistoryDetails = await GetAuctionItemHistoryCount(auctionItem.Id);

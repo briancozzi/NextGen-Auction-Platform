@@ -64,6 +64,65 @@ namespace NextGen.BiddingPlatform.BackgroundService.RabbitMqService
                 data.CreationTime = DateTime.UtcNow;
                 data.UniqueId = Guid.NewGuid();
                 lstData = _cacheAppService.GetHistoryCache();
+
+                //check wheather highest bid cache available or not
+
+
+                var highestBidFromCache = _cacheAppService.GetHighesBidHistoryCache(data.AuctionItemId.ToString());
+                if (highestBidFromCache == null)
+                {
+                    var highestBidFromDb = await _auctionHistoryService.GetHighestBid(data.AuctionItemId);
+                    if (highestBidFromDb == null)
+                    {
+                        await _cacheAppService.SetHighesBidHistoryCache(new AuctionItemHighestBid
+                        {
+                            AuctionItemId = data.AuctionItemId,
+                            HighestBidAmount = data.BidAmount,
+                            MinNextBidAmount = Math.Round(Helper.Helper.GetNextBidAmount(data.BidAmount), 2),
+                            IsBidClosed = false
+                        });
+                    }
+                    else
+                    {
+                        if (data.BidAmount >= Math.Round(highestBidFromDb.BidAmount, 2))
+                        {
+                            await _cacheAppService.SetHighesBidHistoryCache(new AuctionItemHighestBid
+                            {
+                                AuctionItemId = data.AuctionItemId,
+                                HighestBidAmount = data.BidAmount,
+                                MinNextBidAmount = Math.Round(Helper.Helper.GetNextBidAmount(data.BidAmount), 2),
+                                IsBidClosed = false
+                            });
+                        }
+                        else if (data.BidAmount < Math.Round(highestBidFromDb.BidAmount, 2))
+                        {
+                            data.IsOutBid = true;
+                            await _cacheAppService.SetHighesBidHistoryCache(new AuctionItemHighestBid
+                            {
+                                AuctionItemId = data.AuctionItemId,
+                                HighestBidAmount = highestBidFromDb.BidAmount,
+                                MinNextBidAmount = Math.Round(Helper.Helper.GetNextBidAmount(highestBidFromDb.BidAmount), 2),
+                                IsBidClosed = highestBidFromDb.IsBiddingClosed
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    if (data.BidAmount >= Math.Round(highestBidFromCache.MinNextBidAmount, 2))
+                    {
+                        await _cacheAppService.SetHighesBidHistoryCache(new AuctionItemHighestBid
+                        {
+                            AuctionItemId = data.AuctionItemId,
+                            HighestBidAmount = data.BidAmount,
+                            MinNextBidAmount = Math.Round(Helper.Helper.GetNextBidAmount(data.BidAmount), 2),
+                            IsBidClosed = false
+                        });
+                    }
+                    else if (data.BidAmount < Math.Round(highestBidFromCache.MinNextBidAmount, 2))
+                        data.IsOutBid = true;
+                }
+
                 lstData = lstData.OrderBy(x => x.CreationTime).ToList();
                 lstData.Add(data);
                 await _cacheAppService.SetHistoryCache(lstData);

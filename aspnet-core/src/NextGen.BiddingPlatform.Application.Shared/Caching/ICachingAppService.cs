@@ -18,5 +18,10 @@ namespace NextGen.BiddingPlatform.Caching
         AuctionItemWinnerDto GetWinnerCache(string auctinItemId);
         List<AuctionBidderHistoryDto> GetHistoryCache();
         Task SetHistoryCache(List<AuctionBidderHistoryDto> data);
+
+
+        //highest bid cache
+        AuctionItemHighestBid GetHighesBidHistoryCache(string auctionItemId);
+        Task SetHighesBidHistoryCache(AuctionItemHighestBid data);
     }
 }

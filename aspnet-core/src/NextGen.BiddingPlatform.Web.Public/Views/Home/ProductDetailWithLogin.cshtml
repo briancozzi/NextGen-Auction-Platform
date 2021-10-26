@@ -52,6 +52,7 @@
                                 <input type="hidden" id="currentUserAuctionHistoryCount" value="0" />
                                 <input type="hidden" id="auctionBidderId" value="0" />
                                 <input type="hidden" id="auctionBidderName" value="" />
+                                <input type="hidden" id="auctionBiddingClosed" value="false" />
                                 <p id="bidderNameFromDb"></p>
                                 <p class="name"></p>
                                 <ul>
@@ -199,7 +200,9 @@
         });
 
         connection.on("CloseBiddingOnAuctionItems", () => {
+            $("#auctionBiddingClosed").val("true");
             $("#bidNowBtn").addClass("disbale-btn");
+            alert("Bidding closed for item!!");
         });
 
         connection.start().then(function () {
@@ -212,6 +215,12 @@
     });
     $(document).on("click", "#bidNowBtn", function (e) {
         e.preventDefault();
+
+        if ($("#auctionBiddingClosed").val() === "true") {
+            alert("Bidding closed for item!!");
+            return false;
+        }
+
         //first check if current User histroy count is 0 then open popup and get current user name
         var minimumBidValue = parseFloat($(this).attr("data-minimumBidAmount"));
         var currBidValue = parseFloat($("#biddingAmount").val());

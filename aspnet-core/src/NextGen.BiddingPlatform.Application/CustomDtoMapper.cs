@@ -14,6 +14,7 @@ using AutoMapper;
 using NextGen.BiddingPlatform.AppAccount.Dto;
 using NextGen.BiddingPlatform.AppAccountEvent.Dto;
 using NextGen.BiddingPlatform.Auction.Dto;
+using NextGen.BiddingPlatform.AuctionHistory.Dto;
 using NextGen.BiddingPlatform.AuctionItem.Dto;
 using NextGen.BiddingPlatform.Auditing.Dto;
 using NextGen.BiddingPlatform.Authorization.Accounts.Dto;
@@ -251,6 +252,11 @@ namespace NextGen.BiddingPlatform
                 .ForMember(x => x.FullName, option => option.MapFrom(x => x.User.FullName));
             configuration.CreateMap<Core.CardDetails.CardDetail, CardDetailDto>()
                 .ForMember(x => x.FullName, option => option.MapFrom(x => x.User.FullName)).ReverseMap();
+
+            //Auction History
+            configuration.CreateMap<Core.AuctionHistories.AuctionHistory, AuctionHistoryDto>()
+                .ForMember(s => s.IsBiddingClosed, option => option.MapFrom(xs => xs.AuctionItem.IsBiddingClosed))
+                .ReverseMap();
         }
     }
 }

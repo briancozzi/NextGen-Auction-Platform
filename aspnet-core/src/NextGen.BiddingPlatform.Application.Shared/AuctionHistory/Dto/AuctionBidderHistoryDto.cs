@@ -14,6 +14,7 @@ namespace NextGen.BiddingPlatform.AuctionHistory.Dto
         public int? TenantId { get; set; }
         public DateTime CreationTime { get; set; }
         public Guid UniqueId { get; set; }
+        public bool IsOutBid { get; set; }
     }
     public class AuctionItemWinnerDto
     {
@@ -21,5 +22,13 @@ namespace NextGen.BiddingPlatform.AuctionHistory.Dto
         public double BidAmount { get; set; }
         public int? AuctionBidderId { get; set; }
         public long UserId { get; set; }
+    }
+
+    public class AuctionItemHighestBid
+    {
+        public double HighestBidAmount { get; set; }
+        public double MinNextBidAmount { get; set; }
+        public bool IsBidClosed { get; set; }
+        public Guid AuctionItemId { get; set; }
     }
 }

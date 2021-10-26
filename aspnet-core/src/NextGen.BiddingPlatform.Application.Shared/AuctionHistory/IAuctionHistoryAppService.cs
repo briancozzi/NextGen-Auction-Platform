@@ -21,5 +21,7 @@ namespace NextGen.BiddingPlatform.AuctionHistory
         Task SaveAuctionBidderWithHistory(object auctionBiddingHistory);
         //For Saving Fresh Bidder
         Task<GetAuctionBidderHistoryDto> SaveFreshBidder(AuctionBidderHistoryDto auctionBidderHistory);
+
+        Task<AuctionHistoryDto> GetHighestBid(Guid auctionItemId);
     }
 }

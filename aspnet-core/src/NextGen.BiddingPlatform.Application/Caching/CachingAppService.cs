@@ -65,5 +65,19 @@ namespace NextGen.BiddingPlatform.Caching
             var auctionItemWinnerId = "auctionitem_" + winnerDto.AuctionItemId + "_winner";
             await _cacheManager.GetCache("AuctionWinnerCache").SetAsync(auctionItemWinnerId, winnerDto);
         }
+
+        //Check highest bid cache
+        public AuctionItemHighestBid GetHighesBidHistoryCache(string auctionItemId)
+        {
+            var key = "auctionitem_" + auctionItemId + "_highest_bid";
+            var highestBid = _cacheManager.GetCache("AuctionItemHighestBidCache").Get(key, () => null);
+            return highestBid as AuctionItemHighestBid;
+        }
+        public async Task SetHighesBidHistoryCache(AuctionItemHighestBid data)
+        {
+            var key = "auctionitem_" + data.AuctionItemId + "_highest_bid";
+            await _cacheManager.GetCache("AuctionItemHighestBidCache").SetAsync(key, data);
+        }
+
     }
 }

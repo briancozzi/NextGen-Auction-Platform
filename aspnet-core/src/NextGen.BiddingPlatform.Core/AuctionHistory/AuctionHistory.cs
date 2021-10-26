@@ -30,5 +30,7 @@ namespace NextGen.BiddingPlatform.Core.AuctionHistories
         public double BidAmount { get; set; }
 
         public string BidStatus { get; set; }//like winning, pending
+
+        public bool IsOutBid { get; set; } //if true then we will not display, if false then we will display
     }
 }

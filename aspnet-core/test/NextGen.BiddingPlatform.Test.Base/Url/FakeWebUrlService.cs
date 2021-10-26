@@ -26,6 +26,11 @@ namespace NextGen.BiddingPlatform.Test.Base.Url
             return "http://test.com/";
         }
 
+        public string GetExternalLoginAppRootAddress(string tenancyName = null)
+        {
+            return "http://test.com/";
+        }
+
         public List<string> GetRedirectAllowedExternalWebSites()
         {
             return new List<string>();

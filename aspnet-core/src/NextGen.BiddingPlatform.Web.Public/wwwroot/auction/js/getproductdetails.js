@@ -74,6 +74,7 @@ function GetAuctionItem() {
                 $("#auctionBidderName").val(data.currUserBidderName);
                 $("#bidderNameFromDb").text(data.currUserBidderName);
                 $("#itemNo").text(data.itemNumber);
+                $("#auctionBiddingClosed").text(data.isBiddingClosed);
                 var itemHistories = data.auctionItemHistories;
                 $.each(itemHistories, function (i, v) {
                     CreateHistoryData(v);

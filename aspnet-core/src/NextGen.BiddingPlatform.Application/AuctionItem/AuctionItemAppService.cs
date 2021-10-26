@@ -222,6 +222,8 @@ namespace NextGen.BiddingPlatform.AuctionItem
 
                 var isBiddingStarted = (output.Auction.AuctionStartDateTime - DateTime.UtcNow).TotalSeconds <= 0;
 
+                output.AuctionHistories = output.AuctionHistories.Where(s => !s.IsOutBid && !s.IsDeleted).ToList();
+
                 var result = new AuctionItemWithHistoryDto
                 {
                     AuctionItemId = output.UniqueId,
@@ -258,7 +260,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 result.LastBidWinnerName = result.AuctionItemHistories.OrderByDescending(x => x.BidDate).FirstOrDefault()?.BidderName ?? string.Empty;
 
                 //var totalBidAmount = result.AuctionItemHistories.Sum(x => x.BidAmount);
-                result.BidStepIncrementValue = Helper.Helper.GetNextBidAmount(result.LastBidAmount);
+                result.BidStepIncrementValue = Math.Round(Helper.Helper.GetNextBidAmount(result.LastBidAmount), 2);
                 //var currntUseid = 3;
                 if (userId > 0)
                 {

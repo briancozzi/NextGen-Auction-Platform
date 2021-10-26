@@ -243,7 +243,7 @@ namespace ExternalLoginApp.Controllers
 
         public IActionResult Logout()
         {
-            return View();
+            return View("~/Views/Home/Logout.cshtml");
         }
     }
 }
