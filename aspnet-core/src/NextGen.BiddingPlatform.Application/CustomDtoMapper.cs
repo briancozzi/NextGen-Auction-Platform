@@ -1,3 +1,5 @@
+﻿using NextGen.BiddingPlatform.ApplicationConfigurations.Dtos;
+using NextGen.BiddingPlatform.ApplicationConfigurations;
 using Abp.Application.Editions;
 using Abp.Application.Features;
 using Abp.Auditing;
@@ -59,6 +61,8 @@ namespace NextGen.BiddingPlatform
     {
         public static void CreateMappings(IMapperConfigurationExpression configuration)
         {
+            configuration.CreateMap<CreateOrEditApplicationConfigurationDto, ApplicationConfiguration>().ReverseMap();
+            configuration.CreateMap<ApplicationConfigurationDto, ApplicationConfiguration>().ReverseMap();
             //Inputs
             configuration.CreateMap<CheckboxInputType, FeatureInputTypeDto>();
             configuration.CreateMap<SingleLineStringInputType, FeatureInputTypeDto>();
@@ -99,7 +103,6 @@ namespace NextGen.BiddingPlatform
             configuration.CreateMap<Edition, EditionEditDto>();
             configuration.CreateMap<Edition, SubscribableEdition>();
             configuration.CreateMap<Edition, EditionSelectDto>();
-
 
             //Payment
             configuration.CreateMap<SubscriptionPaymentDto, SubscriptionPayment>().ReverseMap();
@@ -171,7 +174,6 @@ namespace NextGen.BiddingPlatform
             //User Delegations
             configuration.CreateMap<CreateUserDelegationDto, UserDelegation>();
 
-
             /* ADD YOUR OWN CUSTOM AUTOMAPPER MAPPINGS HERE */
             //Country
             configuration.CreateMap<Country.Dto.CreateCountryDto, Country.Country>().ReverseMap();
@@ -221,7 +223,6 @@ namespace NextGen.BiddingPlatform
             configuration.CreateMap<Core.Auctions.Auction, UpdateAuctionDto>()
                .ForMember(x => x.AccountUniqueId, option => option.MapFrom(ap => ap.AppAccount.UniqueId))
                .ForMember(x => x.EventUniqueId, option => option.MapFrom(e => e.Event.UniqueId));
-
 
             configuration.CreateMap<CreateAuctionDto, Core.Auctions.Auction>();
             configuration.CreateMap<Core.Auctions.Auction, AuctionDto>();

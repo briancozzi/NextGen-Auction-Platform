@@ -46,6 +46,40 @@
 					"
 					},
 					{
+					"type" : "file",
+					"content" : "
+								<div class=\"form-group\">
+                                    <div class=\"input-group mb-3\">
+                                        <div class=\"input-group-prepend\">
+                                            <span class=\"input-group-text\" id=\"inputGroupFileAddon01\">@L(\"{{Property_Name_Here}}\")</span>
+                                        </div>
+                                        <div class=\"custom-file\">
+                                            <input type=\"file\" class=\"custom-file-input\" name=\"{{Entity_Name_Here}}_{{Property_Name_Here}}\" id=\"{{Entity_Name_Here}}_{{Property_Name_Here}}\"
+                                                   aria-describedby=\"inputGroupFileAddon01\"
+                                                   accept=\"@Model.{{Property_Name_Here}}FileAcceptedTypes\"/>                    
+                                            <label class=\"custom-file-label\" for=\"@L(\"{{Property_Name_Here}}\")\" id=\"{{Entity_Name_Here}}_{{Property_Name_Here}}Label\">@L(\"ChooseAFile\")</label>
+                                        </div>
+                                    </div>
+									                                    
+                                    <div id=\"div_current_file\" style=\"background-color: #e5e5e5; padding: 5px @(Model.{{Property_Name_Here}}FileName.IsNullOrEmpty()?\";display:none\":\"\")\">
+                                        <span class=\"font-weight-bold\">@L(\"CurrentFile\") :</span>
+                                        <div class=\"alert alert-custom alert-white alert-bold m-1\" role=\"alert\">
+                                            <div class=\"alert-text\">
+                                                <a href=\"@(\"/File/DownloadBinaryFile?id=\" + Model.{{Entity_Name_Here}}.{{Property_Name_Here}})\" target=\"_blank\">@Model.{{Property_Name_Here}}FileName</a>
+                                            </div>
+                                            <div class=\"alert-close\">
+                                                <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\" id=\"{{Entity_Name_Here}}_{{Property_Name_Here}}_Remove\">
+                                                    <span aria-hidden=\"true\">
+                                                        <i class=\"la la-close fa-1x\"></i>
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>									
+								</div>
+					"
+					},
+					{
 					"type" : "default",
 					"content" : "
 								<div class=\"form-group\">
@@ -97,7 +131,7 @@
 					"content" : "            
 						<div class=\"form-group\">
 							<label for=\"{{nP_Name_Here}}\">@L(\"{{NP_Foreign_Entity_Name_Here}}\")</label>
-							@Html.DropDownList(\"{{nP_Name_Here}}\", new SelectList(Model.{{Entity_Name_Here}}{{NP_Foreign_Entity_Name_Here}}List,\"Id\",\"DisplayName\", (Model.IsEditMode ? Model.{{Entity_Name_Here}}.{{NP_Name_Here}}.ToString() : \"\")),@L(\"SelectA{{NP_Foreign_Entity_Name_Here}}\"), new { @class = \"form-control\" })
+							@Html.DropDownList(\"{{nP_Name_Here}}\", new SelectList(Model.{{Entity_Name_Here}}{{NP_Foreign_Entity_Name_Here}}List,\"Id\",\"DisplayName\", (Model.IsEditMode ? Model.{{Entity_Name_Here}}.{{NP_Name_Here}}.ToString() : \"\")),@L(\"SelectA{{NP_Foreign_Entity_Name_Here}}\"), new { @class = \"form-control\"  {{NP_IsNullable_Required_Here_With_Comma_And_At}} })
 						</div>
 "
 					}
@@ -149,6 +183,11 @@
 			"placeholder": "{{MinValue}}",
 			"condition": "{{Property_Is_Range_Set_Here}} == true",
 			"content": " min=\"@{{Namespace_Here}}.{{Namespace_Relative_Full_Here}}.{{Entity_Name_Here}}Consts.Min{{Property_Name_Here}}Value\""
+		},	
+		{
+			"placeholder": "{{NP_IsNullable_Required_Here_With_Comma_And_At}}",
+			"condition": "{{NP_IsNullable_Required_Here}} != ''",
+			"content": ", @required=\"required\""
 		}
 	]
 }

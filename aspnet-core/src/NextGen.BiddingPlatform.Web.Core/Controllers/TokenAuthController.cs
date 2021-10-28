@@ -56,6 +56,7 @@ using System.Collections.ObjectModel;
 using System.Net.Http;
 using Newtonsoft.Json;
 using NextGen.BiddingPlatform.UserEvents;
+using NextGen.BiddingPlatform.ApplicationConfigurations;
 
 namespace NextGen.BiddingPlatform.Web.Controllers
 {
@@ -95,7 +96,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
         private readonly IEnumerable<IPasswordValidator<User>> _passwordValidators;
         private readonly RoleManager _roleManager;
         private readonly IRepository<UserEvent, Guid> _userEventsRepository;
-
+        private readonly IRepository<ApplicationConfiguration> _applicationConfigRepository;
 
         public TokenAuthController(
             LogInManager logInManager,
@@ -126,7 +127,8 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             IUserPolicy userPolicy, IPasswordHasher<User> passwordHasher,
             IEnumerable<IPasswordValidator<User>> passwordValidators,
             RoleManager roleManager,
-            IRepository<UserEvent, Guid> userEventsRepository)
+            IRepository<UserEvent, Guid> userEventsRepository,
+            IRepository<ApplicationConfiguration> applicationConfigRepository)
         {
             _logInManager = logInManager;
             _tenantCache = tenantCache;
@@ -159,6 +161,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             _passwordValidators = passwordValidators;
             _roleManager = roleManager;
             _userEventsRepository = userEventsRepository;
+            _applicationConfigRepository = applicationConfigRepository;
         }
 
         [HttpPost]
@@ -259,7 +262,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             HttpClient _client = new HttpClient();
             _client.DefaultRequestHeaders.Clear();
 
-            var getUserDetailsApi = _configurationRoot["ExternalUserLoginSettings:GetUserApi"];
+            var getUserDetailsApi = await GetConfigByKey("GetUserApi");
             getUserDetailsApi += "?uniqueId=" + UniqueId;
             getUserDetailsApi += "&userId=" + userId;
             getUserDetailsApi += "&tenantId=" + TenantId;
@@ -332,6 +335,12 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             }
         }
 
+        public async Task<string> GetConfigByKey(string configKey)
+        {
+            var configFromDb = await _applicationConfigRepository.FirstOrDefaultAsync(s => s.ConfigKey == configKey);
+            return configFromDb?.ConfigValue;
+        }
+
         [HttpPost]
         public async Task<AuthenticateResultModel> ExternalUserLoginWithEvent([FromBody] ExternalLoginWithEvent model)
         {
@@ -340,7 +349,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             HttpClient _client = new HttpClient();
             _client.DefaultRequestHeaders.Clear();
 
-            var getUserDetailsApi = _configurationRoot["ExternalUserLoginSettings:GetUserApi"];
+            var getUserDetailsApi = await GetConfigByKey("GetUserApi");
             getUserDetailsApi += "?uniqueId=" + model.UserUniqueId;
             getUserDetailsApi += "&userId=" + model.UserId;
             getUserDetailsApi += "&tenantId=" + model.TenantId;

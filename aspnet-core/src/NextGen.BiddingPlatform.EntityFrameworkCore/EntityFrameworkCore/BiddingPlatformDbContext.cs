@@ -1,4 +1,5 @@
-﻿using Abp.IdentityServer4;
+﻿using NextGen.BiddingPlatform.ApplicationConfigurations;
+using Abp.IdentityServer4;
 using Abp.Organizations;
 using Abp.Zero.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +39,8 @@ namespace NextGen.BiddingPlatform.EntityFrameworkCore
 {
     public class BiddingPlatformDbContext : AbpZeroDbContext<Tenant, Role, User, BiddingPlatformDbContext>, IAbpPersistedGrantDbContext
     {
+        public virtual DbSet<ApplicationConfiguration> ApplicationConfigurations { get; set; }
+
         /* Define an IDbSet for each entity of the application */
         public virtual DbSet<UserEvent> UserEvents { get; set; }
         public virtual DbSet<UserViewedItem> UserViewedItems { get; set; }
@@ -91,10 +94,14 @@ namespace NextGen.BiddingPlatform.EntityFrameworkCore
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<UserViewedItem>(b =>
+            modelBuilder.Entity<ApplicationConfiguration>(a =>
             {
-                b.HasIndex(e => new { e.TenantId });
+                a.HasIndex(e => new { e.TenantId });
             });
+            modelBuilder.Entity<UserViewedItem>(b =>
+                       {
+                           b.HasIndex(e => new { e.TenantId });
+                       });
 
             modelBuilder.Entity<UserFavoriteItem>(b =>
             {

@@ -1,7 +1,10 @@
-import { CommonModule } from '@angular/common';
+﻿import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppCommonModule } from '@app/shared/common/app-common.module';
+import { ApplicationConfigurationsComponent } from './applicationConfigurations/applicationConfigurations/applicationConfigurations.component';
+import { CreateOrEditApplicationConfigurationModalComponent } from './applicationConfigurations/applicationConfigurations/create-or-edit-applicationConfiguration-modal.component';
+
 import { UtilsModule } from '@shared/utils/utils.module';
 import { AddMemberModalComponent } from 'app/admin/organization-units/add-member-modal.component';
 import { AddRoleModalComponent } from 'app/admin/organization-units/add-role-modal.component';
@@ -162,6 +165,9 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         AppBsModalModule
     ],
     declarations: [
+		ApplicationConfigurationsComponent,
+
+		CreateOrEditApplicationConfigurationModalComponent,
         UsersComponent,
         PermissionComboComponent,
         RoleComboComponent,

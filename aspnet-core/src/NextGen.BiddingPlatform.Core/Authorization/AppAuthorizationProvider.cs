@@ -33,6 +33,11 @@ namespace NextGen.BiddingPlatform.Authorization
 
             var administration = pages.CreateChildPermission(AppPermissions.Pages_Administration, L("Administration"));
 
+            var applicationConfigurations = administration.CreateChildPermission(AppPermissions.Pages_Administration_ApplicationConfigurations, L("ApplicationConfigurations"), multiTenancySides: MultiTenancySides.Tenant);
+            applicationConfigurations.CreateChildPermission(AppPermissions.Pages_Administration_ApplicationConfigurations_Create, L("CreateNewApplicationConfiguration"), multiTenancySides: MultiTenancySides.Tenant);
+            applicationConfigurations.CreateChildPermission(AppPermissions.Pages_Administration_ApplicationConfigurations_Edit, L("EditApplicationConfiguration"), multiTenancySides: MultiTenancySides.Tenant);
+            applicationConfigurations.CreateChildPermission(AppPermissions.Pages_Administration_ApplicationConfigurations_Delete, L("DeleteApplicationConfiguration"), multiTenancySides: MultiTenancySides.Tenant);
+
             var roles = administration.CreateChildPermission(AppPermissions.Pages_Administration_Roles, L("Roles"));
             roles.CreateChildPermission(AppPermissions.Pages_Administration_Roles_Create, L("CreatingNewRole"));
             roles.CreateChildPermission(AppPermissions.Pages_Administration_Roles_Edit, L("EditingRole"));
@@ -89,8 +94,6 @@ namespace NextGen.BiddingPlatform.Authorization
             entityDynamicParameterValues.CreateChildPermission(AppPermissions.Pages_Administration_EntityDynamicParameterValue_Edit, L("EditingEntityDynamicParameterValue"));
             entityDynamicParameterValues.CreateChildPermission(AppPermissions.Pages_Administration_EntityDynamicParameterValue_Delete, L("DeletingEntityDynamicParameterValue"));
 
-
-
             //TENANT-SPECIFIC PERMISSIONS
 
             pages.CreateChildPermission(AppPermissions.Pages_Tenant_Dashboard, L("Dashboard"), multiTenancySides: MultiTenancySides.Tenant);
@@ -139,7 +142,6 @@ namespace NextGen.BiddingPlatform.Authorization
             auctionItemPermissions.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AuctionItem_Create, L("CreateAuctionItem"), multiTenancySides: MultiTenancySides.Tenant);
             auctionItemPermissions.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AuctionItem_Edit, L("EditAuctionItem"), multiTenancySides: MultiTenancySides.Tenant);
             auctionItemPermissions.CreateChildPermission(AppPermissions.Pages_Administration_Tenant_AuctionItem_Delete, L("DeleteAuctionItem"), multiTenancySides: MultiTenancySides.Tenant);
-
 
             //HOST-SPECIFIC PERMISSIONS
             var country = administration.CreateChildPermission(AppPermissions.Pages_Administration_Country, L("Country"), multiTenancySides: MultiTenancySides.Host);

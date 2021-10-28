@@ -1,6 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <localizationDictionary culture="en">
-  <texts>
+  <texts>    <text name="ApplicationConfigurations">Application configurations</text>
+    <text name="ApplicationConfiguration">Application configuration</text>
+    <text name="NextGen.BiddingPlatform.ApplicationConfigurations.ApplicationConfiguration">ApplicationConfiguration</text>
+    <text name="ConfigKey">Config key</text>
+    <text name="ConfigValue">Config value</text>
+    <text name="ApplicationConfigurationsHeaderInfo">Application configurations header info</text>
+    <text name="CreateNewApplicationConfiguration">Create new application configuration</text>
+    <text name="EditApplicationConfiguration">Edit application configuration</text>
+    <text name="DeleteApplicationConfiguration">Delete application configuration</text>
+    <text name="{0}IsRequired">{0} is required.</text>
+    <text name="Pick">Pick</text>
+    <text name="True">True</text>
+    <text name="False">False</text>
+    <text name="MinValue">Min</text>
+    <text name="MaxValue">Max</text>
+
 
 
     <!--Custom Changes start from here -->

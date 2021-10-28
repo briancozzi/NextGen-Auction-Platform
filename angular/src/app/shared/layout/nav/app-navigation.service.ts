@@ -23,21 +23,23 @@ export class AppNavigationService {
             new AppMenuItem('Editions', 'Pages.Editions', 'flaticon-app', '/app/admin/editions'),
 
             //custom menus
-            new AppMenuItem('Accounts','Pages.Tenant.AppAccount','flaticon-app','/app/admin/accounts'),
-            new AppMenuItem("Events",'Pages.Tenant.Event','flaticon-app','/app/admin/events'),
-            new AppMenuItem("Auctions",'Pages.Tenant.Auction',"flaticon-app","/app/admin/auctions"),
-            new AppMenuItem("Items",'Pages.Tenant.Item',"flaticon-app","/app/admin/items"),
-            new AppMenuItem("Category",'Pages.Tenant.Category',"flaticon-app","/app/admin/category"),
-            new AppMenuItem("Auction Items",'Pages.Tenant.AuctionItem',"flaticon-app","/app/admin/auction-items"),
-            new AppMenuItem('Parameter','','flaticon-interface-8','',[],[
-                new AppMenuItem('Countries','Pages.Administration.Country','flaticon-app','/app/main/country'),
-                new AppMenuItem('States','Pages.Administration.State', 'flaticon-app','/app/admin/states')
+            new AppMenuItem('Accounts', 'Pages.Tenant.AppAccount', 'flaticon-app', '/app/admin/accounts'),
+            new AppMenuItem("Events", 'Pages.Tenant.Event', 'flaticon-app', '/app/admin/events'),
+            new AppMenuItem("Auctions", 'Pages.Tenant.Auction', "flaticon-app", "/app/admin/auctions"),
+            new AppMenuItem("Items", 'Pages.Tenant.Item', "flaticon-app", "/app/admin/items"),
+            new AppMenuItem("Category", 'Pages.Tenant.Category', "flaticon-app", "/app/admin/category"),
+            new AppMenuItem("Auction Items", 'Pages.Tenant.AuctionItem', "flaticon-app", "/app/admin/auction-items"),
+            new AppMenuItem('Parameter', '', 'flaticon-interface-8', '', [], [
+                new AppMenuItem('Countries', 'Pages.Administration.Country', 'flaticon-app', '/app/main/country'),
+                new AppMenuItem('States', 'Pages.Administration.State', 'flaticon-app', '/app/admin/states')
             ]),
             //
             new AppMenuItem('Administration', '', 'flaticon-interface-8', '', [], [
                 new AppMenuItem('OrganizationUnits', 'Pages.Administration.OrganizationUnits', 'flaticon-map', '/app/admin/organization-units'),
                 new AppMenuItem('Roles', 'Pages.Administration.Roles', 'flaticon-suitcase', '/app/admin/roles'),
                 new AppMenuItem('Users', 'Pages.Administration.Users', 'flaticon-users', '/app/admin/users'),
+                new AppMenuItem('ApplicationConfigurations', 'Pages.Administration.ApplicationConfigurations', 'flaticon-more', '/app/admin/applicationConfigurations/applicationConfigurations'),
+
                 new AppMenuItem('Languages', 'Pages.Administration.Languages', 'flaticon-tabs', '/app/admin/languages', ['/app/admin/languages/{name}/texts']),
                 new AppMenuItem('AuditLogs', 'Pages.Administration.AuditLogs', 'flaticon-folder-1', '/app/admin/auditLogs'),
                 new AppMenuItem('Maintenance', 'Pages.Administration.Host.Maintenance', 'flaticon-lock', '/app/admin/maintenance'),
@@ -50,7 +52,7 @@ export class AppNavigationService {
                     new AppMenuItem('Definitions', 'Pages.Administration.DynamicParameters', '', '/app/admin/dynamic-parameter'),
                     new AppMenuItem('EntityDynamicParameters', 'Pages.Administration.EntityDynamicParameters', '', '/app/admin/entity-dynamic-parameter'),
                 ]),
-                
+
             ]),
             new AppMenuItem('DemoUiComponents', 'Pages.DemoUiComponents', 'flaticon-shapes', '/app/admin/demo-ui-components')
         ]);
