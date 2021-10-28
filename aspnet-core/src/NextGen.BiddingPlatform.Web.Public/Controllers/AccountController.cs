@@ -7,6 +7,7 @@ using Abp.Extensions;
 using Abp.Runtime.Session;
 using Abp.Timing;
 using Microsoft.AspNetCore.Mvc;
+using NextGen.BiddingPlatform.ApplicationConfigurations;
 using NextGen.BiddingPlatform.Authorization.Users;
 using NextGen.BiddingPlatform.Identity;
 using NextGen.BiddingPlatform.MultiTenancy;
@@ -21,17 +22,20 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
         private readonly SignInManager _signInManager;
         private readonly IWebUrlService _webUrlService;
         private readonly TenantManager _tenantManager;
-
+        private readonly IApplicationConfigurationsAppService _applicationConfigService;
+        public const string TenancyNamePlaceHolder = "{TENANCY_NAME}";
         public AccountController(
             UserManager userManager,
             SignInManager signInManager,
             IWebUrlService webUrlService,
-            TenantManager tenantManager)
+            TenantManager tenantManager,
+            IApplicationConfigurationsAppService applicationConfigService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _webUrlService = webUrlService;
             _tenantManager = tenantManager;
+            _applicationConfigService = applicationConfigService;
         }
 
         public async Task<ActionResult> Login(string accessToken, string userId, int eventId, string tenantId = "", string returnUrl = "")
@@ -76,10 +80,33 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
 
             await _signInManager.SignOutAsync();
 
-            var externalSiteAddress = _webUrlService.GetExternalLoginAppRootAddress(tenancyName);
+            // var externalSiteAddress = _webUrlService.GetExternalLoginAppRootAddress(tenancyName);
+
+
+            var externalSiteAddress = ReplaceTenancyNameInUrl(await _applicationConfigService.GetConfigByKey("ExternalLoginSiteRootAddress"), tenancyName);
             return Redirect(externalSiteAddress.EnsureEndsWith('/') + "Home/Logout");
 
             //return Redirect(serverAddress.EnsureEndsWith('/') + "account/logout?returnUrl=" + websiteAddress);
+        }
+
+        private string ReplaceTenancyNameInUrl(string siteRootFormat, string tenancyName)
+        {
+            if (!siteRootFormat.Contains(TenancyNamePlaceHolder))
+            {
+                return siteRootFormat;
+            }
+
+            if (siteRootFormat.Contains(TenancyNamePlaceHolder + "."))
+            {
+                siteRootFormat = siteRootFormat.Replace(TenancyNamePlaceHolder + ".", TenancyNamePlaceHolder);
+            }
+
+            if (tenancyName.IsNullOrEmpty())
+            {
+                return siteRootFormat.Replace(TenancyNamePlaceHolder, "");
+            }
+
+            return siteRootFormat.Replace(TenancyNamePlaceHolder, tenancyName + ".");
         }
 
         private async Task<ActionResult> RedirectToExternalLoginPageAsync()

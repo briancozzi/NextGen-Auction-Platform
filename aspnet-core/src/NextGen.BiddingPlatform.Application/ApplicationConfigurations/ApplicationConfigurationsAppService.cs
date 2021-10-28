@@ -17,7 +17,6 @@ using NextGen.BiddingPlatform.Storage;
 
 namespace NextGen.BiddingPlatform.ApplicationConfigurations
 {
-    [AbpAuthorize(AppPermissions.Pages_Administration_ApplicationConfigurations)]
     public class ApplicationConfigurationsAppService : BiddingPlatformAppServiceBase, IApplicationConfigurationsAppService
     {
         private readonly IRepository<ApplicationConfiguration> _applicationConfigurationRepository;
@@ -123,6 +122,12 @@ namespace NextGen.BiddingPlatform.ApplicationConfigurations
         public async Task Delete(EntityDto input)
         {
             await _applicationConfigurationRepository.DeleteAsync(input.Id);
+        }
+
+        public async Task<string> GetConfigByKey(string configKey)
+        {
+            var configFromDb = await _applicationConfigurationRepository.FirstOrDefaultAsync(s => s.ConfigKey == configKey);
+            return configFromDb?.ConfigValue;
         }
 
     }
