@@ -440,7 +440,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             }
             else
             {
-                return null;
+                throw new UserFriendlyException("Active session link expired or user not found!!");
             }
         }
 
