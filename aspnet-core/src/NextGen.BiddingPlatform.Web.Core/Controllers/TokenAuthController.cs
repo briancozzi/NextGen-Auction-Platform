@@ -335,6 +335,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             }
         }
 
+        [HttpGet]
         public async Task<string> GetConfigByKey(string configKey)
         {
             var configFromDb = await _applicationConfigRepository.FirstOrDefaultAsync(s => s.ConfigKey == configKey);
