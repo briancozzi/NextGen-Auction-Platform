@@ -351,6 +351,8 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             _client.DefaultRequestHeaders.Clear();
 
             var getUserDetailsApi = await GetConfigByKey("GetUserApi");
+            var apiUrlForError = getUserDetailsApi;
+
             getUserDetailsApi += "?uniqueId=" + model.UserUniqueId;
             getUserDetailsApi += "&userId=" + model.UserId;
             getUserDetailsApi += "&tenantId=" + model.TenantId;
@@ -440,7 +442,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             }
             else
             {
-                throw new UserFriendlyException("Active session link expired or user not found!!");
+                throw new UserFriendlyException($"Error code : {(int)httpResponse.StatusCode}, apiUrl= {apiUrlForError}, Message : Active session link expired or user not found!!");
             }
         }
 
