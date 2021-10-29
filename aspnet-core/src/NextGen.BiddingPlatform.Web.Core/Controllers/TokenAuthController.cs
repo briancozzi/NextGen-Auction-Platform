@@ -342,7 +342,10 @@ namespace NextGen.BiddingPlatform.Web.Controllers
         public async Task<string> GetConfigByKey(string configKey)
         {
             var configFromDb = await _applicationConfigRepository.FirstOrDefaultAsync(s => s.ConfigKey == configKey);
-            return configFromDb?.ConfigValue;
+            if (configFromDb == null)
+                throw new UserFriendlyException(configKey + " not found in database. Please configure first!!");
+
+            return configFromDb.ConfigValue;
         }
 
         [HttpPost]
