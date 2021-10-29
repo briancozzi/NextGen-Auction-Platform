@@ -38,7 +38,7 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
             _applicationConfigService = applicationConfigService;
         }
 
-        public async Task<ActionResult> Login(string accessToken, string userId, int eventId, string tenantId = "", string returnUrl = "")
+        public async Task<ActionResult> Login(string accessToken, string userId, Guid eventId, string tenantId = "", string returnUrl = "")
         {
             if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(userId))
             {

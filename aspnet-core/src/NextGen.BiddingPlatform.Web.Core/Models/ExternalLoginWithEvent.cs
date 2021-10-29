@@ -9,7 +9,7 @@ namespace NextGen.BiddingPlatform.Web.Models
     {
         public Guid UserUniqueId { get; set; }
         public string UserId { get; set; }
-        public int EventId { get; set; }
+        public Guid EventId { get; set; }
         public int? TenantId { get; set; }
     }
 }

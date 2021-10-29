@@ -22,15 +22,18 @@ namespace NextGen.BiddingPlatform.AuctionBidder
         private readonly IRepository<Core.Auctions.Auction> _auctionRepository;
         private readonly IAbpSession _abpSession;
         private readonly IRepository<UserEvent, Guid> _userEventRepository;
+        private readonly IRepository<Core.AppAccountEvents.Event> _appAccountEventRepository;
         public AuctionBidderAppService(IRepository<Core.AuctionBidders.AuctionBidder> auctionBidderRepository,
                                         IAbpSession abpSession,
                                         IRepository<Core.Auctions.Auction> auctionRepository,
-                                        IRepository<UserEvent, Guid> userEventRepository)
+                                        IRepository<UserEvent, Guid> userEventRepository,
+                                        IRepository<Core.AppAccountEvents.Event> appAccountEventRepository)
         {
             _auctionBidderRepository = auctionBidderRepository;
             _auctionRepository = auctionRepository;
             _abpSession = abpSession;
             _userEventRepository = userEventRepository;
+            _appAccountEventRepository = appAccountEventRepository;
         }
 
         public async Task CreateBidder(CreateAuctionBidderDto input)
@@ -61,7 +64,11 @@ namespace NextGen.BiddingPlatform.AuctionBidder
             if (user == null)
                 throw new Exception("User not found for given user id");
 
-            var userEvent = await _userEventRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.UserId == user.Id && s.EventId == input.EventId);
+            var appAccountEvent = await _appAccountEventRepository.FirstOrDefaultAsync(s => s.UniqueId == input.EventId);
+            if (appAccountEvent == null)
+                throw new Exception("Event not found!!");
+
+            var userEvent = await _userEventRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.UserId == user.Id && s.EventId == appAccountEvent.Id);
             if (userEvent == null)
                 throw new UserFriendlyException("User not registered with this event");
 

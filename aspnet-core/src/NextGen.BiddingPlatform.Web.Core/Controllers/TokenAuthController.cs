@@ -97,6 +97,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
         private readonly RoleManager _roleManager;
         private readonly IRepository<UserEvent, Guid> _userEventsRepository;
         private readonly IRepository<ApplicationConfiguration> _applicationConfigRepository;
+        private readonly IRepository<Core.AppAccountEvents.Event> _appAccountEventRepository;
 
         public TokenAuthController(
             LogInManager logInManager,
@@ -128,7 +129,8 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             IEnumerable<IPasswordValidator<User>> passwordValidators,
             RoleManager roleManager,
             IRepository<UserEvent, Guid> userEventsRepository,
-            IRepository<ApplicationConfiguration> applicationConfigRepository)
+            IRepository<ApplicationConfiguration> applicationConfigRepository,
+            IRepository<Core.AppAccountEvents.Event> appAccountEventRepository)
         {
             _logInManager = logInManager;
             _tenantCache = tenantCache;
@@ -162,6 +164,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             _roleManager = roleManager;
             _userEventsRepository = userEventsRepository;
             _applicationConfigRepository = applicationConfigRepository;
+            _appAccountEventRepository = appAccountEventRepository;
         }
 
         [HttpPost]
@@ -360,85 +363,101 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             var httpResponse = await _client.GetAsync(getUserDetailsApi);
             if (httpResponse.IsSuccessStatusCode)
             {
-                var resultFromApi = await httpResponse.Content.ReadAsStringAsync();
-                var data = JsonConvert.DeserializeObject<UserDetails>(resultFromApi);
-
-                var existingUser = await _userManager.Users.FirstOrDefaultAsync(s => s.ExternalUserId == data.ExternalUserId);
-
-                var generalPassword = "123qwe";
-                if (existingUser == null)
+                try
                 {
-                    var input = new CreateOrUpdateUserInput
+                    var resultFromApi = await httpResponse.Content.ReadAsStringAsync();
+                    var data = JsonConvert.DeserializeObject<UserDetails>(resultFromApi);
+
+                    var existingUser = await _userManager.Users.FirstOrDefaultAsync(s => s.ExternalUserId == data.ExternalUserId);
+
+                    var generalPassword = "123qwe";
+
+                    var @event = await _appAccountEventRepository.FirstOrDefaultAsync(s => s.UniqueId == model.EventId);
+                    if (@event == null)
+                        throw new UserFriendlyException("Event not found!!!");
+
+                    if (existingUser == null)
                     {
-                        User = new UserEditDto
+                        var input = new CreateOrUpdateUserInput
                         {
-                            EmailAddress = data.EmailAddress,
-                            IsActive = true,
-                            IsLockoutEnabled = false,
-                            IsTwoFactorEnabled = false,
-                            Name = data.FirstName,
-                            Password = generalPassword,
-                            PhoneNumber = "",
-                            ShouldChangePasswordOnNextLogin = false,
-                            Surname = data.LastName,
-                            UserName = data.EmailAddress,
-                            ExternalUserId = data.ExternalUserId,
-                            //ExternalUserUniqueId = data.ExternalUniqueId
-                        },
-                        AssignedRoleNames = new List<string>() { "User" }.ToArray(),
-                        SendActivationEmail = false,
-                        SetRandomPassword = false
-                    };
+                            User = new UserEditDto
+                            {
+                                EmailAddress = data.EmailAddress,
+                                IsActive = true,
+                                IsLockoutEnabled = false,
+                                IsTwoFactorEnabled = false,
+                                Name = data.FirstName,
+                                Password = generalPassword,
+                                PhoneNumber = "",
+                                ShouldChangePasswordOnNextLogin = false,
+                                Surname = data.LastName,
+                                UserName = data.EmailAddress,
+                                ExternalUserId = data.ExternalUserId,
+                                //ExternalUserUniqueId = data.ExternalUniqueId
+                            },
+                            AssignedRoleNames = new List<string>() { "User" }.ToArray(),
+                            SendActivationEmail = false,
+                            SetRandomPassword = false
+                        };
 
 
-                    await _userPolicy.CheckMaxUserCountAsync(data.TenantId);
-                    await CreateUser(input, data.TenantId);
+                        await _userPolicy.CheckMaxUserCountAsync(data.TenantId);
+                        await CreateUser(input, data.TenantId);
 
-                    //add entry into user events
-                    await _userEventsRepository.InsertAsync(new UserEvent
-                    {
-                        UserId = input.User.Id.Value,
-                        EventId = model.EventId,
-                        TenantId = model.TenantId
-                    });
+                        //add entry into user events
 
+                        
 
-                    var result = await Authenticate(new AuthenticateModel
-                    {
-                        UserNameOrEmailAddress = input.User.UserName,
-                        Password = generalPassword,
-                        SingleSignIn = true,
-                        ReturnUrl = returlUrl
-                    });
-
-                    return result;
-                }
-                else
-                {
-                    await _userManager.UpdateAsync(existingUser);
-
-                    //add entry into user events
-
-                    var userEvent = await _userEventsRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.EventId == model.EventId && s.UserId == existingUser.Id);
-                    if (userEvent == null)
-                    {
                         await _userEventsRepository.InsertAsync(new UserEvent
                         {
-                            UserId = existingUser.Id,
-                            EventId = model.EventId,
+                            UserId = input.User.Id.Value,
+                            EventId = @event.Id,
                             TenantId = model.TenantId
                         });
-                    }
 
-                    var result = await Authenticate(new AuthenticateModel
+
+                        var result = await Authenticate(new AuthenticateModel
+                        {
+                            UserNameOrEmailAddress = input.User.UserName,
+                            Password = generalPassword,
+                            SingleSignIn = true,
+                            ReturnUrl = returlUrl
+                        });
+
+                        return result;
+                    }
+                    else
                     {
-                        UserNameOrEmailAddress = existingUser.UserName,
-                        Password = generalPassword,
-                        SingleSignIn = true,
-                        ReturnUrl = returlUrl
-                    });
-                    return result;
+                        await _userManager.UpdateAsync(existingUser);
+
+                        //add entry into user events
+
+                        var userEvent = await _userEventsRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.EventId == @event.Id && s.UserId == existingUser.Id);
+                        if (userEvent == null)
+                        {
+                            await _userEventsRepository.InsertAsync(new UserEvent
+                            {
+                                UserId = existingUser.Id,
+                                EventId = @event.Id,
+                                TenantId = model.TenantId
+                            });
+                        }
+
+                        var result = await Authenticate(new AuthenticateModel
+                        {
+                            UserNameOrEmailAddress = existingUser.UserName,
+                            Password = generalPassword,
+                            SingleSignIn = true,
+                            ReturnUrl = returlUrl
+                        });
+                        return result;
+                    }
                 }
+                catch (Exception ex)
+                {
+                    throw new UserFriendlyException($"Error code : 500, Message : {ex.Message}");
+                }
+
             }
             else
             {

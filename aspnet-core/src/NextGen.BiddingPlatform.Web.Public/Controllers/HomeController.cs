@@ -64,7 +64,7 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
             return View();
         }
 
-        public async Task<ActionResult> Index(int eventId)
+        public async Task<ActionResult> Index(Guid eventId)
         {
             ViewBag.IsLoggedInUser = await IsCurrentUserLoggedIn();
             var user = await _sessionCache.GetCurrentLoginInformationsAsync();

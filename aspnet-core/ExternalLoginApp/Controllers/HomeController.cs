@@ -63,7 +63,7 @@ namespace ExternalLoginApp.Controllers
         }
 
         //register to event
-        public async Task<IActionResult> RegisterToEvent(int eventId)
+        public async Task<IActionResult> RegisterToEvent(Guid eventId)
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
 
@@ -137,7 +137,7 @@ namespace ExternalLoginApp.Controllers
         }
 
         //create bidder and start bidding
-        public async Task<IActionResult> CreateBidderAndPlaceABid(int eventId)
+        public async Task<IActionResult> CreateBidderAndPlaceABid(Guid eventId)
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
 

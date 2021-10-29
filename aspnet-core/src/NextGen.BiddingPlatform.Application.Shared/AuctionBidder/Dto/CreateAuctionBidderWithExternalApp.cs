@@ -10,6 +10,6 @@ namespace NextGen.BiddingPlatform.AuctionBidder.Dto
         [Required]
         public string ExternalUserId { get; set; }
         [Required]
-        public int EventId { get; set; }
+        public Guid EventId { get; set; }
     }
 }

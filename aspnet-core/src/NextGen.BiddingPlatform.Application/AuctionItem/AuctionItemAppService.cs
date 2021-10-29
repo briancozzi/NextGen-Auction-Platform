@@ -51,7 +51,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
             _eventRepository = eventRepository;
         }
         [AllowAnonymous]
-        public async Task<ListResultDto<AuctionItemListDto>> GetAllAuctionItems(int eventId, int categoryId = 0, string search = "")
+        public async Task<ListResultDto<AuctionItemListDto>> GetAllAuctionItems(Guid eventId, int categoryId = 0, string search = "")
         {
             var query = _auctionitemRepository.GetAll()
                                                 //.GetAllIncluding(x => x.Auction, x => x.Item, x => x.AuctionHistories)
@@ -60,8 +60,11 @@ namespace NextGen.BiddingPlatform.AuctionItem
                                                 .Include(s => s.AuctionHistories)
                                                     .AsNoTracking();
 
+            var @event = await _eventRepository.FirstOrDefaultAsync(s => s.UniqueId == eventId);
+            if (@event == null)
+                throw new UserFriendlyException("Event not found !!");
 
-            query = query.Where(s => s.Auction.EventId == eventId);
+            query = query.Where(s => s.Auction.EventId == @event.Id);
 
             if (categoryId > 0)
                 query = query.Where(s => s.Item.CategoryId == categoryId);
