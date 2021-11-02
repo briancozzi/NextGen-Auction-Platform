@@ -152,7 +152,6 @@ function GetAuctionItems(categoryId, search) {
                                 $("#auctionItems").empty();
                                 $.each(data, function (i, v) {
                                     if (!v.isAuctionExpired) {
-                                        debugger;
                                         var output = Mustache.render($("#auctionItemTemplate").html(), v);
                                         $("#auctionItems").append(output);
                                         totalItems += 1;

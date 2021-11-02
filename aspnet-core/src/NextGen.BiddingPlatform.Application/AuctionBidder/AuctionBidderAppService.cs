@@ -6,6 +6,7 @@ using Abp.UI;
 using Microsoft.EntityFrameworkCore;
 using NextGen.BiddingPlatform.AuctionBidder.Dto;
 using NextGen.BiddingPlatform.Authorization.Users;
+using NextGen.BiddingPlatform.Helpers;
 using NextGen.BiddingPlatform.UserEvents;
 using System;
 using System.Collections.Generic;
@@ -58,38 +59,59 @@ namespace NextGen.BiddingPlatform.AuctionBidder
             });
         }
 
-        public async Task CreateBidderFromExternalApp(CreateAuctionBidderWithExternalApp input)
+        public async Task<ApiResponse<object>> CreateBidderFromExternalApp(CreateAuctionBidderWithExternalApp input)
         {
-            var user = await UserManager.Users.FirstOrDefaultAsync(s => s.ExternalUserId == input.ExternalUserId);
-            if (user == null)
-                throw new Exception("User not found for given user id");
-
-            var appAccountEvent = await _appAccountEventRepository.FirstOrDefaultAsync(s => s.UniqueId == input.EventId);
-            if (appAccountEvent == null)
-                throw new Exception("Event not found!!");
-
-            var userEvent = await _userEventRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.UserId == user.Id && s.EventId == appAccountEvent.Id);
-            if (userEvent == null)
-                throw new UserFriendlyException("User not registered with this event");
-
-            var auctions = await _auctionRepository.GetAll().AsNoTracking().Where(s => s.EventId == userEvent.EventId).Select(s => s.Id).ToListAsync();
-
-            foreach (var auctionId in auctions)
+            try
             {
-                var auctionBidder = await _auctionBidderRepository.GetAll()
-                                .AsNoTracking()
-                                .FirstOrDefaultAsync(s => s.AuctionId == auctionId && s.UserId == user.Id);
+                var user = await UserManager.Users.FirstOrDefaultAsync(s => s.ExternalUserId == input.ExternalUserId);
+                if (user == null)
+                    throw new Exception("User not found for given user id");
 
-                if (auctionBidder == null)
+                var appAccountEvent = await _appAccountEventRepository.FirstOrDefaultAsync(s => s.UniqueId == input.EventId);
+                if (appAccountEvent == null)
+                    throw new Exception("Event not found!!");
+
+                var userEvent = await _userEventRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.UserId == user.Id && s.EventId == appAccountEvent.Id);
+                if (userEvent == null)
+                    throw new UserFriendlyException("User not registered with this event");
+
+                var auctions = await _auctionRepository.GetAll().AsNoTracking().Where(s => s.EventId == userEvent.EventId).Select(s => s.Id).ToListAsync();
+
+                foreach (var auctionId in auctions)
                 {
-                    await _auctionBidderRepository.InsertAsync(new Core.AuctionBidders.AuctionBidder
+                    var auctionBidder = await _auctionBidderRepository.GetAll()
+                                    .AsNoTracking()
+                                    .FirstOrDefaultAsync(s => s.AuctionId == auctionId && s.UserId == user.Id);
+
+                    if (auctionBidder == null)
                     {
-                        UniqueId = Guid.NewGuid(),
-                        UserId = user.Id,
-                        AuctionId = auctionId,
-                        BidderName = user.FullName
-                    });
+                        await _auctionBidderRepository.InsertAsync(new Core.AuctionBidders.AuctionBidder
+                        {
+                            UniqueId = Guid.NewGuid(),
+                            UserId = user.Id,
+                            AuctionId = auctionId,
+                            BidderName = user.FullName
+                        });
+                    }
                 }
+
+                return new ApiResponse<object>
+                {
+                    Data = null,
+                    Message = "Successfully register bidder.",
+                    Status = true,
+                    StatusCode = System.Net.HttpStatusCode.OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<object>
+                {
+                    Data = null,
+                    Status = false,
+                    StatusCode = System.Net.HttpStatusCode.InternalServerError,
+                    Message = ex.Message
+                };
             }
         }
 

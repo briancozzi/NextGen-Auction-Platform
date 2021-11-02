@@ -17,6 +17,8 @@ using NextGen.BiddingPlatform.Authorization.Users;
 using System.Collections.Generic;
 using Abp.Webhooks;
 using NextGen.BiddingPlatform.WebHooks;
+using NextGen.BiddingPlatform.Helpers;
+using System.Net;
 
 namespace NextGen.BiddingPlatform.AppAccountEvent
 {
@@ -50,34 +52,55 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             _webHookPublisher = webhookPublisher;
         }
         [AbpAllowAnonymous]
-        public async Task<ListResultDto<AccountEventListDto>> GetAllAnnonymousAccountEvents()
+        public async Task<ApiResponse<List<AccountEventListDto>>> GetAllAnnonymousAccountEvents()
         {
-
-            var query = await _eventRepository.GetAll().AsNoTracking()
+            List<AccountEventListDto> eventsData = new List<AccountEventListDto>();
+            try
+            {
+                var query = await _eventRepository.GetAll().AsNoTracking()
                 .Include(s => s.AppAccount)
                 .Include(s => s.EventAuctions)
                 .Include($"{nameof(Event.EventAuctions)}.{nameof(Core.Auctions.Auction.AuctionItems)}")
                 .Where(x => x.EventAuctions.Any(c => c.AuctionItems.Any())).ToListAsync();
 
-            List<AccountEventListDto> eventsData = new List<AccountEventListDto>();
-            foreach (var x in query)
-            {
-                if (x.EventAuctions.Any(s => s.AuctionEndDateTime >= DateTime.UtcNow))
+
+                foreach (var x in query)
                 {
-                    eventsData.Add(new AccountEventListDto
+                    if (x.EventAuctions.Any(s => s.AuctionEndDateTime >= DateTime.UtcNow))
                     {
-                        Id = x.Id,
-                        AppAccountUniqueId = x.AppAccount.UniqueId,
-                        EventEndDateTime = x.EventEndDateTime,//.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
-                        EventStartDateTime = x.EventStartDateTime,//.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
-                        EventName = x.EventName,
-                        EventUrl = x.EventUrl,
-                        TimeZone = x.TimeZone,
-                        UniqueId = x.UniqueId
-                    });
+                        eventsData.Add(new AccountEventListDto
+                        {
+                            Id = x.Id,
+                            AppAccountUniqueId = x.AppAccount.UniqueId,
+                            EventEndDateTime = x.EventEndDateTime,//.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
+                            EventStartDateTime = x.EventStartDateTime,//.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
+                            EventName = x.EventName,
+                            EventUrl = x.EventUrl,
+                            TimeZone = x.TimeZone,
+                            UniqueId = x.UniqueId
+                        });
+                    }
                 }
+
+                return new ApiResponse<List<AccountEventListDto>>
+                {
+                    Data = eventsData,
+                    Status = true,
+                    Message = "Successfully fetch the data.",
+                    StatusCode = HttpStatusCode.OK
+                };
             }
-            return new ListResultDto<AccountEventListDto>(eventsData);
+            catch (Exception)
+            {
+                return new ApiResponse<List<AccountEventListDto>>
+                {
+                    Data = eventsData,
+                    Status = false,
+                    Message = "Error occured while fetching the data.",
+                    StatusCode = HttpStatusCode.InternalServerError
+                };
+            }
+
         }
 
         [AbpAuthorize]

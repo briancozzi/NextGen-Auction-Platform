@@ -11,5 +11,8 @@ namespace NextGen.BiddingPlatform.AuctionItem.Dto
         public string WinnerName { get; set; }
         public decimal LastBiddingAmountOfWinner { get; set; }
         public string AuctionStatus { get; set; }
+
+        public int AuctionItemId { get; set; }
+        public int AuctionBidderId { get; set; }
     }
 }

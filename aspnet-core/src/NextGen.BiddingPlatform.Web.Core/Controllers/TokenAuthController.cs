@@ -57,6 +57,7 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using NextGen.BiddingPlatform.UserEvents;
 using NextGen.BiddingPlatform.ApplicationConfigurations;
+using NextGen.BiddingPlatform.Helpers;
 
 namespace NextGen.BiddingPlatform.Web.Controllers
 {
@@ -349,124 +350,163 @@ namespace NextGen.BiddingPlatform.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<AuthenticateResultModel> ExternalUserLoginWithEvent([FromBody] ExternalLoginWithEvent model)
+        public async Task<ApiResponse<AuthenticateResultModel>> ExternalUserLoginWithEvent([FromBody] ExternalLoginWithEvent model)
         {
             var returlUrl = _configurationRoot["ExternalUserLoginSettings:ReturnUrl"];
 
-            HttpClient _client = new HttpClient();
-            _client.DefaultRequestHeaders.Clear();
+            try
+            {
+                HttpClient _client = new HttpClient();
+                _client.DefaultRequestHeaders.Clear();
 
-            var getUserDetailsApi = await GetConfigByKey("GetUserApi");
-            var apiUrlForError = getUserDetailsApi;
+                var getUserDetailsApi = await GetConfigByKey("GetUserApi");
+                var apiUrlForError = getUserDetailsApi;
 
             getUserDetailsApi += "?uniqueId=" + model.UserUniqueId;
             getUserDetailsApi += "&userId=" + model.UserId;
             getUserDetailsApi += "&tenantId=" + model.TenantId;
             getUserDetailsApi += "&eventId=" + model.EventId;
 
-            var httpResponse = await _client.GetAsync(getUserDetailsApi);
-            if (httpResponse.IsSuccessStatusCode)
-            {
-                try
+                var httpResponse = await _client.GetAsync(getUserDetailsApi);
+                if (httpResponse.IsSuccessStatusCode)
                 {
-                    var resultFromApi = await httpResponse.Content.ReadAsStringAsync();
-                    var data = JsonConvert.DeserializeObject<UserDetails>(resultFromApi);
-
-                    var existingUser = await _userManager.Users.FirstOrDefaultAsync(s => s.ExternalUserId == data.ExternalUserId);
-
-                    var generalPassword = "123qwe";
-
-                    var @event = await _appAccountEventRepository.FirstOrDefaultAsync(s => s.UniqueId == model.EventId);
-                    if (@event == null)
-                        throw new UserFriendlyException("Event not found!!!");
-
-                    if (existingUser == null)
+                    try
                     {
-                        var input = new CreateOrUpdateUserInput
+                        var resultFromApi = await httpResponse.Content.ReadAsStringAsync();
+                        var data = JsonConvert.DeserializeObject<UserDetails>(resultFromApi);
+
+                        var existingUser = await _userManager.Users.FirstOrDefaultAsync(s => s.ExternalUserId == data.ExternalUserId);
+
+                        var generalPassword = "123qwe";
+
+                        var @event = await _appAccountEventRepository.FirstOrDefaultAsync(s => s.UniqueId == model.EventId);
+                        if (@event == null)
+                            throw new UserFriendlyException("Event not found!!!");
+
+                        if (existingUser == null)
                         {
-                            User = new UserEditDto
+                            var input = new CreateOrUpdateUserInput
                             {
-                                EmailAddress = data.EmailAddress,
-                                IsActive = true,
-                                IsLockoutEnabled = false,
-                                IsTwoFactorEnabled = false,
-                                Name = data.FirstName,
-                                Password = generalPassword,
-                                PhoneNumber = "",
-                                ShouldChangePasswordOnNextLogin = false,
-                                Surname = data.LastName,
-                                UserName = data.EmailAddress,
-                                ExternalUserId = data.ExternalUserId,
-                                //ExternalUserUniqueId = data.ExternalUniqueId
-                            },
-                            AssignedRoleNames = new List<string>() { "User" }.ToArray(),
-                            SendActivationEmail = false,
-                            SetRandomPassword = false
-                        };
+                                User = new UserEditDto
+                                {
+                                    EmailAddress = data.EmailAddress,
+                                    IsActive = true,
+                                    IsLockoutEnabled = false,
+                                    IsTwoFactorEnabled = false,
+                                    Name = data.FirstName,
+                                    Password = generalPassword,
+                                    PhoneNumber = "",
+                                    ShouldChangePasswordOnNextLogin = false,
+                                    Surname = data.LastName,
+                                    UserName = data.EmailAddress,
+                                    ExternalUserId = data.ExternalUserId,
+                                    //ExternalUserUniqueId = data.ExternalUniqueId
+                                },
+                                AssignedRoleNames = new List<string>() { "User" }.ToArray(),
+                                SendActivationEmail = false,
+                                SetRandomPassword = false
+                            };
 
 
-                        await _userPolicy.CheckMaxUserCountAsync(data.TenantId);
-                        await CreateUser(input, data.TenantId);
+                            await _userPolicy.CheckMaxUserCountAsync(data.TenantId);
+                            await CreateUser(input, data.TenantId);
 
-                        //add entry into user events
-
-                        
-
-                        await _userEventsRepository.InsertAsync(new UserEvent
-                        {
-                            UserId = input.User.Id.Value,
-                            EventId = @event.Id,
-                            TenantId = model.TenantId
-                        });
+                            //add entry into user events
 
 
-                        var result = await Authenticate(new AuthenticateModel
-                        {
-                            UserNameOrEmailAddress = input.User.UserName,
-                            Password = generalPassword,
-                            SingleSignIn = true,
-                            ReturnUrl = returlUrl
-                        });
 
-                        return result;
-                    }
-                    else
-                    {
-                        await _userManager.UpdateAsync(existingUser);
-
-                        //add entry into user events
-
-                        var userEvent = await _userEventsRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.EventId == @event.Id && s.UserId == existingUser.Id);
-                        if (userEvent == null)
-                        {
                             await _userEventsRepository.InsertAsync(new UserEvent
                             {
-                                UserId = existingUser.Id,
+                                UserId = input.User.Id.Value,
                                 EventId = @event.Id,
                                 TenantId = model.TenantId
                             });
+
+
+                            var result = await Authenticate(new AuthenticateModel
+                            {
+                                UserNameOrEmailAddress = input.User.UserName,
+                                Password = generalPassword,
+                                SingleSignIn = true,
+                                ReturnUrl = returlUrl
+                            });
+
+                            return new ApiResponse<AuthenticateResultModel>
+                            {
+                                Data = result,
+                                Message = "Successfully registered.",
+                                Status = true,
+                                StatusCode = System.Net.HttpStatusCode.OK
+                            };
                         }
-
-                        var result = await Authenticate(new AuthenticateModel
+                        else
                         {
-                            UserNameOrEmailAddress = existingUser.UserName,
-                            Password = generalPassword,
-                            SingleSignIn = true,
-                            ReturnUrl = returlUrl
-                        });
-                        return result;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new UserFriendlyException($"Error code : 500, Message : {ex.Message}");
-                }
+                            await _userManager.UpdateAsync(existingUser);
 
+                            //add entry into user events
+
+                            var userEvent = await _userEventsRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.EventId == @event.Id && s.UserId == existingUser.Id);
+                            if (userEvent == null)
+                            {
+                                await _userEventsRepository.InsertAsync(new UserEvent
+                                {
+                                    UserId = existingUser.Id,
+                                    EventId = @event.Id,
+                                    TenantId = model.TenantId
+                                });
+                            }
+
+                            var result = await Authenticate(new AuthenticateModel
+                            {
+                                UserNameOrEmailAddress = existingUser.UserName,
+                                Password = generalPassword,
+                                SingleSignIn = true,
+                                ReturnUrl = returlUrl
+                            });
+                            return new ApiResponse<AuthenticateResultModel>
+                            {
+                                Data = result,
+                                Message = "Successfully registered.",
+                                Status = true,
+                                StatusCode = System.Net.HttpStatusCode.OK
+                            };
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        return new ApiResponse<AuthenticateResultModel>
+                        {
+                            Data = null,
+                            Message = $"Error code : 500, Message : {ex.Message}",
+                            Status = false,
+                            StatusCode = System.Net.HttpStatusCode.InternalServerError
+                        };
+
+                    }
+
+                }
+                else
+                {
+                    return new ApiResponse<AuthenticateResultModel>
+                    {
+                        Data = null,
+                        Message = $"Error code : {(int)httpResponse.StatusCode}, apiUrl= {apiUrlForError}, Message : Active session link expired or user not found!!",
+                        Status = false,
+                        StatusCode = System.Net.HttpStatusCode.InternalServerError
+                    };
+                }
             }
-            else
+            catch (Exception ex)
             {
-                throw new UserFriendlyException($"Error code : {(int)httpResponse.StatusCode}, apiUrl= {apiUrlForError}, Message : Active session link expired or user not found!!");
+                return new ApiResponse<AuthenticateResultModel>
+                {
+                    Data = null,
+                    Message = ex.Message,
+                    Status = false,
+                    StatusCode = System.Net.HttpStatusCode.InternalServerError
+                };
             }
+
         }
 
         private async Task CreateUser(CreateOrUpdateUserInput input, int tenantId)

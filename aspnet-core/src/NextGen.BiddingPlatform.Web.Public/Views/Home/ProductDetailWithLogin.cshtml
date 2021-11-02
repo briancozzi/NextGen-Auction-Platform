@@ -203,6 +203,8 @@
             $("#auctionBiddingClosed").val("true");
             $("#bidNowBtn").addClass("disbale-btn");
             alert("Bidding closed for item!!");
+
+            //GetAuctionItemWinnerDetails(auctionItemId);
         });
 
         connection.start().then(function () {
@@ -367,4 +369,37 @@
 </script>
 <script src="~/auction/js/getproductdetails.js"></script>
 <script src="~/signalr.js"></script>
+<script>
+
+    function GetAuctionItemWinnerDetails(id) {
+        debugger;
+        var url = ApiServerPath + "/api/services/app/AuctionHistory/GetHighestBid?auctionItemId=" + id;
+        $.ajax({
+            url: url,
+            type: 'GET',
+            async: true,
+            cache: false,
+            dataType: "json",
+            success: function (response) {
+                if (response.success) {
+                    console.log(response.result);
+                    alert("Please check console for winner details");
+                }
+                else if (!response.success) {
+                    alert(response.error.message);
+                }
+                else {
+                    alert("Internal server error!!");
+                }
+
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText + " " + xhr.status);
+                alert(xhr.responseText + " " + xhr.status);
+            }
+        });
+        //get winner detail at here
+        //auctionItemId -- use this parameter
+    }
+</script>
 

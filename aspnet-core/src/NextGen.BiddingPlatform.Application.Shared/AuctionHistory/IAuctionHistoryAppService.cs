@@ -23,5 +23,6 @@ namespace NextGen.BiddingPlatform.AuctionHistory
         Task<GetAuctionBidderHistoryDto> SaveFreshBidder(AuctionBidderHistoryDto auctionBidderHistory);
 
         Task<AuctionHistoryDto> GetHighestBid(Guid auctionItemId);
+        Task<SendEventAuctionItemWinnerDataDto> GetDataToSendEventAuctionItemDataToExternalApp(Guid auctionItemId);
     }
 }

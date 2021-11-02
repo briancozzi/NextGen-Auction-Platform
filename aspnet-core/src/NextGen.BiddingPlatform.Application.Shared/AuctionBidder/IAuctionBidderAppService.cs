@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using NextGen.BiddingPlatform.AuctionBidder.Dto;
+using NextGen.BiddingPlatform.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,6 +16,6 @@ namespace NextGen.BiddingPlatform.AuctionBidder
         Task DeleteBidder(Guid Id);
         Task<ListResultDto<AuctionBidderListDto>> GetAllBidders();
         Task<ListResultDto<AuctionBidderListDto>> GetBiddersByAuctionId(Guid auctionId);
-        Task CreateBidderFromExternalApp(CreateAuctionBidderWithExternalApp input);
+        Task<ApiResponse<object>> CreateBidderFromExternalApp(CreateAuctionBidderWithExternalApp input);
     }
 }

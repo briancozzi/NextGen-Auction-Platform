@@ -15,6 +15,7 @@ using NextGen.BiddingPlatform.AuctionItem.Dto;
 using NextGen.BiddingPlatform.Caching;
 using NextGen.BiddingPlatform.Configuration;
 using NextGen.BiddingPlatform.Core.AppAccountEvents;
+using NextGen.BiddingPlatform.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,16 +54,16 @@ namespace NextGen.BiddingPlatform.AuctionItem
         [AllowAnonymous]
         public async Task<ListResultDto<AuctionItemListDto>> GetAllAuctionItems(Guid eventId, int categoryId = 0, string search = "")
         {
+            var @event = await _eventRepository.FirstOrDefaultAsync(s => s.UniqueId == eventId);
+            if (@event == null)
+                throw new UserFriendlyException("Event not found !!");
+
             var query = _auctionitemRepository.GetAll()
                                                 //.GetAllIncluding(x => x.Auction, x => x.Item, x => x.AuctionHistories)
                                                 .Include(s => s.Auction)
                                                 .Include(s => s.Item).ThenInclude(s => s.CategoryFk)
                                                 .Include(s => s.AuctionHistories)
-                                                    .AsNoTracking();
-
-            var @event = await _eventRepository.FirstOrDefaultAsync(s => s.UniqueId == eventId);
-            if (@event == null)
-                throw new UserFriendlyException("Event not found !!");
+                                                    .AsNoTracking().Where(s => s.Auction.EventId == @event.Id && s.Item.IsHide);
 
             query = query.Where(s => s.Auction.EventId == @event.Id);
 
@@ -450,49 +451,79 @@ namespace NextGen.BiddingPlatform.AuctionItem
             return output;
         }
 
-        public async Task<List<EventAuctionItemWinnerDto>> GetEventWinners(Guid eventUniqueId)
+        public async Task<ApiResponse<List<EventAuctionItemWinnerDto>>> GetEventWinners(Guid eventUniqueId)
         {
-            var @event = await _eventRepository.FirstOrDefaultAsync(s => s.UniqueId == eventUniqueId);
-            if (@event == null)
-                throw new UserFriendlyException("Event not found!!");
-
-            var auctionIds = await _auctionRepository.GetAll().AsNoTracking().Where(s => s.EventId == @event.Id).Select(s => s.Id).ToListAsync();
-
-            var auctionItems = await _auctionitemRepository.GetAll().AsNoTracking()
-                                    .Include(s => s.Item)
-                                    .Include(s => s.Auction)
-                                    .Include(s => s.AuctionHistories)
-                                    .Where(s => auctionIds.Contains(s.AuctionId)).ToListAsync();
-
-            List<EventAuctionItemWinnerDto> result = new List<EventAuctionItemWinnerDto>();
-
-            foreach (var s in auctionItems)
+            try
             {
-                var auctionItem = new EventAuctionItemWinnerDto
-                {
-                    ItemName = s.Item.ItemName,
-                    ItemPrice = (decimal)Math.Round(s.Item.FairMarketValue_FMV, 2),
-                    AuctionStatus = "In Progress"
-                };
+                var @event = await _eventRepository.FirstOrDefaultAsync(s => s.UniqueId == eventUniqueId);
+                if (@event == null)
+                    throw new UserFriendlyException("Event not found!!");
 
-                if ((s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours <= 0)
+                var auctionIds = await _auctionRepository.GetAll().AsNoTracking().Where(s => s.EventId == @event.Id).Select(s => s.Id).ToListAsync();
+
+                var auctionItems = await _auctionitemRepository.GetAll().AsNoTracking()
+                                        .Include(s => s.Item)
+                                        .Include(s => s.Auction)
+                                        //.Include(s => s.AuctionHistories)
+                                        .Where(s => auctionIds.Contains(s.AuctionId)).ToListAsync();
+
+                List<EventAuctionItemWinnerDto> result = new List<EventAuctionItemWinnerDto>();
+
+                foreach (var s in auctionItems)
                 {
-                    auctionItem.AuctionStatus = "Winner";
-                    //status inprogress
-                    var maxBidBidder = s.AuctionHistories.OrderByDescending(s => s.CreationTime).ThenByDescending(s => s.BidAmount).FirstOrDefault();
-                    if (maxBidBidder != null)
+                    //If IsHide = true then show item else hide item
+                    if (s.Item.IsHide)
                     {
-                        var bidderDetails = await _auctionBidderRepository.GetAll().AsNoTracking().Include(s => s.User).FirstOrDefaultAsync(s => s.Id == maxBidBidder.AuctionBidderId);
+                        var auctionItem = new EventAuctionItemWinnerDto
+                        {
+                            ItemName = s.Item.ItemName,
+                            ItemPrice = (decimal)Math.Round(s.Item.FairMarketValue_FMV, 2),
+                            AuctionStatus = "In Progress"
+                        };
 
-                        auctionItem.LastBiddingAmountOfWinner = (decimal)Math.Round(maxBidBidder.BidAmount, 2);
-                        auctionItem.WinnerName = bidderDetails.BidderName;
+                        if ((s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours <= 0 || s.IsBiddingClosed)
+                        {
+                            auctionItem.AuctionStatus = "Winner";
+                            //status inprogress
+                            var highestBidHistory = await _auctionHistoryRepository.GetAll()
+                                .Include(s => s.AuctionItem)
+                                .AsNoTracking()
+                                .Where(sn => sn.AuctionItemId == s.Id && !sn.IsOutBid)
+                                .OrderByDescending(x => x.CreationTime)
+                                .FirstOrDefaultAsync();
+
+                            if (highestBidHistory != null)
+                            {
+                                var bidderDetails = await _auctionBidderRepository.GetAll().AsNoTracking().Include(s => s.User).FirstOrDefaultAsync(s => s.Id == highestBidHistory.AuctionBidderId);
+
+                                auctionItem.LastBiddingAmountOfWinner = (decimal)Math.Round(highestBidHistory.BidAmount, 2);
+                                auctionItem.WinnerName = bidderDetails.BidderName;
+                                auctionItem.AuctionBidderId = highestBidHistory.AuctionBidderId;
+                                auctionItem.AuctionItemId = s.Id;
+                            }
+                        }
+                        result.Add(auctionItem);
                     }
                 }
 
-                result.Add(auctionItem);
+                return new ApiResponse<List<EventAuctionItemWinnerDto>>
+                {
+                    Data = result,
+                    Message = "Successfully get the data",
+                    Status = true,
+                    StatusCode = System.Net.HttpStatusCode.OK
+                };
             }
-
-            return result;
+            catch (Exception ex)
+            {
+                return new ApiResponse<List<EventAuctionItemWinnerDto>>
+                {
+                    Data = null,
+                    Message = ex.Message,
+                    Status = false,
+                    StatusCode = System.Net.HttpStatusCode.InternalServerError
+                };
+            }
         }
     }
 }

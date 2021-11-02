@@ -81,9 +81,48 @@ namespace NextGen.BiddingPlatform.AuctionHistory
         {
             var auctionItem = await _auctionItemRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.UniqueId == auctionItemId);
 
-            var highestBidHistory = await _auctionHistoryRepository.GetAll().Include(s => s.AuctionItem).AsNoTracking().Where(s => s.AuctionItemId == auctionItem.Id && !s.IsOutBid).OrderByDescending(x => x.CreationTime).FirstOrDefaultAsync();
+            var highestBidHistory = await _auctionHistoryRepository.GetAll().Include(s => s.AuctionItem).Include(x => x.AuctionBidder).AsNoTracking().Where(s => s.AuctionItemId == auctionItem.Id && !s.IsOutBid).OrderByDescending(x => x.CreationTime).FirstOrDefaultAsync();
 
-            return ObjectMapper.Map<AuctionHistoryDto>(highestBidHistory);
+            var mappedDto = ObjectMapper.Map<AuctionHistoryDto>(highestBidHistory);
+            mappedDto.BidderName = highestBidHistory?.AuctionBidder?.BidderName;
+
+            return mappedDto;
+        }
+
+        public async Task<SendEventAuctionItemWinnerDataDto> GetDataToSendEventAuctionItemDataToExternalApp(Guid auctionItemId)
+        {
+            var auctionItem = await _auctionItemRepository.GetAll()
+                .Include(x => x.Item)
+                .Include(s => s.Auction)
+                .ThenInclude(x => x.Event)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.UniqueId == auctionItemId);
+
+            if (auctionItem == null)
+                throw new UserFriendlyException("Auction item not found!");
+
+            var highestBidHistory = await _auctionHistoryRepository.GetAll()
+                .Include(s => s.AuctionItem)
+                .Include(x => x.AuctionBidder)
+                .ThenInclude(c => c.User)
+                .AsNoTracking()
+                .Where(s => s.AuctionItemId == auctionItem.Id && !s.IsOutBid)
+                .OrderByDescending(x => x.CreationTime)
+                .FirstOrDefaultAsync();
+
+            var result = new SendEventAuctionItemWinnerDataDto
+            {
+                EventName = auctionItem.Auction.Event.EventName,
+                EventUniqueId = auctionItem.Auction.Event.UniqueId,
+                ItemName = auctionItem.Item.ItemName,
+                ItemUniqueId = auctionItem.Item.UniqueId,
+                ExternalUserId = highestBidHistory.AuctionBidder.User.ExternalUserId,
+                UserId = highestBidHistory.AuctionBidder.UserId,
+                BidderName = highestBidHistory.AuctionBidder.BidderName,
+                BidderUniqueId = highestBidHistory.AuctionBidder.UniqueId,
+                BidAmount = Math.Round(highestBidHistory.BidAmount, 2)
+            };
+            return result;
         }
 
 
