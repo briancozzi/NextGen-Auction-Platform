@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using NextGen.BiddingPlatform.AuctionItem.Dto;
+using NextGen.BiddingPlatform.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -23,6 +24,6 @@ namespace NextGen.BiddingPlatform.AuctionItem
 
         //for current user bids
         Task<List<AuctionItemWithHistoryDto>> GetUsersBiddingHistory(long userId);
-        Task<List<EventAuctionItemWinnerDto>> GetEventWinners(Guid eventUniqueId);
+        Task<ApiResponse<List<EventAuctionItemWinnerDto>>> GetEventWinners(Guid eventUniqueId);
     }
 }

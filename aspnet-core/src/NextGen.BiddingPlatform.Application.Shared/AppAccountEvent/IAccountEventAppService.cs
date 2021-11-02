@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using NextGen.BiddingPlatform.AppAccountEvent.Dto;
+using NextGen.BiddingPlatform.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,7 +19,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
         Task<AccountEventDto> GetAccountEventById(Guid input);
         Task<AccountEventListDto> GetEventDateTimeByEventId(Guid Id);
 
-        Task<ListResultDto<AccountEventListDto>> GetAllAnnonymousAccountEvents();
+        Task<ApiResponse<List<AccountEventListDto>>> GetAllAnnonymousAccountEvents();
         Task<EventWithAuctionItems> GetEventById(int id);
 
         Task CloseBiddingOnEvent(Guid eventId);

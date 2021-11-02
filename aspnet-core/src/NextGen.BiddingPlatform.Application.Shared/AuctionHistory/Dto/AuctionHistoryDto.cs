@@ -11,5 +11,6 @@ namespace NextGen.BiddingPlatform.AuctionHistory.Dto
         public double BidAmount { get; set; }
         public bool IsOutBid { get; set; }
         public bool IsBiddingClosed { get; set; }
+        public string BidderName { get; set; }
     }
 }

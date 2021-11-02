@@ -21,8 +21,11 @@ function GetAuctionItem() {
                 //shortly.setSeconds(shortly.getSeconds() + 5.5);
 
                 if (parseInt(data.remainingDays) > 0) {
+                    var shortly = new Date();
+                    shortly.setSeconds(shortly.getSeconds() + 5.5);
+
                     $('#defaultCountdown').countdown({
-                        until: endDate,
+                        until: endDate,//shortly
                         layout: ' {dn} {dl}  ',
                         onExpiry: disableBidding
                     });
@@ -34,7 +37,7 @@ function GetAuctionItem() {
                         onExpiry: disableBidding
                     });
                 }
-                
+
                 if (!data.isBiddingStarted) {
                     $("#bidNowBtn").addClass("disbale-btn");
                     $("#lastBidAmount").parent("li").hide();
@@ -117,7 +120,31 @@ function GetAuctionItem() {
 
     function disableBidding() {
         $("#biddingAmount").addClass("disbale-btn");
-        $("#bidNowBtn").addClass("disbale-btn")
+        $("#bidNowBtn").addClass("disbale-btn");
+
+        var url = WebSiteUrl + "Home/SendDataToExternalApp?auctionItemId=" + $("#auctionItemId").val();
+        $.ajax({
+            url: url,
+            type: 'GET',
+            async: true,
+            cache: false,
+            dataType: "json",
+            success: function (response) {
+                if (response.result.success) {
+                    alert(response.result.message);
+                }
+                else {
+                    alert(response.result.message);
+                }
+
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText + " " + xhr.status);
+                alert(xhr.responseText + " " + xhr.status);
+            }
+        });
+
+        //GetAuctionItemWinnerDetails($("#auctionItemId").val());
     }
 }
 

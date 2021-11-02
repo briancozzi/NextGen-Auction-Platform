@@ -2206,6 +2206,12 @@ header .menu-icon {
 footer {
     padding-top: 3.75rem;
     text-align: center;
+    padding-top: 3.75rem;
+    text-align: center;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
     footer .host-by {
@@ -2318,6 +2324,7 @@ header .right-side nav ul li.active a {
 
 .inner-wrapper {
     margin-top: 110px;
+    margin-bottom: 260px;
 }
 
 .search-bar {
@@ -2477,6 +2484,7 @@ header .right-side nav ul li.active a {
     font-size: 86.76px;
     color: #e8e8e8;
     font-family: "YesevaOne-Regular";
+ /*   z-index:2;*/
 }
 
     .side-name.v-center {
@@ -3136,6 +3144,7 @@ header .right-side nav ul li.active a {
 
     .inner-wrapper {
         margin-top: 100px;
+        margin-bottom: 260px;
     }
 
     header {

@@ -49,7 +49,7 @@ namespace ExternalLoginApp.Controllers
         public async Task<IActionResult> GetEvents()
         {
             var route = "/api/services/app/AccountEvent/GetAllAnnonymousAccountEvents";
-            ResponseVM<AuctionEvents> response = await DataHelper<AuctionEvents>.Execute(
+            ResponseVM<ApiResponse<List<AccountEventListDto>>> response = await DataHelper<ApiResponse<List<AccountEventListDto>>>.Execute(
                 _configuration["Bidding:ApiUrl"],
                 route,
                 _configuration["Bidding:TenantId"], OperationType.GET);
@@ -57,7 +57,7 @@ namespace ExternalLoginApp.Controllers
             var result = new List<AccountEventListDto>();
             if (response.Result == null || response.Result.Data == null) { }
 
-            result = response.Result.Data.Items;
+            result = response.Result.Data.Data;
 
             return PartialView("~/Views/Home/_AllEventsPartialView.cshtml", result);
         }
@@ -90,7 +90,7 @@ namespace ExternalLoginApp.Controllers
                 tenantId = tenantId
             };
 
-            ResponseVM<AuthenticateResultModel> response = await DataHelper<AuthenticateResultModel>.Execute(
+            ResponseVM<ApiResponse<AuthenticateResultModel>> response = await DataHelper<ApiResponse<AuthenticateResultModel>>.Execute(
                 _configuration["Bidding:ApiUrl"],
                 route,
                 tenantId,
@@ -98,13 +98,13 @@ namespace ExternalLoginApp.Controllers
                 input
                 );
 
-            if (response.Result == null)
-                return Json(new { Success = false, Message = "Internal Server Error !!" });
+            if (response.Result == null || response.Result.Data.Data == null)
+                return Json(new { Success = false, Message = response.Result.Data.Message });
             else if (!response.Result.Success)
                 return Json(new { Success = false, Message = response.Result.Error.message });
             else
             {
-                var data = response.Result.Data;
+                var data = response.Result.Data.Data;
                 _httpAccessor.HttpContext.Response.Cookies.Append("AuthToken", data.AccessToken, new CookieOptions
                 {
                     Expires = DateTime.Now.AddSeconds(data.ExpireInSeconds)
@@ -148,7 +148,7 @@ namespace ExternalLoginApp.Controllers
             };
 
             var route = $"/api/services/app/AuctionBidder/CreateBidderFromExternalApp";
-            ResponseVM<object> response = await DataHelper<object>.ExecuteWithToken(
+            ResponseVM<ApiResponse<object>> response = await DataHelper<ApiResponse<object>>.ExecuteWithToken(
                 _configuration["Bidding:ApiUrl"],
                 route,
                 _configuration["Bidding:TenantId"],
@@ -157,13 +157,13 @@ namespace ExternalLoginApp.Controllers
                 input
                 );
 
-            if (response.Result == null)
-                return Json(new { Success = false, Message = "Internal Server Error !!" });
+            if (response.Result == null || !response.Result.Data.Status)
+                return Json(new { Success = false, Message = response.Result.Data.Message });
             else if (!response.Result.Success)
                 return Json(new { Success = false, Message = response.Result.Error.message });
             else
             {
-                return Json(new { Success = true, Message = "" });
+                return Json(new { Success = true, Message = response.Result.Data.Message });
             }
         }
 
@@ -228,6 +228,12 @@ namespace ExternalLoginApp.Controllers
                 //send user details
                 return Json(userDetails);
             }
+        }
+
+        [HttpPost]
+        public IActionResult GetWinnerDataForAuctionItem([FromBody] GetEventAuctionItemWinnerDto input)
+        {
+            return Json(true);
         }
 
         public IActionResult Privacy()

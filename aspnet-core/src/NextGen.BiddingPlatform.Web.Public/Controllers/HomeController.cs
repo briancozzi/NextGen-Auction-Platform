@@ -1,9 +1,12 @@
+using Abp.Authorization;
 using Abp.Runtime.Session;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using NextGen.BiddingPlatform.AppAccountEvent.Dto;
+using NextGen.BiddingPlatform.ApplicationConfigurations;
+using NextGen.BiddingPlatform.AuctionHistory;
 using NextGen.BiddingPlatform.AuctionHistory.Dto;
 using NextGen.BiddingPlatform.AuctionItem;
 using NextGen.BiddingPlatform.AuctionItem.Dto;
@@ -17,6 +20,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,15 +34,22 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
         private readonly INotificationManager _notify;
         private readonly IWebhookSubscriptionAppService _webhookSubscriptionService;
         private readonly IAuctionItemAppService _auctionItemAppService;
+        private readonly IAuctionHistoryAppService _auctionHistoryAppService;
+        private readonly IApplicationConfigurationsAppService _appConfigAppService;
+
         public HomeController(IPerRequestSessionCache sessionCache,
                               INotificationManager notificationManager,
                               IWebhookSubscriptionAppService webhookSubscriptionService,
-                              IAuctionItemAppService auctionItemAppService)
+                              IAuctionItemAppService auctionItemAppService,
+                              IAuctionHistoryAppService auctionHistoryAppService,
+                              IApplicationConfigurationsAppService appConfigAppService)
         {
             _sessionCache = sessionCache;
             _notify = notificationManager;
             _webhookSubscriptionService = webhookSubscriptionService;
             _auctionItemAppService = auctionItemAppService;
+            _auctionHistoryAppService = auctionHistoryAppService;
+            _appConfigAppService = appConfigAppService;
         }
         #region pages
 
@@ -219,6 +230,52 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
                     throw new NotImplementedException();
             }
             return computedSignature == receivedSignature[1];
+        }
+
+        //send data to eventlify means external app
+
+        [HttpGet]
+        [AbpAuthorize]
+        public async Task<IActionResult> SendDataToExternalApp(Guid auctionItemId)
+        {
+            try
+            {
+                var payload = await _auctionHistoryAppService.GetDataToSendEventAuctionItemDataToExternalApp(auctionItemId);
+
+                var route = await _appConfigAppService.GetConfigByKey("WinnerApiResponse");
+
+                HttpClient _client = new HttpClient();
+                _client.DefaultRequestHeaders.Clear();
+
+                var data = JsonConvert.SerializeObject(payload);
+                var stringContent = new StringContent(data, Encoding.UTF8, "application/json");
+                HttpResponseMessage httpResponse = await _client.PostAsync(route, stringContent);
+
+                if (!httpResponse.IsSuccessStatusCode)
+                {
+                    return Json(new
+                    {
+                        Success = false,
+                        Message = "Error occured while sending data to external app!!"
+                    });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        Success = true,
+                        Message = "Data sent successfully."
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    Success = false,
+                    Message = ex.Message
+                });
+            }
         }
     }
 }
