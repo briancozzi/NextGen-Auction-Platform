@@ -362,9 +362,10 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                 var getUserDetailsApi = await GetConfigByKey("GetUserApi");
                 var apiUrlForError = getUserDetailsApi;
 
-                getUserDetailsApi += "?uniqueId=" + model.UserUniqueId;
-                getUserDetailsApi += "&userId=" + model.UserId;
-                getUserDetailsApi += "&tenantId=" + model.TenantId;
+            getUserDetailsApi += "?uniqueId=" + model.UserUniqueId;
+            getUserDetailsApi += "&userId=" + model.UserId;
+            getUserDetailsApi += "&tenantId=" + model.TenantId;
+            getUserDetailsApi += "&eventId=" + model.EventId;
 
                 var httpResponse = await _client.GetAsync(getUserDetailsApi);
                 if (httpResponse.IsSuccessStatusCode)

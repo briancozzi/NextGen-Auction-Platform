@@ -203,7 +203,7 @@ namespace ExternalLoginApp.Controllers
                 return Redirect(response.Result.Data.ToString());
         }
 
-        public async Task<IActionResult> GetUserDetails(Guid uniqueId, string userId, int tenantId)
+        public async Task<IActionResult> GetUserDetails(Guid uniqueId, string userId, int tenantId, Guid eventId)
         {
             var userActiveSession = await _context.UserExternalSessions.FirstOrDefaultAsync(s => s.UniqueId == uniqueId && s.UserId == userId);
 
