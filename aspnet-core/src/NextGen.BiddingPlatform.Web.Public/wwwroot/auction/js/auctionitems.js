@@ -138,7 +138,6 @@ function GetAuctionItems(categoryId, search) {
                         contentType: "application/json",
                         dataType: "json",
                         success: function (responseFromFavorite) {
-
                             if (responseFromFavorite !== null) {
                                 var favItems = responseFromFavorite.result;
                                 for (var i = 0; i < favItems.length; i++) {
@@ -152,6 +151,7 @@ function GetAuctionItems(categoryId, search) {
                                 $("#auctionItems").empty();
                                 $.each(data, function (i, v) {
                                     if (!v.isAuctionExpired) {
+
                                         var output = Mustache.render($("#auctionItemTemplate").html(), v);
                                         $("#auctionItems").append(output);
                                         totalItems += 1;
@@ -172,8 +172,8 @@ function GetAuctionItems(categoryId, search) {
                 $("#auctionItems").empty();
                 $.each(data, function (i, v) {
                     if (!v.isAuctionExpired) {
-                        if (v.imageName != null) {
-                            v.imageName = ApiServerPath + v.imageName;
+                        if (v.mainImageName !== undefined) {
+                            v.imageName = ApiServerPath + v.mainImageName;
                         }
                         else {
                             v.imageName = WebSiteUrl + "/auction/images/no-img.png";
