@@ -362,6 +362,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
             getUserDetailsApi += "?uniqueId=" + model.UserUniqueId;
             getUserDetailsApi += "&userId=" + model.UserId;
             getUserDetailsApi += "&tenantId=" + model.TenantId;
+            getUserDetailsApi += "&eventId=" + model.EventId;
 
             var httpResponse = await _client.GetAsync(getUserDetailsApi);
             if (httpResponse.IsSuccessStatusCode)
