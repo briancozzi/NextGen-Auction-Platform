@@ -1,5 +1,6 @@
 using Abp.Authorization;
 using Abp.Runtime.Session;
+using Abp.UI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -236,18 +237,20 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
 
         [HttpGet]
         [AbpAuthorize]
-        public async Task<IActionResult> SendDataToExternalApp(Guid auctionItemId)
+        public async Task<IActionResult> SendDataToExternalApp(Guid eventId)
         {
             try
             {
-                var payload = await _auctionHistoryAppService.GetDataToSendEventAuctionItemDataToExternalApp(auctionItemId);
+                var payload = await _auctionItemAppService.GetEventWinners(eventId);
+                if (!payload.Status)
+                    throw new UserFriendlyException(payload.Message);
 
                 var route = await _appConfigAppService.GetConfigByKey("WinnerApiResponse");
 
                 HttpClient _client = new HttpClient();
                 _client.DefaultRequestHeaders.Clear();
 
-                var data = JsonConvert.SerializeObject(payload);
+                var data = JsonConvert.SerializeObject(payload.Data);
                 var stringContent = new StringContent(data, Encoding.UTF8, "application/json");
                 HttpResponseMessage httpResponse = await _client.PostAsync(route, stringContent);
 

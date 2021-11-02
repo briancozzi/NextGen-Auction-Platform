@@ -10,6 +10,7 @@ namespace NextGen.BiddingPlatform.AuctionItem.Dto
         {
             AuctionItemHistories = new List<AuctionItemHistoryDto>();
         }
+        public Guid EventUniqueId { get; set; }
         public Guid AuctionItemId { get; set; }
         //Auction
         public Guid AuctionId { get; set; }

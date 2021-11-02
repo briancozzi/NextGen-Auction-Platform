@@ -17,26 +17,23 @@ function GetAuctionItem() {
 
                 var endDate = new Date(Date.parse(data.auctionEndDateTime));
 
-                //shortly = new Date();
-                //shortly.setSeconds(shortly.getSeconds() + 5.5);
+                shortly = new Date();
+                shortly.setSeconds(shortly.getSeconds() + 5.5);
 
-                if (parseInt(data.remainingDays) > 0) {
-                    var shortly = new Date();
-                    shortly.setSeconds(shortly.getSeconds() + 5.5);
-
-                    $('#defaultCountdown').countdown({
-                        until: endDate,//shortly
-                        layout: ' {dn} {dl}  ',
-                        onExpiry: disableBidding
-                    });
-                }
-                else {
-                    $('#defaultCountdown').countdown({
-                        until: endDate,
-                        layout: ' {hn} {hl} {mn} {ml} {sn} {sl} ',
-                        onExpiry: disableBidding
-                    });
-                }
+                //if (parseInt(data.remainingDays) > 0) {
+                //    $('#defaultCountdown').countdown({
+                //        until: endDate,//shortly
+                //        layout: ' {dn} {dl}  ',
+                //        onExpiry: disableBidding
+                //    });
+                //}
+                //else {
+                $('#defaultCountdown').countdown({
+                    until: shortly,//shortly
+                    layout: ' {hn} {hl} {mn} {ml} {sn} {sl} ',
+                    onExpiry: disableBidding
+                });
+                /*}*/
 
                 if (!data.isBiddingStarted) {
                     $("#bidNowBtn").addClass("disbale-btn");
@@ -78,6 +75,7 @@ function GetAuctionItem() {
                 $("#bidderNameFromDb").text(data.currUserBidderName);
                 $("#itemNo").text(data.itemNumber);
                 $("#auctionBiddingClosed").text(data.isBiddingClosed);
+                $("#eventUniqueId").val(data.eventUniqueId);
                 var itemHistories = data.auctionItemHistories;
                 $.each(itemHistories, function (i, v) {
                     CreateHistoryData(v);
@@ -122,7 +120,7 @@ function GetAuctionItem() {
         $("#biddingAmount").addClass("disbale-btn");
         $("#bidNowBtn").addClass("disbale-btn");
 
-        var url = WebSiteUrl + "Home/SendDataToExternalApp?auctionItemId=" + $("#auctionItemId").val();
+        var url = WebSiteUrl + "Home/SendDataToExternalApp?eventId=" + $("#eventUniqueId").val();
         $.ajax({
             url: url,
             type: 'GET',

@@ -231,7 +231,7 @@ namespace ExternalLoginApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult GetWinnerDataForAuctionItem([FromBody] GetEventAuctionItemWinnerDto input)
+        public IActionResult GetWinnerDataForAuctionItem([FromBody] EventItemWinners input)
         {
             return Json(true);
         }
