@@ -513,9 +513,9 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 return new ApiResponse<EventItemWinners>
                 {
                     Data = result,
-                    Message = "Successfully get the data",
-                    Status = true,
-                    StatusCode = System.Net.HttpStatusCode.OK
+                    //Message = "Successfully get the data",
+                    //Status = true,
+                    //StatusCode = System.Net.HttpStatusCode.OK
                 };
             }
             catch (Exception ex)
@@ -523,9 +523,9 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 return new ApiResponse<EventItemWinners>
                 {
                     Data = null,
-                    Message = ex.Message,
-                    Status = false,
-                    StatusCode = System.Net.HttpStatusCode.InternalServerError
+                    //Message = ex.Message,
+                    //Status = false,
+                    //StatusCode = System.Net.HttpStatusCode.InternalServerError
                 };
             }
         }

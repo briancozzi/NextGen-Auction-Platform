@@ -362,10 +362,10 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                 var getUserDetailsApi = await GetConfigByKey("GetUserApi");
                 var apiUrlForError = getUserDetailsApi;
 
-            getUserDetailsApi += "?uniqueId=" + model.UserUniqueId;
-            getUserDetailsApi += "&userId=" + model.UserId;
-            getUserDetailsApi += "&tenantId=" + model.TenantId;
-            getUserDetailsApi += "&eventId=" + model.EventId;
+                getUserDetailsApi += "?uniqueId=" + model.UserUniqueId;
+                getUserDetailsApi += "&userId=" + model.UserId;
+                getUserDetailsApi += "&tenantId=" + model.TenantId;
+                getUserDetailsApi += "&eventId=" + model.EventId;
 
                 var httpResponse = await _client.GetAsync(getUserDetailsApi);
                 if (httpResponse.IsSuccessStatusCode)
@@ -434,9 +434,9 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                             return new ApiResponse<AuthenticateResultModel>
                             {
                                 Data = result,
-                                Message = "Successfully registered.",
-                                Status = true,
-                                StatusCode = System.Net.HttpStatusCode.OK
+                                //Message = "Successfully registered.",
+                                //Status = true,
+                                //StatusCode = System.Net.HttpStatusCode.OK
                             };
                         }
                         else
@@ -466,9 +466,9 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                             return new ApiResponse<AuthenticateResultModel>
                             {
                                 Data = result,
-                                Message = "Successfully registered.",
-                                Status = true,
-                                StatusCode = System.Net.HttpStatusCode.OK
+                                //Message = "Successfully registered.",
+                                //Status = true,
+                                //StatusCode = System.Net.HttpStatusCode.OK
                             };
                         }
                     }
@@ -477,9 +477,9 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                         return new ApiResponse<AuthenticateResultModel>
                         {
                             Data = null,
-                            Message = $"Error code : 500, Message : {ex.Message}",
-                            Status = false,
-                            StatusCode = System.Net.HttpStatusCode.InternalServerError
+                            //Message = $"Error code : 500, Message : {ex.Message}",
+                            //Status = false,
+                            //StatusCode = System.Net.HttpStatusCode.InternalServerError
                         };
 
                     }
@@ -490,9 +490,9 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                     return new ApiResponse<AuthenticateResultModel>
                     {
                         Data = null,
-                        Message = $"Error code : {(int)httpResponse.StatusCode}, apiUrl= {apiUrlForError}, Message : Active session link expired or user not found!!",
-                        Status = false,
-                        StatusCode = System.Net.HttpStatusCode.InternalServerError
+                        //Message = $"Error code : {(int)httpResponse.StatusCode}, apiUrl= {apiUrlForError}, Message : Active session link expired or user not found!!",
+                        //Status = false,
+                        //StatusCode = System.Net.HttpStatusCode.InternalServerError
                     };
                 }
             }
@@ -501,9 +501,9 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                 return new ApiResponse<AuthenticateResultModel>
                 {
                     Data = null,
-                    Message = ex.Message,
-                    Status = false,
-                    StatusCode = System.Net.HttpStatusCode.InternalServerError
+                    //Message = ex.Message,
+                    //Status = false,
+                    //StatusCode = System.Net.HttpStatusCode.InternalServerError
                 };
             }
 

@@ -242,8 +242,6 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
             try
             {
                 var payload = await _auctionItemAppService.GetEventWinners(eventId);
-                if (!payload.Status)
-                    throw new UserFriendlyException(payload.Message);
 
                 var route = await _appConfigAppService.GetConfigByKey("WinnerApiResponse");
 

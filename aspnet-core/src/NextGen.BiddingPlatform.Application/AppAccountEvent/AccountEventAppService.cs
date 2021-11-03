@@ -85,9 +85,9 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
                 return new ApiResponse<List<AccountEventListDto>>
                 {
                     Data = eventsData,
-                    Status = true,
-                    Message = "Successfully fetch the data.",
-                    StatusCode = HttpStatusCode.OK
+                    //Status = true,
+                    //Message = "Successfully fetch the data.",
+                    //StatusCode = HttpStatusCode.OK
                 };
             }
             catch (Exception)
@@ -95,9 +95,9 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
                 return new ApiResponse<List<AccountEventListDto>>
                 {
                     Data = eventsData,
-                    Status = false,
-                    Message = "Error occured while fetching the data.",
-                    StatusCode = HttpStatusCode.InternalServerError
+                    //Status = false,
+                    //Message = "Error occured while fetching the data.",
+                    //StatusCode = HttpStatusCode.InternalServerError
                 };
             }
 

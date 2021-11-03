@@ -98,9 +98,9 @@ namespace NextGen.BiddingPlatform.AuctionBidder
                 return new ApiResponse<object>
                 {
                     Data = null,
-                    Message = "Successfully register bidder.",
-                    Status = true,
-                    StatusCode = System.Net.HttpStatusCode.OK
+                    //Message = "Successfully register bidder.",
+                    //Status = true,
+                    //StatusCode = System.Net.HttpStatusCode.OK
                 };
             }
             catch (Exception ex)
@@ -108,9 +108,9 @@ namespace NextGen.BiddingPlatform.AuctionBidder
                 return new ApiResponse<object>
                 {
                     Data = null,
-                    Status = false,
-                    StatusCode = System.Net.HttpStatusCode.InternalServerError,
-                    Message = ex.Message
+                    //Status = false,
+                    //StatusCode = System.Net.HttpStatusCode.InternalServerError,
+                    //Message = ex.Message
                 };
             }
         }

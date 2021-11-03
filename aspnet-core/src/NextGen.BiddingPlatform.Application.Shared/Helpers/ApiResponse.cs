@@ -8,8 +8,8 @@ namespace NextGen.BiddingPlatform.Helpers
     public class ApiResponse<T> where T : class, new()
     {
         public T Data { get; set; }
-        public bool Status { get; set; }
-        public string Message { get; set; }
-        public HttpStatusCode StatusCode { get; set; }
+        //public bool Status { get; set; }
+        //public string Message { get; set; }
+        //public HttpStatusCode StatusCode { get; set; }
     }
 }
