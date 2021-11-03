@@ -95,9 +95,16 @@ namespace NextGen.BiddingPlatform.AuctionBidder
                     }
                 }
 
+                var resultForResponse = new
+                {
+                    ExternalUserId = input.ExternalUserId,
+                    EventId = input.EventId,
+                    Message = "Successfully register user as bidder."
+                };
+
                 return new ApiResponse<object>
                 {
-                    Data = input,
+                    Data = resultForResponse,
                     //Message = "Successfully register bidder.",
                     //Status = true,
                     //StatusCode = System.Net.HttpStatusCode.OK

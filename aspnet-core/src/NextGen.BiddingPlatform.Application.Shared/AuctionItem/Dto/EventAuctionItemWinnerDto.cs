@@ -43,5 +43,6 @@ namespace NextGen.BiddingPlatform.AuctionItem.Dto
     {
         public Guid ItemId { get; set; }
         public string ItemName { get; set; }
+        public double ItemAmount { get; set; }
     }
 }

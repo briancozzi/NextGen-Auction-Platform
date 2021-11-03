@@ -484,28 +484,38 @@ namespace NextGen.BiddingPlatform.AuctionItem
                     //If IsHide = true then show item else hide item
                     if (s.Item.IsHide && (s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours <= 0 || s.IsBiddingClosed)
                     {
-
                         //first winner
                         var winnerDto = s.AuctionHistories.Where(x => !x.IsOutBid).OrderByDescending(c => c.CreationTime).FirstOrDefault();
                         if (winnerDto != null)
                         {
-                            var winner = new EventWinnersDto
+                            if (eventWinners.Any(x => x.BidderId == winnerDto.AuctionBidder.UniqueId))
                             {
-                                BidderId = winnerDto.AuctionBidder.UniqueId,
-                                BidderName = winnerDto.AuctionBidder.BidderName,
-                                Items = await (from ah in _auctionHistoryRepository.GetAll().AsNoTracking()
-                                               join ai in _auctionitemRepository.GetAll().AsNoTracking() on ah.AuctionItemId equals ai.Id
-                                               join i in _itemRepository.GetAll().AsNoTracking() on ai.ItemId equals i.Id
-                                               where ah.AuctionBidderId == winnerDto.AuctionBidderId
-                                               group i by new { i.UniqueId, i.ItemName } into g
-                                               select new WinnerItemDto
-                                               {
-                                                   ItemId = g.Key.UniqueId,
-                                                   ItemName = g.Key.ItemName
-                                               }).ToListAsync()
-                            };
+                                var auctionItem = auctionItems.FirstOrDefault(c => c.Id == winnerDto.AuctionItemId);
+                                var winnerDetails = eventWinners.FirstOrDefault(s => s.BidderId == winnerDto.AuctionBidder.UniqueId);
 
-                            eventWinners.Add(winner);
+                                winnerDetails.Items.Add(new WinnerItemDto
+                                {
+                                    ItemAmount = Math.Round(winnerDto.BidAmount, 2),
+                                    ItemId = auctionItem.Item.UniqueId,
+                                    ItemName = auctionItem.Item.ItemName
+                                });
+                            }
+                            else
+                            {
+                                var winner = new EventWinnersDto
+                                {
+                                    BidderId = winnerDto.AuctionBidder.UniqueId,
+                                    BidderName = winnerDto.AuctionBidder.BidderName,
+                                };
+                                var auctionItem = auctionItems.FirstOrDefault(c => c.Id == winnerDto.AuctionItemId);
+                                winner.Items.Add(new WinnerItemDto
+                                {
+                                    ItemAmount = Math.Round(winnerDto.BidAmount, 2),
+                                    ItemId = auctionItem.Item.UniqueId,
+                                    ItemName = auctionItem.Item.ItemName
+                                });
+                                eventWinners.Add(winner);
+                            }
                         }
                     }
                 }
