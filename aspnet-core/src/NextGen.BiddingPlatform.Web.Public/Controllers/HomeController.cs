@@ -180,7 +180,7 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
                     if (!await IsSignatureValid(result.Event, body, result.Data?.TenantId))
                         return BadRequest("Unexpected signature");
 
-                    await _notify.CloseBiddingForEventOrItem(result.Data.AuctionItemIds);
+                    await _notify.CloseBiddingForEventOrItem(result.Data);
                     //await _notify.UpdateCurrentBidsAsync();
                 }
                 return Ok("Success");

@@ -126,29 +126,7 @@ function GetAuctionItem() {
         $("#biddingAmount").addClass("disbale-btn");
         $("#bidNowBtn").addClass("disbale-btn");
 
-        var url = WebSiteUrl + "Home/SendDataToExternalApp?eventId=" + $("#eventUniqueId").val();
-        $.ajax({
-            url: url,
-            type: 'GET',
-            async: true,
-            cache: false,
-            dataType: "json",
-            success: function (response) {
-                if (response.result.success) {
-                    alert(response.result.message);
-                }
-                else {
-                    alert(response.result.message);
-                }
-
-            },
-            error: function (xhr) {
-                console.log(xhr.responseText + " " + xhr.status);
-                alert(xhr.responseText + " " + xhr.status);
-            }
-        });
-
-        //GetAuctionItemWinnerDetails($("#auctionItemId").val());
+        SendAuctionWinnerDetails();
     }
 }
 

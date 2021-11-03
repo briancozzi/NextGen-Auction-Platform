@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using NextGen.BiddingPlatform.AppAccountEvent.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,12 +33,12 @@ namespace NextGen.BiddingPlatform.Web.Public.Notification
             }
         }
 
-        public async Task CloseBiddingForEventOrItem(List<Guid> auctionItemIds)
+        public async Task CloseBiddingForEventOrItem(CloseEventOrItemDto input)
         {
-            var connections = _connectionManager.GetCloseBiddingConnections(auctionItemIds);
+            var connections = _connectionManager.GetCloseBiddingConnections(input.AuctionItemIds);
             if (connections != null && connections.Count() > 0)
             {
-                await _context.Clients.Clients(connections.ToList()).SendAsync("CloseBiddingOnAuctionItems");
+                await _context.Clients.Clients(connections.ToList()).SendAsync("CloseBiddingOnAuctionItems", input.FromService);
             }
         }
     }

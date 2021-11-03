@@ -431,7 +431,8 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
                 new CloseEventOrItemDto
                 {
                     AuctionItemIds = auctionItemIds,
-                    TenantId = AbpSession.TenantId
+                    TenantId = AbpSession.TenantId,
+                    FromService = "Events"
                 }, AbpSession.TenantId);
         }
 

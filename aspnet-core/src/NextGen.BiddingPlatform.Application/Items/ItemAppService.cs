@@ -353,7 +353,8 @@ namespace NextGen.BiddingPlatform.Items
                 new CloseEventOrItemDto
                 {
                     AuctionItemIds = new List<Guid>() { auctionItem.UniqueId },
-                    TenantId = AbpSession.TenantId
+                    TenantId = AbpSession.TenantId,
+                    FromService = "Items"
                 }, AbpSession.TenantId);
         }
     }

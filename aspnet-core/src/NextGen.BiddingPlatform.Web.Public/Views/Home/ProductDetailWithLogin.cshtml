@@ -200,10 +200,14 @@
             }
         });
 
-        connection.on("CloseBiddingOnAuctionItems", () => {
+        connection.on("CloseBiddingOnAuctionItems", (result) => {
             $("#auctionBiddingClosed").val("true");
             $("#bidNowBtn").addClass("disbale-btn");
             alert("Bidding closed for item!!");
+
+            if (result === "Events") {
+                SendAuctionWinnerDetails();
+            }
 
             //GetAuctionItemWinnerDetails(auctionItemId);
         });
@@ -372,9 +376,9 @@
 <script src="~/signalr.js"></script>
 <script>
 
-    function GetAuctionItemWinnerDetails(id) {
-        debugger;
-        var url = ApiServerPath + "/api/services/app/AuctionHistory/GetHighestBid?auctionItemId=" + id;
+    function SendAuctionWinnerDetails() {
+        
+        var url = WebSiteUrl + "Home/SendDataToExternalApp?eventId=" + $("#eventUniqueId").val();
         $.ajax({
             url: url,
             type: 'GET',
@@ -382,15 +386,11 @@
             cache: false,
             dataType: "json",
             success: function (response) {
-                if (response.success) {
-                    console.log(response.result);
-                    alert("Please check console for winner details");
-                }
-                else if (!response.success) {
-                    alert(response.error.message);
+                if (response.result.success) {
+                    alert(response.result.message);
                 }
                 else {
-                    alert("Internal server error!!");
+                    alert(response.result.message);
                 }
 
             },

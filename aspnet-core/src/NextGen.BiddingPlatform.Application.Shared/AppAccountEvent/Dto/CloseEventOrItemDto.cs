@@ -12,5 +12,6 @@ namespace NextGen.BiddingPlatform.AppAccountEvent.Dto
         }
         public List<Guid> AuctionItemIds { get; set; }
         public int? TenantId { get; set; }
+        public string FromService { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NextGen.BiddingPlatform.AppAccountEvent.Dto;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +11,6 @@ namespace NextGen.BiddingPlatform.Web.Public.Notification
         Task SendAsync(string auctionItemId, object data);
         Task UpdateCurrentBidsAsync();
 
-        Task CloseBiddingForEventOrItem(List<Guid> auctionItemIds);
+        Task CloseBiddingForEventOrItem(CloseEventOrItemDto input);
     }
 }
