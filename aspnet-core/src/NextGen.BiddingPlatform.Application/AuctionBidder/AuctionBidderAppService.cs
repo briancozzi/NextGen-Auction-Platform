@@ -97,7 +97,7 @@ namespace NextGen.BiddingPlatform.AuctionBidder
 
                 return new ApiResponse<object>
                 {
-                    Data = null,
+                    Data = input,
                     //Message = "Successfully register bidder.",
                     //Status = true,
                     //StatusCode = System.Net.HttpStatusCode.OK
