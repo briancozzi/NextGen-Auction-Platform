@@ -99,7 +99,7 @@ namespace ExternalLoginApp.Controllers
                 );
 
             if (response.Result == null || response.Result.Data.Data == null)
-                return Json(new { Success = false, Message = response.Result.Data.Message });
+                return Json(new { Success = false, Message = "Internal server error!!" });
             else if (!response.Result.Success)
                 return Json(new { Success = false, Message = response.Result.Error.message });
             else
@@ -157,8 +157,8 @@ namespace ExternalLoginApp.Controllers
                 input
                 );
 
-            if (response.Result == null || !response.Result.Data.Status)
-                return Json(new { Success = false, Message = response.Result.Data.Message });
+            if (response.Result == null || response.Result.Data.Data == null)
+                return Json(new { Success = false, Message = "Internal server error!!" });
             else if (!response.Result.Success)
                 return Json(new { Success = false, Message = response.Result.Error.message });
             else
