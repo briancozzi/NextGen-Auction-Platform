@@ -151,8 +151,8 @@ function GetAuctionItems(categoryId, search) {
                                 $("#auctionItems").empty();
                                 $.each(data, function (i, v) {
                                     if (!v.isAuctionExpired) {
-
                                         var output = Mustache.render($("#auctionItemTemplate").html(), v);
+                                        
                                         $("#auctionItems").append(output);
                                         totalItems += 1;
                                     }
@@ -172,7 +172,7 @@ function GetAuctionItems(categoryId, search) {
                 $("#auctionItems").empty();
                 $.each(data, function (i, v) {
                     if (!v.isAuctionExpired) {
-                        if (v.mainImageName !== undefined) {
+                        if (v.mainImageName !== undefined && v.mainImageName !== null) {
                             v.imageName = ApiServerPath + v.mainImageName;
                         }
                         else {
