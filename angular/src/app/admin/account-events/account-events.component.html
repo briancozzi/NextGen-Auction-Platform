@@ -82,6 +82,10 @@
                                                 </li>
                                                 <li>
                                                     <a href="javascript:;"
+                                                        (click)="sendWinner(record.uniqueId)">{{'Send Winner' | localize}}</a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:;"
                                                         (click)="editEventsModal.show(record.uniqueId)">{{'Edit' | localize}}</a>
                                                 </li>
                                                 <li>

@@ -1,13 +1,13 @@
 import { Component, Injector, ViewChild } from '@angular/core';
 import { AppComponentBase } from '@shared/common/app-component-base';
-import { AccountEventServiceProxy,AccountEventDto } from '@shared/service-proxies/service-proxies';
+import { AccountEventServiceProxy, AccountEventDto, AuctionItemServiceProxy } from '@shared/service-proxies/service-proxies';
 import { Table } from 'primeng/table';
 import { Paginator } from 'primeng/paginator';
 import { finalize } from 'rxjs/operators';
 import { LazyLoadEvent } from 'primeng/public_api';
 import { CreateEventsModalComponent } from './create-events-modal.component';
 import { EditEventsModalComponent } from './edit-events-modal.component';
-import {forkJoin} from "rxjs";
+import { forkJoin } from "rxjs";
 import * as moment from 'moment';
 @Component({
   selector: 'app-account-events',
@@ -21,15 +21,16 @@ export class AccountEventsComponent extends AppComponentBase {
 
   constructor(injector: Injector,
     private _eventService: AccountEventServiceProxy,
+    private _auctionItemService: AuctionItemServiceProxy
   ) {
     super(injector)
   }
- 
+
 
   filters: {
     filterText: string;
   } = <any>{};
-  
+
   getEvents(event?: LazyLoadEvent): void {
     this.primengTableHelper.showLoadingIndicator();
     forkJoin([
@@ -40,42 +41,56 @@ export class AccountEventsComponent extends AppComponentBase {
         this.primengTableHelper.getSkipCount(this.paginator, event)
       )
     ]).pipe(finalize(() => this.primengTableHelper.hideLoadingIndicator()))
-        .subscribe(result => {
-      this.primengTableHelper.totalRecordsCount = result[0].totalCount;
-      this.primengTableHelper.records = result[0].items;
-      this.primengTableHelper.hideLoadingIndicator();
-    });
-      
+      .subscribe(result => {
+        this.primengTableHelper.totalRecordsCount = result[0].totalCount;
+        this.primengTableHelper.records = result[0].items;
+        this.primengTableHelper.hideLoadingIndicator();
+      });
+
   }
   createEvent(): void {
     this.createEventsModal.show();
   }
   deleteEvent(event: AccountEventDto): void {
     this.message.confirm(
-        this.l('DeleteAccountEvent', event.email),
-        this.l('AreYouSure'),
-        isConfirmed => {
-            if (isConfirmed) {
-                this._eventService.delete(event.uniqueId).subscribe(() => {
-                    this.getEvents();
-                    this.notify.success(this.l('SuccessfullyDeleted'));
-                });
-            }
+      this.l('DeleteAccountEvent', event.email),
+      this.l('AreYouSure'),
+      isConfirmed => {
+        if (isConfirmed) {
+          this._eventService.delete(event.uniqueId).subscribe(() => {
+            this.getEvents();
+            this.notify.success(this.l('SuccessfullyDeleted'));
+          });
         }
+      }
     );
   }
 
-  closeEvent(eventId : string):void{
+  closeEvent(eventId: string): void {
     this.message.confirm(
       this.l('Are you sure want to close event?'),
       this.l('Close Event'),
       isConfirmed => {
-          if (isConfirmed) {
-              this._eventService.closeBiddingOnEvent(eventId).subscribe(() => {
-                  this.notify.success(this.l('SuccefullyCloseEvent'));
-              });
-          }
+        if (isConfirmed) {
+          this._eventService.closeBiddingOnEvent(eventId).subscribe(() => {
+            this.notify.success(this.l('SuccefullyCloseEvent'));
+          });
+        }
       }
-  );
+    );
+  }
+
+  sendWinner(eventId: string): void {
+    this.message.confirm(
+      this.l('Are you sure want to send winners?'),
+      this.l('Send Winners'),
+      isConfirmed => {
+        if (isConfirmed) {
+          this._auctionItemService.sendWinnersToExternalEndPoint(eventId).subscribe(() => {
+            this.message.success(this.l('Successfully sent data'));
+          });
+        }
+      }
+    );
   }
 }

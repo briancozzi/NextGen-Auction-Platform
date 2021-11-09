@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using NextGen.BiddingPlatform.ApplicationConfigurations;
 using NextGen.BiddingPlatform.AuctionItem.Dto;
 using NextGen.BiddingPlatform.Caching;
 using NextGen.BiddingPlatform.Configuration;
@@ -22,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using static NextGen.BiddingPlatform.Enums.ItemEnums;
@@ -38,6 +41,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
         private readonly IAbpSession _abpSession;
         private readonly IRepository<Event> _eventRepository;
         private readonly IRepository<UserEvent, Guid> _userEventRepository;
+        private readonly IApplicationConfigurationsAppService _appConfigAppService;
         public AuctionItemAppService(IRepository<Core.AuctionItems.AuctionItem> auctionitemRepository,
                                      IRepository<Core.Auctions.Auction> auctionRepository,
                                      IRepository<Core.Items.Item> itemRepository,
@@ -45,7 +49,8 @@ namespace NextGen.BiddingPlatform.AuctionItem
                                      IRepository<Core.AuctionBidders.AuctionBidder> auctionBidderRepository,
                                      IRepository<Core.AuctionHistories.AuctionHistory> auctionHistoryRepository,
                                      IRepository<Event> eventRepository,
-                                     IRepository<UserEvent, Guid> userEventRepository)
+                                     IRepository<UserEvent, Guid> userEventRepository,
+                                     IApplicationConfigurationsAppService appConfigAppService)
         {
             _auctionitemRepository = auctionitemRepository;
             _auctionRepository = auctionRepository;
@@ -55,6 +60,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
             _auctionHistoryRepository = auctionHistoryRepository;
             _eventRepository = eventRepository;
             _userEventRepository = userEventRepository;
+            _appConfigAppService = appConfigAppService;
         }
         [AllowAnonymous]
         public async Task<ListResultDto<AuctionItemListDto>> GetAllAuctionItems(Guid eventId, int categoryId = 0, string search = "")
@@ -555,6 +561,25 @@ namespace NextGen.BiddingPlatform.AuctionItem
                     //StatusCode = System.Net.HttpStatusCode.InternalServerError
                 };
             }
+        }
+
+        public async Task SendWinnersToExternalEndPoint(Guid eventId)
+        {
+            var winners = await GetEventWinners(eventId);
+            if (winners.Data == null)
+                throw new UserFriendlyException("Something went wrong!!");
+
+            var route = await _appConfigAppService.GetConfigByKey("WinnerApiResponse");
+
+            HttpClient _client = new HttpClient();
+            _client.DefaultRequestHeaders.Clear();
+
+            var data = JsonConvert.SerializeObject(winners.Data);
+            var stringContent = new StringContent(data, Encoding.UTF8, "application/json");
+            HttpResponseMessage httpResponse = await _client.PostAsync(route, stringContent);
+
+            if (!httpResponse.IsSuccessStatusCode)
+                throw new UserFriendlyException("Error occured while sending data to external app!!");
         }
 
         [AbpAuthorize]

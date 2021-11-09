@@ -3806,10 +3806,62 @@ export class AuctionItemServiceProxy {
     }
 
     /**
+     * @param eventId (optional) 
+     * @return Success
+     */
+    sendWinnersToExternalEndPoint(eventId: string | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/AuctionItem/SendWinnersToExternalEndPoint?";
+        if (eventId === null)
+            throw new Error("The parameter 'eventId' cannot be null.");
+        else if (eventId !== undefined)
+            url_ += "eventId=" + encodeURIComponent("" + eventId) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSendWinnersToExternalEndPoint(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSendWinnersToExternalEndPoint(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processSendWinnersToExternalEndPoint(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
      * @param body (optional) 
      * @return Success
      */
-    paymentUpdate(body: PaymentUpdateDto[] | null | undefined): Observable<ApiResponseOfPaymentStatusResponse> {
+    paymentUpdate(body: PaymentUpdateDto | undefined): Observable<ApiResponseOfPaymentStatusResponse> {
         let url_ = this.baseUrl + "/api/services/app/AuctionItem/PaymentUpdate";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -23915,8 +23967,9 @@ export interface IApiResponseOfEventItemWinners {
 
 export class PaymentUpdateDto implements IPaymentUpdateDto {
     eventId!: string;
-    itemId!: string;
+    items!: string[];
     paymentStatus!: string | undefined;
+    bidderUUID!: string;
 
     constructor(data?: IPaymentUpdateDto) {
         if (data) {
@@ -23925,13 +23978,21 @@ export class PaymentUpdateDto implements IPaymentUpdateDto {
                     (<any>this)[property] = (<any>data)[property];
             }
         }
+        if (!data) {
+            this.items = [];
+        }
     }
 
     init(_data?: any) {
         if (_data) {
             this.eventId = _data["eventId"];
-            this.itemId = _data["itemId"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(item);
+            }
             this.paymentStatus = _data["paymentStatus"];
+            this.bidderUUID = _data["bidderUUID"];
         }
     }
 
@@ -23945,16 +24006,22 @@ export class PaymentUpdateDto implements IPaymentUpdateDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["eventId"] = this.eventId;
-        data["itemId"] = this.itemId;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item);
+        }
         data["paymentStatus"] = this.paymentStatus;
+        data["bidderUUID"] = this.bidderUUID;
         return data; 
     }
 }
 
 export interface IPaymentUpdateDto {
     eventId: string;
-    itemId: string;
+    items: string[];
     paymentStatus: string | undefined;
+    bidderUUID: string;
 }
 
 export class PaymentStatusResponse implements IPaymentStatusResponse {
