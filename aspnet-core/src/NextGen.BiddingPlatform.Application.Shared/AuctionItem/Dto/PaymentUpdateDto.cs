@@ -5,17 +5,13 @@ using System.Text;
 
 namespace NextGen.BiddingPlatform.AuctionItem.Dto
 {
-    public class CreateAuctionItemDto
+    public class PaymentUpdateDto
     {
-        public Guid UniqueId { get; set; }
         [Required]
-        public Guid AuctionId { get; set; }
+        public Guid EventId { get; set; }
         [Required]
         public Guid ItemId { get; set; }
-        public bool IsActive { get; set; } = true;
 
         public string PaymentStatus { get; set; }
-        public Guid? BidderId { get; set; }
-        public string BidderName { get; set; }
     }
 }

@@ -9,6 +9,7 @@ using Abp.Timing;
 using Abp.UI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NextGen.BiddingPlatform.AuctionItem.Dto;
@@ -16,6 +17,7 @@ using NextGen.BiddingPlatform.Caching;
 using NextGen.BiddingPlatform.Configuration;
 using NextGen.BiddingPlatform.Core.AppAccountEvents;
 using NextGen.BiddingPlatform.Helpers;
+using NextGen.BiddingPlatform.UserEvents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,13 +37,15 @@ namespace NextGen.BiddingPlatform.AuctionItem
         private readonly IRepository<Core.AuctionHistories.AuctionHistory> _auctionHistoryRepository;
         private readonly IAbpSession _abpSession;
         private readonly IRepository<Event> _eventRepository;
+        private readonly IRepository<UserEvent, Guid> _userEventRepository;
         public AuctionItemAppService(IRepository<Core.AuctionItems.AuctionItem> auctionitemRepository,
                                      IRepository<Core.Auctions.Auction> auctionRepository,
                                      IRepository<Core.Items.Item> itemRepository,
                                      IAbpSession abpSession,
                                      IRepository<Core.AuctionBidders.AuctionBidder> auctionBidderRepository,
                                      IRepository<Core.AuctionHistories.AuctionHistory> auctionHistoryRepository,
-                                     IRepository<Event> eventRepository)
+                                     IRepository<Event> eventRepository,
+                                     IRepository<UserEvent, Guid> userEventRepository)
         {
             _auctionitemRepository = auctionitemRepository;
             _auctionRepository = auctionRepository;
@@ -50,6 +54,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
             _auctionBidderRepository = auctionBidderRepository;
             _auctionHistoryRepository = auctionHistoryRepository;
             _eventRepository = eventRepository;
+            _userEventRepository = userEventRepository;
         }
         [AllowAnonymous]
         public async Task<ListResultDto<AuctionItemListDto>> GetAllAuctionItems(Guid eventId, int categoryId = 0, string search = "")
@@ -64,6 +69,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
                                                 .ThenInclude(s => s.Event)
                                                 .Include(s => s.Item).ThenInclude(s => s.CategoryFk)
                                                 .Include(s => s.AuctionHistories)
+                                                .Include($"{nameof(Core.AuctionItems.AuctionItem.AuctionHistories)}.{nameof(Core.AuctionHistories.AuctionHistory.AuctionBidder)}")
                                                     .AsNoTracking().Where(s => s.Auction.EventId == @event.Id && s.Item.IsHide);
 
             query = query.Where(s => s.Auction.EventId == @event.Id);
@@ -103,7 +109,10 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 IsHide = s.Item.IsHide,
                 IsActive = s.Item.IsActive,
                 CategoryId = s.Item.CategoryFk.Id,
-                UniqueCategoryId = s.Item.CategoryFk.UniqueId
+                UniqueCategoryId = s.Item.CategoryFk.UniqueId,
+                PaymentStatus = s.PaymentStatus,
+                BidderId = s.AuctionHistories.Where(x => !x.IsOutBid).OrderByDescending(c => c.CreationTime).FirstOrDefault().AuctionBidder.UniqueId,
+                BidderName = s.AuctionHistories.Where(x => !x.IsOutBid).OrderByDescending(c => c.CreationTime).FirstOrDefault().AuctionBidder.BidderName
             }).ToListAsync();
 
             return new ListResultDto<AuctionItemListDto>(auctionItems);
@@ -162,11 +171,19 @@ namespace NextGen.BiddingPlatform.AuctionItem
         }
         public async Task<CreateAuctionItemDto> GetAuctionItemById(Guid Id)
         {
-            var output = await _auctionitemRepository.GetAllIncluding(x => x.Item, x => x.Auction).FirstOrDefaultAsync(x => x.UniqueId == Id);
+            var output = await _auctionitemRepository.GetAll()
+                .Include(x => x.Item)
+                .Include(s => s.Auction)
+                .Include(s => s.AuctionHistories)
+                .Include($"{nameof(Core.AuctionItems.AuctionItem.AuctionHistories)}.{nameof(Core.AuctionHistories.AuctionHistory.AuctionBidder)}")
+                .FirstOrDefaultAsync(x => x.UniqueId == Id);
             if (output == null)
                 throw new UserFriendlyException("Auction Item not found for given id");
 
-            return ObjectMapper.Map<CreateAuctionItemDto>(output);
+            var mappedObj = ObjectMapper.Map<CreateAuctionItemDto>(output);
+            mappedObj.BidderId = output.AuctionHistories.Where(x => !x.IsOutBid).OrderByDescending(c => c.CreationTime).FirstOrDefault()?.AuctionBidder?.UniqueId;
+            mappedObj.BidderName = output.AuctionHistories.Where(x => !x.IsOutBid).OrderByDescending(c => c.CreationTime).FirstOrDefault()?.AuctionBidder?.BidderName;
+            return mappedObj;
         }
 
         [AllowAnonymous]
@@ -538,6 +555,94 @@ namespace NextGen.BiddingPlatform.AuctionItem
                     //StatusCode = System.Net.HttpStatusCode.InternalServerError
                 };
             }
+        }
+
+        [AbpAuthorize]
+        public async Task PaymentUpdate(List<PaymentUpdateDto> input)
+        {
+            foreach (var i in input)
+            {
+                var @event = await _eventRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.UniqueId == i.EventId);
+                if (@event == null)
+                    throw new UserFriendlyException("Event not found!!");
+
+                var @item = await _itemRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.UniqueId == i.ItemId);
+                if (@item == null)
+                    throw new UserFriendlyException("Item not found!!");
+
+                var auctionItem = await _auctionitemRepository.FirstOrDefaultAsync(s => s.ItemId == @item.Id);
+
+                auctionItem.PaymentStatus = i.PaymentStatus;
+                auctionItem.PaymentStatusUpdateDate = DateTime.UtcNow;
+                await _auctionitemRepository.UpdateAsync(auctionItem);
+            }
+        }
+
+        [AbpAuthorize]
+        public async Task<ApiResponse<List<BidderAuctionItemDetailsDto>>> GetBidderWinningItems(string externalUserId)
+        {
+            try
+            {
+                var user = await UserManager.Users.FirstOrDefaultAsync(s => s.ExternalUserId == externalUserId);
+                if (user == null)
+                    throw new Exception("User not found for given user id");
+
+                var auctionIds = await (from ue in _userEventRepository.GetAll().AsNoTracking()
+                                        join a in _auctionRepository.GetAll().AsNoTracking() on ue.EventId equals a.EventId
+                                        where ue.UserId == user.Id
+                                        select a.Id).ToListAsync();
+
+                var auctionItems = await _auctionitemRepository.GetAll().AsNoTracking()
+                                           .Include(s => s.Item)
+                                           .Include(s => s.Auction)
+                                           .ThenInclude(s => s.Event)
+                                           .Include(s => s.AuctionHistories)
+                                           .Include($"{nameof(Core.AuctionItems.AuctionItem.AuctionHistories)}.{nameof(Core.AuctionHistories.AuctionHistory.AuctionBidder)}")
+                                           .Where(s => auctionIds.Contains(s.AuctionId)).ToListAsync();
+
+                var currentUserBidderDetails = await _auctionBidderRepository.GetAll().AsNoTracking().Where(s => s.UserId == user.Id).Select(x => new
+                {
+                    BidderID = x.Id,
+                    BidderName = x.BidderName,
+                    UniqueId = x.UniqueId
+                }).ToListAsync();
+
+                List<BidderAuctionItemDetailsDto> winningItems = new List<BidderAuctionItemDetailsDto>();
+                foreach (var s in auctionItems)
+                {
+                    if (s.IsBiddingClosed)
+                    {
+                        var winnerDto = s.AuctionHistories.Where(x => !x.IsOutBid).OrderByDescending(c => c.CreationTime).FirstOrDefault();
+                        if (winnerDto != null && currentUserBidderDetails.Select(s => s.BidderID).Contains(winnerDto.AuctionBidderId))
+                        {
+                            var auctionItem = auctionItems.FirstOrDefault(c => c.Id == winnerDto.AuctionItemId);
+                            winningItems.Add(new BidderAuctionItemDetailsDto
+                            {
+                                EventName = auctionItem.Auction.Event.EventName,
+                                EventId = auctionItem.Auction.Event.UniqueId,
+                                AuctionEndDate = auctionItem.Auction.AuctionEndDateTime,
+                                AuctionStartDate = auctionItem.Auction.AuctionStartDateTime,
+                                ItemId = auctionItem.Item.UniqueId,
+                                ItemName = auctionItem.Item.ItemName,
+                                Amount = Math.Round(winnerDto.BidAmount, 2),
+                                PaymentStatus = auctionItem.PaymentStatus
+                            });
+                        }
+                    }
+                }
+                return new ApiResponse<List<BidderAuctionItemDetailsDto>>
+                {
+                    Data = winningItems,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<List<BidderAuctionItemDetailsDto>>
+                {
+                    Data = null,
+                };
+            }
+
         }
     }
 }

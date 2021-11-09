@@ -51,5 +51,8 @@ namespace NextGen.BiddingPlatform.AuctionItem.Dto
         public int? CategoryId { get; set; }
         public Guid? UniqueCategoryId { get; set; }
         public bool IsBiddingStarted { get; set; }
+        public string PaymentStatus { get; set; }
+        public Guid? BidderId { get; set; }
+        public string BidderName { get; set; }
     }
 }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NextGen.BiddingPlatform.EntityFrameworkCore;
 
 namespace NextGen.BiddingPlatform.Migrations
 {
     [DbContext(typeof(BiddingPlatformDbContext))]
-    partial class BiddingPlatformDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211109051236_Update_Entity_AuctionItem_With_PaymentFields")]
+    partial class Update_Entity_AuctionItem_With_PaymentFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
