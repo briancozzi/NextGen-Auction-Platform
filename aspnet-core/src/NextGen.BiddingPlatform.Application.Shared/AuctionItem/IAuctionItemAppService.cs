@@ -27,7 +27,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
         Task<ApiResponse<EventItemWinners>> GetEventWinners(Guid eventUniqueId);
 
         //payment status update api
-        Task PaymentUpdate(List<PaymentUpdateDto> input);
-        Task<ApiResponse<List<BidderAuctionItemDetailsDto>>> GetBidderWinningItems(string externalUserId);
+        Task<ApiResponse<PaymentStatusResponse>> PaymentUpdate(List<PaymentUpdateDto> input);
+        Task<ApiResponse<List<BidderAuctionItemDetailsDto>>> GetBidderWinningItems(Guid externalUserId);
     }
 }

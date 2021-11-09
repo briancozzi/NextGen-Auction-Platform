@@ -558,32 +558,53 @@ namespace NextGen.BiddingPlatform.AuctionItem
         }
 
         [AbpAuthorize]
-        public async Task PaymentUpdate(List<PaymentUpdateDto> input)
+        public async Task<ApiResponse<PaymentStatusResponse>> PaymentUpdate(List<PaymentUpdateDto> input)
         {
-            foreach (var i in input)
+            var result = new PaymentStatusResponse
             {
-                var @event = await _eventRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.UniqueId == i.EventId);
-                if (@event == null)
-                    throw new UserFriendlyException("Event not found!!");
+                Success = true
+            };
+            try
+            {
+                foreach (var i in input)
+                {
+                    var @event = await _eventRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.UniqueId == i.EventId);
+                    if (@event == null)
+                        throw new UserFriendlyException("Event not found!!");
 
-                var @item = await _itemRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.UniqueId == i.ItemId);
-                if (@item == null)
-                    throw new UserFriendlyException("Item not found!!");
+                    var @item = await _itemRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.UniqueId == i.ItemId);
+                    if (@item == null)
+                        throw new UserFriendlyException("Item not found!!");
 
-                var auctionItem = await _auctionitemRepository.FirstOrDefaultAsync(s => s.ItemId == @item.Id);
+                    var auctionItem = await _auctionitemRepository.FirstOrDefaultAsync(s => s.ItemId == @item.Id);
 
-                auctionItem.PaymentStatus = i.PaymentStatus;
-                auctionItem.PaymentStatusUpdateDate = DateTime.UtcNow;
-                await _auctionitemRepository.UpdateAsync(auctionItem);
+                    auctionItem.PaymentStatus = i.PaymentStatus;
+                    auctionItem.PaymentStatusUpdateDate = DateTime.UtcNow;
+                    await _auctionitemRepository.UpdateAsync(auctionItem);
+                }
+
+                return new ApiResponse<PaymentStatusResponse>
+                {
+                    Data = result,
+                };
             }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                return new ApiResponse<PaymentStatusResponse>
+                {
+                    Data = result,
+                };
+            }
+
         }
 
         [AbpAuthorize]
-        public async Task<ApiResponse<List<BidderAuctionItemDetailsDto>>> GetBidderWinningItems(string externalUserId)
+        public async Task<ApiResponse<List<BidderAuctionItemDetailsDto>>> GetBidderWinningItems(Guid externalUserId)
         {
             try
             {
-                var user = await UserManager.Users.FirstOrDefaultAsync(s => s.ExternalUserId == externalUserId);
+                var user = await UserManager.Users.FirstOrDefaultAsync(s => s.ExternalUserId == externalUserId.ToString());
                 if (user == null)
                     throw new Exception("User not found for given user id");
 
