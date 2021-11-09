@@ -563,6 +563,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
             }
         }
 
+        [AbpAuthorize]
         public async Task SendWinnersToExternalEndPoint(Guid eventId)
         {
             var winners = await GetEventWinners(eventId);
