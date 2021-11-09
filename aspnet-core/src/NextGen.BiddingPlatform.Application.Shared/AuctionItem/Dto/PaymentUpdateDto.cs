@@ -7,11 +7,16 @@ namespace NextGen.BiddingPlatform.AuctionItem.Dto
 {
     public class PaymentUpdateDto
     {
+        public PaymentUpdateDto()
+        {
+            Items = new List<Guid>();
+        }
         [Required]
         public Guid EventId { get; set; }
         [Required]
-        public Guid ItemId { get; set; }
+        public List<Guid> Items { get; set; }
 
         public string PaymentStatus { get; set; }
+        public Guid BidderUUID { get; set; }
     }
 }

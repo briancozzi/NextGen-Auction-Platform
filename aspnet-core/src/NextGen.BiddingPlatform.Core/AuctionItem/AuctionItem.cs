@@ -1,5 +1,6 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
+using NextGen.BiddingPlatform.Core.AuctionBidders;
 using NextGen.BiddingPlatform.Core.Auctions;
 using NextGen.BiddingPlatform.Core.Items;
 using NextGen.BiddingPlatform.CustomInterface;
@@ -33,6 +34,9 @@ namespace NextGen.BiddingPlatform.Core.AuctionItems
 
         public string PaymentStatus { get; set; }
         public DateTime? PaymentStatusUpdateDate { get; set; }
+        public int? WinnerBidderId { get; set; }
+        [ForeignKey("WinnerBidderId")]
+        public AuctionBidder BidderFk { get; set; }
 
         public ICollection<AuctionHistories.AuctionHistory> AuctionHistories { get; set; }
         public AuctionItem()

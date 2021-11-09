@@ -41,6 +41,8 @@
     <Compile Remove="Migrations\20211028084957_Check-Missing-Migration.Designer.cs" />
     <Compile Remove="Migrations\20211028085131_Added_Entity_ApplicationConfigurations.cs" />
     <Compile Remove="Migrations\20211028085131_Added_Entity_ApplicationConfigurations.Designer.cs" />
+    <Compile Remove="Migrations\20211109114034_Update_Entity_AuctionItem.cs" />
+    <Compile Remove="Migrations\20211109114034_Update_Entity_AuctionItem.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.3" />
