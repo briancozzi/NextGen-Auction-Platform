@@ -558,7 +558,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
         }
 
         [AbpAuthorize]
-        public async Task<ApiResponse<PaymentStatusResponse>> PaymentUpdate(List<PaymentUpdateDto> input)
+        public async Task<ApiResponse<PaymentStatusResponse>> PaymentUpdate(PaymentUpdateDto input)
         {
             var result = new PaymentStatusResponse
             {
@@ -566,20 +566,26 @@ namespace NextGen.BiddingPlatform.AuctionItem
             };
             try
             {
-                foreach (var i in input)
-                {
-                    var @event = await _eventRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.UniqueId == i.EventId);
-                    if (@event == null)
-                        throw new UserFriendlyException("Event not found!!");
+                var @event = await _eventRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.UniqueId == input.EventId);
+                if (@event == null)
+                    throw new UserFriendlyException("Event not found!!");
 
-                    var @item = await _itemRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.UniqueId == i.ItemId);
+                var bidder = await _auctionBidderRepository.GetAll().FirstOrDefaultAsync(s => s.UniqueId == input.BidderUUID);
+                if (bidder == null)
+                    throw new UserFriendlyException("Bidder not found!!");
+
+                foreach (var i in input.Items)
+                {
+                    var @item = await _itemRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(s => s.UniqueId == i);
                     if (@item == null)
                         throw new UserFriendlyException("Item not found!!");
 
                     var auctionItem = await _auctionitemRepository.FirstOrDefaultAsync(s => s.ItemId == @item.Id);
 
-                    auctionItem.PaymentStatus = i.PaymentStatus;
+                    auctionItem.PaymentStatus = input.PaymentStatus;
                     auctionItem.PaymentStatusUpdateDate = DateTime.UtcNow;
+                    auctionItem.WinnerBidderId = bidder.Id;
+
                     await _auctionitemRepository.UpdateAsync(auctionItem);
                 }
 
@@ -588,7 +594,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
                     Data = result,
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 result.Success = false;
                 return new ApiResponse<PaymentStatusResponse>
