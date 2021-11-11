@@ -505,7 +505,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 foreach (var s in auctionItems)
                 {
                     //If IsHide = true then show item else hide item
-                    if (s.Item.IsHide && (s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours <= 0 || s.IsBiddingClosed)
+                    if (s.Item.IsHide && ((s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours <= 0 || s.IsBiddingClosed))
                     {
                         //first winner
                         var winnerDto = s.AuctionHistories.Where(x => !x.IsOutBid).OrderByDescending(c => c.CreationTime).FirstOrDefault();
@@ -563,10 +563,91 @@ namespace NextGen.BiddingPlatform.AuctionItem
             }
         }
 
+        private async Task<ApiResponse<EventItemWinners>> GetWinnersBeforeEventClosed(Guid eventUniqueId)
+        {
+            try
+            {
+                var @event = await _eventRepository.FirstOrDefaultAsync(s => s.UniqueId == eventUniqueId);
+                if (@event == null)
+                    throw new UserFriendlyException("Event not found!!");
+
+                var auctionIds = await _auctionRepository.GetAll().AsNoTracking().Where(s => s.EventId == @event.Id).Select(s => s.Id).ToListAsync();
+
+                var auctionItems = await _auctionitemRepository.GetAll().AsNoTracking()
+                                        .Include(s => s.Item)
+                                        .Include(s => s.Auction)
+                                        .Include(s => s.AuctionHistories)
+                                        .Include($"{nameof(Core.AuctionItems.AuctionItem.AuctionHistories)}.{nameof(Core.AuctionHistories.AuctionHistory.AuctionBidder)}")
+                                        .Where(s => auctionIds.Contains(s.AuctionId)).ToListAsync();
+
+                EventItemWinners result = new EventItemWinners
+                {
+                    EventName = @event.EventName,
+                    EventUniqueId = @event.UniqueId
+                };
+
+                List<EventWinnersDto> eventWinners = new List<EventWinnersDto>();
+                foreach (var s in auctionItems)
+                {
+                    //If IsHide = true then show item else hide item
+                    if (s.Item.IsHide)
+                    {
+                        //first winner
+                        var winnerDto = s.AuctionHistories.Where(x => !x.IsOutBid).OrderByDescending(c => c.CreationTime).FirstOrDefault();
+                        if (winnerDto != null)
+                        {
+                            if (eventWinners.Any(x => x.BidderId == winnerDto.AuctionBidder.UniqueId))
+                            {
+                                var auctionItem = auctionItems.FirstOrDefault(c => c.Id == winnerDto.AuctionItemId);
+                                var winnerDetails = eventWinners.FirstOrDefault(s => s.BidderId == winnerDto.AuctionBidder.UniqueId);
+
+                                winnerDetails.Items.Add(new WinnerItemDto
+                                {
+                                    ItemAmount = Math.Round(winnerDto.BidAmount, 2),
+                                    ItemId = auctionItem.Item.UniqueId,
+                                    ItemName = auctionItem.Item.ItemName
+                                });
+                            }
+                            else
+                            {
+                                var winner = new EventWinnersDto
+                                {
+                                    BidderId = winnerDto.AuctionBidder.UniqueId,
+                                    BidderName = winnerDto.AuctionBidder.BidderName,
+                                };
+                                var auctionItem = auctionItems.FirstOrDefault(c => c.Id == winnerDto.AuctionItemId);
+                                winner.Items.Add(new WinnerItemDto
+                                {
+                                    ItemAmount = Math.Round(winnerDto.BidAmount, 2),
+                                    ItemId = auctionItem.Item.UniqueId,
+                                    ItemName = auctionItem.Item.ItemName
+                                });
+                                eventWinners.Add(winner);
+                            }
+                        }
+                    }
+                }
+                result.Winners = eventWinners;
+                return new ApiResponse<EventItemWinners>
+                {
+                    Data = result,
+
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<EventItemWinners>
+                {
+                    Data = null,
+                };
+            }
+        }
+
+
         [AbpAuthorize]
         public async Task SendWinnersToExternalEndPoint(Guid eventId)
         {
-            var winners = await GetEventWinners(eventId);
+            var winners = await GetWinnersBeforeEventClosed(eventId);
             if (winners.Data == null)
                 throw new UserFriendlyException("Something went wrong!!");
 
