@@ -1,0 +1,118 @@
+﻿@using Microsoft.AspNetCore.Hosting
+@using NextGen.BiddingPlatform.Configuration
+@using Microsoft.Extensions.Configuration
+@inject IWebHostEnvironment env
+@{
+    var appConfiguration = env.GetAppConfiguration();
+    var apiServerPath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:ApiWebSiteRootAddress", string.Empty);
+    var webSitePath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:WebSiteRootAddress", string.Empty);
+    var tenantId = ConfigurationBinder.GetValue<string>(appConfiguration, "App:TenantId", string.Empty);
+}
+<style>
+    .hide-nav-items {
+        display: none !important;
+    }
+</style>
+<div class="inner-wrapper">
+    <div class="content-wrapper have-sidename">
+        <div class="container position-relative">
+            <div class="side-name">
+                Silent Auctions
+            </div>
+            <div class="inner-topbar">
+                <div class="search-result">
+                    Search Results <span id="eventCount"></span>
+                </div>
+
+            </div>
+            <div class="row col-gap-20">
+                <table class="table table-responsive" id="tbl-events">
+                    <thead>
+                        <tr>
+                            <th>Event Name</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Event Url</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script id="eventsTemplate" type="x-tmpl-mustache">
+   <tr>
+    <td>{{eventName}}</td>
+    <td>{{eventStartDateTime}}</td>
+    <td>{{eventEndDateTime}}</td>
+    <td>{{eventUrl}}</td>
+    <td><a href="javascript:void(0);" id="view-items" data-event-id="{{uniqueId}}">View Details</a></td>
+</tr>
+</script>
+@section Scripts
+{
+    <script>
+        var ApiServerPath = "@apiServerPath";
+        var WebSiteUrl = "@webSitePath";
+        var tenantId = "@tenantId";
+
+        $(function () {
+            $(".myActivity").addClass("hide-nav-items");
+            $(".pay-item").addClass("hide-nav-items");
+            $(".donate-item").addClass("hide-nav-items");
+            $(".account").addClass("hide-nav-items");
+
+            $(document).off("click", ".logo, .logo-heading");
+
+            var url = "/api/services/app/AccountEvent/GetAllAnnonymousAccountEvents";
+            $.ajax({
+                url: ApiServerPath + url,
+                headers: {
+                    "Abp.TenantId": tenantId
+                },
+                type: "GET",
+                cache: false,
+                async: true,
+                contentType: "application/json",
+                dataType: "json",
+                success: function (response) {
+                    if (response.success) {
+                        console.log(response);
+
+                        var totalItems = 0;
+
+                        $("#tbl-events tbody").empty();
+                        $.each(response.result.data, function (i, v) {
+                            var output = Mustache.render($("#eventsTemplate").html(), v);
+                            $("#tbl-events tbody").append(output);
+                            totalItems += 1;
+                        });
+                        $("#eventCount").text('(' + totalItems + ')');
+                    }
+                    else if (!response.success) {
+                        alert(response.result.error.message);
+                    }
+                    else {
+                        alert("Internal server error!!");
+                    }
+                },
+                error: function (xhr) {
+                    console.log(xhr.responseText + " " + xhr.status)
+                }
+            });
+        });
+
+        $(document).on("click", "#view-items", function (e) {
+            e.preventDefault();
+
+            var uniqueId = $(this).attr("data-event-id");
+
+            location.replace("/Home/PublicEventItems?eventId=" + uniqueId);
+        });
+
+    </script>
+}

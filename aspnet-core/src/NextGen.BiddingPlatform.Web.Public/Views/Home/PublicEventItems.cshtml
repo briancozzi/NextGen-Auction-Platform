@@ -1,0 +1,123 @@
+﻿@using Microsoft.AspNetCore.Hosting
+@using NextGen.BiddingPlatform.Configuration
+@using Microsoft.Extensions.Configuration
+@inject IWebHostEnvironment env
+@{
+    var appConfiguration = env.GetAppConfiguration();
+    var apiServerPath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:ApiWebSiteRootAddress", string.Empty);
+    var webSitePath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:WebSiteRootAddress", string.Empty);
+    var tenantId = ConfigurationBinder.GetValue<string>(appConfiguration, "App:TenantId", string.Empty);
+}
+<style>
+    .hide-nav-items {
+        display: none !important;
+    }
+</style>
+
+<div class="inner-wrapper">
+    <div class="content-wrapper have-sidename">
+        <div class="container position-relative">
+            <div class="side-name">
+                Silent Auctions
+            </div>
+            <div class="inner-topbar">
+                <div class="search-result">
+                    Search Results <span id="itemCount"></span>
+                </div>
+            </div>
+            <div class="row col-gap-20" id="auctionItems">
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script>
+        var ApiServerPath = "@apiServerPath";
+        var WebSiteUrl = "@webSitePath";
+        var tenantId = "@tenantId";
+        var eventId = "@ViewBag.EventId";
+
+        $(function () {
+            $(".myActivity").addClass("hide-nav-items");
+            $(".pay-item").addClass("hide-nav-items");
+            $(".donate-item").addClass("hide-nav-items");
+            $(".account").addClass("hide-nav-items");
+
+            $(document).off("click", ".logo, .logo-heading");
+
+            var url = "/api/services/app/AuctionItem/GetAllAuctionItems?eventId=" + eventId;
+            $.ajax({
+                url: ApiServerPath + url,
+                headers: {
+                    "Abp.TenantId": tenantId
+                },
+                type: "GET",
+                cache: false,
+                async: true,
+                contentType: "application/json",
+                dataType: "json",
+                success: function (response) {
+                    if (response.success) {
+                        console.log(response);
+                        var totalItems = 0;
+
+                        $("#auctionItems").empty();
+                        var data = response.result.items;
+                        $.each(data, function (i, v) {
+                            if (!v.isAuctionExpired) {
+                                if (v.mainImageName !== undefined && v.mainImageName !== null && v.mainImageName !== "") {
+                                    v.imageName = ApiServerPath + v.mainImageName;
+                                }
+                                else {
+                                    v.imageName = WebSiteUrl + "/auction/images/no-img.png";
+                                }
+                                var output = Mustache.render($("#auctionItemTemplate").html(), v);
+                                $("#auctionItems").append(output);
+                                totalItems += 1;
+                            }
+                        });
+                        $("#itemCount").text('(' + totalItems + ')');
+
+                    }
+                    else if (!response.success) {
+                        alert(response.result.error.message);
+                    }
+                    else {
+                        alert("Internal server error!!");
+                    }
+                },
+                error: function (xhr) {
+                    console.log(xhr.responseText + " " + xhr.status)
+                }
+            });
+        });
+
+        $(document).on("click", ".golf-event .desc, #viewItem", function (e) {
+            e.preventDefault();
+            var isClosedAuction = $(this).parents(".golf-event").attr("data-is-closed-auction");
+            var itemStatus = $(this).parents(".golf-event").attr("data-itemstatus");
+            //if (isClosedAuction == "true") {
+            //    if (IsLoggedInUser == "true") {
+            //        location.href = "/Home/ProductDetailClosedWithLogin?id=" + $(this).parents(".golf-event").attr("data-id") + "&itemStatus=" + itemStatus;
+            //    }
+            //    else {
+            //        location.href = "/Home/ProductDetailClosed?id=" + $(this).parents(".golf-event").attr("data-id") + "&itemStatus=" + itemStatus;
+            //    }
+            //}
+            //else {
+            //    if (IsLoggedInUser == "true") {
+            //        location.href = "/Home/ProductDetailWithLogin?id=" + $(this).parents(".golf-event").attr("data-id") + "&itemStatus=" + itemStatus;
+            //    }
+            //    else {
+            //        location.href = "/Home/ProductDetail?id=" + $(this).parents(".golf-event").attr("data-id");
+            //    }
+            //}
+
+            location.href = "/Home/PublicEventAuctionItem?auctionItemId=" + $(this).parents(".golf-event").attr("data-id");
+        });
+
+    </script>
+
+}

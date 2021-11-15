@@ -1,0 +1,178 @@
+﻿@using Microsoft.AspNetCore.Hosting
+@using NextGen.BiddingPlatform.Configuration
+@using Microsoft.Extensions.Configuration
+@inject IWebHostEnvironment env
+@{
+    var appConfiguration = env.GetAppConfiguration();
+    var apiServerPath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:ApiWebSiteRootAddress", string.Empty);
+    var webSitePath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:WebSiteRootAddress", string.Empty);
+    var externalLoginUrl = ConfigurationBinder.GetValue<string>(appConfiguration, "App:ExternalLoginSiteRootAddress", string.Empty);
+}
+<style>
+    .hide-nav-items {
+        display: none !important;
+    }
+</style>
+<div class="inner-wrapper">
+    <div class="content-wrapper have-sidename pt-80">
+        <div class="container position-relative">
+            <div class="side-name v-center">
+                Silent Auctions
+            </div>
+            <div class="event-details">
+                <div class="row col-gap-20 align-items-center">
+                    <div class="col-lg-8 col-md-7">
+                        <div class="golf-event bg-transparent box-shadow-n">
+                            <div class="event-slider slick-instance slider-loader" data-slick='{"slidesToShow": 1, "slidesToScroll": 1, "fade": true, "arrows": true, "infinite": false, "dots": false, "autoplay": true}'>
+                                <div class="image">
+                                    <img src="" alt="" id="itemImage">
+                                    <div class="numeric"><span id="itemNo">123</span></div>
+                                    <a href="#" class="wishlist"></a>
+
+                                    @* show if status is closed *@
+                                    <div class="event-close"><span>CLOSED</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-5 mt--81">
+
+                        @* hide if status is closed *@
+                        <div class="countdown-wrapper">
+                            <img src="~/auction/images/timer-icon.png" alt="">
+                            <span class="time-left">time left</span>
+                            <div id="defaultCountdown"></div>
+                        </div>
+                        <div class="golf-event details">
+                            <div class="desc ">
+                                <input type="hidden" id="auctionItemId" value="@ViewBag.AuctionItemId" />
+                                <p class="name"></p>
+                                <ul>
+                                    <li>
+                                        Last Bid:
+                                        <span id="lastBidAmount">$0.0</span>
+                                    </li>
+                                    <li>
+                                        FMV:
+                                        <span id="fmvValue">$0.0</span>
+                                    </li>
+                                </ul>
+                                <ul>
+                                    <li>
+                                        # of Bids:
+                                        <span id="totalBids">0</span>
+                                    </li>
+                                    <li>
+                                        # of Watchers:
+                                        <span>5</span>
+                                    </li>
+                                </ul>
+                                <div class="bid">
+                                    <div class="green-text text-center">Want to place a bid?</div>
+                                    <div class="button-row mb-30">
+                                        <a href="javascript:void(0);" id="loginOrRegister" class="btn btn-primary">LOGIN/REGISTER NOW</a>
+                                    </div>
+                                    @*<div class="black-text text-center">Already have an account?</div>
+                                    <div class="button-row">
+                                        <a href="#" class="btn btn-default">SIGN IN</a>
+                                    </div>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="inner pb-0">
+                    <div class="card-heading">
+                        Item Description
+                    </div>
+                    <p class="desc" id="itemDescription">
+
+                    </p>
+                    <div class="share-wrapper">
+                        <div class="text">
+                            Share this:
+                        </div>
+                        <ul>
+                            <li>
+                                <a href="#" class="fb"></a>
+                            </li>
+                            <li>
+                                <a href="#" class="twitter"></a>
+                            </li>
+                            <li>
+                                <a href="#" class="o-social"></a>
+                            </li>
+                            <li>
+                                <a href="#" class="share"></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script>
+        var ApiServerPath = "@apiServerPath";
+        var WebSiteUrl = "@webSitePath";
+        var auctionItemId = "@ViewBag.AuctionItemId";
+
+        $(function () {
+            $(".myActivity").addClass("hide-nav-items");
+            $(".pay-item").addClass("hide-nav-items");
+            $(".donate-item").addClass("hide-nav-items");
+            $(".account").addClass("hide-nav-items");
+
+            $(document).off("click", ".logo, .logo-heading");
+
+            $.ajax({
+                url: ApiServerPath + "/api/services/app/AuctionItem/GetAuctionItem?Id=" + auctionItemId,
+                type: "GET",
+                cache: false,
+                async: true,
+                contentType: "application/json",
+                dataType: "json",
+                success: function (response) {
+                    if (response != null || response != undefined) {
+                        var data = response.result;
+                        var endDate = new Date(Date.parse(data.auctionEndDateTime));
+
+                        $('#defaultCountdown').countdown({
+                            until: endDate,
+                            layout: ' {hn} {hl} {mn} {ml} {sn} {sl} '
+                        });
+
+                        $(".name").text(data.itemName);
+                        $("#lastBidAmount").text("$" + data.lastBidAmount.toFixed(2));
+                        $("#fmvValue").text("$" + data.fairMarketValue_FMV.toFixed(2));
+                        $("#totalBids").text(data.totalBidCount);
+                        $("#itemDescription").text(data.itemDescription);
+                        var imageFullPath = "";
+                        if (data.imageName != null) {
+                            imageFullPath = ApiServerPath + data.imageName;
+                        }
+                        else {
+                            imageFullPath = WebSiteUrl + "/auction/images/no-img.png";
+                        }
+                        $("#itemImage").attr("src", imageFullPath);
+                        $("#itemNo").text(data.itemNumber);
+                    }
+                },
+                error: function (xhr) {
+                    console.log(xhr.responseText + " " + xhr.status)
+                }
+            });
+        });
+
+        $(document).on("click", "#loginOrRegister", function () {
+            location.href = "@externalLoginUrl";
+        });
+    </script>
+
+}

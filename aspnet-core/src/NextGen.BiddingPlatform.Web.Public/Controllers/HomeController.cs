@@ -119,6 +119,23 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
             return user.User != null;
         }
 
+        public IActionResult PublicEvents()
+        {
+            return View();
+        }
+
+        public IActionResult PublicEventItems(Guid eventId)
+        {
+            ViewBag.EventId = eventId;
+            return View();
+        }
+
+        public IActionResult PublicEventAuctionItem(Guid auctionItemId)
+        {
+            ViewBag.AuctionItemId = auctionItemId;
+            return View();
+        }
+
         [AllowAnonymous]
         [IgnoreAntiforgeryToken]
         [HttpPost]
