@@ -68,6 +68,8 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
                 {
                     if (x.EventAuctions.Any(s => s.AuctionEndDateTime >= DateTime.UtcNow))
                     {
+                        var itemCount = x.EventAuctions.Select(s => s.AuctionItems.Count).Sum();
+
                         eventsData.Add(new AccountEventListDto
                         {
                             Id = x.Id,
@@ -77,7 +79,8 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
                             EventName = x.EventName,
                             EventUrl = x.EventUrl,
                             TimeZone = x.TimeZone,
-                            UniqueId = x.UniqueId
+                            UniqueId = x.UniqueId,
+                            ItemCount = itemCount
                         });
                     }
                 }
