@@ -9,8 +9,29 @@
     var tenantId = ConfigurationBinder.GetValue<string>(appConfiguration, "App:TenantId", string.Empty);
 }
 <style>
-    .hide-nav-items {
+    /* .hide-nav-items {
         display: none !important;
+    }*/
+    .myActivity,
+    .pay-item,
+    .donate-item,
+    .account a::after {
+        display: none;
+    }
+
+    .account a:first-child {
+        padding-right:0 !important;
+        margin-right:0 !important;
+    }
+
+    .btn.btn-default.gray-btn:hover,
+    .btn.btn-default.gray-btn:focus {
+        background: #fff !important;
+        color: gray !important;
+        border: 2px solid gray !important;
+    }
+    button.btn{
+        width:49%;
     }
 </style>
 <div class="inner-wrapper">
@@ -25,33 +46,52 @@
                 </div>
 
             </div>
-            <div class="row col-gap-20">
-                <table class="table table-responsive" id="tbl-events">
-                    <thead>
-                        <tr>
-                            <th>Event Name</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
-                            <th>Event Url</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+            <div class="col-gap-20">
+                <div id="tbl-events">
+                </div>
+                @*<table class="table table-responsive" id="tbl-events">
+                        <thead>
+                            <tr>
+                                <th>Event Name</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Event Url</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>*@
             </div>
         </div>
     </div>
 </div>
 
 <script id="eventsTemplate" type="x-tmpl-mustache">
-   <tr>
-    <td>{{eventName}}</td>
-    <td>{{eventStartDateTime}}</td>
-    <td>{{eventEndDateTime}}</td>
-    <td>{{eventUrl}}</td>
-    <td><a href="javascript:void(0);" id="view-items" data-event-id="{{uniqueId}}">View Details</a></td>
-</tr>
+    <div class="col-lg-6 col-sm-6">
+        <div class="golf-event closed">
+            <div class="item-section-border">
+            @*<div class="image">
+                <img src="{{imageName}}" alt="">
+
+            </div>*@
+            <div class="desc">
+                <p class="name" style="min-height:30px;">{{eventName}}</p>
+                <div style="margin-bottom:20px;">Item Count: {{itemCount}}</div>
+                <ul>
+                    <li style="text-align:left;">
+                        Start Date:
+                        <span style="display:inline-block;">{{eventStartDateTimeStr}}</span>
+                    </li>
+                </ul>
+                <div style="display:flex; margin-top:10px; justify-content:space-between;">
+                <button class="btn btn-default gray-btn" data-event-id={{uniqueId}} id="view-items" style="cursor:pointer; background:gray;color:#fff;border:0">View</button>
+                <button class="btn btn-primary" id="viewRegister" style="cursor:pointer">Register</button>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
 </script>
 @section Scripts
 {
@@ -85,10 +125,11 @@
 
                         var totalItems = 0;
 
-                        $("#tbl-events tbody").empty();
+                        $("#tbl-events").empty();
                         $.each(response.result.data, function (i, v) {
+                            v.imageName = WebSiteUrl + "/auction/images/no-img.png";
                             var output = Mustache.render($("#eventsTemplate").html(), v);
-                            $("#tbl-events tbody").append(output);
+                            $("#tbl-events").append(output);
                             totalItems += 1;
                         });
                         $("#eventCount").text('(' + totalItems + ')');

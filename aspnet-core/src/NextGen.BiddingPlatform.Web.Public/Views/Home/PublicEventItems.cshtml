@@ -9,8 +9,16 @@
     var tenantId = ConfigurationBinder.GetValue<string>(appConfiguration, "App:TenantId", string.Empty);
 }
 <style>
-    .hide-nav-items {
-        display: none !important;
+    .myActivity,
+    .pay-item,
+    .donate-item,
+    .account a::after {
+        display: none;
+    }
+
+    .account a:first-child {
+        padding-right: 0 !important;
+        margin-right: 0 !important;
     }
 </style>
 
