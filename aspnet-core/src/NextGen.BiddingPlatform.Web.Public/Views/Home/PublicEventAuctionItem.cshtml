@@ -1,13 +1,27 @@
 ﻿@using Microsoft.AspNetCore.Hosting
 @using NextGen.BiddingPlatform.Configuration
 @using Microsoft.Extensions.Configuration
+
+@using NextGen.BiddingPlatform.Web.Session
+@using NextGen.BiddingPlatform.ApplicationConfigurations
+
 @inject IWebHostEnvironment env
+
+@inject IPerRequestSessionCache _sessionCache
+@inject IApplicationConfigurationsAppService _appConfigService
 @{
     var appConfiguration = env.GetAppConfiguration();
     var apiServerPath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:ApiWebSiteRootAddress", string.Empty);
     var webSitePath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:WebSiteRootAddress", string.Empty);
-    var externalLoginUrl = ConfigurationBinder.GetValue<string>(appConfiguration, "App:ExternalLoginSiteRootAddress", string.Empty);
     var tenantId = ConfigurationBinder.GetValue<string>(appConfiguration, "App:TenantId", string.Empty);
+
+    var userLoggedIn = await _sessionCache.GetCurrentLoginInformationsAsync();
+    var isLogin = userLoggedIn.User != null ? true : false;
+    var registerEventRoute = "";
+    if (!isLogin)
+    {
+        registerEventRoute = await _appConfigService.GetConfigByKey("RegisterEventUrl");
+    }
 }
 <style>
     .hide-nav-items {
@@ -71,7 +85,7 @@
                                 <div class="bid">
                                     <div class="green-text text-center">Want to place a bid?</div>
                                     <div class="button-row mb-30">
-                                        <a href="javascript:void(0);" id="loginOrRegister" class="btn btn-primary">REGISTER NOW</a>
+                                        <a href="javascript:void(0);" id="loginOrRegister" data-event-id="@ViewBag.EventId" class="btn btn-primary">REGISTER NOW</a>
                                     </div>
                                     @*<div class="black-text text-center">Already have an account?</div>
                                         <div class="button-row">
@@ -174,8 +188,10 @@
             });
         });
 
-        $(document).on("click", "#loginOrRegister", function () {
-            location.href = "@externalLoginUrl";
+        $(document).on("click", "#loginOrRegister", function (e) {
+             e.preventDefault();
+            var eventId = $(this).attr("data-event-id");
+            location.href = "@registerEventRoute".replace("{eventId}", eventId);
         });
     </script>
 

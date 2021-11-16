@@ -1,12 +1,28 @@
 ﻿@using Microsoft.AspNetCore.Hosting
 @using NextGen.BiddingPlatform.Configuration
 @using Microsoft.Extensions.Configuration
+@using NextGen.BiddingPlatform.Web.Session
+@using NextGen.BiddingPlatform.ApplicationConfigurations
 @inject IWebHostEnvironment env
+@inject IPerRequestSessionCache _sessionCache
+@inject IApplicationConfigurationsAppService _appConfigService
 @{
     var appConfiguration = env.GetAppConfiguration();
     var apiServerPath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:ApiWebSiteRootAddress", string.Empty);
     var webSitePath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:WebSiteRootAddress", string.Empty);
     var tenantId = ConfigurationBinder.GetValue<string>(appConfiguration, "App:TenantId", string.Empty);
+    var userLoggedIn = await _sessionCache.GetCurrentLoginInformationsAsync();
+    var isLogin = userLoggedIn.User != null ? true : false;
+    var registerEventRoute = "";
+    var userID = "";
+    if (!isLogin)
+    {
+        registerEventRoute = await _appConfigService.GetConfigByKey("RegisterEventUrl");
+    }
+    else
+    {
+        userID = userLoggedIn.User.Id.ToString();
+    }
 }
 <style>
     /* .hide-nav-items {
@@ -20,8 +36,8 @@
     }
 
     .account a:first-child {
-        padding-right:0 !important;
-        margin-right:0 !important;
+        padding-right: 0 !important;
+        margin-right: 0 !important;
     }
 
     .btn.btn-default.gray-btn:hover,
@@ -30,8 +46,9 @@
         color: gray !important;
         border: 2px solid gray !important;
     }
-    button.btn{
-        width:49%;
+
+    button.btn {
+        width: 49%;
     }
 </style>
 <div class="inner-wrapper">
@@ -49,19 +66,6 @@
             <div class="col-gap-20">
                 <div id="tbl-events">
                 </div>
-                @*<table class="table table-responsive" id="tbl-events">
-                        <thead>
-                            <tr>
-                                <th>Event Name</th>
-                                <th>Start Date</th>
-                                <th>End Date</th>
-                                <th>Event Url</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>*@
             </div>
         </div>
     </div>
@@ -84,10 +88,16 @@
                         <span style="display:inline-block;">{{eventStartDateTimeStr}}</span>
                     </li>
                 </ul>
-                <div style="display:flex; margin-top:10px; justify-content:space-between;">
-                <button class="btn btn-default gray-btn" data-event-id={{uniqueId}} id="view-items" style="cursor:pointer; background:gray;color:#fff;border:0">View</button>
-                <button class="btn btn-primary" id="viewRegister" style="cursor:pointer">Register</button>
-                </div>
+                 {{#isRegistered}}
+                    <button class="btn btn-default gray-btn" data-event-id={{uniqueId}} id="startBidding" style="cursor:pointer; background:gray;color:#fff;border:0; width:100%;">Start Bidding</button>
+                 {{/isRegistered}}
+                 {{^isRegistered}}
+                 <div style="display:flex; margin-top:10px; justify-content:space-between;">
+                 <button class="btn btn-default gray-btn" data-event-id={{uniqueId}} id="view-items" style="cursor:pointer;background:gray;color:#fff;border:0">View</button>
+                 <button class="btn btn-primary" id="registerToEvent" data-event-id={{uniqueId}} style="cursor:pointer">Register</button>
+                 </div>
+                 {{/isRegistered}}
+
             </div>
         </div>
         </div>
@@ -99,6 +109,7 @@
         var ApiServerPath = "@apiServerPath";
         var WebSiteUrl = "@webSitePath";
         var tenantId = "@tenantId";
+        var isLoggedInUser = "@isLogin".toLowerCase();
 
         $(function () {
             $(".myActivity").addClass("hide-nav-items");
@@ -123,16 +134,13 @@
                     if (response.success) {
                         console.log(response);
 
-                        var totalItems = 0;
 
-                        $("#tbl-events").empty();
-                        $.each(response.result.data, function (i, v) {
-                            v.imageName = WebSiteUrl + "/auction/images/no-img.png";
-                            var output = Mustache.render($("#eventsTemplate").html(), v);
-                            $("#tbl-events").append(output);
-                            totalItems += 1;
-                        });
-                        $("#eventCount").text('(' + totalItems + ')');
+                        if (isLoggedInUser === "true") {
+                            GetUserRegisterEvets(response.result.data);
+                        }
+                        else {
+                            AppendEvents(response.result.data);
+                        }
                     }
                     else if (!response.success) {
                         alert(response.result.error.message);
@@ -147,12 +155,76 @@
             });
         });
 
+        function AppendEvents(data) {
+            var totalItems = 0;
+            $("#tbl-events").empty();
+            $.each(data, function (i, v) {
+                v.imageName = WebSiteUrl + "/auction/images/no-img.png";
+                var output = Mustache.render($("#eventsTemplate").html(), v);
+                $("#tbl-events").append(output);
+                totalItems += 1;
+            });
+            $("#eventCount").text('(' + totalItems + ')');
+        }
+
+        function GetUserRegisterEvets(eventsData) {
+            var route = "/api/services/app/UserEvents/GetUserRegisterEvents?userId=" + "@userID";
+            $.ajax({
+                url: ApiServerPath + route,
+                headers: {
+                    "Abp.TenantId": tenantId
+                },
+                type: "GET",
+                cache: false,
+                async: true,
+                contentType: "application/json",
+                dataType: "json",
+                success: function (response) {
+                    if (response.success) {
+                        $.each(eventsData, function (i, s) {
+
+                            if (response.result.some((x) => x === s.uniqueId)) {
+                                s.isRegistered = true;
+                            }
+                            else {
+                                s.isRegistered = false;
+                            }
+                        });
+                        AppendEvents(eventsData);
+                    }
+                    else if (!response.success) {
+                        alert(response.result.error.message);
+                    }
+                    else {
+                        alert("Internal server error!!");
+                    }
+                },
+                error: function (xhr) {
+                    console.log(xhr.responseText + " " + xhr.status)
+                }
+            });
+        }
+
+
         $(document).on("click", "#view-items", function (e) {
             e.preventDefault();
 
             var uniqueId = $(this).attr("data-event-id");
 
             location.replace("/Home/PublicEventItems?eventId=" + uniqueId);
+        });
+
+        $(document).on("click", "#registerToEvent", function (e) {
+            e.preventDefault();
+            var eventId = $(this).attr("data-event-id");
+            location.href = "@registerEventRoute".replace("{eventId}", eventId);
+        });
+
+        $(document).on("click", "#startBidding", function (e) {
+            e.preventDefault();
+
+            var eventId = $(this).attr("data-event-id");
+            location.href = "/Home/Index?eventId=" + eventId;
         });
 
     </script>

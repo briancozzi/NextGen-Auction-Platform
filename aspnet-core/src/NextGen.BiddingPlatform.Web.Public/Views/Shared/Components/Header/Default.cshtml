@@ -24,6 +24,10 @@
                 @Model.GetShownLoginName()
             </li>
         }
+        else
+        {
+            <li><a href="/Account/NewLogin">Login</a></li>
+        }
 
     </ul>
 </nav>
@@ -56,13 +60,15 @@
                             }
                             else
                             {
-                                <a href="@(string.Format("{0}{1}?ss={2}&returnUrl={3}", Model.AdminWebSiteRootAddress, "account/login", "true", Model.WebSiteRootAddress + "Account/Login"))">LOGIN</a>
+                                @*<a href="@(string.Format("{0}{1}?ss={2}&returnUrl={3}", Model.AdminWebSiteRootAddress, "account/login", "true", Model.WebSiteRootAddress + "Account/Login"))">LOGIN</a>*@
+
+                                <a href="/Account/NewLogin">LOGIN</a>
 
                             }
-                            @if (Model.LoginInformations?.User == null && Model.IsMultiTenancyEnabled && Model.TenantRegistrationEnabled && Model.IsInHostView)
-                            {
-                                <a href="@(string.Format("{0}{1}", Model.AdminWebSiteRootAddress,"?redirect=TenantRegistration&forceNewRegistration=true"))">SIGNUP</a>
-                            }
+                            @*@if (Model.LoginInformations?.User == null && Model.IsMultiTenancyEnabled && Model.TenantRegistrationEnabled && Model.IsInHostView)
+                                {
+                                    <a href="@(string.Format("{0}{1}", Model.AdminWebSiteRootAddress,"?redirect=TenantRegistration&forceNewRegistration=true"))">SIGNUP</a>
+                                }*@
                         </li>
                     </ul>
                     <ul class="list-inline d-none show-on-md">

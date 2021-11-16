@@ -1,12 +1,26 @@
 ﻿@using Microsoft.AspNetCore.Hosting
 @using NextGen.BiddingPlatform.Configuration
 @using Microsoft.Extensions.Configuration
+
+@using NextGen.BiddingPlatform.Web.Session
+@using NextGen.BiddingPlatform.ApplicationConfigurations
 @inject IWebHostEnvironment env
+
+@inject IPerRequestSessionCache _sessionCache
+@inject IApplicationConfigurationsAppService _appConfigService
 @{
     var appConfiguration = env.GetAppConfiguration();
     var apiServerPath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:ApiWebSiteRootAddress", string.Empty);
     var webSitePath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:WebSiteRootAddress", string.Empty);
     var tenantId = ConfigurationBinder.GetValue<string>(appConfiguration, "App:TenantId", string.Empty);
+
+    var userLoggedIn = await _sessionCache.GetCurrentLoginInformationsAsync();
+    var isLogin = userLoggedIn.User != null ? true : false;
+    var registerEventRoute = "";
+    if (!isLogin)
+    {
+        registerEventRoute = await _appConfigService.GetConfigByKey("RegisterEventUrl");
+    }
 }
 <style>
     .myActivity,
@@ -33,7 +47,7 @@
                     Search Results <span id="itemCount"></span>
                 </div>
                 <div class="">
-                    <button class="btn btn-primary" style="padding: 4px 20px 5px;">Register</button>
+                    <button class="btn btn-primary" style="padding: 4px 20px 5px;" id="registerToEvent" data-event-id="@ViewBag.EventId">Register</button>
                 </div>
             </div>
             <div class="row col-gap-20" id="auctionItems">
@@ -109,24 +123,18 @@
             e.preventDefault();
             var isClosedAuction = $(this).parents(".golf-event").attr("data-is-closed-auction");
             var itemStatus = $(this).parents(".golf-event").attr("data-itemstatus");
-            //if (isClosedAuction == "true") {
-            //    if (IsLoggedInUser == "true") {
-            //        location.href = "/Home/ProductDetailClosedWithLogin?id=" + $(this).parents(".golf-event").attr("data-id") + "&itemStatus=" + itemStatus;
-            //    }
-            //    else {
-            //        location.href = "/Home/ProductDetailClosed?id=" + $(this).parents(".golf-event").attr("data-id") + "&itemStatus=" + itemStatus;
-            //    }
-            //}
-            //else {
-            //    if (IsLoggedInUser == "true") {
-            //        location.href = "/Home/ProductDetailWithLogin?id=" + $(this).parents(".golf-event").attr("data-id") + "&itemStatus=" + itemStatus;
-            //    }
-            //    else {
-            //        location.href = "/Home/ProductDetail?id=" + $(this).parents(".golf-event").attr("data-id");
-            //    }
-            //}
 
-            location.href = "/Home/PublicEventAuctionItem?auctionItemId=" + $(this).parents(".golf-event").attr("data-id");
+            var route = "/Home/PublicEventAuctionItem?auctionItemId=" + $(this).parents(".golf-event").attr("data-id");
+            route += "&eventId=" + eventId;
+
+
+            location.href = route;
+        });
+
+         $(document).on("click", "#registerToEvent", function (e) {
+            e.preventDefault();
+            var eventId = $(this).attr("data-event-id");
+            location.href = "@registerEventRoute".replace("{eventId}", eventId);
         });
 
     </script>

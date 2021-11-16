@@ -139,7 +139,9 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
 
         public async Task<IActionResult> NewLogin()
         {
-            return View();
+            var tenancyName = await GetCurrentTenancyName();
+            var externalSiteAddress = ReplaceTenancyNameInUrl(await _applicationConfigService.GetConfigByKey("LoginUrl"), tenancyName);
+            return Redirect(externalSiteAddress);
         }
     }
 }
