@@ -95,6 +95,8 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
                         var itemCount = x.EventAuctions.Select(s => s.AuctionItems.Where(x => x.Item.IsShow).Count()).Sum();
                         if (itemCount > 0)
                         {
+                            var isEventExpired = ((x.EventEndDateTime - DateTime.UtcNow).TotalSeconds <= 0 || x.EventAuctions.Any(c => c.AuctionItems.Any(d => d.IsBiddingClosed))) ? true : false;
+
                             eventsData.Add(new AccountEventListDto
                             {
                                 Id = x.Id,
@@ -106,7 +108,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
                                 TimeZone = x.TimeZone,
                                 UniqueId = x.UniqueId,
                                 ItemCount = itemCount,
-                                IsEventClosedOrExpired = x.EventAuctions.Any(c => c.AuctionItems.Any(d => d.IsBiddingClosed))
+                                IsEventClosedOrExpired = isEventExpired
                             });
                         }
                     }
