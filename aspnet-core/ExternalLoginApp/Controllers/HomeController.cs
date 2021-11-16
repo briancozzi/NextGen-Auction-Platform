@@ -251,5 +251,12 @@ namespace ExternalLoginApp.Controllers
         {
             return View("~/Views/Home/Logout.cshtml");
         }
+
+        [HttpGet]
+        [Route("Home/Register/{eventId}")]
+        public IActionResult Register(Guid eventId)
+        {
+            return View();
+        }
     }
 }

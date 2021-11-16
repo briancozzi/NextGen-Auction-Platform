@@ -12,6 +12,7 @@ using NextGen.BiddingPlatform.AuctionHistory.Dto;
 using NextGen.BiddingPlatform.AuctionItem;
 using NextGen.BiddingPlatform.AuctionItem.Dto;
 using NextGen.BiddingPlatform.Sessions.Dto;
+using NextGen.BiddingPlatform.UserEvents;
 using NextGen.BiddingPlatform.Web.Controllers;
 using NextGen.BiddingPlatform.Web.Public.Notification;
 using NextGen.BiddingPlatform.Web.Session;
@@ -37,13 +38,14 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
         private readonly IAuctionItemAppService _auctionItemAppService;
         private readonly IAuctionHistoryAppService _auctionHistoryAppService;
         private readonly IApplicationConfigurationsAppService _appConfigAppService;
-
+        private readonly IUserEventsAppService _userEventsAppService;
         public HomeController(IPerRequestSessionCache sessionCache,
                               INotificationManager notificationManager,
                               IWebhookSubscriptionAppService webhookSubscriptionService,
                               IAuctionItemAppService auctionItemAppService,
                               IAuctionHistoryAppService auctionHistoryAppService,
-                              IApplicationConfigurationsAppService appConfigAppService)
+                              IApplicationConfigurationsAppService appConfigAppService,
+                              IUserEventsAppService userEventsAppService)
         {
             _sessionCache = sessionCache;
             _notify = notificationManager;
@@ -51,6 +53,7 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
             _auctionItemAppService = auctionItemAppService;
             _auctionHistoryAppService = auctionHistoryAppService;
             _appConfigAppService = appConfigAppService;
+            _userEventsAppService = userEventsAppService;
         }
         #region pages
 
@@ -130,9 +133,10 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
             return View();
         }
 
-        public IActionResult PublicEventAuctionItem(Guid auctionItemId)
+        public IActionResult PublicEventAuctionItem(Guid eventId, Guid auctionItemId)
         {
             ViewBag.AuctionItemId = auctionItemId;
+            ViewBag.EventId = eventId;
             return View();
         }
 
