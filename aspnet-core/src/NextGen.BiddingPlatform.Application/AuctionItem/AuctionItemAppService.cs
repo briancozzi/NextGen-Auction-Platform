@@ -76,7 +76,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
                                                 .Include(s => s.Item).ThenInclude(s => s.CategoryFk)
                                                 .Include(s => s.AuctionHistories)
                                                 .Include($"{nameof(Core.AuctionItems.AuctionItem.AuctionHistories)}.{nameof(Core.AuctionHistories.AuctionHistory.AuctionBidder)}")
-                                                    .AsNoTracking().Where(s => s.Auction.EventId == @event.Id && s.Item.IsShow);
+                                                    .AsNoTracking().Where(s => s.Auction.EventId == @event.Id);
 
             if (categoryId > 0)
                 query = query.Where(s => s.Item.CategoryId == categoryId);
