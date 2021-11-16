@@ -84,7 +84,8 @@ namespace NextGen.BiddingPlatform.AuctionHistory
             var highestBidHistory = await _auctionHistoryRepository.GetAll().Include(s => s.AuctionItem).Include(x => x.AuctionBidder).AsNoTracking().Where(s => s.AuctionItemId == auctionItem.Id && !s.IsOutBid).OrderByDescending(x => x.CreationTime).FirstOrDefaultAsync();
 
             var mappedDto = ObjectMapper.Map<AuctionHistoryDto>(highestBidHistory);
-            mappedDto.BidderName = highestBidHistory?.AuctionBidder?.BidderName;
+            if (mappedDto != null)
+                mappedDto.BidderName = highestBidHistory?.AuctionBidder?.BidderName;
 
             return mappedDto;
         }
