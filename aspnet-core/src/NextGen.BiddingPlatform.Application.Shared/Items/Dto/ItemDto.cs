@@ -42,6 +42,7 @@ namespace NextGen.BiddingPlatform.Items.Dto
         [Required]
         public double Expense { get; set; }
         public bool IsHide { get; set; }
+        public bool IsShow { get; set; }
         public ICollection<ItemGalleryDto> ItemImages { get; set; }
         public ICollection<int> Categories { get; set; }
 

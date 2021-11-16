@@ -52,7 +52,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
             _webHookPublisher = webhookPublisher;
         }
         [AbpAllowAnonymous]
-        public async Task<ApiResponse<List<AccountEventListDto>>> GetAllAnnonymousAccountEvents()
+        public async Task<ApiResponse<List<AccountEventListDto>>> GetAllAnnonymousAccountEvents(bool includeClosed = false)
         {
             List<AccountEventListDto> eventsData = new List<AccountEventListDto>();
             try
@@ -61,28 +61,56 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
                 .Include(s => s.AppAccount)
                 .Include(s => s.EventAuctions)
                 .Include($"{nameof(Event.EventAuctions)}.{nameof(Core.Auctions.Auction.AuctionItems)}")
+                .Include($"{nameof(Event.EventAuctions)}.{nameof(Core.Auctions.Auction.AuctionItems)}.{nameof(Core.AuctionItems.AuctionItem.Item)}")
                 .Where(x => x.EventAuctions.Any(c => c.AuctionItems.Any())).ToListAsync();
 
-
+                var tenantOd = AbpSession.TenantId;
                 foreach (var x in query)
                 {
-                    if (x.EventAuctions.Any(s => s.AuctionEndDateTime >= DateTime.UtcNow))
+                    if (!includeClosed)
                     {
-                        var itemCount = x.EventAuctions.Select(s => s.AuctionItems.Count).Sum();
-
-                        eventsData.Add(new AccountEventListDto
+                        if (x.EventAuctions.Any(s => s.AuctionEndDateTime >= DateTime.UtcNow))
                         {
-                            Id = x.Id,
-                            AppAccountUniqueId = x.AppAccount.UniqueId,
-                            EventEndDateTime = x.EventEndDateTime,//.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
-                            EventStartDateTime = x.EventStartDateTime,//.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
-                            EventName = x.EventName,
-                            EventUrl = x.EventUrl,
-                            TimeZone = x.TimeZone,
-                            UniqueId = x.UniqueId,
-                            ItemCount = itemCount
-                        });
+                            var itemCount = x.EventAuctions.Select(s => s.AuctionItems.Where(x => x.Item.IsShow).Count()).Sum();
+                            if (itemCount > 0)
+                            {
+                                eventsData.Add(new AccountEventListDto
+                                {
+                                    Id = x.Id,
+                                    AppAccountUniqueId = x.AppAccount.UniqueId,
+                                    EventEndDateTime = x.EventEndDateTime,//.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
+                                    EventStartDateTime = x.EventStartDateTime,//.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
+                                    EventName = x.EventName,
+                                    EventUrl = x.EventUrl,
+                                    TimeZone = x.TimeZone,
+                                    UniqueId = x.UniqueId,
+                                    ItemCount = itemCount,
+                                    IsEventClosedOrExpired = false
+                                });
+                            }
+                        }
                     }
+                    else
+                    {
+                        var itemCount = x.EventAuctions.Select(s => s.AuctionItems.Where(x => x.Item.IsShow).Count()).Sum();
+                        if (itemCount > 0)
+                        {
+                            eventsData.Add(new AccountEventListDto
+                            {
+                                Id = x.Id,
+                                AppAccountUniqueId = x.AppAccount.UniqueId,
+                                EventEndDateTime = x.EventEndDateTime,//.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
+                                EventStartDateTime = x.EventStartDateTime,//.ConvertTimeFromUtcToUserTimeZone(currentUserTimeZone),
+                                EventName = x.EventName,
+                                EventUrl = x.EventUrl,
+                                TimeZone = x.TimeZone,
+                                UniqueId = x.UniqueId,
+                                ItemCount = itemCount,
+                                IsEventClosedOrExpired = x.EventAuctions.Any(c => c.AuctionItems.Any(d => d.IsBiddingClosed))
+                            });
+                        }
+                    }
+
                 }
 
                 return new ApiResponse<List<AccountEventListDto>>
@@ -93,7 +121,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
                     //StatusCode = HttpStatusCode.OK
                 };
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return new ApiResponse<List<AccountEventListDto>>
                 {

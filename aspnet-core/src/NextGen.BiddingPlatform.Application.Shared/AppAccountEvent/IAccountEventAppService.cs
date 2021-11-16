@@ -19,7 +19,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
         Task<AccountEventDto> GetAccountEventById(Guid input);
         Task<AccountEventListDto> GetEventDateTimeByEventId(Guid Id);
 
-        Task<ApiResponse<List<AccountEventListDto>>> GetAllAnnonymousAccountEvents();
+        Task<ApiResponse<List<AccountEventListDto>>> GetAllAnnonymousAccountEvents(bool includeClosed = false);
         Task<EventWithAuctionItems> GetEventById(int id);
 
         Task CloseBiddingOnEvent(Guid eventId);

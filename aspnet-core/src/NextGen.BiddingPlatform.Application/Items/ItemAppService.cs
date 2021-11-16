@@ -261,7 +261,8 @@ namespace NextGen.BiddingPlatform.Items
                 existingItem.ThumbnailImage = input.ThumbnailImage;
                 existingItem.VideoLink = input.VideoLink;
                 existingItem.CategoryId = input.CategoryId;
-                existingItem.IsHide = input.IsHide;
+                //existingItem.IsHide = input.IsHide;
+                existingItem.IsShow = input.IsShow;
                 await _itemRepository.UpdateAsync(existingItem);
 
             }

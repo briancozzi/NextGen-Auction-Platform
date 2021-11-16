@@ -172,8 +172,8 @@
                         $("#totalBids").text(data.totalBidCount);
                         $("#itemDescription").text(data.itemDescription);
                         var imageFullPath = "";
-                        if (data.imageName != null) {
-                            imageFullPath = ApiServerPath + data.imageName;
+                        if (data.mainImageName != undefined) {
+                            imageFullPath = ApiServerPath + data.mainImageName;
                         }
                         else {
                             imageFullPath = WebSiteUrl + "/auction/images/no-img.png";

@@ -639,10 +639,15 @@ export class AccountEventServiceProxy {
     }
 
     /**
+     * @param includeClosed (optional) 
      * @return Success
      */
-    getAllAnnonymousAccountEvents(): Observable<ApiResponseOfListOfAccountEventListDto> {
-        let url_ = this.baseUrl + "/api/services/app/AccountEvent/GetAllAnnonymousAccountEvents";
+    getAllAnnonymousAccountEvents(includeClosed: boolean | undefined): Observable<ApiResponseOfListOfAccountEventListDto> {
+        let url_ = this.baseUrl + "/api/services/app/AccountEvent/GetAllAnnonymousAccountEvents?";
+        if (includeClosed === null)
+            throw new Error("The parameter 'includeClosed' cannot be null.");
+        else if (includeClosed !== undefined)
+            url_ += "includeClosed=" + encodeURIComponent("" + includeClosed) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -18793,6 +18798,78 @@ export class UserDelegationServiceProxy {
 }
 
 @Injectable()
+export class UserEventsServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    /**
+     * @param userId (optional) 
+     * @return Success
+     */
+    getUserRegisterEvents(userId: number | undefined): Observable<string[]> {
+        let url_ = this.baseUrl + "/api/services/app/UserEvents/GetUserRegisterEvents?";
+        if (userId === null)
+            throw new Error("The parameter 'userId' cannot be null.");
+        else if (userId !== undefined)
+            url_ += "userId=" + encodeURIComponent("" + userId) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetUserRegisterEvents(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetUserRegisterEvents(<any>response_);
+                } catch (e) {
+                    return <Observable<string[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<string[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetUserRegisterEvents(response: HttpResponseBase): Observable<string[]> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(item);
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<string[]>(<any>null);
+    }
+}
+
+@Injectable()
 export class UserFavoriteItemServiceProxy {
     private http: HttpClient;
     private baseUrl: string;
@@ -20982,8 +21059,12 @@ export class AccountEventListDto implements IAccountEventListDto {
     eventName!: string | undefined;
     eventStartDateTime!: moment.Moment;
     eventEndDateTime!: moment.Moment;
+    readonly eventStartDateTimeStr!: string | undefined;
+    readonly eventEndDateTimeStr!: string | undefined;
     eventUrl!: string | undefined;
     timeZone!: string | undefined;
+    itemCount!: number;
+    isEventClosedOrExpired!: boolean;
 
     constructor(data?: IAccountEventListDto) {
         if (data) {
@@ -21002,8 +21083,12 @@ export class AccountEventListDto implements IAccountEventListDto {
             this.eventName = _data["eventName"];
             this.eventStartDateTime = _data["eventStartDateTime"] ? moment(_data["eventStartDateTime"].toString()) : <any>undefined;
             this.eventEndDateTime = _data["eventEndDateTime"] ? moment(_data["eventEndDateTime"].toString()) : <any>undefined;
+            (<any>this).eventStartDateTimeStr = _data["eventStartDateTimeStr"];
+            (<any>this).eventEndDateTimeStr = _data["eventEndDateTimeStr"];
             this.eventUrl = _data["eventUrl"];
             this.timeZone = _data["timeZone"];
+            this.itemCount = _data["itemCount"];
+            this.isEventClosedOrExpired = _data["isEventClosedOrExpired"];
         }
     }
 
@@ -21022,8 +21107,12 @@ export class AccountEventListDto implements IAccountEventListDto {
         data["eventName"] = this.eventName;
         data["eventStartDateTime"] = this.eventStartDateTime ? this.eventStartDateTime.toISOString() : <any>undefined;
         data["eventEndDateTime"] = this.eventEndDateTime ? this.eventEndDateTime.toISOString() : <any>undefined;
+        data["eventStartDateTimeStr"] = this.eventStartDateTimeStr;
+        data["eventEndDateTimeStr"] = this.eventEndDateTimeStr;
         data["eventUrl"] = this.eventUrl;
         data["timeZone"] = this.timeZone;
+        data["itemCount"] = this.itemCount;
+        data["isEventClosedOrExpired"] = this.isEventClosedOrExpired;
         return data; 
     }
 }
@@ -21035,8 +21124,12 @@ export interface IAccountEventListDto {
     eventName: string | undefined;
     eventStartDateTime: moment.Moment;
     eventEndDateTime: moment.Moment;
+    eventStartDateTimeStr: string | undefined;
+    eventEndDateTimeStr: string | undefined;
     eventUrl: string | undefined;
     timeZone: string | undefined;
+    itemCount: number;
+    isEventClosedOrExpired: boolean;
 }
 
 export class ApiResponseOfListOfAccountEventListDto implements IApiResponseOfListOfAccountEventListDto {
@@ -29957,6 +30050,7 @@ export class UpdateItemDto implements IUpdateItemDto {
     donatedBy!: string | undefined;
     expense!: number;
     isHide!: boolean;
+    isShow!: boolean;
     itemImages!: ItemGalleryDto[] | undefined;
     categories!: number[] | undefined;
     removeImageIds!: number[] | undefined;
@@ -29994,6 +30088,7 @@ export class UpdateItemDto implements IUpdateItemDto {
             this.donatedBy = _data["donatedBy"];
             this.expense = _data["expense"];
             this.isHide = _data["isHide"];
+            this.isShow = _data["isShow"];
             if (Array.isArray(_data["itemImages"])) {
                 this.itemImages = [] as any;
                 for (let item of _data["itemImages"])
@@ -30043,6 +30138,7 @@ export class UpdateItemDto implements IUpdateItemDto {
         data["donatedBy"] = this.donatedBy;
         data["expense"] = this.expense;
         data["isHide"] = this.isHide;
+        data["isShow"] = this.isShow;
         if (Array.isArray(this.itemImages)) {
             data["itemImages"] = [];
             for (let item of this.itemImages)
@@ -30085,6 +30181,7 @@ export interface IUpdateItemDto {
     donatedBy: string | undefined;
     expense: number;
     isHide: boolean;
+    isShow: boolean;
     itemImages: ItemGalleryDto[] | undefined;
     categories: number[] | undefined;
     removeImageIds: number[] | undefined;
@@ -30113,6 +30210,7 @@ export class ItemDto implements IItemDto {
     donatedBy!: string | undefined;
     expense!: number;
     isHide!: boolean;
+    isShow!: boolean;
     itemImages!: ItemGalleryDto[] | undefined;
     categories!: number[] | undefined;
 
@@ -30149,6 +30247,7 @@ export class ItemDto implements IItemDto {
             this.donatedBy = _data["donatedBy"];
             this.expense = _data["expense"];
             this.isHide = _data["isHide"];
+            this.isShow = _data["isShow"];
             if (Array.isArray(_data["itemImages"])) {
                 this.itemImages = [] as any;
                 for (let item of _data["itemImages"])
@@ -30193,6 +30292,7 @@ export class ItemDto implements IItemDto {
         data["donatedBy"] = this.donatedBy;
         data["expense"] = this.expense;
         data["isHide"] = this.isHide;
+        data["isShow"] = this.isShow;
         if (Array.isArray(this.itemImages)) {
             data["itemImages"] = [];
             for (let item of this.itemImages)
@@ -30230,6 +30330,7 @@ export interface IItemDto {
     donatedBy: string | undefined;
     expense: number;
     isHide: boolean;
+    isShow: boolean;
     itemImages: ItemGalleryDto[] | undefined;
     categories: number[] | undefined;
 }

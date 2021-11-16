@@ -76,9 +76,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
                                                 .Include(s => s.Item).ThenInclude(s => s.CategoryFk)
                                                 .Include(s => s.AuctionHistories)
                                                 .Include($"{nameof(Core.AuctionItems.AuctionItem.AuctionHistories)}.{nameof(Core.AuctionHistories.AuctionHistory.AuctionBidder)}")
-                                                    .AsNoTracking().Where(s => s.Auction.EventId == @event.Id && s.Item.IsHide);
-
-            query = query.Where(s => s.Auction.EventId == @event.Id);
+                                                    .AsNoTracking().Where(s => s.Auction.EventId == @event.Id && s.Item.IsShow);
 
             if (categoryId > 0)
                 query = query.Where(s => s.Item.CategoryId == categoryId);
@@ -112,7 +110,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 IsClosedItemStatus = s.Item.ItemStatus == (int)ItemStatus.Closed,
                 IsFavorite = "",
                 ActualItemId = s.ItemId,
-                IsHide = s.Item.IsHide,
+                IsHide = !s.Item.IsShow,
                 IsActive = s.Item.IsActive,
                 CategoryId = s.Item.CategoryFk.Id,
                 UniqueCategoryId = s.Item.CategoryFk.UniqueId,
@@ -223,7 +221,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
                     TotalBidCount = output.AuctionHistories.Count,
                     ItemDescription = output.Item.Description,
                     IsActive = output.Item.IsActive,
-                    IsHide = output.Item.IsHide
+                    IsHide = !output.Item.IsShow
                 };
             }
             catch (Exception ex)
@@ -505,7 +503,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 foreach (var s in auctionItems)
                 {
                     //If IsHide = true then show item else hide item
-                    if (s.Item.IsHide && ((s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours <= 0 || s.IsBiddingClosed))
+                    if (s.Item.IsShow && ((s.Auction.AuctionEndDateTime - DateTime.UtcNow).TotalHours <= 0 || s.IsBiddingClosed))
                     {
                         //first winner
                         var winnerDto = s.AuctionHistories.Where(x => !x.IsOutBid).OrderByDescending(c => c.CreationTime).FirstOrDefault();
@@ -590,7 +588,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
                 foreach (var s in auctionItems)
                 {
                     //If IsHide = true then show item else hide item
-                    if (s.Item.IsHide)
+                    if (s.Item.IsShow)
                     {
                         //first winner
                         var winnerDto = s.AuctionHistories.Where(x => !x.IsOutBid).OrderByDescending(c => c.CreationTime).FirstOrDefault();

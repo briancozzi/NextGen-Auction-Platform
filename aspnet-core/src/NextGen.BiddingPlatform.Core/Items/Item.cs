@@ -58,6 +58,8 @@ namespace NextGen.BiddingPlatform.Core.Items
         public double Expense { get; set; }
         public bool IsHide { get; set; }
 
+        public bool IsShow { get; set; }
+
         public ICollection<ItemGallery> ItemImages { get; set; }
         public ICollection<ItemCategory.ItemCategory> ItemCategories { get; set; }
 
