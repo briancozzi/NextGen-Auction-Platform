@@ -119,7 +119,7 @@
 
             $(document).off("click", ".logo, .logo-heading");
 
-            var url = "/api/services/app/AccountEvent/GetAllAnnonymousAccountEvents";
+            var url = "/api/services/app/AccountEvent/GetAllAnnonymousAccountEvents?includeClosed=true";
             $.ajax({
                 url: ApiServerPath + url,
                 headers: {
