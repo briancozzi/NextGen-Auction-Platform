@@ -71,7 +71,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
                     {
                         if (x.EventAuctions.Any(s => s.AuctionEndDateTime >= DateTime.UtcNow))
                         {
-                            var itemCount = x.EventAuctions.Select(s => s.AuctionItems.Where(x => x.Item.IsShow).Count()).Sum();
+                            var itemCount = x.EventAuctions.Select(s => s.AuctionItems.Count()).Sum();
                             if (itemCount > 0)
                             {
                                 eventsData.Add(new AccountEventListDto
@@ -92,7 +92,7 @@ namespace NextGen.BiddingPlatform.AppAccountEvent
                     }
                     else
                     {
-                        var itemCount = x.EventAuctions.Select(s => s.AuctionItems.Where(x => x.Item.IsShow).Count()).Sum();
+                        var itemCount = x.EventAuctions.Select(s => s.AuctionItems.Count()).Sum();
                         if (itemCount > 0)
                         {
                             var isEventExpired = ((x.EventEndDateTime - DateTime.UtcNow).TotalSeconds <= 0 || x.EventAuctions.Any(c => c.AuctionItems.Any(d => d.IsBiddingClosed))) ? true : false;

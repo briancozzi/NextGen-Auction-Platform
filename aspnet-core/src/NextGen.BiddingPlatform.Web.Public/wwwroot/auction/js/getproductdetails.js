@@ -51,7 +51,7 @@ function GetAuctionItem() {
                     $("#lastBidAmount").parent("li").show();
                 }
 
-                if (data.isAuctionExpired || data.isBiddingClosed) {
+                if (data.isAuctionExpired || data.isBiddingClosed || data.isHide) {
                     $("#bidNowBtn").addClass("disbale-btn");
                 }
                 else {

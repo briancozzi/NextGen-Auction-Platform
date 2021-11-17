@@ -76,7 +76,7 @@ namespace NextGen.BiddingPlatform.AuctionItem
                                                 .Include(s => s.Item).ThenInclude(s => s.CategoryFk)
                                                 .Include(s => s.AuctionHistories)
                                                 .Include($"{nameof(Core.AuctionItems.AuctionItem.AuctionHistories)}.{nameof(Core.AuctionHistories.AuctionHistory.AuctionBidder)}")
-                                                    .AsNoTracking().Where(s => s.Auction.EventId == @event.Id && s.Item.IsShow);
+                                                    .AsNoTracking().Where(s => s.Auction.EventId == @event.Id);
 
             if (categoryId > 0)
                 query = query.Where(s => s.Item.CategoryId == categoryId);
@@ -283,7 +283,8 @@ namespace NextGen.BiddingPlatform.AuctionItem
                         AuctionBidderId = s.AuctionBidderId
                     }).ToList(),
                     IsBiddingStarted = isBiddingStarted,
-                    IsBiddingClosed = output.IsBiddingClosed
+                    IsBiddingClosed = output.IsBiddingClosed,
+                    IsHide = !output.Item.IsShow
                 };
                 result.LastBidAmount = result.AuctionItemHistories.OrderByDescending(x => x.BidDate).FirstOrDefault()?.BidAmount ?? 0;
                 result.LastBidWinnerName = result.AuctionItemHistories.OrderByDescending(x => x.BidDate).FirstOrDefault()?.BidderName ?? string.Empty;
