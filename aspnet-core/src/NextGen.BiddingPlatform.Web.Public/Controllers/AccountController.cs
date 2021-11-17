@@ -6,9 +6,12 @@ using Abp;
 using Abp.Extensions;
 using Abp.Runtime.Session;
 using Abp.Timing;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using NextGen.BiddingPlatform.ApplicationConfigurations;
 using NextGen.BiddingPlatform.Authorization.Users;
+using NextGen.BiddingPlatform.Configuration;
 using NextGen.BiddingPlatform.Identity;
 using NextGen.BiddingPlatform.MultiTenancy;
 using NextGen.BiddingPlatform.Url;
@@ -23,19 +26,23 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
         private readonly IWebUrlService _webUrlService;
         private readonly TenantManager _tenantManager;
         private readonly IApplicationConfigurationsAppService _applicationConfigService;
+        private readonly IConfigurationRoot _appConfiguration;
+
         public const string TenancyNamePlaceHolder = "{TENANCY_NAME}";
         public AccountController(
             UserManager userManager,
             SignInManager signInManager,
             IWebUrlService webUrlService,
             TenantManager tenantManager,
-            IApplicationConfigurationsAppService applicationConfigService)
+            IApplicationConfigurationsAppService applicationConfigService,
+            IWebHostEnvironment env)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _webUrlService = webUrlService;
             _tenantManager = tenantManager;
             _applicationConfigService = applicationConfigService;
+            _appConfiguration = env.GetAppConfiguration();
         }
 
         public async Task<ActionResult> Login(string accessToken, string userId, Guid eventId, string tenantId = "", string returnUrl = "")
@@ -140,7 +147,8 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
         public async Task<IActionResult> NewLogin()
         {
             var tenancyName = await GetCurrentTenancyName();
-            var externalSiteAddress = ReplaceTenancyNameInUrl(await _applicationConfigService.GetConfigByKey("LoginUrl"), tenancyName);
+            var tenantId = ConfigurationBinder.GetValue<string>(_appConfiguration, "App:TenantId", string.Empty);
+            var externalSiteAddress = ReplaceTenancyNameInUrl(await _applicationConfigService.GetConfigByKey("LoginUrl",int.Parse(tenantId)), tenancyName);
             return Redirect(externalSiteAddress);
         }
     }

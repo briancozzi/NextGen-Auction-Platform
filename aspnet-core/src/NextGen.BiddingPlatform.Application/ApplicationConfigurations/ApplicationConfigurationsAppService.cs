@@ -14,6 +14,7 @@ using Abp.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Abp.UI;
 using NextGen.BiddingPlatform.Storage;
+using Abp.Domain.Uow;
 
 namespace NextGen.BiddingPlatform.ApplicationConfigurations
 {
@@ -124,13 +125,28 @@ namespace NextGen.BiddingPlatform.ApplicationConfigurations
             await _applicationConfigurationRepository.DeleteAsync(input.Id);
         }
 
-        public async Task<string> GetConfigByKey(string configKey)
+        public async Task<string> GetConfigByKey(string configKey, int tenantId =0)
         {
-            var configFromDb = await _applicationConfigurationRepository.FirstOrDefaultAsync(s => s.ConfigKey == configKey);
-            if (configFromDb == null)
-                throw new UserFriendlyException(configKey + " not found in database. Please configure first!!");
+            if (tenantId == 0)
+            {
+                var configFromDb = await _applicationConfigurationRepository.FirstOrDefaultAsync(s => s.ConfigKey == configKey);
 
-            return configFromDb.ConfigValue;
+                if (configFromDb == null)
+                    throw new UserFriendlyException(configKey + " not found in database. Please configure first!!");
+
+                return configFromDb.ConfigValue;
+            }
+            else {
+                using (CurrentUnitOfWork.DisableFilter(AbpDataFilters.MayHaveTenant))
+                {
+                    var configFromDb = await _applicationConfigurationRepository.FirstOrDefaultAsync(s => s.ConfigKey == configKey && s.TenantId == tenantId);
+
+                    if (configFromDb == null)
+                        throw new UserFriendlyException(configKey + " not found in database. Please configure first!!");
+
+                    return configFromDb.ConfigValue;
+                }
+            }
         }
 
     }

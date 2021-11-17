@@ -17,7 +17,7 @@ namespace NextGen.BiddingPlatform.ApplicationConfigurations
 
         Task Delete(EntityDto input);
 
-        Task<string> GetConfigByKey(string configKey);
+        Task<string> GetConfigByKey(string configKey, int tenantId=0);
 
     }
 }

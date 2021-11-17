@@ -20,7 +20,7 @@
     var registerEventRoute = "";
     if (!isLogin)
     {
-        registerEventRoute = await _appConfigService.GetConfigByKey("RegisterEventUrl");
+        registerEventRoute = await _appConfigService.GetConfigByKey("RegisterEventUrl",int.Parse(tenantId));
     }
 }
 <style>
