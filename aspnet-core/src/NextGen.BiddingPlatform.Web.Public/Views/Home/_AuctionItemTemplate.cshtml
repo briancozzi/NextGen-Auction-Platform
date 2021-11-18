@@ -1,7 +1,7 @@
 ﻿<script id="auctionItemTemplate" type="x-tmpl-mustache">
     {{#isClosedItemStatus}}
     <div class="col-lg-4 col-sm-6">
-        <div class="golf-event closed" data-id="{{auctionItemId}}" data-is-closed-auction="true" data-itemstatus="{{itemStatus}}">
+        <div class="golf-event closed" data-id="{{auctionItemId}}" data-is-closed-auction="true" data-itemstatus="{{itemStatus}}" data-event-id={{eventUniqueId}}>
             <div class="item-section-border">
             <div class="image">
                 <img src="{{imageName}}" alt="">
@@ -11,7 +11,7 @@
             </div>
             <div class="desc">
                 <p class="name">{{itemName}}</p>
-               
+
                 <ul>
                     {{#isBiddingStarted}}
                     <li>
@@ -25,7 +25,12 @@
                         <span>{{remainingDays}} day {{remainingTime}} hrs</span>
                     </li>
                 </ul>
-                <button class="btn btn-primary" id="viewItem" style="cursor:pointer">View Details</button>
+                 {{#isUserLoggedIn}}
+                <button class="btn btn-primary" id="viewItem" style="cursor:pointer">Place Bid</button>
+                {{/isUserLoggedIn}}
+                {{^isUserLoggedIn}}
+                <button class="btn btn-primary" id="registerToEvent" data-event-id={{eventUniqueId}} style="cursor:pointer">Register Now</button>
+                {{/isUserLoggedIn}}
             </div>
         </div>
         </div>
@@ -33,7 +38,7 @@
     {{/isClosedItemStatus}}
     {{^isClosedItemStatus}}
     <div class="col-lg-4 col-sm-6">
-        <div class="golf-event" data-id="{{auctionItemId}}" data-is-closed-auction="false" data-itemstatus="{{itemStatus}}">
+        <div class="golf-event" data-id="{{auctionItemId}}" data-is-closed-auction="false" data-itemstatus="{{itemStatus}}" data-event-id={{eventUniqueId}}>
             <div class="item-section-border">
             <div class="image">
                 <img src="{{imageName}}" alt="">
@@ -60,7 +65,13 @@
 
                     </li>
                 </ul>
-                <button class="btn btn-primary" id="viewItem" style="cursor:pointer">View Details</button>
+
+                {{#isUserLoggedIn}}
+                <button class="btn btn-primary" id="viewItem" style="cursor:pointer">Place Bid</button>
+                {{/isUserLoggedIn}}
+                {{^isUserLoggedIn}}
+                <button class="btn btn-primary" id="registerToEvent" data-event-id={{eventUniqueId}} style="cursor:pointer">Register Now</button>
+                {{/isUserLoggedIn}}
             </div>
         </div>
         </div>

@@ -1,18 +1,47 @@
 ﻿$(function () {
+    if (userId === "") {
+        $(".search-bar, .myActivity, .pay-item, .donate-item").hide();
+    }
+    else {
+
+        $(".search-bar, .myActivity, .pay-item, .donate-item").show();
+    }
+
+    if (!isUserLoggedIn || (isUserLoggedIn && !isRegisterForEvent)) {
+        $(".register-for-bid").show();
+        $(".place-a-bid, .auction-item-history").hide();
+    }
+    else if (isUserLoggedIn && isRegisterForEvent) {
+        $(".register-for-bid").hide();
+        $(".place-a-bid, .auction-item-history").show();
+    }
+
+
     GetAuctionItem();
 });
 function GetAuctionItem() {
     var id = $("#auctionItemId").val();
     var itemStatus = $("#itemStatus").val();
+
+    var route = ApiServerPath + "/api/services/app/AuctionItem/GetAuctionItemWithHistory?Id=" + id;
+    route += "&itemStatus=" + itemStatus;
+    if (userId !== "") {
+        route += "&userId=" + userId;
+    }
+
     $.ajax({
-        url: ApiServerPath + "/api/services/app/AuctionItem/GetAuctionItemWithHistory?Id=" + id + "&itemStatus=" + itemStatus + "&userId=" + userId,
+        url: route,
+        headers: {
+            "Abp.TenantId": tenantId
+        },
         type: "GET",
         contentType: "application/json",
         cache: false,
+        async: true,
         dataType: "json",
         success: function (response) {
 
-            if (response != null || response != undefined) {
+            if (response.success) {
                 var data = response.result;
 
                 var endDate = new Date(Date.parse(data.auctionEndDateTime));
@@ -115,6 +144,12 @@ function GetAuctionItem() {
                         console.log(xhr.responseText + " " + xhr.status)
                     }
                 });
+            }
+            else if (!response.success) {
+                alert(response.error.message);
+            }
+            else {
+                alert("Internal server error!!");
             }
         },
         error: function (xhr) {

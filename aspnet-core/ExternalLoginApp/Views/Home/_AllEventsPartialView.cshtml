@@ -1,4 +1,9 @@
 ﻿@model List<AccountEventListDto>
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration _config
+@{
+    var publicUrl = _config["Bidding:PublicSiteUrl"];
+}
 <table class="table table-responsive">
     <thead>
         <tr>
@@ -13,7 +18,10 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>@item.EventName</td>
+                @{
+                    var eventUrl = publicUrl + "?eventId=" + item.UniqueId;
+                }
+                <td><a href="@eventUrl">@item.EventName</a></td>
                 <td>@item.EventStartDateTime</td>
                 <td>@item.EventEndDateTime</td>
                 <td>@item.EventUrl</td>

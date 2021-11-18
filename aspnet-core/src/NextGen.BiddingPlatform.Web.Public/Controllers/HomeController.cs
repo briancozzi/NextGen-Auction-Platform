@@ -82,9 +82,6 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
         public async Task<ActionResult> Index(Guid eventId)
         {
             ViewBag.IsLoggedInUser = await IsCurrentUserLoggedIn();
-            var user = await _sessionCache.GetCurrentLoginInformationsAsync();
-            ViewBag.UserId = user?.User?.Id;
-            ViewBag.TenantId = user?.Tenant?.Id;
             ViewBag.EventId = eventId;
             return View();
         }
@@ -93,13 +90,11 @@ namespace NextGen.BiddingPlatform.Web.Public.Controllers
             ViewBag.AuctionItemId = id;
             return View();
         }
-        public async Task<ActionResult> ProductDetailWithLogin(Guid id, int itemStatus)
+        public ActionResult ProductDetailWithLogin(Guid id, int itemStatus, Guid eventId)
         {
             ViewBag.AuctionItemId = id;
             ViewBag.ItemStatus = itemStatus;
-            var user = await _sessionCache.GetCurrentLoginInformationsAsync();
-            ViewBag.TenantId = user?.Tenant?.Id;
-            ViewBag.UserId = user?.User?.Id;
+            ViewBag.EventId = eventId;
             return View();
         }
         public ActionResult ProductDetailClosed(Guid id, int itemStatus)

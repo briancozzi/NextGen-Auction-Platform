@@ -9,5 +9,6 @@ namespace NextGen.BiddingPlatform.UserEvents
     public interface IUserEventsAppService : IApplicationService
     {
         Task<List<Guid>> GetUserRegisterEvents(long userId);
+        Task<bool> IsUserRegisteredForAnEvent(long userId, Guid eventId, int tenantId);
     }
 }

@@ -1,22 +1,47 @@
 ﻿@using Microsoft.AspNetCore.Hosting
-@using Microsoft.AspNetCore.Http
 @using NextGen.BiddingPlatform.Configuration
 @using Microsoft.Extensions.Configuration
-@using  NextGen.BiddingPlatform.Caching
-@using NextGen.BiddingPlatform.AuctionHistory.Dto
+@using NextGen.BiddingPlatform.Web.Session
+@using NextGen.BiddingPlatform.ApplicationConfigurations
+@using NextGen.BiddingPlatform.UserEvents
 @inject IWebHostEnvironment env
-@inject IHttpContextAccessor _context
-@inject ICachingAppService _cacheService;
+@inject IPerRequestSessionCache _sessionCache
+@inject IApplicationConfigurationsAppService _appConfigService
+@inject IUserEventsAppService _userEventService
 @{
     var appConfiguration = env.GetAppConfiguration();
     var apiServerPath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:ApiWebSiteRootAddress", string.Empty);
     var webSitePath = ConfigurationBinder.GetValue<string>(appConfiguration, "App:WebSiteRootAddress", string.Empty);
-    //var cookie = _context.HttpContext.Request.Cookies["Abp.AuthToken"];
+    var tenantId = ConfigurationBinder.GetValue<string>(appConfiguration, "App:TenantId", string.Empty);
+
+    var userLoggedIn = await _sessionCache.GetCurrentLoginInformationsAsync();
+    var isLogin = userLoggedIn.User != null ? true : false;
+    var registerEventRoute = "";
+    var userID = "";
+    bool isRegisterForEvent = false;
+    if (!isLogin)
+    {
+        registerEventRoute = await _appConfigService.GetConfigByKey("RegisterEventUrl", int.Parse(tenantId));
+    }
+    else
+    {
+        userID = userLoggedIn.User.Id.ToString();
+        isRegisterForEvent = await _userEventService.IsUserRegisteredForAnEvent(userLoggedIn.User.Id, @ViewBag.EventId, int.Parse(tenantId));
+    }
 }
 <style>
     .disbale-btn {
         pointer-events: none;
         cursor: no-drop;
+    }
+
+    .account a::after {
+        display: none;
+    }
+
+    .account a:first-child {
+        padding-right: 0 !important;
+        margin-right: 0 !important;
     }
 </style>
 <div class="inner-wrapper">
@@ -53,7 +78,7 @@
                                 <input type="hidden" id="auctionBidderId" value="0" />
                                 <input type="hidden" id="auctionBidderName" value="" />
                                 <input type="hidden" id="auctionBiddingClosed" value="false" />
-                                <input type="hidden" id="eventUniqueId"  />
+                                <input type="hidden" id="eventUniqueId" />
                                 <p id="bidderNameFromDb"></p>
                                 <p class="name"></p>
                                 <ul>
@@ -77,6 +102,14 @@
                                     </li>
                                 </ul>
                             </div>
+
+                            <div class="desc mt-0 bbid register-for-bid">
+                                <div class="green-text text-center">Want to place a bid?</div>
+                                <div class="button-row mb-30">
+                                    <a href="javascript:void(0);" id="loginOrRegister" data-event-id="@ViewBag.EventId" class="btn btn-primary">REGISTER NOW</a>
+                                </div>
+                            </div>
+
                             <div class="desc mt-0 b bid place-a-bid">
                                 <h5 class="green-color">PLACE A BID</h5>
                                 <div class="form-group">
@@ -134,7 +167,7 @@
 
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-5">
+                <div class="col-lg-4 col-md-5 auction-item-history">
                     <div class="card">
                         <div class="inner pb-0 pl-0 pr-0">
                             <div class="card-heading d-flex pl-10 pr-10">
@@ -176,8 +209,10 @@
     var ApiServerPath = "@apiServerPath";
     var WebSiteUrl = "@webSitePath";
     var auctionItemId = "@ViewBag.AuctionItemId";
-    var tenantId = '@ViewBag.TenantId';
-    var userId = '@ViewBag.UserId';
+    var tenantId = '@tenantId';
+    var userId = '@userID';
+    var isRegisterForEvent = "@isRegisterForEvent".toLowerCase() === "true";
+    var isUserLoggedIn = userId !== "";
     $(function () {
         const connection = new signalR.HubConnectionBuilder()
                                         .withUrl("/signalr-BidHub")
@@ -377,7 +412,7 @@
 <script>
 
     function SendAuctionWinnerDetails() {
-        
+
         var url = WebSiteUrl + "Home/SendDataToExternalApp?eventId=" + $("#eventUniqueId").val();
         $.ajax({
             url: url,

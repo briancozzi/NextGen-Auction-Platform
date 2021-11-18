@@ -1,49 +1,35 @@
 ﻿$(function () {
     //GetTemplate();
+
+    if (IsLoggedInUser === "true") {
+        $(".search-bar, .myActivity, .pay-item, .donate-item").show();
+    }
+    else {
+        $(".search-bar, .myActivity, .pay-item, .donate-item").hide();
+    }
+
     GetCategories();
     GetAuctionItems();
     //get auction item by id
-    //.golf-event.image,
-    $(document).on("click", ".golf-event .desc, #viewItem", function () {
-        var isClosedAuction = $(this).parents(".golf-event").attr("data-is-closed-auction");
-        var itemStatus = $(this).parents(".golf-event").attr("data-itemstatus");
-        if (isClosedAuction == "true") {
-            if (IsLoggedInUser == "true") {
-                location.href = "/Home/ProductDetailClosedWithLogin?id=" + $(this).parents(".golf-event").attr("data-id") + "&itemStatus=" + itemStatus;
-            }
-            else {
-                location.href = "/Home/ProductDetailClosed?id=" + $(this).parents(".golf-event").attr("data-id") + "&itemStatus=" + itemStatus;
-            }
-        }
-        else {
-            if (IsLoggedInUser == "true") {
-                location.href = "/Home/ProductDetailWithLogin?id=" + $(this).parents(".golf-event").attr("data-id") + "&itemStatus=" + itemStatus;
-            }
-            else {
-                location.href = "/Home/ProductDetail?id=" + $(this).parents(".golf-event").attr("data-id");
-            }
-        }
+    $(document).on("click", ".golf-event .image", function () {
+        var id = $(this).parents(".golf-event").attr("data-id");
+        var status = $(this).parents(".golf-event").attr("data-itemstatus");
+        var eventId = $(this).parents(".golf-event").attr("data-event-id");
+        OpenAuctionItemDetails(id, status, eventId);
     });
 
+    function OpenAuctionItemDetails(id, status, eventId) {
+        var route = "/Home/ProductDetailWithLogin?id=" + id;
+        route += "&itemStatus=" + status;
+        route += "&eventId=" + eventId;
+        location.href = route;
+    }
+
     $(document).on("click", "#viewItem", function () {
-        var isClosedAuction = $(this).parents(".golf-event").attr("data-is-closed-auction");
-        var itemStatus = $(this).parents(".golf-event").attr("data-itemstatus");
-        if (isClosedAuction == "true") {
-            if (IsLoggedInUser == "true") {
-                location.href = "/Home/ProductDetailClosedWithLogin?id=" + $(this).parents(".golf-event").attr("data-id") + "&itemStatus=" + itemStatus;
-            }
-            else {
-                location.href = "/Home/ProductDetailClosed?id=" + $(this).parents(".golf-event").attr("data-id") + "&itemStatus=" + itemStatus;
-            }
-        }
-        else {
-            if (IsLoggedInUser == "true") {
-                location.href = "/Home/ProductDetailWithLogin?id=" + $(this).parents(".golf-event").attr("data-id") + "&itemStatus=" + itemStatus;
-            }
-            else {
-                location.href = "/Home/ProductDetail?id=" + $(this).parents(".golf-event").attr("data-id");
-            }
-        }
+        var id = $(this).parents(".golf-event").attr("data-id");
+        var status = $(this).parents(".golf-event").attr("data-itemstatus");
+        var eventId = $(this).parents(".golf-event").attr("data-event-id");
+        OpenAuctionItemDetails(id, status, eventId);
     });
 
 
@@ -118,15 +104,23 @@ function GetAuctionItems(categoryId, search) {
         categoryId = 0;
     if (search === undefined || search === "undefined")
         search = "";
+
+    var itemsURL = ApiServerPath + "/api/services/app/AuctionItem/GetAllAuctionItems?categoryId=" + categoryId;
+    itemsURL += "&search=" + search;
+    itemsURL += "&eventId=" + eventId;
+
     $.ajax({
-        url: ApiServerPath + "/api/services/app/AuctionItem/GetAllAuctionItems?categoryId=" + categoryId + "&search=" + search + "&eventId=" + eventId,
+        url: itemsURL,
+        headers: {
+            "Abp.TenantId": tenantId
+        },
         type: "GET",
         cache: false,
         async: true,
         contentType: "application/json",
         dataType: "json",
         success: function (response) {
-            if (response != null || response != undefined) {
+            if (response.success) {
                 var data = response.result.items;
 
                 if (UserId !== "") {
@@ -142,7 +136,7 @@ function GetAuctionItems(categoryId, search) {
                                 var favItems = responseFromFavorite.result;
                                 for (var i = 0; i < favItems.length; i++) {
                                     var result = data.filter(s => s.actualItemId === favItems[i].itemId)[0];
-                                    if (result !== null) {
+                                    if (result !== undefined) {
                                         result.isFavorite = "liked";
                                     }
                                 }
@@ -178,12 +172,30 @@ function GetAuctionItems(categoryId, search) {
                         else {
                             v.imageName = WebSiteUrl + "/auction/images/no-img.png";
                         }
+
+                        //if user not logged in 
+                        //OR
+                        //user logged in but not registered for an event
+                        if (IsLoggedInUser === "false" || (IsLoggedInUser === "true" && !isRegisterForEvent)) {
+                            v.isUserLoggedIn = false;
+                        }
+                        //if user logged in and register for an event
+                        else if (IsLoggedInUser === "true" && isRegisterForEvent) {
+                            v.isUserLoggedIn = true;
+                        }
+
                         var output = Mustache.render($("#auctionItemTemplate").html(), v);
                         $("#auctionItems").append(output);
                         totalItems += 1;
                     }
                 });
                 $("#itemCount").text('(' + totalItems + ')');
+            }
+            else if (!response.success && response.result === null) {
+                alert(response.error.message);
+            }
+            else {
+                alert("Internal server error!!");
             }
         },
         error: function (xhr) {
