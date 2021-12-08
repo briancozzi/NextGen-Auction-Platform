@@ -6,8 +6,10 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using NextGen.BiddingPlatform.AuctionHistory;
 using NextGen.BiddingPlatform.AuctionHistory.Dto;
+using NextGen.BiddingPlatform.Authorization.Users;
 using NextGen.BiddingPlatform.Caching;
 using NextGen.BiddingPlatform.Configuration;
+using NextGen.BiddingPlatform.Net.Sms;
 using NextGen.BiddingPlatform.RabbitMQ;
 using RabbitMQ.Client;
 using System;
@@ -27,16 +29,19 @@ namespace NextGen.BiddingPlatform.BackgroundService.RabbitMqService
         private readonly IAuctionHistoryAppService _auctionHistoryService;
         private readonly ICachingAppService _cacheAppService;
         private readonly IConfigurationRoot _appConfiguration;
+        private readonly IUserAppService _userAppService;
         public RabbitMqService(IOptions<RabbitMqSettings> rabbitMqSettings,
                                                     IAuctionHistoryAppService auctionHistoryAppService,
                                                     ICachingAppService cacheAppService,
-                                                    IWebHostEnvironment env)
+                                                    IWebHostEnvironment env,
+                                                    IUserAppService userAppService)
         {
             _rabbitMqSettings = rabbitMqSettings.Value;
             _auctionHistoryService = auctionHistoryAppService;
             _cacheAppService = cacheAppService;
             _appConfiguration = env.GetAppConfiguration();
             EnabledQueue = _appConfiguration["EnabledQueue"];
+            _userAppService = userAppService;
         }
         public async Task AddToQueue(AuctionBidderHistoryDto data)
         {
@@ -97,6 +102,7 @@ namespace NextGen.BiddingPlatform.BackgroundService.RabbitMqService
                         else if (data.BidAmount < Math.Round(highestBidFromDb.BidAmount, 2))
                         {
                             data.IsOutBid = true;
+                            //await _userAppService.GetUserAndSendSMS(data.UserId, data.TenantId, data.BidAmount);
                             await _cacheAppService.SetHighesBidHistoryCache(new AuctionItemHighestBid
                             {
                                 AuctionItemId = data.AuctionItemId,
@@ -120,7 +126,11 @@ namespace NextGen.BiddingPlatform.BackgroundService.RabbitMqService
                         });
                     }
                     else if (data.BidAmount < Math.Round(highestBidFromCache.MinNextBidAmount, 2))
+                    {
                         data.IsOutBid = true;
+                        //await _userAppService.GetUserAndSendSMS(data.UserId, data.TenantId, data.BidAmount);
+                    }
+
                 }
 
                 lstData = lstData.OrderBy(x => x.CreationTime).ToList();

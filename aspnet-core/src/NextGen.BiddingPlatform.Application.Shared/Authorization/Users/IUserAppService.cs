@@ -26,5 +26,7 @@ namespace NextGen.BiddingPlatform.Authorization.Users
 
         Task UnlockUser(EntityDto<long> input);
         UserEditDto GetCurrUser();
+
+        Task GetUserAndSendSMS(long userId, int? tenantId, double bidAmount);
     }
 }

@@ -29,10 +29,11 @@ using NextGen.BiddingPlatform.Dto;
 using NextGen.BiddingPlatform.Notifications;
 using NextGen.BiddingPlatform.Url;
 using NextGen.BiddingPlatform.Organizations.Dto;
+using NextGen.BiddingPlatform.Net.Sms;
 
 namespace NextGen.BiddingPlatform.Authorization.Users
 {
-    [AbpAuthorize(AppPermissions.Pages_Administration_Users)]
+
     public class UserAppService : BiddingPlatformAppServiceBase, IUserAppService
     {
         public IAppUrlService AppUrlService { get; set; }
@@ -54,6 +55,7 @@ namespace NextGen.BiddingPlatform.Authorization.Users
         private readonly UserManager _userManager;
         private readonly IRepository<UserOrganizationUnit, long> _userOrganizationUnitRepository;
         private readonly IRepository<OrganizationUnitRole, long> _organizationUnitRoleRepository;
+        private readonly ISmsSender _smsSender;
 
         public UserAppService(
             RoleManager roleManager,
@@ -72,7 +74,8 @@ namespace NextGen.BiddingPlatform.Authorization.Users
             IRoleManagementConfig roleManagementConfig,
             UserManager userManager,
             IRepository<UserOrganizationUnit, long> userOrganizationUnitRepository,
-            IRepository<OrganizationUnitRole, long> organizationUnitRoleRepository)
+            IRepository<OrganizationUnitRole, long> organizationUnitRoleRepository,
+            ISmsSender smsSender)
         {
             _roleManager = roleManager;
             _userEmailer = userEmailer;
@@ -93,8 +96,10 @@ namespace NextGen.BiddingPlatform.Authorization.Users
             _roleRepository = roleRepository;
 
             AppUrlService = NullAppUrlService.Instance;
+            _smsSender = smsSender;
         }
 
+        [AbpAuthorize(AppPermissions.Pages_Administration_Users)]
         public async Task<PagedResultDto<UserListDto>> GetUsers(GetUsersInput input)
         {
             var query = GetUsersFilteredQuery(input);
@@ -115,6 +120,7 @@ namespace NextGen.BiddingPlatform.Authorization.Users
                 );
         }
 
+        [AbpAuthorize(AppPermissions.Pages_Administration_Users)]
         public async Task<FileDto> GetUsersToExcel(GetUsersToExcelInput input)
         {
             var query = GetUsersFilteredQuery(input);
@@ -129,7 +135,7 @@ namespace NextGen.BiddingPlatform.Authorization.Users
             return _userListExcelExporter.ExportToFile(userListDtos);
         }
 
-        [AbpAuthorize(AppPermissions.Pages_Administration_Users_Create, AppPermissions.Pages_Administration_Users_Edit)]
+        [AbpAuthorize(AppPermissions.Pages_Administration_Users, AppPermissions.Pages_Administration_Users_Create, AppPermissions.Pages_Administration_Users_Edit, RequireAllPermissions = true)]
         public async Task<GetUserForEditOutput> GetUserForEdit(NullableIdDto<long> input)
         {
             //Getting all available roles
@@ -223,7 +229,7 @@ namespace NextGen.BiddingPlatform.Authorization.Users
                     select userOuRoles.Name).ToList();
         }
 
-        [AbpAuthorize(AppPermissions.Pages_Administration_Users_ChangePermissions)]
+        [AbpAuthorize(AppPermissions.Pages_Administration_Users, AppPermissions.Pages_Administration_Users_ChangePermissions, RequireAllPermissions = true)]
         public async Task<GetUserPermissionsForEditOutput> GetUserPermissionsForEdit(EntityDto<long> input)
         {
             var user = await UserManager.GetUserByIdAsync(input.Id);
@@ -237,14 +243,14 @@ namespace NextGen.BiddingPlatform.Authorization.Users
             };
         }
 
-        [AbpAuthorize(AppPermissions.Pages_Administration_Users_ChangePermissions)]
+        [AbpAuthorize(AppPermissions.Pages_Administration_Users, AppPermissions.Pages_Administration_Users_ChangePermissions, RequireAllPermissions = true)]
         public async Task ResetUserSpecificPermissions(EntityDto<long> input)
         {
             var user = await UserManager.GetUserByIdAsync(input.Id);
             await UserManager.ResetAllPermissionsAsync(user);
         }
 
-        [AbpAuthorize(AppPermissions.Pages_Administration_Users_ChangePermissions)]
+        [AbpAuthorize(AppPermissions.Pages_Administration_Users, AppPermissions.Pages_Administration_Users_ChangePermissions, RequireAllPermissions = true)]
         public async Task UpdateUserPermissions(UpdateUserPermissionsInput input)
         {
             var user = await UserManager.GetUserByIdAsync(input.Id);
@@ -252,6 +258,7 @@ namespace NextGen.BiddingPlatform.Authorization.Users
             await UserManager.SetGrantedPermissionsAsync(user, grantedPermissions);
         }
 
+        [AbpAuthorize(AppPermissions.Pages_Administration_Users)]
         public async Task CreateOrUpdateUser(CreateOrUpdateUserInput input)
         {
             var currUser = GetCurrUser();
@@ -268,7 +275,7 @@ namespace NextGen.BiddingPlatform.Authorization.Users
             }
         }
 
-        [AbpAuthorize(AppPermissions.Pages_Administration_Users_Delete)]
+        [AbpAuthorize(AppPermissions.Pages_Administration_Users, AppPermissions.Pages_Administration_Users_Delete, RequireAllPermissions = true)]
         public async Task DeleteUser(EntityDto<long> input)
         {
             if (input.Id == AbpSession.GetUserId())
@@ -280,14 +287,14 @@ namespace NextGen.BiddingPlatform.Authorization.Users
             CheckErrors(await UserManager.DeleteAsync(user));
         }
 
-        [AbpAuthorize(AppPermissions.Pages_Administration_Users_Unlock)]
+        [AbpAuthorize(AppPermissions.Pages_Administration_Users, AppPermissions.Pages_Administration_Users_Unlock, RequireAllPermissions = true)]
         public async Task UnlockUser(EntityDto<long> input)
         {
             var user = await UserManager.GetUserByIdAsync(input.Id);
             user.Unlock();
         }
 
-        [AbpAuthorize(AppPermissions.Pages_Administration_Users_Edit)]
+        [AbpAuthorize(AppPermissions.Pages_Administration_Users, AppPermissions.Pages_Administration_Users_Edit, RequireAllPermissions = true)]
         protected virtual async Task UpdateUserAsync(CreateOrUpdateUserInput input)
         {
             Debug.Assert(input.User.Id != null, "input.User.Id should be set.");
@@ -328,7 +335,7 @@ namespace NextGen.BiddingPlatform.Authorization.Users
             }
         }
 
-        [AbpAuthorize(AppPermissions.Pages_Administration_Users_Create)]
+        [AbpAuthorize(AppPermissions.Pages_Administration_Users, AppPermissions.Pages_Administration_Users_Create, RequireAllPermissions = true)]
         protected virtual async Task CreateUserAsync(CreateOrUpdateUserInput input)
         {
             if (AbpSession.TenantId.HasValue)
@@ -480,10 +487,31 @@ namespace NextGen.BiddingPlatform.Authorization.Users
             return query;
         }
 
+        [AbpAuthorize(AppPermissions.Pages_Administration_Users)]
         public UserEditDto GetCurrUser()
         {
             var user = UserManager.GetUserById(AbpSession.UserId.Value);
             return ObjectMapper.Map<UserEditDto>(user);
+        }
+
+        [AbpAllowAnonymous]
+        public async Task GetUserAndSendSMS(long userId, int? tenantId, double bidAmount)
+        {
+            using (CurrentUnitOfWork.DisableFilter(Abp.Domain.Uow.AbpDataFilters.MayHaveTenant))
+            {
+                var user = await _userManager.Users.AsNoTracking().FirstOrDefaultAsync(s => s.Id == userId && s.TenantId == tenantId);
+                if (user != null && !string.IsNullOrEmpty(user.PhoneNumber))
+                {
+                    try
+                    {
+                        await _smsSender.SendAsync(user.PhoneNumber, $"Your last bid with {bidAmount} is outbid");
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+            }
+
         }
     }
 }

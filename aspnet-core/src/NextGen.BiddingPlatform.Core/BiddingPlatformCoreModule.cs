@@ -35,6 +35,7 @@ using NextGen.BiddingPlatform.MultiTenancy;
 using NextGen.BiddingPlatform.Net.Emailing;
 using NextGen.BiddingPlatform.Notifications;
 using NextGen.BiddingPlatform.WebHooks;
+using NextGen.BiddingPlatform.Net.Sms;
 
 namespace NextGen.BiddingPlatform
 {
@@ -83,7 +84,7 @@ namespace NextGen.BiddingPlatform
             //Configuration.Modules.ZeroLdap().Enable(typeof(AppLdapAuthenticationSource));
 
             //Twilio - Enable this line to activate Twilio SMS integration
-            //Configuration.ReplaceService<ISmsSender,TwilioSmsSender>();
+            Configuration.ReplaceService<ISmsSender, TwilioSmsSender>();
 
             //Adding DynamicEntityParameters definition providers
             Configuration.DynamicEntityParameters.Providers.Add<AppDynamicEntityParameterDefinitionProvider>();

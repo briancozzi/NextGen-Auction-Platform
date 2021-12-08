@@ -395,7 +395,7 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                                     IsTwoFactorEnabled = false,
                                     Name = data.FirstName,
                                     Password = generalPassword,
-                                    PhoneNumber = "",
+                                    PhoneNumber = data.PhoneNumber,
                                     ShouldChangePasswordOnNextLogin = false,
                                     Surname = data.LastName,
                                     UserName = data.EmailAddress,
@@ -441,6 +441,12 @@ namespace NextGen.BiddingPlatform.Web.Controllers
                         }
                         else
                         {
+
+                            existingUser.EmailAddress = data.EmailAddress;
+                            existingUser.Name = data.FirstName;
+                            existingUser.PhoneNumber = data.PhoneNumber;
+                            existingUser.Surname = data.LastName;
+
                             await _userManager.UpdateAsync(existingUser);
 
                             //add entry into user events
@@ -1148,5 +1154,6 @@ namespace NextGen.BiddingPlatform.Web.Controllers
         public int TenantId { get; set; }
         public string ExternalUserId { get; set; }
         public string ExternalUniqueId { get; set; }
+        public string PhoneNumber { get; set; }
     }
 }

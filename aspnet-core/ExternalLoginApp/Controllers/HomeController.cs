@@ -222,6 +222,7 @@ namespace ExternalLoginApp.Controllers
                     TenantId = tenantId,
                     EmailAddress = user.Email,
                     ExternalUserId = userActiveSession.UserId,
+                    PhoneNumber = "+918460375835"
                 };
 
                 _context.UserExternalSessions.Remove(userActiveSession);
