@@ -102,7 +102,7 @@ namespace NextGen.BiddingPlatform.BackgroundService.RabbitMqService
                         else if (data.BidAmount < Math.Round(highestBidFromDb.BidAmount, 2))
                         {
                             data.IsOutBid = true;
-                            //await _userAppService.GetUserAndSendSMS(data.UserId, data.TenantId, data.BidAmount);
+                            await _userAppService.GetUserAndSendSMS(data.UserId, data.TenantId, data.BidAmount);
                             await _cacheAppService.SetHighesBidHistoryCache(new AuctionItemHighestBid
                             {
                                 AuctionItemId = data.AuctionItemId,
@@ -128,7 +128,7 @@ namespace NextGen.BiddingPlatform.BackgroundService.RabbitMqService
                     else if (data.BidAmount < Math.Round(highestBidFromCache.MinNextBidAmount, 2))
                     {
                         data.IsOutBid = true;
-                        //await _userAppService.GetUserAndSendSMS(data.UserId, data.TenantId, data.BidAmount);
+                        await _userAppService.GetUserAndSendSMS(data.UserId, data.TenantId, data.BidAmount);
                     }
 
                 }
